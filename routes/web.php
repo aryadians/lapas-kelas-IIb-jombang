@@ -1,15 +1,17 @@
 <?php
+
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NewsController; // Public News Controller
 use App\Http\Controllers\AnnouncementController; // Public Announcement Controller
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController; // Admin Announcement Controller
 use App\Http\Controllers\Admin\NewsController as AdminNewsController; // Admin News Controller
-use App\Http\Controllers\AuthController; // <--- TAMBAHKAN INI (PENTING)
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\WbpController; // <--- TAMBAHAN: Controller WBP Admin
 use App\Http\Controllers\FaqController;
 use App\Models\News;
 use App\Models\Announcement;
@@ -17,10 +19,9 @@ use App\Models\Kunjungan;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\PasswordResetLinkController; // <--- PENTING: Import ini
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Guest\GalleryController; // <--- PENTING
-
+use App\Http\Controllers\Guest\GalleryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +50,7 @@ Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store')
 
 // Public News Routes
 Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index');
-Route::get('/berita/{news:slug}', [NewsController::class, 'show'])->name('news.public.show'); // Assuming 'slug' for News model
+Route::get('/berita/{news:slug}', [NewsController::class, 'show'])->name('news.public.show');
 
 // Public Announcement Routes
 Route::get('/pengumuman', [AnnouncementController::class, 'index'])->name('announcements.public.index');
@@ -65,8 +66,12 @@ Route::get('/kunjungan/status/{kunjungan}', [KunjunganController::class, 'status
 Route::get('/kunjungan/{kunjungan}/print', [KunjunganController::class, 'printProof'])->name('kunjungan.print');
 Route::get('/kunjungan/verify/{kunjungan}', [KunjunganController::class, 'verify'])->name('kunjungan.verify');
 
+// API Routes for Guest Kunjungan
 Route::get('/api/kunjungan/{kunjungan}/status', [KunjunganController::class, 'getStatusApi'])->name('kunjungan.status.api');
 Route::get('/api/kunjungan/quota', [KunjunganController::class, 'getQuotaStatus'])->name('kunjungan.quota.api');
+
+// API Search WBP (Autocomplete di Form Pendaftaran) <--- TAMBAHAN
+Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('api.search.wbp');
 
 
 // =========================================================================
@@ -83,7 +88,7 @@ Route::post('logout', [AuthController::class, 'logout'])
     ->middleware('auth');
 
 // Note: Jika butuh fitur Lupa Password, uncomment baris bawah ini (tapi pakai controller bawaan Breeze)
-require __DIR__ . '/auth.php'; 
+require __DIR__ . '/auth.php';
 
 
 // =========================================================================
@@ -118,16 +123,16 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // G. MANAJEMEN WBP & IMPORT EXCEL <--- TAMBAHAN
+    Route::resource('wbp', WbpController::class);
+    Route::post('wbp/import', [WbpController::class, 'import'])->name('wbp.import');
+    Route::get('wbp/{id}/history', [WbpController::class, 'history'])->name('wbp.history');
 });
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
 
-// ... route login dan logout Anda sebelumnya ...
-
-// --- ROUTE LUPA PASSWORD (FORGOT PASSWORD) ---
+// =========================================================================
+// 5. PASSWORD RESET ROUTES
+// =========================================================================
 
 // 1. Menampilkan form (Halaman yang ada input emailnya)
 Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -136,8 +141,6 @@ Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
 // 2. Memproses pengiriman email (Ini yang dicari oleh error 'password.email')
 Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
     ->name('password.email');
-
-// --- ROUTE RESET PASSWORD (SAAT LINK DI EMAIL DIKLIK) ---
 
 // 3. Menampilkan form input password baru
 Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])

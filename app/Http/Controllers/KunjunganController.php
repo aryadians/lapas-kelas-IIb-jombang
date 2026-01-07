@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kunjungan;
+use App\Models\Wbp; // Import Model WBP
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\KunjunganConfirmationMail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class KunjunganController extends Controller
 {
@@ -22,7 +25,7 @@ class KunjunganController extends Controller
             'Kamis' => [],
         ];
 
-        $date = \Carbon\Carbon::today();
+        $date = Carbon::today();
         $dayMapping = [
             1 => 'Senin',
             2 => 'Selasa',
@@ -50,46 +53,103 @@ class KunjunganController extends Controller
     }
 
     /**
+     * API untuk Pencarian WBP (Autocomplete)
+     */
+    public function searchWbp(Request $request)
+    {
+        $query = $request->get('q');
+        $wbps = Wbp::where('nama', 'LIKE', "%{$query}%")
+            ->orWhere('no_registrasi', 'LIKE', "%{$query}%")
+            ->limit(10)->get();
+        return response()->json($wbps);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input Dasar
+        // 1. Validasi Input Dasar & Baru
         $validated = $request->validate([
             'nama_pengunjung'    => 'required|string|max:255',
             'nik_pengunjung'     => 'required|string|size:16',
             'no_wa_pengunjung'   => 'required|string|max:15',
             'email_pengunjung'   => 'required|email|max:255',
             'alamat_pengunjung'  => 'required|string',
-            'nama_wbp'           => 'required|string|max:255',
+
+            // Validasi WBP & Hubungan
+            'wbp_id'             => 'required|exists:wbps,id', // Wajib ID dari database WBP
+            'nama_wbp'           => 'required|string', // Fallback name
             'hubungan'           => 'required|string|max:100',
+
             'tanggal_kunjungan'  => 'required|date|after_or_equal:today',
             'sesi'               => 'nullable|string|in:pagi,siang',
+
+            // Validasi Pengikut
+            'total_pengikut'     => 'required|integer|min:0|max:4',
+            'pengikut_nama.*'    => 'nullable|string',
+            'pengikut_barang.*'  => 'nullable|string',
+            
         ]);
 
-        $tanggalKunjungan = \Carbon\Carbon::parse($validated['tanggal_kunjungan']);
+        $tanggalKunjungan = Carbon::parse($validated['tanggal_kunjungan']);
         $sesi = $request->input('sesi');
+        $today = Carbon::now();
 
-        // 2. Validasi Hari & Sesi
+        // 2. LOGIKA VALIDASI HARI (H-1 & SENIN)
+        if ($tanggalKunjungan->isMonday()) {
+            // Jika kunjungan Senin, wajib daftar hari Jumat sebelumnya
+            // (Asumsi: Hari ini harus Jumat)
+            if (!$today->isFriday()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'tanggal_kunjungan' => 'Khusus kunjungan hari Senin, pendaftaran hanya dibuka pada hari Jumat sebelumnya.',
+                ]);
+            }
+            // Sesi wajib untuk Senin
+            if (!$sesi) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'sesi' => 'Untuk hari Senin, Anda wajib memilih sesi kunjungan.',
+                ]);
+            }
+        } else {
+            // Hari Biasa (Selasa-Kamis): Wajib H-1
+            // Cek selisih hari (harus 1 hari)
+            if ($today->diffInDays($tanggalKunjungan, false) != 1) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'tanggal_kunjungan' => 'Pendaftaran wajib dilakukan H-1 (Satu hari sebelum jadwal kunjungan).',
+                ]);
+            }
+        }
+
+        // Cek jika hari libur sistem (Jumat/Sabtu/Minggu tidak terima kunjungan)
         if ($tanggalKunjungan->isFriday() || $tanggalKunjungan->isSaturday() || $tanggalKunjungan->isSunday()) {
             throw \Illuminate\Validation\ValidationException::withMessages([
-                'tanggal_kunjungan' => 'Pendaftaran tidak bisa dilakukan pada hari Jumat, Sabtu, atau Minggu.',
+                'tanggal_kunjungan' => 'Layanan kunjungan tutup pada hari Jumat, Sabtu, dan Minggu.',
             ]);
         }
 
-        if ($tanggalKunjungan->isMonday() && !$sesi) {
+        // 3. LOGIKA SISTEM KUNCI (LOCK) 1 MINGGU
+        // Cek apakah WBP ini sudah dikunjungi dalam 7 hari terakhir?
+        $lockDateStart = $tanggalKunjungan->copy()->subDays(6);
+
+        $sudahDikunjungi = Kunjungan::where('wbp_id', $request->wbp_id)
+            ->where('status', '!=', 'rejected') // Hitung status pending & approved
+            ->whereBetween('tanggal_kunjungan', [$lockDateStart->format('Y-m-d'), $tanggalKunjungan->format('Y-m-d')])
+            ->exists();
+
+        if ($sudahDikunjungi) {
             throw \Illuminate\Validation\ValidationException::withMessages([
-                'sesi' => 'Untuk hari Senin, Anda wajib memilih sesi kunjungan.',
+                'nama_wbp' => 'Warga Binaan ini sudah menerima kunjungan dalam 1 minggu terakhir. Kuota terkunci.',
             ]);
         }
 
-        // 3. Validasi Kuota
+        // 4. Validasi Kuota Harian/Sesi
         $query = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->format('Y-m-d'));
-        
+
         if ($tanggalKunjungan->isMonday()) {
             $kuota = ($sesi == 'pagi') ? config('kunjungan.quota_senin_pagi') : config('kunjungan.quota_senin_siang');
             $jumlahPendaftar = (clone $query)->where('sesi', $sesi)->where('status', 'approved')->count();
-            
+
             if ($jumlahPendaftar >= $kuota) {
                 $namaSesi = ($sesi == 'pagi') ? 'Pagi' : 'Siang';
                 throw \Illuminate\Validation\ValidationException::withMessages([
@@ -101,20 +161,36 @@ class KunjunganController extends Controller
             $jumlahPendaftar = (clone $query)->where('status', 'approved')->count();
 
             if ($jumlahPendaftar >= $kuota) {
-                 throw \Illuminate\Validation\ValidationException::withMessages([
+                throw \Illuminate\Validation\ValidationException::withMessages([
                     'tanggal_kunjungan' => 'Maaf, kuota untuk tanggal tersebut sudah penuh.',
                 ]);
             }
         }
 
-        // 4. Proses Database
+        // 5. Proses Data Pengikut (Array ke JSON)
+        $dataPengikut = [];
+        if ($request->total_pengikut > 0 && $request->has('pengikut_nama')) {
+            foreach ($request->pengikut_nama as $index => $nama) {
+                if (!empty($nama)) {
+                    $dataPengikut[] = [
+                        'nama' => $nama,
+                        'barang' => $request->pengikut_barang[$index] ?? '-'
+                    ];
+                }
+            }
+        }
+
+        // 6. Simpan ke Database
         $kunjunganBaru = null;
-        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $tanggalKunjungan, $sesi, &$kunjunganBaru) {
+        DB::transaction(function () use ($validated, $tanggalKunjungan, $sesi, $dataPengikut, &$kunjunganBaru) {
             $nomorAntrian = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->format('Y-m-d'))->count() + 1;
-            
+
+            // Setup data insert
             $validated['nomor_antrian_harian'] = $nomorAntrian;
             $validated['status'] = 'pending';
-            $validated['qr_token'] = Str::uuid(); // Generate unique QR token
+            $validated['qr_token'] = Str::uuid();
+            $validated['data_pengikut'] = $dataPengikut; // Simpan JSON
+
             if ($sesi) {
                 $validated['sesi'] = $sesi;
             }
@@ -125,7 +201,7 @@ class KunjunganController extends Controller
         // Send confirmation email
         Mail::to($kunjunganBaru->email_pengunjung)->queue(new KunjunganConfirmationMail($kunjunganBaru));
 
-        // 5. Redirect dengan pesan sukses
+        // 7. Redirect dengan pesan sukses
         $pesanSukses = "Pendaftaran berhasil! Nomor antrian Anda: {$kunjunganBaru->nomor_antrian_harian}.";
         if ($kunjunganBaru->sesi) {
             $pesanSukses .= " Anda terdaftar untuk Sesi " . ucfirst($kunjunganBaru->sesi) . ".";
@@ -151,144 +227,60 @@ class KunjunganController extends Controller
         return view('guest.kunjungan.verify', compact('kunjungan'));
     }
 
-        /**
+    /**
+     * Get the status of a Kunjungan for API calls.
+     */
+    public function getStatusApi(Kunjungan $kunjungan)
+    {
+        return response()->json(['status' => $kunjungan->status]);
+    }
 
-         * Get the status of a Kunjungan for API calls.
+    /**
+     * Get quota status for a given date and session for API calls.
+     */
+    public function getQuotaStatus(Request $request)
+    {
+        $validated = $request->validate([
+            'tanggal_kunjungan' => 'required|date_format:Y-m-d',
+            'sesi'              => 'nullable|string|in:pagi,siang',
+        ]);
 
-         */
+        $tanggalKunjungan = Carbon::parse($validated['tanggal_kunjungan']);
+        $sesi = $validated['sesi'] ?? null;
 
-        public function getStatusApi(Kunjungan $kunjungan)
-
-        {
-
-            return response()->json(['status' => $kunjungan->status]);
-
+        if ($tanggalKunjungan->isFriday() || $tanggalKunjungan->isSaturday() || $tanggalKunjungan->isSunday()) {
+            return response()->json(['error' => 'Kunjungan tidak tersedia pada hari Jumat, Sabtu, atau Minggu.'], 422);
         }
 
-    
+        $query = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->format('Y-m-d'));
+        $jumlahPendaftar = 0;
+        $totalKuota = 0;
 
-        /**
-
-         * Get quota status for a given date and session for API calls.
-
-         */
-
-        public function getQuotaStatus(Request $request)
-
-        {
-
-            $validated = $request->validate([
-
-                'tanggal_kunjungan' => 'required|date_format:Y-m-d',
-
-                'sesi'              => 'nullable|string|in:pagi,siang',
-
-            ]);
-
-    
-
-            $tanggalKunjungan = \Carbon\Carbon::parse($validated['tanggal_kunjungan']);
-
-            $sesi = $validated['sesi'] ?? null;
-
-    
-
-            if ($tanggalKunjungan->isFriday() || $tanggalKunjungan->isSaturday() || $tanggalKunjungan->isSunday()) {
-
-                return response()->json(['error' => 'Kunjungan tidak tersedia pada hari Jumat, Sabtu, atau Minggu.'], 422);
-
+        if ($tanggalKunjungan->isMonday()) {
+            if (!$sesi) {
+                return response()->json(['error' => 'Sesi harus dipilih untuk hari Senin.'], 422);
             }
+            $totalKuota = ($sesi == 'pagi') ? config('kunjungan.quota_senin_pagi') : config('kunjungan.quota_senin_siang');
+            $jumlahPendaftar = (clone $query)->where('sesi', $sesi)->where('status', 'approved')->count();
+        } else {
+            $totalKuota = config('kunjungan.quota_hari_biasa');
+            $jumlahPendaftar = (clone $query)->where('status', 'approved')->count();
+        }
 
-    
+        $sisaKuota = $totalKuota - $jumlahPendaftar;
 
-            $query = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->format('Y-m-d'));
+        return response()->json([
+            'total_kuota' => $totalKuota,
+            'jumlah_pendaftar' => $jumlahPendaftar,
+            'sisa_kuota' => $sisaKuota,
+        ]);
+    }
 
-            $jumlahPendaftar = 0;
-
-            $totalKuota = 0;
-
-    
-
-            if ($tanggalKunjungan->isMonday()) {
-
-                if (!$sesi) {
-
-                    return response()->json(['error' => 'Sesi harus dipilih untuk hari Senin.'], 422);
-
-                }
-
-                $totalKuota = ($sesi == 'pagi') ? config('kunjungan.quota_senin_pagi') : config('kunjungan.quota_senin_siang');
-
-                $jumlahPendaftar = (clone $query)->where('sesi', $sesi)->where('status', 'approved')->count();
-
-            } else {
-
-                $totalKuota = config('kunjungan.quota_hari_biasa');
-
-                $jumlahPendaftar = (clone $query)->where('status', 'approved')->count();
-
-            }
-
-    
-
-            $sisaKuota = $totalKuota - $jumlahPendaftar;
-
-    
-
-                    return response()->json([
-
-    
-
-                            'total_kuota' => $totalKuota,
-
-    
-
-                            'jumlah_pendaftar' => $jumlahPendaftar,
-
-    
-
-                            'sisa_kuota' => $sisaKuota,
-
-    
-
-                        ]);
-
-    
-
-                    }
-
-    
-
-            
-
-    
-
-                /**
-
-    
-
-                 * Display a printable version of the registration proof.
-
-    
-
-                 */
-
-    
-
-                public function printProof(Kunjungan $kunjungan)
-
-    
-
-                {
-
-    
-
-                    return view('guest.kunjungan.print', compact('kunjungan'));
-
-    
-
-                }
-
-    
-
-            }
+    /**
+     * Display a printable version of the registration proof.
+     */
+    public function printProof(Kunjungan $kunjungan)
+    {
+        return view('guest.kunjungan.print', compact('kunjungan'));
+    }
+}

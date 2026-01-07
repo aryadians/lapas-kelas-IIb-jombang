@@ -27,5 +27,18 @@ class Kunjungan extends Model
         'nomor_antrian_harian',
         'status',
         'qr_token',
+        // --- TAMBAHAN BARU ---
+        'wbp_id',
+        'total_pengikut',
+        'data_pengikut'
     ];
+    // --- TAMBAHAN BARU ---
+    protected $casts = [
+        'data_pengikut' => 'array', // Agar otomatis jadi Array/JSON
+    ];
+
+    public function wbp()
+    {
+        return $this->belongsTo(Wbp::class);
+    }
 }
