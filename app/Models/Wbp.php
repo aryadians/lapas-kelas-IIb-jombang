@@ -9,11 +9,11 @@ class Wbp extends Model
 {
     use HasFactory;
 
-    // Field yang boleh diisi (untuk import Excel)
     protected $guarded = ['id'];
 
+    // Relasi ke Kunjungan (Satu WBP punya Banyak Kunjungan)
     public function kunjungans()
     {
-        return $this->hasMany(Kunjungan::class);
+        return $this->hasMany(Kunjungan::class, 'wbp_id');
     }
 }

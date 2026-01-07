@@ -118,7 +118,7 @@
     <form id="bulk-action-form" method="POST">
         @csrf
         
-        {{-- TOOLBAR (STATIS - TIDAK FLOATING) --}}
+        {{-- TOOLBAR --}}
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4 animate__animated animate__fadeIn">
             {{-- Checkbox Select All --}}
             <div class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
@@ -160,7 +160,10 @@
                             </div>
                             <div>
                                 <h3 class="font-bold text-lg text-slate-800 leading-tight">{{ $kunjungan->nama_pengunjung }}</h3>
-                                <p class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded mt-1 inline-block">NIK: {{ $kunjungan->nik_pengunjung }}</p>
+                                {{-- UPDATED: Menggunakan nik_ktp --}}
+                                <p class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded mt-1 inline-block">
+                                    NIK: {{ $kunjungan->nik_ktp }}
+                                </p>
                             </div>
                         </div>
                         
@@ -188,7 +191,10 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase">Mengunjungi</p>
-                                <p class="text-sm font-bold text-slate-700">{{ $kunjungan->nama_wbp }}</p>
+                                {{-- UPDATED: Menggunakan Relasi WBP --}}
+                                <p class="text-sm font-bold text-slate-700 truncate max-w-[150px]">
+                                    {{ $kunjungan->wbp->nama ?? 'WBP Dihapus' }}
+                                </p>
                                 <p class="text-xs text-slate-500">Hubungan: {{ $kunjungan->hubungan }}</p>
                             </div>
                         </div>

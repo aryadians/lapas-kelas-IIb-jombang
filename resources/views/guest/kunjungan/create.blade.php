@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-{{-- Style Tambahan untuk Autocomplete Dropdown --}}
+{{-- Style Tambahan untuk Autocomplete Dropdown Custom --}}
 <style>
     .search-results {
         position: absolute;
@@ -16,28 +16,36 @@
         border: 1px solid #e2e8f0;
         margin-top: 0.5rem;
     }
-    .search-item {
+    .wbp-item {
         padding: 0.75rem 1rem;
         cursor: pointer;
         border-bottom: 1px solid #f1f5f9;
         transition: all 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
-    .search-item:last-child { border-bottom: none; }
-    .search-item:hover { background-color: #fef9c3; color: #854d0e; }
+    .wbp-item:last-child { border-bottom: none; }
+    .wbp-item:hover { background-color: #fef9c3; color: #854d0e; }
+    
+    /* Custom Scrollbar */
+    .search-results::-webkit-scrollbar { width: 6px; }
+    .search-results::-webkit-scrollbar-track { background: #f1f1f1; }
+    .search-results::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 </style>
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
 <div x-data="{ showForm: {{ session('errors') && $errors->any() ? 'true' : 'false' }} }" class="bg-slate-50 min-h-screen pb-20">
 
     {{-- ============================================================== --}}
-    {{-- BAGIAN 1: INFORMASI & TATA TERTIB (Muncul Awal) --}}
+    {{-- BAGIAN 1: INFORMASI & TATA TERTIB (FULL UI) --}}
     {{-- ============================================================== --}}
     <div x-show="!showForm"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4"
         x-transition:enter-end="opacity-100 translate-y-0">
 
-        {{-- HEADER: JUDUL BESAR --}}
+        {{-- HERO HEADER --}}
         <div class="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 pt-16 pb-24 px-4 relative overflow-hidden">
             <div class="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 opacity-15 blur-3xl animate-pulse"></div>
             <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 opacity-10 blur-3xl"></div>
@@ -65,7 +73,7 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-20">
 
-            {{-- BADGE RESMI KEMENTERIAN --}}
+            {{-- BADGE KEMENTERIAN --}}
             <div class="text-center mb-8">
                 <div class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-950 to-blue-900 text-yellow-400 px-6 py-3 rounded-full font-bold text-sm shadow-2xl border-2 border-yellow-500 border-opacity-50">
                     <i class="fa-solid fa-landmark text-lg"></i>
@@ -76,7 +84,7 @@
 
             {{-- 1. JADWAL & KUOTA --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                {{-- (Konten Card Jadwal tetap sama seperti kode asli) --}}
+                {{-- Card 1: Waktu Layanan --}}
                 <div class="bg-white rounded-2xl shadow-2xl p-6 border-t-4 border-blue-600 flex flex-col h-full card-hover-scale transition-all duration-300 hover:shadow-blue-500/20">
                     <div class="flex items-center gap-4 mb-6">
                         <div class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-200 rounded-full text-blue-600 shadow-lg">
@@ -162,7 +170,7 @@
                 </div>
             </div>
 
-            {{-- 2. ALUR LAYANAN (Code Alur Layanan Tetap) --}}
+            {{-- 2. ALUR LAYANAN (FULL VERSION) --}}
             <div class="bg-white rounded-3xl shadow-2xl p-8 mb-12 overflow-hidden relative border border-gray-100">
                 <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-yellow-400 to-yellow-600"></div>
                 <div class="text-center mb-10">
@@ -220,7 +228,7 @@
                 </div>
             </div>
 
-            {{-- 3. KETENTUAN BARANG BAWAAN (Tetap) --}}
+            {{-- 3. KETENTUAN BARANG BAWAAN (FULL VERSION) --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
                 {{-- A. DIPERBOLEHKAN --}}
                 <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-100 h-full">
@@ -338,24 +346,12 @@
                         <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
                     </span>
                 </button>
-
-                <div class="flex gap-4 text-xs text-slate-500">
-                    <span class="flex items-center gap-1">
-                        <i class="fa-solid fa-shield-alt text-green-500"></i> Data Aman
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <i class="fa-solid fa-clock text-blue-500"></i> Proses Cepat
-                    </span>
-                    <span class="flex items-center gap-1">
-                        <i class="fa-solid fa-users text-purple-500"></i> Layanan Publik
-                    </span>
-                </div>
             </div>
         </div>
     </div>
 
     {{-- ============================================================== --}}
-    {{-- BAGIAN 2: FORMULIR PENDAFTARAN (Muncul setelah klik tombol) --}}
+    {{-- BAGIAN 2: FORMULIR PENDAFTARAN (DIPERBARUI LOGIC-NYA) --}}
     {{-- ============================================================== --}}
     <div x-show="showForm"
         style="display: none;"
@@ -374,23 +370,39 @@
                     </h2>
                     <p class="text-gray-200 text-sm mt-1">Lengkapi data di bawah ini dengan benar dan lengkap.</p>
                 </div>
-                {{-- Tombol Batal diperbesar --}}
                 <button @click="showForm = false" class="relative z-10 text-gray-300 hover:text-white transition flex items-center gap-2 text-sm font-semibold bg-blue-800 bg-opacity-50 hover:bg-opacity-70 px-4 py-2 rounded-lg shadow-md backdrop-blur-sm">
                     <i class="fa-solid fa-xmark text-lg"></i> Batal
                 </button>
             </div>
 
-            <div class="p-10"> {{-- Padding diperbesar agar lebih lega --}}
-
-                {{-- PESAN SUKSES --}}
+            <div class="p-10">
                 @if (session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8" role="alert">
                         <p class="font-bold">Berhasil!</p>
                         <p>{{ session('success') }}</p>
                     </div>
                 @endif
-
-                <form method="POST" action="{{ route('kunjungan.store') }}" class="space-y-8 animate-fade-in">
+                @if (session('error'))
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg mb-8" role="alert">
+                        <p class="font-bold">Gagal!</p>
+                        <p>{{ session('error') }}</p>
+                    </div>
+                @endif
+{{-- KODE UNTUK MENAMPILKAN ERROR VALIDASI --}}
+@if ($errors->any())
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-lg" role="alert">
+        <p class="font-bold text-lg"><i class="fa-solid fa-triangle-exclamation"></i> Gagal Menyimpan!</p>
+        <p>Silakan perbaiki kesalahan berikut:</p>
+        <ul class="mt-2 list-disc list-inside text-sm font-semibold">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+{{-- BATAS KODE ERROR --}}
+                {{-- FORM START --}}
+                <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in">
                     @csrf
 
                     {{-- Data Pengunjung --}}
@@ -402,50 +414,61 @@
                             <span class="text-blue-800">Data Pengunjung</span>
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {{-- Nama Lengkap --}}
                             <div class="group">
-                                <label for="nama_pengunjung" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-id-card text-blue-500"></i>
-                                    Nama Lengkap (Sesuai KTP)
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-id-card text-blue-500"></i> Nama Lengkap (Sesuai KTP)
                                 </label>
-                                <input type="text" id="nama_pengunjung" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300 @error('nama_pengunjung') border-red-500 @enderror" placeholder="Masukkan nama lengkap Anda">
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_nama_pengunjung"></p>
+                                <input type="text" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nama_pengunjung') border-red-500 @enderror" required placeholder="Budi Santoso">
                             </div>
+
+                            {{-- NIK KTP --}}
                             <div class="group">
-                                <label for="nik_pengunjung" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-hashtag text-blue-500"></i>
-                                    NIK (Nomor Induk Kependudukan)
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-hashtag text-blue-500"></i> NIK (16 Digit)
                                 </label>
-                                <input type="text" id="nik_pengunjung" name="nik_pengunjung" value="{{ old('nik_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300 @error('nik_pengunjung') border-red-500 @enderror" placeholder="Masukkan 16 digit NIK Anda" maxlength="16">
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_nik_pengunjung"></p>
+                                <input type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
                             </div>
+
+                            {{-- Jenis Kelamin --}}
                             <div class="group">
-                                <label for="no_wa_pengunjung" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-brands fa-whatsapp text-green-500"></i>
-                                    Nomor WhatsApp Aktif
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-venus-mars text-blue-500"></i> Jenis Kelamin
                                 </label>
-                                <input type="text" id="no_wa_pengunjung" name="no_wa_pengunjung" value="{{ old('no_wa_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300 @error('no_wa_pengunjung') border-red-500 @enderror" placeholder="Contoh: 081234567890">
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_no_wa_pengunjung"></p>
+                                <select name="jenis_kelamin" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required>
+                                    <option value="">- Pilih -</option>
+                                    <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                    <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                </select>
                             </div>
+
+                            {{-- Nomor HP --}}
                             <div class="group">
-                                <label for="email_pengunjung" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-envelope text-blue-500"></i>
-                                    Alamat Email Aktif
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-brands fa-whatsapp text-green-500"></i> Nomor WhatsApp
                                 </label>
-                                <input type="email" id="email_pengunjung" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300 @error('email_pengunjung') border-red-500 @enderror" placeholder="Contoh: budi@email.com" required>
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_email_pengunjung"></p>
+                                <input type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
                             </div>
+
+                            {{-- Alamat --}}
                             <div class="md:col-span-2 group">
-                                <label for="alamat_pengunjung" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-map-marker-alt text-red-500"></i>
-                                    Alamat Lengkap
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-map-marker-alt text-red-500"></i> Alamat Lengkap
                                 </label>
-                                <input type="text" id="alamat_pengunjung" name="alamat_pengunjung" value="{{ old('alamat_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300 @error('alamat_pengunjung') border-red-500 @enderror" placeholder="Masukkan alamat lengkap Anda (Desa/Kelurahan, Kecamatan, Kota/Kabupaten)">
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_alamat_pengunjung"></p>
+                                <input type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
+                            </div>
+
+                            {{-- Upload Foto KTP (BARU) --}}
+                            <div class="md:col-span-2 group">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-camera text-slate-500"></i> Upload Foto KTP (Wajib, Max 2MB)
+                                </label>
+                                <input type="file" name="foto_ktp" accept="image/*" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" required>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Data WBP (DENGAN AUTOCOMPLETE) --}}
+                    {{-- Data WBP (AUTOCOMPLETE FIX) --}}
                     <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-2xl border border-yellow-100 animate-slide-up-delay">
                         <h3 class="text-lg font-bold text-slate-800 border-b-2 border-yellow-200 pb-3 mb-6 flex items-center gap-3">
                             <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
@@ -453,10 +476,10 @@
                             </span> 
                             <span class="text-yellow-800">Data Tujuan Kunjungan</span>
                         </h3>
-                        <div 
-                            class="grid grid-cols-1 md:grid-cols-2 gap-6"
+                        
+                        {{-- X-DATA ALPINE UNTUK KALENDER & KUOTA --}}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
-                                // Data & State untuk Calendar
                                 datesByDay: {{ json_encode($datesByDay) }},
                                 selectedDay: '{{ old('selected_day', '') }}',
                                 selectedDate: '{{ old('tanggal_kunjungan', '') }}',
@@ -465,8 +488,6 @@
                                 isMonday: false,
                                 quotaInfo: '',
                                 isLoading: false,
-                                
-                                // Methods
                                 init() {
                                     if (this.selectedDay) { this.updateAvailableDates(); }
                                     if (this.selectedDate) { this.getQuota(); }
@@ -495,10 +516,7 @@
                                             sesi: this.isMonday ? this.selectedSesi : '',
                                         });
                                         const response = await fetch(`{{ route('kunjungan.quota.api') }}?${params}`);
-                                        if (!response.ok) {
-                                            const errorData = await response.json();
-                                            throw new Error(errorData.message || 'Gagal mengambil data kuota.');
-                                        }
+                                        if (!response.ok) throw new Error('Gagal');
                                         const data = await response.json();
                                         if (data.sisa_kuota > 0) {
                                             this.quotaInfo = `<span class='text-green-600 font-semibold'><i class='fa-solid fa-check-circle mr-1'></i>Sisa Kuota: ${data.sisa_kuota}</span>`;
@@ -506,185 +524,206 @@
                                             this.quotaInfo = `<span class='text-red-600 font-semibold'><i class='fa-solid fa-times-circle mr-1'></i>Kuota Penuh</span>`;
                                         }
                                     } catch (error) {
-                                        this.quotaInfo = `<span class='text-red-600 font-semibold'>Gagal memeriksa kuota.</span>`;
+                                        this.quotaInfo = `<span class='text-red-600'>Gagal cek kuota.</span>`;
                                     } finally {
                                         this.isLoading = false;
                                     }
                                 }
-                            }"
-                        >
-                            {{-- NAMA WBP SEARCH --}}
-                            <div class="group relative">
-                                <label for="nama_wbp" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-user-tie text-yellow-600"></i>
-                                    Cari Nama Warga Binaan (WBP)
-                                </label>
-                                <input type="text" id="wbp_search_input" name="nama_wbp" value="{{ old('nama_wbp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-yellow-300 @error('nama_wbp') border-red-500 @enderror" placeholder="Ketik nama atau nomor registrasi..." autocomplete="off">
-                                
-                                {{-- Hidden Input untuk ID WBP yang sebenarnya --}}
-                                <input type="hidden" name="wbp_id" id="wbp_id_hidden">
-                                
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_nama_wbp"></p>
+                            }">
 
-                                {{-- Hasil Pencarian Container --}}
+                            {{-- PENCARIAN WBP (CUSTOM JS) --}}
+                            <div class="group relative">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-tie text-yellow-600"></i> Cari Nama WBP
+                                </label>
+                                <input type="text" id="wbp_search_input" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" placeholder="Ketik nama atau no. registrasi..." autocomplete="off">
+                                
+                                {{-- HIDDEN INPUT UNTUK WBP ID --}}
+                                <input type="hidden" name="wbp_id" id="wbp_id_hidden">
+
+                                {{-- HASIL PENCARIAN --}}
                                 <div id="wbp_results" class="search-results"></div>
 
-                                {{-- Info WBP Terpilih --}}
-                                <div id="selected_wbp_info" class="hidden mt-2 p-3 bg-yellow-100 rounded-lg border border-yellow-300 text-sm text-yellow-800">
-                                    <strong>Terpilih:</strong> <span id="display_wbp_nama"></span> <br>
-                                    <span class="text-xs">No. Reg: <span id="display_wbp_noreg"></span> | Blok: <span id="display_wbp_blok"></span></span>
+                                {{-- INFO WBP TERPILIH --}}
+                                <div id="selected_wbp_info" class="hidden mt-2 p-3 bg-yellow-100 rounded-lg border border-yellow-300 text-sm text-yellow-800 flex justify-between items-center">
+                                    <div>
+                                        <strong>Terpilih:</strong> <span id="disp_nama"></span><br>
+                                        <span class="text-xs">No.Reg: <span id="disp_noreg"></span> | Blok: <span id="disp_blok"></span></span>
+                                    </div>
+                                    <button type="button" id="btn_reset_wbp" class="text-red-600 text-xs font-bold underline">Ganti</button>
                                 </div>
                             </div>
 
-                            {{-- HUBUNGAN --}}
+                            {{-- Hubungan --}}
                             <div class="group">
-                                <label for="hubungan" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-heart text-red-500"></i>
-                                    Hubungan dengan WBP
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-heart text-red-500"></i> Hubungan
                                 </label>
-                                <select id="hubungan" name="hubungan" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-yellow-300 @error('hubungan') border-red-500 @enderror">
-                                    <option value="" disabled selected>Pilih hubungan Anda dengan WBP...</option>
-                                    <option value="Orang Tua" @if(old('hubungan') == 'Orang Tua') selected @endif>Orang Tua</option>
-                                    <option value="Suami / Istri" @if(old('hubungan') == 'Suami / Istri') selected @endif>Suami / Istri</option>
-                                    <option value="Anak" @if(old('hubungan') == 'Anak') selected @endif>Anak</option>
-                                    <option value="Saudara" @if(old('hubungan') == 'Saudara') selected @endif>Saudara</option>
-                                    <option value="Teman" @if(old('hubungan') == 'Teman') selected @endif>Teman</option>
-                                    <option value="Kuasa Hukum" @if(old('hubungan') == 'Kuasa Hukum') selected @endif>Kuasa Hukum</option>
-                                    <option value="Lainnya" @if(old('hubungan') == 'Lainnya') selected @endif>Lainnya</option>
+                                <select name="hubungan" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required>
+                                    <option value="">- Pilih -</option>
+                                    <option value="Istri/Suami">Istri/Suami</option>
+                                    <option value="Orang Tua">Orang Tua</option>
+                                    <option value="Anak">Anak</option>
+                                    <option value="Saudara">Saudara</option>
+                                    <option value="Lainnya">Lainnya</option>
                                 </select>
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_hubungan"></p>
                             </div>
 
                             {{-- HARI --}}
                             <div class="group">
-                                <label for="hari" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-calendar-day text-blue-500"></i>
-                                    Pilih Hari Kunjungan
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-day text-blue-500"></i> Pilih Hari
                                 </label>
-                                <select id="hari" name="selected_day" @change="handleDayChange()" x-model="selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-yellow-300">
-                                    <option value="" disabled>Pilih hari kunjungan...</option>
+                                <select name="selected_day" @change="handleDayChange()" x-model="selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white">
+                                    <option value="" disabled>Pilih hari...</option>
                                     @foreach (array_keys($datesByDay) as $day)
                                         <option value="{{ $day }}">{{ $day }}</option>
                                     @endforeach
                                 </select>
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_hari"></p>
                             </div>
 
                             {{-- TANGGAL --}}
                             <div class="group">
-                                <label for="tanggal_kunjungan" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-calendar-alt text-green-500"></i>
-                                    Pilih Tanggal Kunjungan
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-calendar-alt text-green-500"></i> Pilih Tanggal
                                 </label>
-                                <select id="tanggal_kunjungan" name="tanggal_kunjungan" x-model="selectedDate" :disabled="!selectedDay || availableDates.length === 0" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-yellow-300 disabled:bg-gray-50 disabled:cursor-not-allowed @error('tanggal_kunjungan') border-red-500 @enderror">
-                                    <option value="" disabled>-- Pilih hari terlebih dahulu --</option>
+                                <select name="tanggal_kunjungan" x-model="selectedDate" :disabled="!selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white disabled:bg-gray-100">
+                                    <option value="" disabled>-- Pilih hari dulu --</option>
                                     <template x-for="date in availableDates" :key="date.value">
                                         <option :value="date.value" x-text="date.label"></option>
                                     </template>
                                 </select>
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_tanggal_kunjungan"></p>
-                                <div class="mt-3 p-3 bg-white rounded-lg border border-gray-200 shadow-sm">
-                                    <div class="text-sm font-semibold h-5">
-                                        <span x-show="isLoading" class="text-slate-500 flex items-center gap-1">
-                                            <i class="fa-solid fa-spinner fa-spin"></i> Memeriksa kuota...
-                                        </span>
-                                        <span x-show="!isLoading" x-html="quotaInfo"></span>
-                                    </div>
-                                </div>
+                                <div class="mt-2 text-sm" x-html="quotaInfo"></div>
                             </div>
 
-                            {{-- Dropdown Sesi Dinamis --}}
-                            <div x-show="isMonday" x-transition class="md:col-span-2 bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
-                                <label for="sesi" class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-clock text-blue-600"></i>
-                                    Sesi Kunjungan (Khusus Hari Senin)
+                            {{-- SESI (SENIN) --}}
+                            <div x-show="isMonday" class="md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2">
+                                    <i class="fa-solid fa-clock text-blue-600"></i> Sesi Kunjungan (Senin)
                                 </label>
-                                <select id="sesi" name="sesi" x-model="selectedSesi" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-yellow-300 @error('sesi') border-red-500 @enderror">
-                                    <option value="" disabled>Pilih sesi kunjungan...</option>
-                                    <option value="pagi" @if(old('sesi') == 'pagi') selected @endif>Sesi Pagi (08:30 - 10:00)</option>
-                                    <option value="siang" @if(old('sesi') == 'siang') selected @endif>Sesi Siang (13:30 - 14:30)</option>
+                                <select name="sesi" x-model="selectedSesi" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white">
+                                    <option value="" disabled>Pilih sesi...</option>
+                                    <option value="pagi">Sesi Pagi (08:30 - 10:00)</option>
+                                    <option value="siang">Sesi Siang (13:30 - 14:30)</option>
                                 </select>
-                                <p class="mt-2 text-sm text-red-600 hidden" id="error_sesi"></p>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Data Pengikut (BARU - Section 3) --}}
-                    <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" x-data="{ count: 0 }">
-                        <div class="flex justify-between items-center border-b-2 border-emerald-200 pb-3 mb-6">
+                   {{-- DATA PENGIKUT (DINAMIS DENGAN FOTO & DETAIL) --}}
+                    <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" 
+                         x-data="{ 
+                             followers: [] // Array kosong untuk menampung pengikut
+                         }">
+                        
+                        <div class="border-b-2 border-emerald-200 pb-3 mb-6 flex justify-between items-center">
                             <h3 class="text-lg font-bold text-slate-800 flex items-center gap-3">
                                 <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
                                     <i class="fa-solid fa-users"></i> 3
                                 </span> 
-                                <span class="text-emerald-800">Detail Pengikut</span>
+                                <span class="text-emerald-800">Data Pengikut (Opsional)</span>
                             </h3>
-                            <div class="flex items-center gap-2">
-                                <label for="total_pengikut" class="text-sm font-semibold text-slate-700">Jumlah:</label>
-                                <select id="total_pengikut" name="total_pengikut" x-model="count" class="rounded-lg border-emerald-300 text-sm focus:ring-emerald-500 focus:border-emerald-500 shadow-sm">
-                                    <option value="0">Sendirian (0)</option>
-                                    <option value="1">1 Orang</option>
-                                    <option value="2">2 Orang</option>
-                                    <option value="3">3 Orang</option>
-                                    <option value="4">4 Orang (Max)</option>
-                                </select>
-                            </div>
+                            
+                            {{-- Tombol Tambah --}}
+                            <button type="button" @click="followers.push({id: Date.now()})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-lg shadow transition flex items-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Tambah Orang
+                            </button>
                         </div>
 
-                        <div class="space-y-4">
-                            <template x-for="i in parseInt(count)" :key="i">
-                                <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 transition-all duration-300 hover:shadow-md">
-                                    <p class="text-xs font-bold text-emerald-600 mb-2 uppercase tracking-wide flex items-center gap-2">
-                                        <i class="fa-solid fa-user-group"></i> Pengikut ke-<span x-text="i"></span>
-                                    </p>
+                        {{-- AREA LOOPING FORM --}}
+                        <div class="space-y-6">
+                            <template x-for="(follower, index) in followers" :key="follower.id">
+                                <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200 relative transition-all duration-300 hover:shadow-md">
+                                    
+                                    {{-- Header per Orang --}}
+                                    <div class="flex justify-between items-center mb-4">
+                                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wide bg-emerald-50 px-2 py-1 rounded">
+                                            Pengikut ke-<span x-text="index + 1"></span>
+                                        </span>
+                                        <button type="button" @click="followers.splice(index, 1)" class="text-red-500 hover:text-red-700 text-xs font-bold underline">
+                                            <i class="fa-solid fa-trash"></i> Hapus
+                                        </button>
+                                    </div>
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {{-- Nama --}}
                                         <div>
-                                            <input type="text" name="pengikut_nama[]" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all duration-300 shadow-sm py-2 px-4 bg-white text-sm" placeholder="Nama Lengkap Pengikut" required>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+                                            <input type="text" name="pengikut_nama[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Nama sesuai KTP" required>
                                         </div>
+
+                                        {{-- NIK --}}
                                         <div>
-                                            <input type="text" name="pengikut_barang[]" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-500 transition-all duration-300 shadow-sm py-2 px-4 bg-white text-sm" placeholder="Detail Barang Bawaan (Baju, Makanan, dll)">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">NIK (KTP/KIA)</label>
+                                            <input type="number" name="pengikut_nik[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Nomor Induk Kependudukan">
+                                        </div>
+
+                                        {{-- Hubungan --}}
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Hubungan</label>
+                                            <select name="pengikut_hubungan[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2">
+                                                <option value="Istri/Suami">Istri/Suami</option>
+                                                <option value="Anak">Anak</option>
+                                                <option value="Saudara">Saudara</option>
+                                                <option value="Orang Tua">Orang Tua</option>
+                                                <option value="Lainnya">Lainnya</option>
+                                            </select>
+                                        </div>
+
+                                        {{-- Barang Bawaan --}}
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Barang Bawaan</label>
+                                            <input type="text" name="pengikut_barang[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Contoh: Baju ganti, Susu bayi">
+                                        </div>
+
+                                        {{-- Upload Foto KTP Pengikut --}}
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Foto KTP/Identitas Pengikut</label>
+                                            <input type="file" name="pengikut_foto[]" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg cursor-pointer">
+                                            <p class="text-[10px] text-gray-400 mt-1">*Wajib upload foto KTP/KIA/Kartu Pelajar pengikut.</p>
                                         </div>
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="count == 0" class="text-center text-slate-400 italic text-sm py-4">
-                                Tidak ada pengikut tambahan.
+
+                            {{-- Pesan Jika Kosong --}}
+                            <div x-show="followers.length === 0" class="text-center py-6 border-2 border-dashed border-emerald-200 rounded-xl bg-white bg-opacity-50">
+                                <i class="fa-solid fa-user-plus text-3xl text-emerald-200 mb-2"></i>
+                                <p class="text-sm text-slate-500">Tidak ada pengikut tambahan?</p>
+                                <p class="text-xs text-slate-400">Klik tombol <strong>+ Tambah Orang</strong> jika Anda membawa teman/keluarga.</p>
                             </div>
                         </div>
                     </div>
 
                     {{-- Tombol Kirim --}}
                     <div class="pt-8 border-t-2 border-gray-200 flex items-center justify-between gap-4 bg-gradient-to-r from-gray-50 to-blue-50 p-6 rounded-2xl">
-                        <button type="button" @click="showForm = false" class="px-8 py-3 text-slate-600 font-bold hover:text-slate-900 transition-all duration-300 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 flex items-center gap-2">
+                        <button type="button" @click="showForm = false" class="px-8 py-3 text-slate-600 font-bold hover:text-slate-900 transition bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </button>
-                        <button type="submit" class="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 hover:from-yellow-600 hover:via-yellow-700 hover:to-yellow-800 text-slate-900 font-bold px-12 py-4 rounded-xl shadow-xl hover:shadow-yellow-500/50 transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 flex items-center gap-3 text-lg">
-                            <i class="fa-solid fa-paper-plane text-xl"></i> 
-                            <span>KIRIM PENDAFTARAN</span>
-                            <i class="fa-solid fa-check-circle text-xl"></i>
+                        <button type="submit" class="bg-gradient-to-r from-yellow-500 to-yellow-700 text-slate-900 font-bold px-12 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center gap-3 text-lg">
+                            <i class="fa-solid fa-paper-plane text-xl"></i> KIRIM
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
 </div>
 @endsection
-
+{{-- SCRIPT VALIDASI & AUTOCOMPLETE FIX --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- 1. LOGIC SEARCH WBP (AUTOCOMPLETE) ---
         const searchInput = document.getElementById('wbp_search_input');
         const resultsDiv = document.getElementById('wbp_results');
-        const hiddenId = document.getElementById('wbp_id');
-        const hiddenNama = document.getElementById('nama_wbp_text');
+        const hiddenId = document.getElementById('wbp_id_hidden');
         const infoDiv = document.getElementById('selected_wbp_info');
+        const btnReset = document.getElementById('btn_reset_wbp');
 
+        // Logic Autocomplete
         searchInput.addEventListener('keyup', function() {
             let query = this.value;
-            // Reset hidden ID jika user mengetik ulang (mencegah nama tidak sesuai ID)
-            hiddenId.value = ''; 
+            hiddenId.value = ''; // Reset ID jika user mengetik ulang
             
             if(query.length > 2) {
                 fetch(`{{ route('api.search.wbp') }}?q=${query}`)
@@ -694,79 +733,66 @@
                         resultsDiv.style.display = 'block';
                         
                         if(data.length === 0) {
-                            resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic">Data tidak ditemukan. Pastikan Admin sudah import data WBP.</div>';
+                            resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic">Data tidak ditemukan.</div>';
                         }
                         
                         data.forEach(item => {
                             let div = document.createElement('div');
                             div.className = 'wbp-item';
-                            div.innerHTML = `<strong>${item.nama}</strong> <span class="text-xs text-gray-500">(${item.no_registrasi})</span>`;
+                            // PERBAIKAN DISINI: Gunakan item.nama dan item.no_registrasi
+                            div.innerHTML = `<div><strong>${item.nama}</strong><br><span class="text-xs text-gray-500">${item.no_registrasi}</span></div>`;
+                            
                             div.onclick = () => {
-                                // Populate Inputs
-                                searchInput.value = item.nama;
-                                hiddenId.value = item.id; // INI PENTING
-                                hiddenNama.value = item.nama;
+                                // Set Values
+                                searchInput.value = item.nama; // Tampilkan nama di input
+                                hiddenId.value = item.id;      // Simpan ID di input hidden
                                 
                                 // Show Info Box
                                 infoDiv.classList.remove('hidden');
                                 document.getElementById('disp_nama').innerText = item.nama;
-                                document.getElementById('disp_blok').innerText = item.blok_kamar || '-';
                                 document.getElementById('disp_noreg').innerText = item.no_registrasi;
+                                document.getElementById('disp_blok').innerText = item.blok || '-'; 
                                 
-                                // Hide Results
+                                // Hide Search & Results
+                                searchInput.classList.add('hidden');
                                 resultsDiv.style.display = 'none';
                             };
                             resultsDiv.appendChild(div);
                         });
                     })
                     .catch(err => {
-                        console.error('Error fetching WBP:', err);
+                        console.error(err);
+                        resultsDiv.innerHTML = '<div class="p-3 text-sm text-red-500 italic">Gagal memuat data.</div>';
                     });
             } else {
                 resultsDiv.style.display = 'none';
             }
         });
 
-        // Close search when clicking outside
+        // Reset Pilihan WBP
+        btnReset.addEventListener('click', function() {
+            hiddenId.value = '';
+            searchInput.value = '';
+            searchInput.classList.remove('hidden');
+            infoDiv.classList.add('hidden');
+            searchInput.focus();
+        });
+
+        // Klik di luar menutup dropdown
         document.addEventListener('click', function(e) {
             if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
                 resultsDiv.style.display = 'none';
             }
         });
 
-        // --- 2. VALIDASI SAAT SUBMIT ---
-        const form = document.querySelector('form');
-        
-        form.addEventListener('submit', function(event) {
-            let isValid = true;
-            let errorMessage = '';
-
-            // Cek WBP ID (Wajib Klik Autocomplete)
+        // Validasi Submit
+        document.querySelector('form').addEventListener('submit', function(e) {
             if (!hiddenId.value) {
-                isValid = false;
-                errorMessage = 'Anda wajib memilih Nama WBP dari daftar pencarian yang muncul!';
-                searchInput.focus();
-                searchInput.style.border = "1px solid red";
-            }
-
-            // Cek Nama Pengunjung
-            if (document.getElementById('nama_pengunjung').value.trim() === '') {
-                isValid = false;
-                errorMessage = 'Nama Pengunjung wajib diisi.';
-            }
-
-            // Cek Tanggal
-            if (document.getElementById('tanggal_kunjungan').value === '') {
-                isValid = false;
-                errorMessage = 'Silahkan pilih tanggal kunjungan terlebih dahulu.';
-            }
-
-            if (!isValid) {
-                event.preventDefault(); // Stop form submission
+                e.preventDefault();
                 Swal.fire({
                     icon: 'error',
-                    title: 'Data Belum Lengkap',
-                    text: errorMessage,
+                    title: 'WBP Belum Dipilih',
+                    text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.',
                     confirmButtonColor: '#1e3a8a'
                 });
             }

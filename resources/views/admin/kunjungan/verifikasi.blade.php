@@ -185,13 +185,15 @@
                                     </div>
                                     <div class="flex justify-between border-b border-slate-200 pb-2">
                                         <span class="text-slate-500 font-medium">NIK</span>
-                                        <span class="font-mono font-bold text-slate-700">{{ $kunjungan->nik_pengunjung }}</span>
+                                        {{-- UPDATED --}}
+                                        <span class="font-mono font-bold text-slate-700">{{ $kunjungan->nik_ktp }}</span>
                                     </div>
                                 </div>
                                 <div class="space-y-4">
                                     <div class="flex justify-between border-b border-slate-200 pb-2">
                                         <span class="text-slate-500 font-medium">Mengunjungi WBP</span>
-                                        <span class="font-bold text-slate-800 text-lg">{{ $kunjungan->nama_wbp }}</span>
+                                        {{-- UPDATED --}}
+                                        <span class="font-bold text-slate-800 text-lg">{{ $kunjungan->wbp->nama ?? '-' }}</span>
                                     </div>
                                     <div class="flex justify-between border-b border-slate-200 pb-2">
                                         <span class="text-slate-500 font-medium">Jadwal</span>

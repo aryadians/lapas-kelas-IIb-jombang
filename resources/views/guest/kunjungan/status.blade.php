@@ -1,181 +1,206 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="bg-slate-50 min-h-screen pb-20">
-    <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-
-        {{-- SUCCESS MESSAGE --}}
-        @if(session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-md mb-8" role="alert">
-            <div class="flex">
-                <div class="py-1">
-                    <svg class="h-6 w-6 text-green-500 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <div>
-                    <p class="font-bold text-lg">Pendaftaran Berhasil!</p>
-                    <p class="text-sm">{{ session('success') }}</p>
-                </div>
-            </div>
+<div class="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        
+        {{-- TOMBOL KEMBALI --}}
+        <div class="mb-6">
+            <a href="/" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Beranda
+            </a>
         </div>
-        @endif
 
-        {{-- MAIN CARD --}}
-        <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-            <div class="bg-slate-800 p-6 text-center text-white">
-                <h2 class="text-2xl font-bold">Status Pendaftaran Kunjungan</h2>
-                <p class="text-sm text-slate-300">Berikut adalah detail pendaftaran Anda.</p>
-            </div>
-
-            {{-- STATUS BADGE --}}
-            <div class="p-6 flex justify-center">
-                 @if($kunjungan->status == 'approved')
-                    <span class="inline-flex items-center px-6 py-2 rounded-full text-lg font-bold bg-green-100 text-green-800 border-2 border-green-200">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Disetujui
-                    </span>
-                @elseif($kunjungan->status == 'rejected')
-                    <span class="inline-flex items-center px-6 py-2 rounded-full text-lg font-bold bg-red-100 text-red-800 border-2 border-red-200">
-                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
-                        Ditolak
-                    </span>
-                @else
-                    <span class="inline-flex items-center px-6 py-2 rounded-full text-lg font-bold bg-yellow-100 text-yellow-800 border-2 border-yellow-200">
-                        <svg class="w-6 h-6 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.75V6.25m0 11.5v1.5M4.75 12H6.25m11.5 0h1.5M7.05 7.05l1.06 1.06m7.84 7.84l1.06 1.06M7.05 16.95l1.06-1.06m7.84-7.84l1.06-1.06"></path></svg>
-                        Menunggu Persetujuan
-                    </span>
-                @endif
-            </div>
-
-            {{-- QR CODE SECTION (if approved) --}}
-            @if ($kunjungan->status == 'approved')
-            <div class="text-center px-6 pb-6 border-b border-gray-100">
-                <h3 class="text-base font-semibold text-slate-700 mb-2">Tunjukkan QR Code ini kepada petugas saat check-in</h3>
-                <div class="flex justify-center p-4 bg-slate-50 rounded-lg">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode(route('kunjungan.verify', $kunjungan)) }}" alt="QR Code Verifikasi" class="border-4 border-white rounded-lg shadow-lg">
-                </div>
-                <p class="text-xs text-slate-500 mt-3">QR code ini berisi data kunjungan Anda untuk diverifikasi oleh petugas.</p>
-            </div>
-            @endif
-
-            {{-- Alasan Penolakan --}}
-            @if ($kunjungan->status == 'rejected' && $kunjungan->rejection_reason)
-            <div class="px-6 pb-6">
-                <div class="bg-red-50 p-4 rounded-md border border-red-200">
-                    <p class="text-sm font-bold text-red-800">Alasan Penolakan:</p>
-                    <p class="text-sm text-red-700">{{ $kunjungan->rejection_reason }}</p>
-                </div>
-            </div>
-            @endif
+        {{-- KARTU TIKET UTAMA --}}
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
             
-            <div class="px-6 pb-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                {{-- DATA PENGUNJUNG --}}
-                <div class="col-span-1 md:col-span-2">
-                    <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-3">Data Pengunjung</h3>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Nama Lengkap</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->nama_pengunjung }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">NIK</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->nik_pengunjung }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Email</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->email_pengunjung }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">No. WhatsApp</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->no_wa_pengunjung }}</p>
-                </div>
-                <div class="col-span-1 md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-500">Alamat</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->alamat_pengunjung }}</p>
-                </div>
+            {{-- 1. HEADER: STATUS & KODE --}}
+            <div class="bg-gradient-to-r from-slate-900 to-blue-900 px-6 py-8 text-center relative overflow-hidden">
+                {{-- Background Pattern --}}
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                 
-                {{-- DATA KUNJUNGAN --}}
-                <div class="col-span-1 md:col-span-2 pt-4">
-                    <h3 class="text-lg font-bold text-slate-800 border-b pb-2 mb-3">Detail Kunjungan</h3>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Warga Binaan yang Dikunjungi</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->nama_wbp }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Hubungan dengan WBP</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->hubungan }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Tanggal Kunjungan</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Sesi Kunjungan</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->sesi ? 'Sesi ' . ucfirst($kunjungan->sesi) : 'Tidak ada sesi khusus' }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-500">Nomor Antrian Harian</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">#{{ $kunjungan->nomor_antrian_harian }}</p>
-                </div>
-                 <div>
-                    <label class="block text-sm font-medium text-gray-500">Tanggal Pendaftaran</label>
-                    <p class="mt-1 text-sm font-semibold text-gray-900">{{ $kunjungan->created_at->translatedFormat('l, d F Y - H:i') }}</p>
-                </div>
+                <div class="relative z-10">
+                    <p class="text-blue-200 text-xs font-bold tracking-widest uppercase mb-2">Status Pendaftaran</p>
+                    
+                    {{-- LOGIC STATUS BADGE --}}
+                    <div class="inline-block">
+                        @if($kunjungan->status == 'pending')
+                            <span class="bg-yellow-400 text-yellow-900 text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+                                <i class="fa-solid fa-clock"></i> MENUNGGU VERIFIKASI
+                            </span>
+                        @elseif($kunjungan->status == 'approved')
+                            <span class="bg-green-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-check-circle"></i> DISETUJUI / SIAP DATANG
+                            </span>
+                        @elseif($kunjungan->status == 'rejected')
+                            <span class="bg-red-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-circle-xmark"></i> DITOLAK
+                            </span>
+                        @endif
+                    </div>
 
+                    <div class="mt-6">
+                        <p class="text-slate-400 text-xs uppercase tracking-wider">Kode Registrasi</p>
+                        <h1 class="text-3xl md:text-5xl font-mono font-black text-white tracking-widest mt-1">{{ $kunjungan->kode_kunjungan }}</h1>
+                    </div>
+                </div>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-3">
-                @if($kunjungan->status == 'approved')
-                <a href="{{ route('kunjungan.print', $kunjungan) }}" target="_blank" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m0 0l-4 4m4-4l4 4m-4-4v-4m7 0v4m-4-4H9"></path></svg>
-                    Cetak Bukti Pendaftaran
-                </a>
+            {{-- 2. BODY: INFORMASI DETAIL --}}
+            <div class="p-6 md:p-10">
+                
+                {{-- Alert Sukses (Hanya muncul sekali setelah submit) --}}
+                @if(session('success'))
+                <div class="mb-8 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fa-solid fa-check-circle text-green-500 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-bold text-green-800">Berhasil Dikirim!</h3>
+                            <div class="mt-1 text-sm text-green-700">
+                                {{ session('success') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 @endif
-                <a href="{{ route('kunjungan.create') }}" class="bg-slate-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-700 transition">
-                    Daftarkan Kunjungan Lain
-                </a>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    
+                    {{-- KOLOM KIRI: DATA PENGUNJUNG --}}
+                    <div>
+                        <div class="flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                            <h3 class="text-slate-800 font-bold text-lg">Data Pengunjung</h3>
+                        </div>
+
+                        <div class="space-y-5">
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Nama Lengkap</label>
+                                <p class="text-slate-900 font-semibold text-lg">{{ $kunjungan->nama_pengunjung }}</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 uppercase block">NIK (KTP)</label>
+                                    <p class="text-slate-700 font-mono">{{ $kunjungan->nik_ktp }}</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 uppercase block">Jenis Kelamin</label>
+                                    <p class="text-slate-700">{{ $kunjungan->jenis_kelamin }}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Kontak WhatsApp</label>
+                                <p class="text-slate-700 flex items-center gap-2">
+                                    <i class="fa-brands fa-whatsapp text-green-500"></i> {{ $kunjungan->no_wa_pengunjung }}
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Alamat</label>
+                                <p class="text-slate-600 text-sm leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p>
+                            </div>
+
+                            {{-- Foto KTP Preview --}}
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Foto KTP</label>
+                                <div class="w-32 h-20 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group">
+                                    <img src="{{ asset('storage/' . $kunjungan->foto_ktp) }}" alt="KTP" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- KOLOM KANAN: DETAIL KUNJUNGAN (TIKET) --}}
+                    <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 relative">
+                        {{-- Hiasan Bolongan Tiket --}}
+                        <div class="absolute top-1/2 -left-3 w-6 h-6 bg-white rounded-full border-r border-slate-200"></div>
+                        <div class="absolute top-1/2 -right-3 w-6 h-6 bg-white rounded-full border-l border-slate-200"></div>
+
+                        <div class="flex items-center gap-2 mb-4 border-b pb-2 border-slate-200">
+                            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                <i class="fa-solid fa-ticket"></i>
+                            </div>
+                            <h3 class="text-slate-800 font-bold text-lg">Detail Tiket</h3>
+                        </div>
+
+                        {{-- INFO WBP --}}
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm mb-6">
+                            <label class="text-[10px] font-bold text-yellow-600 uppercase tracking-wider mb-1 block">Mengunjungi WBP:</label>
+                            <h4 class="text-slate-900 font-bold text-xl mb-1">{{ $kunjungan->wbp->nama ?? 'Nama WBP Tidak Ditemukan' }}</h4>
+                            <div class="flex gap-2 text-xs text-slate-500">
+                                <span class="bg-slate-100 px-2 py-1 rounded">Blok: <strong>{{ $kunjungan->wbp->blok ?? '-' }}</strong></span>
+                                <span class="bg-slate-100 px-2 py-1 rounded">Kamar: <strong>{{ $kunjungan->wbp->kamar ?? '-' }}</strong></span>
+                            </div>
+                        </div>
+
+                        {{-- JADWAL --}}
+                        <div class="grid grid-cols-2 gap-y-6">
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Tanggal Kunjungan</label>
+                                <p class="text-slate-900 font-bold">
+                                    {{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d F Y') }}
+                                </p>
+                                <p class="text-sm text-slate-500">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l') }}</p>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Sesi / Jam</label>
+                                @if($kunjungan->sesi)
+                                    <p class="text-slate-900 font-bold capitalize">{{ $kunjungan->sesi }}</p>
+                                    <p class="text-xs text-slate-500">
+                                        {{ $kunjungan->sesi == 'pagi' ? '08.30 - 11.30' : '13.00 - 14.30' }} WIB
+                                    </p>
+                                @else
+                                    <p class="text-slate-900 font-bold">Sesuai Jadwal</p>
+                                @endif
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Hubungan</label>
+                                <p class="text-slate-900 font-medium">{{ $kunjungan->hubungan }}</p>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-400 uppercase block">Pengikut</label>
+                                <p class="text-slate-900 font-medium">
+                                    {{ ($kunjungan->pengikut_laki + $kunjungan->pengikut_perempuan + $kunjungan->pengikut_anak) }} Orang
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- NOMOR ANTRIAN --}}
+                        <div class="mt-8 pt-6 border-t border-dashed border-slate-300 text-center">
+                            <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Nomor Antrian Anda</label>
+                            <div class="text-6xl font-black text-slate-800 tracking-tighter">{{ $kunjungan->nomor_antrian_harian }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="text-center mt-8">
-            <p class="text-sm text-gray-500">Terima kasih telah menggunakan layanan kami.</p>
-        </div>
+            {{-- 3. FOOTER: TOMBOL AKSI --}}
+            <div class="bg-slate-50 px-6 md:px-10 py-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="text-sm text-slate-500 italic flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i>
+                    <span>Simpan halaman ini. Tombol cetak aktif setelah disetujui Admin.</span>
+                </div>
 
+                @if($kunjungan->status == 'approved')
+                    {{-- TOMBOL AKTIF (HIJAU/BIRU) --}}
+                    <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> CETAK TIKET
+                    </a>
+                @else
+                    {{-- TOMBOL MATI (ABU-ABU) --}}
+                    <button disabled class="w-full sm:w-auto bg-slate-200 text-slate-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
+                        <i class="fa-solid fa-lock"></i> TIKET BELUM TERSEDIA
+                    </button>
+                @endif
+            </div>
+
+        </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const initialStatus = @json($kunjungan->status);
-        const checkUrl = @json(route('kunjungan.status.api', $kunjungan));
-
-        if (initialStatus === 'pending') {
-            const intervalId = setInterval(function () {
-                fetch(checkUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.status !== 'pending') {
-                            clearInterval(intervalId);
-                            // Add a small delay before reloading to ensure server has processed everything
-                            // and to make the transition feel less abrupt.
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 500);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error checking status:', error);
-                        // Stop polling if there's a network error or parsing error
-                        // to avoid spamming the console.
-                        clearInterval(intervalId);
-                    });
-            }, 5000); // Check every 5 seconds
-        }
-    });
-</script>
 @endsection

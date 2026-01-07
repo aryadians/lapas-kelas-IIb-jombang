@@ -3,174 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bukti Pendaftaran Kunjungan - {{ $kunjungan->nama_pengunjung }}</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <title>Tiket Kunjungan - {{ $kunjungan->kode_kunjungan }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @media print {
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .no-print {
-                display: none !important;
-            }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #333;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f8f8f8;
+            font-family: 'Inconsolata', monospace; /* Font struk */
+            background-color: #f3f4f6;
         }
-        .container {
-            max-width: 800px;
-            margin: 30px auto;
-            background-color: #fff;
-            padding: 30px 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+        .ticket {
+            background: white;
+            max-width: 400px; /* Lebar struk standar */
+            margin: 40px auto;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 20px;
+        /* Efek gerigi kertas di bawah */
+        .ticket::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: radial-gradient(circle, transparent 70%, white 70%) 0 0;
+            background-size: 20px 20px;
+            transform: rotate(180deg);
         }
-        .header img {
-            max-height: 80px;
-            margin-bottom: 15px;
-        }
-        .header h1 {
-            font-size: 2.2rem;
-            color: #2c3e50;
-            margin: 0;
-        }
-        .header p {
-            font-size: 1rem;
-            color: #7f8c8d;
-            margin: 5px 0 0;
-        }
-        .section-title {
-            font-size: 1.4rem;
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        .data-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        .data-row .label {
-            flex: 0 0 200px;
-            font-weight: 500;
-            color: #555;
-        }
-        .data-row .value {
-            flex: 1;
-            font-weight: 600;
-            color: #222;
-        }
-        .qr-section {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 2px solid #f0f0f0;
-        }
-        .qr-section img {
-            border: 5px solid #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 5px;
-            max-width: 200px;
-            height: auto;
-        }
-        .qr-section p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 15px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 0.85rem;
-            color: #999;
+
+        @media print {
+            body { background: white; }
+            .ticket { box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
-<body onload="window.print()" class="bg-gray-100">
-    <div class="container">
-        <div class="header">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo Lapas Kelas IIB Jombang">
-            <h1>Bukti Pendaftaran Kunjungan</h1>
-            <p>Lembaga Pemasyarakatan Kelas IIB Jombang</p>
+<body>
+
+    <div class="ticket">
+        
+        {{-- HEADER --}}
+        <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+            <h2 class="font-bold text-xl uppercase text-gray-800">LAPAS KELAS IIB</h2>
+            <h3 class="font-bold text-lg uppercase text-gray-800">JOMBANG</h3>
+            <p class="text-xs text-gray-500 mt-1">Jl. KH. Wahid Hasyim No.123, Jombang</p>
+            <p class="text-xs text-gray-500">Layanan Kunjungan Tatap Muka</p>
         </div>
 
-        <div class="section-title">Data Pengunjung</div>
-        <div class="data-row">
-            <div class="label">Nama Lengkap</div>
-            <div class="value">{{ $kunjungan->nama_pengunjung }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">NIK</div>
-            <div class="value">{{ $kunjungan->nik_pengunjung }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Email</div>
-            <div class="value">{{ $kunjungan->email_pengunjung }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">No. WhatsApp</div>
-            <div class="value">{{ $kunjungan->no_wa_pengunjung }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Alamat</div>
-            <div class="value">{{ $kunjungan->alamat_pengunjung }}</div>
+        {{-- NOMOR ANTRIAN --}}
+        <div class="text-center mb-6">
+            <p class="text-sm font-bold text-gray-500 uppercase">Nomor Antrian</p>
+            <h1 class="text-6xl font-black text-gray-900 my-2">{{ $kunjungan->nomor_antrian_harian }}</h1>
+            <span class="inline-block bg-black text-white px-3 py-1 text-sm font-bold rounded uppercase">
+                Sesi: {{ $kunjungan->sesi ?? 'Umum' }}
+            </span>
         </div>
 
-        <div class="section-title">Detail Kunjungan</div>
-        <div class="data-row">
-            <div class="label">Warga Binaan yang Dikunjungi</div>
-            <div class="value">{{ $kunjungan->nama_wbp }}</div>
+        {{-- QR CODE --}}
+        <div class="flex justify-center mb-6">
+            {{-- Menggunakan API QR Code Server (Gratis & Stabil) --}}
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $kunjungan->qr_token }}&bgcolor=ffffff" 
+                 alt="QR Code" class="w-40 h-40 border-4 border-gray-800 p-1 rounded">
         </div>
-        <div class="data-row">
-            <div class="label">Hubungan dengan WBP</div>
-            <div class="value">{{ $kunjungan->hubungan }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Tanggal Kunjungan</div>
-            <div class="value">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Sesi Kunjungan</div>
-            <div class="value">{{ $kunjungan->sesi ? 'Sesi ' . ucfirst($kunjungan->sesi) : 'Tidak ada sesi khusus' }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Nomor Antrian Harian</div>
-            <div class="value">#{{ $kunjungan->nomor_antrian_harian }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Status</div>
-            <div class="value">{{ ucfirst($kunjungan->status) }}</div>
-        </div>
-        <div class="data-row">
-            <div class="label">Tanggal Pendaftaran</div>
-            <div class="value">{{ $kunjungan->created_at->translatedFormat('l, d F Y - H:i') }}</div>
+        <p class="text-center text-xs font-mono mb-6">{{ $kunjungan->qr_token }}</p>
+
+        {{-- DETAIL DATA --}}
+        <div class="space-y-2 border-t border-dashed border-gray-300 pt-4 text-sm">
+            <div class="flex justify-between">
+                <span class="text-gray-500">Tanggal</span>
+                <span class="font-bold">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->format('d/m/Y') }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Pengunjung</span>
+                <span class="font-bold text-right w-32 truncate">{{ $kunjungan->nama_pengunjung }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Tujuan WBP</span>
+                {{-- Gunakan optional() untuk menghindari error jika WBP terhapus --}}
+                <span class="font-bold text-right w-32 truncate">{{ optional($kunjungan->wbp)->nama ?? '-' }}</span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-gray-500">Pengikut</span>
+                <span class="font-bold">{{ ($kunjungan->pengikut_laki + $kunjungan->pengikut_perempuan + $kunjungan->pengikut_anak) }} Orang</span>
+            </div>
         </div>
 
-        <div class="qr-section">
-            <p>Scan QR Code ini untuk verifikasi saat kedatangan:</p>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ urlencode(route('kunjungan.verify', ['kunjungan' => $kunjungan->qr_token])) }}" alt="QR Code Verifikasi Kunjungan">
-            <p class="mt-2">Kode Verifikasi: <strong>{{ $kunjungan->qr_token }}</strong></p>
+        {{-- FOOTER --}}
+        <div class="mt-8 text-center text-xs text-gray-400 border-t border-dashed border-gray-300 pt-4">
+            <p>Harap membawa KTP Asli saat berkunjung.</p>
+            <p class="mt-1">Dicetak: {{ now()->format('d/m/Y H:i') }}</p>
+            <p class="mt-4 font-bold text-gray-300">--- TERIMA KASIH ---</p>
         </div>
 
-        <div class="footer">
-            <p>Mohon tunjukkan bukti pendaftaran ini kepada petugas di Lapas Kelas IIB Jombang.</p>
-            <p>&copy; {{ date('Y') }} Lapas Kelas IIB Jombang. Semua hak dilindungi.</p>
-        </div>
     </div>
+
+    {{-- TOMBOL PRINT (Hanya tampil di layar) --}}
+    <div class="fixed bottom-6 right-6 no-print flex gap-2">
+        <button onclick="window.close()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition">
+            Tutup
+        </button>
+        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            Cetak Tiket
+        </button>
+    </div>
+
+    <script>
+        // Otomatis muncul dialog print saat halaman dibuka
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+    </script>
 </body>
 </html>
