@@ -86,7 +86,7 @@
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-500">Pengikut</span>
-                <span class="font-bold">{{ ($kunjungan->pengikut_laki + $kunjungan->pengikut_perempuan + $kunjungan->pengikut_anak) }} Orang</span>
+                <span class="font-bold">{{ $kunjungan->pengikuts->count() }} Orang</span>
             </div>
         </div>
 

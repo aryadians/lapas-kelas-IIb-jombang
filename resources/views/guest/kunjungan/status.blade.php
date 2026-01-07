@@ -166,7 +166,7 @@
                             <div>
                                 <label class="text-xs font-bold text-slate-400 uppercase block">Pengikut</label>
                                 <p class="text-slate-900 font-medium">
-                                    {{ ($kunjungan->pengikut_laki + $kunjungan->pengikut_perempuan + $kunjungan->pengikut_anak) }} Orang
+                                   {{ $kunjungan->pengikuts->count() }} Orang
                                 </p>
                             </div>
                         </div>

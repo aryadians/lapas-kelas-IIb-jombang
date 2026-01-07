@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\KunjunganPending;
+use App\Mail\KunjunganRejected;
+use App\Mail\KunjunganApproved;
 use App\Models\Kunjungan;
 use App\Models\Wbp;
 use App\Models\Pengikut;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use App\Mail\KunjunganConfirmationMail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -65,7 +68,9 @@ class KunjunganController extends Controller
             'nama_pengunjung'   => 'required|string|max:255',
             'nik_ktp'           => 'required|numeric|digits:16',
             'nomor_hp'          => 'required|string',
+            'email_pengunjung'  => 'required|email|max:255',
             'alamat_lengkap'    => 'required|string',
+            'barang_bawaan'     => 'nullable|string|max:255',
             'jenis_kelamin'     => 'required|in:Laki-laki,Perempuan',
             'foto_ktp'          => 'required|image|max:5000',
             'wbp_id'            => 'required',
@@ -81,7 +86,9 @@ class KunjunganController extends Controller
 
             // KIRI: Database | KANAN: Form Input
             'no_wa_pengunjung'  => $request->nomor_hp,
+            'email_pengunjung'  => $request->email_pengunjung,
             'alamat_pengunjung' => $request->alamat_lengkap,
+            'barang_bawaan'     => $request->barang_bawaan,
 
             'jenis_kelamin'     => $request->jenis_kelamin,
             'hubungan'          => $request->hubungan,
@@ -131,6 +138,15 @@ class KunjunganController extends Controller
             }
 
             DB::commit();
+            // --- [BARU] KIRIM EMAIL PENDING ---
+            try {
+                if ($request->email_pengunjung) {
+                    Mail::to($request->email_pengunjung)->send(new KunjunganPending($kunjungan));
+                }
+            } catch (\Exception $e) {
+                // Log error jika email gagal, tapi biarkan user lanjut sukses
+            }
+            // ----------------------------------
 
             // SUKSES -> Redirect ke halaman status tiket
             return redirect()->route('kunjungan.status', $kunjungan->id)
@@ -164,5 +180,89 @@ class KunjunganController extends Controller
         }
 
         return view('guest.kunjungan.print', compact('kunjungan'));
+    }
+    public function updateStatus(Request $request, Kunjungan $kunjungan)
+    {
+        $statusBaru = $request->status; // 'approved' atau 'rejected'
+
+        $kunjungan->update(['status' => $statusBaru]);
+
+        // --- LOGIKA KIRIM EMAIL OTOMATIS ---
+        try {
+            if ($statusBaru == 'approved') {
+                // Kirim Email Tiket
+                // Mail::to($kunjungan->email_pengunjung)->send(new \App\Mail\KunjunganApproved($kunjungan));
+            } elseif ($statusBaru == 'rejected') {
+                // Kirim Email Penolakan
+                // Mail::to($kunjungan->email_pengunjung)->send(new \App\Mail\KunjunganRejected($kunjungan));
+            }
+        } catch (\Exception $e) {
+            // Log error email tapi biarkan status berubah
+        }
+
+        return back()->with('success', 'Status berhasil diperbarui!');
+    }
+    public function update(Request $request, $id)
+    {
+        $kunjungan = Kunjungan::findOrFail($id);
+        $oldStatus = $kunjungan->status;
+
+        // Update Status
+        $kunjungan->status = $request->status;
+        $kunjungan->save();
+
+        // --- [BARU] LOGIKA KIRIM EMAIL OTOMATIS ---
+        try {
+            if ($kunjungan->email_pengunjung) {
+                // 1. Jika berubah jadi APPROVED
+                if ($request->status == 'approved' && $oldStatus != 'approved') {
+                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganApproved($kunjungan));
+                }
+                // 2. Jika berubah jadi REJECTED
+                elseif ($request->status == 'rejected' && $oldStatus != 'rejected') {
+                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganRejected($kunjungan));
+                }
+            }
+        } catch (\Exception $e) {
+            // Abaikan error email agar admin tidak terganggu
+        }
+        // -------------------------------------------
+
+        return back()->with('success', 'Status diperbarui & Notifikasi email dikirim.');
+    }
+    // 1. Menampilkan Halaman Awal (Scan/Input)
+    public function verifikasiPage()
+    {
+        return view('admin.kunjungan.verifikasi');
+    }
+
+    // 2. Memproses Data Saat Tombol Ditekan
+    public function verifikasiSubmit(Request $request)
+    {
+        // Ambil token dari input form
+        $token = $request->qr_token;
+
+        // Cari data berdasarkan qr_token (atau kode_kunjungan)
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts']) // Load relasi biar lengkap
+            ->where('qr_token', $token)
+            ->orWhere('kode_kunjungan', $token) // Biar bisa cari pakai kode manual juga
+            ->first();
+
+        if ($kunjungan) {
+            // JIKA KETEMU:
+            // Kembalikan ke view yang sama, tapi bawa data 'status_verifikasi' = 'success'
+            // dan bawa data '$kunjungan' nya.
+            return view('admin.kunjungan.verifikasi', [
+                'status_verifikasi' => 'success',
+                'kunjungan' => $kunjungan
+            ]);
+        } else {
+            // JIKA TIDAK KETEMU:
+            // Kembalikan ke view yang sama, status 'failed'
+            return view('admin.kunjungan.verifikasi', [
+                'status_verifikasi' => 'failed',
+                'qr_token' => $token
+            ]);
+        }
     }
 }

@@ -449,6 +449,14 @@
                                 </label>
                                 <input type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
                             </div>
+                            {{-- Letakkan di bawah Input Nomor WhatsApp --}}
+<div class="group">
+    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
+    </label>
+    <input type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
+    <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
+</div>
 
                             {{-- Alamat --}}
                             <div class="md:col-span-2 group">
@@ -457,6 +465,14 @@
                                 </label>
                                 <input type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
                             </div>
+                            {{-- Input Barang Bawaan (BARU) --}}
+<div class="md:col-span-2 group">
+    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+        <i class="fa-solid fa-box-open text-orange-500"></i> Barang Bawaan (Opsional)
+    </label>
+    <input type="text" name="barang_bawaan" value="{{ old('barang_bawaan') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300" placeholder="Contoh: Baju ganti, makanan ringan, obat-obatan">
+    <p class="text-[10px] text-slate-400 mt-1">*Sebutkan barang yang dibawa untuk pemeriksaan petugas.</p>
+</div>
 
                             {{-- Upload Foto KTP (BARU) --}}
                             <div class="md:col-span-2 group">

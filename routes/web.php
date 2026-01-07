@@ -72,6 +72,12 @@ Route::get('/api/kunjungan/quota', [KunjunganController::class, 'getQuotaStatus'
 // Route ini mencari data WBP agar sinkron dengan database admin
 Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('api.search.wbp');
 
+// Route untuk Halaman Verifikasi (GET)
+Route::get('/admin/kunjungan/verifikasi', [KunjunganController::class, 'verifikasiPage'])->name('admin.kunjungan.verifikasi');
+
+// Route untuk Proses Submit Token (POST) - INI YANG PENTING
+Route::post('/admin/kunjungan/verifikasi', [KunjunganController::class, 'verifikasiSubmit'])->name('admin.kunjungan.verifikasi.submit');
+
 
 // =========================================================================
 // 3. AUTHENTICATION (LOGIN/LOGOUT/RESET PASS)
