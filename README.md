@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./public/img/logo.pngalt="Lapas Jombang Logo" width="150">
+  <img src="./public/img/logo.png" alt="Lapas Jombang Logo" width="150">
   <h1>Lapas Jombang - Sistem Kunjungan Online</h1>
   <p>
     Aplikasi web untuk pendaftaran kunjungan online di Lembaga Pemasyarakatan Kelas IIB Jombang. Memudahkan masyarakat untuk menjadwalkan kunjungan dengan Warga Binaan Pemasyarakatan (WBP) secara efisien dan transparan.
