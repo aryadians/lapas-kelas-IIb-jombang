@@ -35,7 +35,7 @@
 </style>
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
-<div x-data="{ showForm: {{ session('errors') && $errors->any() ? 'true' : 'false' }} }" class="bg-slate-50 min-h-screen pb-20">
+<div x-data="{ showForm: {{ session('errors') || session('error') ? 'true' : 'false' }} }" class="bg-slate-50 min-h-screen pb-20">
 
     {{-- ============================================================== --}}
     {{-- BAGIAN 1: INFORMASI & TATA TERTIB (FULL UI) --}}
@@ -351,7 +351,7 @@
     </div>
 
     {{-- ============================================================== --}}
-    {{-- BAGIAN 2: FORMULIR PENDAFTARAN (DIPERBARUI LOGIC-NYA) --}}
+    {{-- BAGIAN 2: FORMULIR PENDAFTARAN --}}
     {{-- ============================================================== --}}
     <div x-show="showForm"
         style="display: none;"
@@ -376,6 +376,7 @@
             </div>
 
             <div class="p-10">
+                {{-- ALERT BAWAAN (Bootstrap Style) --}}
                 @if (session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8" role="alert">
                         <p class="font-bold">Berhasil!</p>
@@ -388,19 +389,22 @@
                         <p>{{ session('error') }}</p>
                     </div>
                 @endif
-{{-- KODE UNTUK MENAMPILKAN ERROR VALIDASI --}}
-@if ($errors->any())
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-lg" role="alert">
-        <p class="font-bold text-lg"><i class="fa-solid fa-triangle-exclamation"></i> Gagal Menyimpan!</p>
-        <p>Silakan perbaiki kesalahan berikut:</p>
-        <ul class="mt-2 list-disc list-inside text-sm font-semibold">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-{{-- BATAS KODE ERROR --}}
+                {{-- END ALERT BAWAAN --}}
+
+                {{-- ALERT VALIDASI INPUT LARAVEL --}}
+                @if ($errors->any())
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r shadow-md">
+                    <div class="ml-3">
+                        <h3 class="text-sm font-bold text-red-800">Periksa Inputan Anda</h3>
+                        <ul class="list-disc list-inside text-sm text-red-700 mt-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+                @endif
+
                 {{-- FORM START --}}
                 <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in">
                     @csrf
@@ -449,14 +453,15 @@
                                 </label>
                                 <input type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
                             </div>
-                            {{-- Letakkan di bawah Input Nomor WhatsApp --}}
-<div class="group">
-    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
-    </label>
-    <input type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
-    <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
-</div>
+
+                            {{-- Email --}}
+                            <div class="group">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
+                                </label>
+                                <input type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
+                                <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
+                            </div>
 
                             {{-- Alamat --}}
                             <div class="md:col-span-2 group">
@@ -465,16 +470,17 @@
                                 </label>
                                 <input type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
                             </div>
-                            {{-- Input Barang Bawaan (BARU) --}}
-<div class="md:col-span-2 group">
-    <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-box-open text-orange-500"></i> Barang Bawaan (Opsional)
-    </label>
-    <input type="text" name="barang_bawaan" value="{{ old('barang_bawaan') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300" placeholder="Contoh: Baju ganti, makanan ringan, obat-obatan">
-    <p class="text-[10px] text-slate-400 mt-1">*Sebutkan barang yang dibawa untuk pemeriksaan petugas.</p>
-</div>
 
-                            {{-- Upload Foto KTP (BARU) --}}
+                            {{-- Input Barang Bawaan (BARU) --}}
+                            <div class="md:col-span-2 group">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-box-open text-orange-500"></i> Barang Bawaan (Opsional)
+                                </label>
+                                <input type="text" name="barang_bawaan" value="{{ old('barang_bawaan') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white hover:border-blue-300" placeholder="Contoh: Baju ganti, makanan ringan, obat-obatan">
+                                <p class="text-[10px] text-slate-400 mt-1">*Sebutkan barang yang dibawa untuk pemeriksaan petugas.</p>
+                            </div>
+
+                            {{-- Upload Foto KTP --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-camera text-slate-500"></i> Upload Foto KTP (Wajib, Max 2MB)
@@ -716,7 +722,7 @@
                         <button type="button" @click="showForm = false" class="px-8 py-3 text-slate-600 font-bold hover:text-slate-900 transition bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </button>
-                        <button type="submit" class="bg-gradient-to-r from-yellow-500 to-yellow-700 text-slate-900 font-bold px-12 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center gap-3 text-lg">
+                        <button type="submit" class="bg-gradient-to-r from-yellow-50 to-yellow-700 text-slate-900 font-bold px-12 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center gap-3 text-lg">
                             <i class="fa-solid fa-paper-plane text-xl"></i> KIRIM
                         </button>
                     </div>
@@ -725,10 +731,57 @@
         </div>
     </div>
 </div>
-@endsection
-{{-- SCRIPT VALIDASI & AUTOCOMPLETE FIX --}}
+
+{{-- SCRIPT AREA --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+    // --- 1. SCRIPT SWEETALERT (JARING PENGAMAN) ---
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // A. Cek Error Logic dari Controller (Misal: H-1, Lock, dll)
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Pendaftaran Ditolak',
+                text: "{!! session('error') !!}", // Menggunakan !! agar karakter aman
+                confirmButtonText: 'Saya Mengerti',
+                confirmButtonColor: '#d33',
+                background: '#fff',
+                allowOutsideClick: false
+            });
+        @endif
+
+        // B. Cek Error Validasi Input (Required, Numeric, dll)
+        @if($errors->any())
+            let pesanError = '<ul style="text-align: left; margin-left: 20px;">';
+            @foreach($errors->all() as $error)
+                pesanError += '<li>{{ $error }}</li>';
+            @endforeach
+            pesanError += '</ul>';
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data Belum Lengkap / Salah',
+                html: pesanError,
+                confirmButtonText: 'Perbaiki',
+                confirmButtonColor: '#f59e0b'
+            });
+        @endif
+
+        // C. Cek Sukses
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                confirmButtonText: 'Lihat Status',
+                confirmButtonColor: '#10b981'
+            });
+        @endif
+    });
+
+    // --- 2. SCRIPT AUTOCOMPLETE WBP ---
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('wbp_search_input');
         const resultsDiv = document.getElementById('wbp_results');
@@ -737,81 +790,90 @@
         const btnReset = document.getElementById('btn_reset_wbp');
 
         // Logic Autocomplete
-        searchInput.addEventListener('keyup', function() {
-            let query = this.value;
-            hiddenId.value = ''; // Reset ID jika user mengetik ulang
-            
-            if(query.length > 2) {
-                fetch(`{{ route('api.search.wbp') }}?q=${query}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        resultsDiv.innerHTML = '';
-                        resultsDiv.style.display = 'block';
-                        
-                        if(data.length === 0) {
-                            resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic">Data tidak ditemukan.</div>';
-                        }
-                        
-                        data.forEach(item => {
-                            let div = document.createElement('div');
-                            div.className = 'wbp-item';
-                            // PERBAIKAN DISINI: Gunakan item.nama dan item.no_registrasi
-                            div.innerHTML = `<div><strong>${item.nama}</strong><br><span class="text-xs text-gray-500">${item.no_registrasi}</span></div>`;
+        if(searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                let query = this.value;
+                hiddenId.value = ''; // Reset ID jika user mengetik ulang
+                
+                if(query.length > 2) {
+                    fetch(`{{ route('api.search.wbp') }}?q=${query}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            resultsDiv.innerHTML = '';
+                            resultsDiv.style.display = 'block';
                             
-                            div.onclick = () => {
-                                // Set Values
-                                searchInput.value = item.nama; // Tampilkan nama di input
-                                hiddenId.value = item.id;      // Simpan ID di input hidden
+                            if(data.length === 0) {
+                                resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic">Data tidak ditemukan.</div>';
+                            }
+                            
+                            data.forEach(item => {
+                                let div = document.createElement('div');
+                                div.className = 'wbp-item';
+                                div.innerHTML = `<div><strong>${item.nama}</strong><br><span class="text-xs text-gray-500">${item.no_registrasi}</span></div>`;
                                 
-                                // Show Info Box
-                                infoDiv.classList.remove('hidden');
-                                document.getElementById('disp_nama').innerText = item.nama;
-                                document.getElementById('disp_noreg').innerText = item.no_registrasi;
-                                document.getElementById('disp_blok').innerText = item.blok || '-'; 
-                                
-                                // Hide Search & Results
-                                searchInput.classList.add('hidden');
-                                resultsDiv.style.display = 'none';
-                            };
-                            resultsDiv.appendChild(div);
+                                div.onclick = () => {
+                                    // Set Values
+                                    searchInput.value = item.nama; // Tampilkan nama di input
+                                    hiddenId.value = item.id;      // Simpan ID di input hidden
+                                    
+                                    // Show Info Box
+                                    infoDiv.classList.remove('hidden');
+                                    document.getElementById('disp_nama').innerText = item.nama;
+                                    document.getElementById('disp_noreg').innerText = item.no_registrasi;
+                                    document.getElementById('disp_blok').innerText = item.blok || '-'; 
+                                    
+                                    // Hide Search & Results
+                                    searchInput.classList.add('hidden');
+                                    resultsDiv.style.display = 'none';
+                                };
+                                resultsDiv.appendChild(div);
+                            });
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            resultsDiv.innerHTML = '<div class="p-3 text-sm text-red-500 italic">Gagal memuat data.</div>';
                         });
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        resultsDiv.innerHTML = '<div class="p-3 text-sm text-red-500 italic">Gagal memuat data.</div>';
-                    });
-            } else {
-                resultsDiv.style.display = 'none';
-            }
-        });
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            });
+        }
 
         // Reset Pilihan WBP
-        btnReset.addEventListener('click', function() {
-            hiddenId.value = '';
-            searchInput.value = '';
-            searchInput.classList.remove('hidden');
-            infoDiv.classList.add('hidden');
-            searchInput.focus();
-        });
+        if(btnReset) {
+            btnReset.addEventListener('click', function() {
+                hiddenId.value = '';
+                searchInput.value = '';
+                searchInput.classList.remove('hidden');
+                infoDiv.classList.add('hidden');
+                searchInput.focus();
+            });
+        }
 
         // Klik di luar menutup dropdown
         document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
-                resultsDiv.style.display = 'none';
+            if (searchInput && resultsDiv) {
+                if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                    resultsDiv.style.display = 'none';
+                }
             }
         });
 
-        // Validasi Submit
-        document.querySelector('form').addEventListener('submit', function(e) {
-            if (!hiddenId.value) {
-                e.preventDefault();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'WBP Belum Dipilih',
-                    text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.',
-                    confirmButtonColor: '#1e3a8a'
-                });
-            }
-        });
+        // Validasi Submit (WBP Wajib Dipilih)
+        const mainForm = document.querySelector('form');
+        if(mainForm) {
+            mainForm.addEventListener('submit', function(e) {
+                if (!hiddenId.value) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'WBP Belum Dipilih',
+                        text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.',
+                        confirmButtonColor: '#1e3a8a'
+                    });
+                }
+            });
+        }
     });
 </script>
+@endsection
