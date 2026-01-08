@@ -138,7 +138,7 @@
                             {{ $kunjungan->hubungan }}
                         </td>
                         <td class="p-4 text-sm text-slate-600">
-                            {{ $kunjungan->pengikut_laki + $kunjungan->pengikut_perempuan }} Orang
+                            {{ $kunjungan->pengikuts->count() }} Orang
                         </td>
                         <td class="p-4 text-center">
                             @if($kunjungan->status == 'approved' || $kunjungan->status == 'selesai')
