@@ -7,6 +7,7 @@ use App\Models\Wbp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Artisan;
 
 class WbpController extends Controller
 {
@@ -37,7 +38,6 @@ class WbpController extends Controller
      */
     public function import(Request $request)
     {
-        // 1. Validasi File
         $request->validate([
             'file' => 'required|file|mimes:csv,txt'
         ]);
@@ -45,53 +45,44 @@ class WbpController extends Controller
         $file = $request->file('file');
         $path = $file->getRealPath();
 
-        // 2. Deteksi Delimiter (Pemisah ; atau ,) secara otomatis
         $handle = fopen($path, "r");
+        if (!$handle) {
+            return response()->json(['success' => false, 'message' => 'Gagal membuka file yang diupload.']);
+        }
         $firstLine = fgets($handle);
         fclose($handle);
-
-        // Prioritaskan titik koma (Format Excel Indo), kalau tidak ada baru koma
         $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
 
         $imported = 0;
+        $skipped = 0;
         $rowNumber = 0;
+        $processedRegistrations = []; // Array to track duplicates within the CSV
 
-        if (($handle = fopen($path, "r")) !== FALSE) {
+        DB::beginTransaction();
+        try {
+            // Hapus semua data lama sebelum import
+            Wbp::query()->delete();
 
-            DB::beginTransaction(); // Pakai Transaction agar aman
-            try {
-                // Baca baris per baris
+            if (($handle = fopen($path, "r")) !== FALSE) {
                 while (($row = fgetcsv($handle, 3000, $delimiter)) !== FALSE) {
                     $rowNumber++;
-
-                    // SKIP HEADER: Jika baris pertama ATAU kolom pertama berisi kata "Nama"
                     if ($rowNumber == 1 || (isset($row[0]) && stripos($row[0], 'Nama') !== false)) {
                         continue;
                     }
 
-                    // === BERSIHKAN DATA DARI KARAKTER ANEH ===
-                    // Ini penting agar data terbaca oleh database
                     $cleanRow = array_map(function ($val) {
-                        // Hapus karakter non-printable (BOM, Null, dll)
                         return trim(preg_replace('/[\x00-\x1F\x7F]/u', '', $val ?? ''));
                     }, $row);
 
-                    // === MAPPING DATA SESUAI STRUKTUR EXCEL ANDA ===
-                    // A [0] : Nama Lengkap
-                    // B [1] : No Registrasi
-                    // C [2] : Tgl Msk UPT
-                    // D [3] : Tgl Ekspirasi
-                    // E [4] - J [9] : Alias / Nama Kecil
-                    // K [10]: Blok
-                    // L [11]: Lokasi Sel
+                    $noReg = $cleanRow[1] ?? '';
 
-                    $nama   = $cleanRow[0] ?? '';
-                    $noReg  = $cleanRow[1] ?? '';
+                    // Validasi: Lewati jika No. Reg kosong ATAU jika sudah diproses (duplikat di CSV)
+                    if (empty($noReg) || in_array($noReg, $processedRegistrations)) {
+                        $skipped++;
+                        continue;
+                    }
 
-                    // Validasi Kunci: Jika No Reg Kosong, lewati baris ini
-                    if (empty($noReg)) continue;
-
-                    // Logika Ambil Alias (Cari kolom alias pertama yang terisi)
+                    $nama = $cleanRow[0] ?? '';
                     $alias = null;
                     for ($i = 4; $i <= 9; $i++) {
                         if (!empty($cleanRow[$i]) && $cleanRow[$i] != '-') {
@@ -99,41 +90,53 @@ class WbpController extends Controller
                             break;
                         }
                     }
-
-                    // Logika Ambil Lokasi
                     $blok = !empty($cleanRow[10]) ? strtoupper($cleanRow[10]) : '-';
                     $kamar = !empty($cleanRow[11]) ? strtoupper($cleanRow[11]) : '-';
 
-                    // SIMPAN KE DATABASE
-                    Wbp::updateOrCreate(
-                        ['no_registrasi' => $noReg], // Cek berdasarkan No Reg
-                        [
-                            'nama'              => strtoupper($nama),
-                            'nama_panggilan'    => $alias,
-                            'tanggal_masuk'     => $this->parseDate($cleanRow[2] ?? null),
-                            'tanggal_ekspirasi' => $this->parseDate($cleanRow[3] ?? null),
-                            'blok'              => $blok,
-                            'kamar'             => $kamar,
-                        ]
-                    );
+                    Wbp::create([
+                        'no_registrasi'     => $noReg,
+                        'nama'              => strtoupper($nama),
+                        'nama_panggilan'    => $alias,
+                        'tanggal_masuk'     => $this->parseDate($cleanRow[2] ?? null),
+                        'tanggal_ekspirasi' => $this->parseDate($cleanRow[3] ?? null),
+                        'blok'              => $blok,
+                        'kamar'             => $kamar,
+                    ]);
+                    $processedRegistrations[] = $noReg; // Tandai No. Reg ini sudah diproses
                     $imported++;
                 }
-
-                DB::commit(); // Simpan perubahan permanen
-
-            } catch (\Exception $e) {
-                DB::rollBack(); // Batalkan jika ada error
                 fclose($handle);
-                return back()->with('error', 'Error pada baris ' . $rowNumber . ': ' . $e->getMessage());
             }
-            fclose($handle);
+
+            DB::commit();
+            Artisan::call('cache:clear');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (isset($handle) && is_resource($handle)) {
+                fclose($handle);
+            }
+            return response()->json([
+                'success' => false, 
+                'message' => 'Terjadi error pada baris ' . $rowNumber . ': ' . $e->getMessage()
+            ]);
         }
 
-        // Feedback ke User
         if ($imported > 0) {
-            return back()->with('success', "BERHASIL! $imported data WBP telah masuk ke database.");
+            return response()->json([
+                'success' => true,
+                'message' => "Basis data telah diganti!",
+                'stats'   => [
+                    'imported' => $imported,
+                    'updated'  => 0, // No longer updating
+                    'skipped'  => $skipped,
+                ]
+            ]);
         } else {
-            return back()->with('error', 'File terbaca tapi KOSONG atau Format salah. Pastikan Save As CSV (Comma delimited).');
+            return response()->json([
+                'success' => false,
+                'message' => 'File terbaca, namun tidak ada data valid yang dapat diimpor. Basis data tidak diubah.'
+            ]);
         }
     }
 
@@ -157,12 +160,68 @@ class WbpController extends Controller
         }
     }
 
-    public function history($id)
+    public function history(Wbp $wbp)
     {
-        $wbp = Wbp::with(['kunjungans' => function ($q) {
+        $wbp->load(['kunjungans' => function ($q) {
             $q->latest();
-        }])->findOrFail($id);
+        }]);
 
         return view('admin.wbp.history', compact('wbp'));
+    }
+
+    public function create()
+    {
+        return view('admin.wbp.create');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_registrasi' => 'required|string|max:255|unique:wbps,no_registrasi',
+            'nama_panggilan' => 'nullable|string|max:255',
+            'tanggal_masuk' => 'nullable|date',
+            'tanggal_ekspirasi' => 'nullable|date',
+            'blok' => 'nullable|string|max:255',
+            'kamar' => 'nullable|string|max:255',
+        ]);
+
+        Wbp::create($request->all());
+
+        return redirect()->route('admin.wbp.index')->with('success', 'WBP created successfully.');
+    }
+
+    public function show(Wbp $wbp)
+    {
+        return view('admin.wbp.show', compact('wbp'));
+    }
+
+    public function edit(Wbp $wbp)
+    {
+        return view('admin.wbp.edit', compact('wbp'));
+    }
+
+    public function update(Request $request, Wbp $wbp)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'no_registrasi' => 'required|string|max:255|unique:wbps,no_registrasi,' . $wbp->id,
+            'nama_panggilan' => 'nullable|string|max:255',
+            'tanggal_masuk' => 'nullable|date',
+            'tanggal_ekspirasi' => 'nullable|date',
+            'blok' => 'nullable|string|max:255',
+            'kamar' => 'nullable|string|max:255',
+        ]);
+
+        $wbp->update($request->all());
+
+        return redirect()->route('admin.wbp.index')->with('success', 'WBP updated successfully.');
+    }
+
+    public function destroy(Wbp $wbp)
+    {
+        $wbp->delete();
+
+        return redirect()->route('admin.wbp.index')->with('success', 'WBP deleted successfully.');
     }
 }

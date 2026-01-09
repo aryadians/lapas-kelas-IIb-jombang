@@ -107,10 +107,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
 
     // B. MANAJEMEN DATA WBP (WARGA BINAAN)
-    // Fitur: List, Import Excel/CSV, History Kunjungan
-    Route::resource('wbp', WbpController::class);
-    Route::post('wbp/import', [WbpController::class, 'import'])->name('wbp.import');
-    Route::get('wbp/{id}/history', [WbpController::class, 'history'])->name('wbp.history');
+    Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
+    Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
+    Route::resource('wbp', WbpController::class)->names('admin.wbp');
 
     // C. MANAJEMEN KUNJUNGAN (VERIFIKASI & LAPORAN)
     Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');

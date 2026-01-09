@@ -100,9 +100,9 @@
                 @endif
 
                 @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin', 'admin_registrasi']))
-                <a href="{{ route('wbp.index') }}" 
-                   class="flex items-center px-4 py-3 {{ request()->routeIs('wbp.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
-                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('wbp.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <a href="{{ route('admin.wbp.index') }}" 
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.wbp.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.wbp.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     <span class="font-medium">Data Warga Binaan</span>
@@ -169,20 +169,20 @@
     // =================================================================================
     const swalTheme = {
         customClass: {
-            popup: 'bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-700',
-            title: 'text-slate-800 dark:text-white text-xl font-bold pt-6',
-            htmlContainer: 'text-slate-500 dark:text-slate-300 text-sm px-6',
-            confirmButton: 'px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 mx-1.5 shadow-md focus:outline-none focus:ring-4 focus:ring-blue-300',
-            cancelButton: 'px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-all duration-200 mx-1.5 focus:outline-none focus:ring-4 focus:ring-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-white',
-            icon: 'mt-6 scale-110' // Slight scale up for better visibility
+            popup: 'bg-white rounded-2xl shadow-2xl border border-slate-200 transform transition-all duration-300',
+            title: 'text-slate-800 text-2xl font-bold pt-6',
+            htmlContainer: 'text-slate-500 text-base px-6 pb-4',
+            confirmButton: 'px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 mx-2 shadow-lg hover:shadow-blue-500/50 transform hover:-translate-y-0.5',
+            cancelButton: 'px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg transition-all duration-300 mx-2 transform hover:-translate-y-0.5',
+            icon: 'mt-6 scale-110'
         },
         buttonsStyling: false,
-        backdrop: 'rgba(15, 23, 42, 0.6)', // Slate-900 with opacity
+        backdrop: 'rgba(15, 23, 42, 0.7)',
         showClass: {
-            popup: 'animate__animated animate__fadeInDown animate__faster'
+            popup: 'animate__animated animate__fadeInUp animate__faster'
         },
         hideClass: {
-            popup: 'animate__animated animate__fadeOutUp animate__faster'
+            popup: 'animate__animated animate__fadeOutDown animate__faster'
         }
     };
 
@@ -334,5 +334,6 @@
         });
     }
     </script>
+    @stack('scripts')
 </body>
 </html>
