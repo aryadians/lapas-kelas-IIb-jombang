@@ -125,6 +125,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // E. MANAJEMEN USER (ADMIN & PETUGAS)
     Route::resource('users', AdminUserController::class)->names('admin.users');
 
+    // G. MANAJEMEN SURVEY IKM
+    Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
+
     // F. PROFIL ADMIN
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
