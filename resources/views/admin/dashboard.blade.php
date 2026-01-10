@@ -220,33 +220,60 @@
                     <i class="fas fa-rocket text-blue-500"></i> Akses Cepat
                 </h3>
                 <div class="grid grid-cols-2 gap-4">
+                    @php $userRole = Auth::user()->role ?? 'user'; @endphp
+                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
                     <a href="{{ route('news.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-pen-nib text-xl"></i>
                         </div>
                         <span class="text-sm font-bold text-slate-600 group-hover:text-blue-600">Tulis Berita</span>
                     </a>
+                    @endif
                     
+                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
                     <a href="{{ route('announcements.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-yellow-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-bullhorn text-xl"></i>
                         </div>
                         <span class="text-sm font-bold text-slate-600 group-hover:text-yellow-600">Umumkan</span>
                     </a>
+                    @endif
                     
+                    @if(in_array($userRole, ['super_admin', 'admin_registrasi']))
                     <a href="{{ route('admin.kunjungan.verifikasi') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-green-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-qrcode text-xl"></i>
                         </div>
                         <span class="text-sm font-bold text-slate-600 group-hover:text-green-600">Scan QR</span>
                     </a>
+                    @endif
                     
+                    @if(in_array($userRole, ['super_admin', 'admin_registrasi', 'admin_umum']))
                     <a href="{{ route('admin.users.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-purple-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-user-plus text-xl"></i>
                         </div>
                         <span class="text-sm font-bold text-slate-600 group-hover:text-purple-600">Tambah User</span>
                     </a>
+                    @endif
+
+                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                    <a href="{{ route('admin.surveys.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-cyan-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-chart-pie text-xl"></i>
+                        </div>
+                        <span class="text-sm font-bold text-slate-600 group-hover:text-cyan-600">Survey IKM</span>
+                    </a>
+                    @endif
+
+                    @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin_registrasi']))
+                    <a href="{{ route('admin.wbp.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-rose-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
+                        <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-users-viewfinder text-xl"></i>
+                        </div>
+                        <span class="text-sm font-bold text-slate-600 group-hover:text-rose-600">Data WBP</span>
+                    </a>
+                    @endif
                 </div>
             </div>
 
