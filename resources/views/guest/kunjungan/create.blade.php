@@ -471,6 +471,28 @@
                                 <input type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
                             </div>
 
+                            {{-- Pilihan Notifikasi --}}
+                            <div class="md:col-span-2 group">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                                    <i class="fa-solid fa-paper-plane text-purple-500"></i> Kanal Notifikasi Pilihan
+                                </label>
+                                <div class="flex gap-2 rounded-xl bg-slate-200 p-1 border-2 border-gray-200">
+                                    <label class="flex-1 text-center cursor-pointer">
+                                        <input type="radio" name="preferred_notification_channel" value="email" class="hidden peer" checked>
+                                        <span class="block w-full py-2 px-4 rounded-lg text-sm font-semibold text-slate-600 bg-white peer-checked:bg-blue-600 peer-checked:text-white peer-checked:shadow-md transition-all">
+                                            <i class="fa-solid fa-envelope mr-1"></i> Email
+                                        </span>
+                                    </label>
+                                    <label class="flex-1 text-center cursor-pointer">
+                                        <input type="radio" name="preferred_notification_channel" value="whatsapp" class="hidden peer" {{ old('preferred_notification_channel') == 'whatsapp' ? 'checked' : '' }}>
+                                        <span class="block w-full py-2 px-4 rounded-lg text-sm font-semibold text-slate-600 bg-white peer-checked:bg-green-600 peer-checked:text-white peer-checked:shadow-md transition-all">
+                                            <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp
+                                        </span>
+                                    </label>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">*Pilih metode pengiriman status pendaftaran dan tiket barcode.</p>
+                            </div>
+
                             {{-- Input Barang Bawaan (BARU) --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
@@ -535,7 +557,7 @@
                                     try {
                                         const params = new URLSearchParams({
                                             tanggal_kunjungan: this.selectedDate,
-                                            sesi: this.isMonday ? this.selectedSesi : '',
+                                            sesi: this.isMonday ? this.selectedSesi : 'pagi', // Explisit kirim 'pagi' untuk hari lain
                                         });
                                         const response = await fetch(`{{ route('kunjungan.quota.api') }}?${params}`);
                                         if (!response.ok) throw new Error('Gagal');

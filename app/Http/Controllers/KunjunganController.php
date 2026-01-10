@@ -17,6 +17,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator; // <--- POSISI BENAR DI SINI
 
+use App\Services\WhatsAppService;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 class KunjunganController extends Controller
 {
     public function create()
@@ -63,10 +66,6 @@ class KunjunganController extends Controller
 
     public function store(Request $request)
     {
-        // ====================================================
-        // 1. DYNAMIC & CONDITIONAL VALIDATION
-        // ====================================================
-        
         $rules = [
             'nama_pengunjung'   => 'required|string|max:255',
             'nik_ktp'           => 'required|numeric|digits:16',
@@ -79,15 +78,14 @@ class KunjunganController extends Controller
             'wbp_id'            => 'required|exists:wbps,id',
             'hubungan'          => 'required|string',
             'tanggal_kunjungan' => 'required|date',
-            // Aturan untuk pengikut
+            'preferred_notification_channel' => 'required|in:email,whatsapp',
             'pengikut_nama'     => 'nullable|array|max:4',
             'pengikut_nik'      => 'nullable|array|max:4',
             'pengikut_hubungan' => 'nullable|array|max:4',
             'pengikut_foto'     => 'nullable|array|max:4',
-            'pengikut_foto.*'   => 'nullable|image|max:5000', // Validasi setiap file di dalam array
+            'pengikut_foto.*'   => 'nullable|image|max:5000',
         ];
 
-        // Pesan error kustom untuk batas maksimal pengikut
         $messages = [
             'pengikut_nama.max' => 'Jumlah pengikut tidak boleh lebih dari 4 orang.',
         ];
@@ -101,24 +99,19 @@ class KunjunganController extends Controller
                     $request->merge(['sesi' => 'pagi']);
                 }
             } catch (\Exception $e) {
-                // Let main validation handle format errors
+                // Let validation handle format errors
             }
         }
 
         $validator = Validator::make($request->all(), $rules, $messages);
-
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
         $validatedData = $validator->validated();
 
-        // ====================================================
-        // 2. BUSINESS LOGIC VALIDATION
-        // ====================================================
         $requestDate = Carbon::parse($validatedData['tanggal_kunjungan'])->startOfDay();
-        $today       = Carbon::now()->startOfDay();
-        $wbp         = Wbp::find($validatedData['wbp_id']);
+        $today = Carbon::now()->startOfDay();
+        $wbp = Wbp::find($validatedData['wbp_id']);
 
         if ($requestDate->isFriday() || $requestDate->isSaturday() || $requestDate->isSunday()) {
             return back()->with('error', 'Layanan kunjungan tidak tersedia pada hari Jumat, Sabtu, dan Minggu.')->withInput();
@@ -159,19 +152,14 @@ class KunjunganController extends Controller
             return back()->with('error', "WBP ini sudah menerima kunjungan pada " . Carbon::parse($recentVisit->tanggal_kunjungan)->translatedFormat('d M Y') . ". WBP baru bisa dikunjungi lagi setelah 1 minggu, yaitu mulai " . $nextAllowedDate)->withInput();
         }
 
-        // ====================================================
-        // 3. DATABASE TRANSACTION
-        // ====================================================
         try {
             DB::beginTransaction();
 
             $pathFotoUtama = $request->file('foto_ktp')->store('uploads/ktp', 'public');
             $nomorAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])->count() + 1;
             
-            // Re-add non-validated but necessary fields from the request
             $fullData = array_merge($validatedData, [
                 'no_wa_pengunjung'  => $request->nomor_hp,
-                'email_pengunjung'  => $request->email_pengunjung,
                 'alamat_pengunjung' => $request->alamat_lengkap,
             ]);
 
@@ -186,22 +174,18 @@ class KunjunganController extends Controller
             if ($request->has('pengikut_nama')) {
                 foreach ($request->pengikut_nama as $index => $nama) {
                     if (!empty($nama)) {
-                        Pengikut::create([
-                            'kunjungan_id'  => $kunjungan->id,
-                            'nama'          => $nama,
-                            'nik'           => $request->pengikut_nik[$index] ?? null,
-                            'hubungan'      => $request->pengikut_hubungan[$index] ?? null,
-                        ]);
+                        Pengikut::create(['kunjungan_id' => $kunjungan->id, 'nama' => $nama, 'nik' => $request->pengikut_nik[$index] ?? null, 'hubungan' => $request->pengikut_hubungan[$index] ?? null]);
                     }
                 }
             }
 
             DB::commit();
 
-            try {
-                Mail::to($validatedData['email_pengunjung'])->send(new KunjunganPending($kunjungan));
-            } catch (\Exception $e) {
-                \Log::error('Email sending failed for Kunjungan ID ' . $kunjungan->id . ': ' . $e->getMessage());
+            // Send notification based on user preference
+            if ($kunjungan->preferred_notification_channel === 'whatsapp') {
+                (new WhatsAppService())->sendPending($kunjungan);
+            } else {
+                Mail::to($kunjungan->email_pengunjung)->send(new KunjunganPending($kunjungan));
             }
 
             return redirect()->route('kunjungan.status', $kunjungan->id)
@@ -209,7 +193,7 @@ class KunjunganController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error('Error storing visit: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
+            Log::error('Error storing visit: ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine());
             return back()->with('error', 'Terjadi kesalahan internal saat memproses pendaftaran. Silakan coba lagi.')->withInput();
         }
     }
@@ -221,100 +205,118 @@ class KunjunganController extends Controller
 
     public function getQuotaStatus(Request $request)
     {
-        // (Isi API Quota - biarkan seperti kode sebelumnya)
-        return response()->json(['sisa_kuota' => 100]);
+        $validator = Validator::make($request->all(), [
+            'tanggal_kunjungan' => 'required|date_format:Y-m-d',
+            'sesi' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Input tidak valid.'], 400);
+        }
+
+        $validated = $validator->validated();
+        $tanggal = Carbon::parse($validated['tanggal_kunjungan']);
+        $sesi = $validated['sesi'] ?? 'pagi'; // Default to 'pagi' if not provided
+
+        // 1. Tentukan Total Kuota
+        $totalQuota = 0;
+        if ($tanggal->isMonday()) {
+            if ($sesi === 'pagi') {
+                $totalQuota = 120;
+            } elseif ($sesi === 'siang') {
+                $totalQuota = 40;
+            }
+        } elseif ($tanggal->isTuesday() || $tanggal->isWednesday() || $tanggal->isThursday()) {
+            $totalQuota = 150;
+        }
+
+        if ($totalQuota === 0) {
+            return response()->json(['sisa_kuota' => 0]);
+        }
+
+        // 2. Hitung Kunjungan yang Sudah Terdaftar
+        $query = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
+                         ->whereIn('status', ['pending', 'approved']);
+        
+        // Hanya filter berdasarkan sesi jika hari Senin
+        if ($tanggal->isMonday()) {
+            $query->where('sesi', $sesi);
+        }
+
+        $registeredCount = $query->count();
+
+        // 3. Hitung Sisa Kuota
+        $sisaKuota = max(0, $totalQuota - $registeredCount);
+
+        return response()->json(['sisa_kuota' => $sisaKuota]);
     }
-    /**
-     * Menampilkan Halaman Cetak Tiket
-     */
+    
     public function printProof(Kunjungan $kunjungan)
     {
-        // Pastikan hanya yang status approved yang bisa cetak (opsional)
         if ($kunjungan->status != 'approved') {
             return redirect()->route('kunjungan.status', $kunjungan->id)
                 ->with('error', 'Tiket belum tersedia. Menunggu persetujuan admin.');
         }
-
         return view('guest.kunjungan.print', compact('kunjungan'));
     }
-    public function updateStatus(Request $request, Kunjungan $kunjungan)
-    {
-        $statusBaru = $request->status; // 'approved' atau 'rejected'
 
-        $kunjungan->update(['status' => $statusBaru]);
-
-        // --- LOGIKA KIRIM EMAIL OTOMATIS ---
-        try {
-            if ($statusBaru == 'approved') {
-                // Kirim Email Tiket
-                // Mail::to($kunjungan->email_pengunjung)->send(new \App\Mail\KunjunganApproved($kunjungan));
-            } elseif ($statusBaru == 'rejected') {
-                // Kirim Email Penolakan
-                // Mail::to($kunjungan->email_pengunjung)->send(new \App\Mail\KunjunganRejected($kunjungan));
-            }
-        } catch (\Exception $e) {
-            // Log error email tapi biarkan status berubah
-        }
-
-        return back()->with('success', 'Status berhasil diperbarui!');
-    }
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, WhatsAppService $whatsAppService)
     {
         $kunjungan = Kunjungan::findOrFail($id);
         $oldStatus = $kunjungan->status;
+        $newStatus = $request->status;
 
-        // Update Status
-        $kunjungan->status = $request->status;
+        if ($oldStatus === $newStatus) {
+            return back()->with('info', 'Status tidak berubah.');
+        }
+
+        $kunjungan->status = $newStatus;
         $kunjungan->save();
 
-        // --- [BARU] LOGIKA KIRIM EMAIL OTOMATIS ---
         try {
-            if ($kunjungan->email_pengunjung) {
-                // 1. Jika berubah jadi APPROVED
-                if ($request->status == 'approved' && $oldStatus != 'approved') {
-                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganApproved($kunjungan));
+            if ($newStatus == 'approved') {
+                $qrCode = QrCode::format('png')->size(250)->generate($kunjungan->qr_token);
+                $qrCodePath = 'qrcodes/' . $kunjungan->id . '.png';
+                Storage::disk('public')->put($qrCodePath, $qrCode);
+
+                if ($kunjungan->preferred_notification_channel === 'whatsapp') {
+                    $whatsAppService->sendApproved($kunjungan, Storage::disk('public')->url($qrCodePath));
+                } else {
+                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganApproved($kunjungan, $qrCode));
                 }
-                // 2. Jika berubah jadi REJECTED
-                elseif ($request->status == 'rejected' && $oldStatus != 'rejected') {
+            } elseif ($newStatus == 'rejected') {
+                if ($kunjungan->preferred_notification_channel === 'whatsapp') {
+                    $whatsAppService->sendRejected($kunjungan);
+                } else {
                     Mail::to($kunjungan->email_pengunjung)->send(new KunjunganRejected($kunjungan));
                 }
             }
         } catch (\Exception $e) {
-            // Abaikan error email agar admin tidak terganggu
+            Log::error('Notification sending failed for Kunjungan ID ' . $kunjungan->id . ': ' . $e->getMessage());
         }
-        // -------------------------------------------
 
-        return back()->with('success', 'Status diperbarui & Notifikasi email dikirim.');
+        return back()->with('success', 'Status diperbarui & notifikasi telah dijadwalkan untuk pengiriman.');
     }
-    // 1. Menampilkan Halaman Awal (Scan/Input)
+    
     public function verifikasiPage()
     {
         return view('admin.kunjungan.verifikasi');
     }
 
-    // 2. Memproses Data Saat Tombol Ditekan
     public function verifikasiSubmit(Request $request)
     {
-        // Ambil token dari input form
         $token = $request->qr_token;
-
-        // Cari data berdasarkan qr_token (atau kode_kunjungan)
-        $kunjungan = Kunjungan::with(['wbp', 'pengikuts']) // Load relasi biar lengkap
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])
             ->where('qr_token', $token)
-            ->orWhere('kode_kunjungan', $token) // Biar bisa cari pakai kode manual juga
+            ->orWhere('kode_kunjungan', $token)
             ->first();
 
         if ($kunjungan) {
-            // JIKA KETEMU:
-            // Kembalikan ke view yang sama, tapi bawa data 'status_verifikasi' = 'success'
-            // dan bawa data '$kunjungan' nya.
             return view('admin.kunjungan.verifikasi', [
                 'status_verifikasi' => 'success',
                 'kunjungan' => $kunjungan
             ]);
         } else {
-            // JIKA TIDAK KETEMU:
-            // Kembalikan ke view yang sama, status 'failed'
             return view('admin.kunjungan.verifikasi', [
                 'status_verifikasi' => 'failed',
                 'qr_token' => $token

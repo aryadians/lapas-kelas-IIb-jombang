@@ -12,15 +12,31 @@ class KunjunganApproved extends Mailable
     use Queueable, SerializesModels;
 
     public $kunjungan;
+    public $qrCode;
 
-    public function __construct(Kunjungan $kunjungan)
+    /**
+     * Create a new message instance.
+     *
+     * @param Kunjungan $kunjungan
+     * @param mixed $qrCode Raw QR code image data.
+     */
+    public function __construct(Kunjungan $kunjungan, $qrCode)
     {
         $this->kunjungan = $kunjungan;
+        $this->qrCode = $qrCode;
     }
 
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
     public function build()
     {
         return $this->subject('✅ Kunjungan DISETUJUI - Tiket Masuk Lapas')
-            ->view('emails.kunjungan_approved'); // Kita akan buat view ini
+            ->view('emails.kunjungan_approved')
+            ->attachData($this->qrCode, 'qrcode.png', [
+                'mime' => 'image/png',
+            ]);
     }
 }
