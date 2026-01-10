@@ -247,96 +247,101 @@
     </div>
 
     {{-- ========================================== --}}
-    {{-- WIDGET SURVEI KEPUASAN (FLOATING KANAN) --}}
-    {{-- ========================================== --}}
-    <div x-data="{ openSurvey: false }" class="fixed bottom-6 right-6 z-40 print:hidden">
+{{-- WIDGET SURVEI KEPUASAN (FLOATING KANAN) --}}
+{{-- ========================================== --}}
+<div x-data="{ openSurvey: false }" class="fixed bottom-6 right-6 z-40 print:hidden">
 
-        {{-- Tombol Pemicu --}}
-        <button @click="openSurvey = !openSurvey"
-            class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl border-2 border-yellow-500 transition transform hover:scale-105 group">
-            <span class="font-bold text-sm hidden group-hover:block transition-all duration-300">Survei Kepuasan</span>
-            <div class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-        </button>
+    {{-- Tombol Pemicu --}}
+    <button @click="openSurvey = !openSurvey"
+        class="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-full shadow-2xl border-2 border-yellow-500 transition transform hover:scale-105 group">
+        <span class="font-bold text-sm hidden group-hover:block transition-all duration-300">Survei Kepuasan</span>
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+    </button>
 
-        {{-- Modal Form --}}
-                <div x-show="openSurvey"
-                    @survey-success.window="openSurvey = false"
-                    x-transition:enter="transition ease-out duration-300"
-                    x-transition:enter-start="opacity-0 translate-y-4 scale-90"
-                    x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-                    x-transition:leave="transition ease-in duration-200"
-                    x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-                    x-transition:leave-end="opacity-0 translate-y-4 scale-90"
-                    class="absolute bottom-16 right-0 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
-                    style="display: none;">
-        
-                    {{-- Header Modal --}}
-                    <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-4 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-white font-bold text-lg">IKM Online</h3>
-                            <p class="text-xs text-yellow-500">Indeks Kepuasan Masyarakat</p>
-                        </div>
-                        <button @click="openSurvey = false" class="text-gray-400 hover:text-white transition">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-        
-                    {{-- Body Form --}}
-                    <div class="p-5">
-                        <form action="{{ route('survey.store') }}" method="POST" id="surveyForm">
-                            @csrf
-        
-                            <div class="mb-4 text-center">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Bagaimana pelayanan kami?</label>
-                                <div class="flex justify-center gap-3">
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="rating" value="1" class="hidden peer" required>
-                                        <div class="text-3xl grayscale peer-checked:grayscale-0 group-hover:scale-125 transition">😡</div>
-                                        <span class="text-[10px] text-gray-400 peer-checked:text-red-500 block">Buruk</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="rating" value="2" class="hidden peer">
-                                        <div class="text-3xl grayscale peer-checked:grayscale-0 group-hover:scale-125 transition">😐</div>
-                                        <span class="text-[10px] text-gray-400 peer-checked:text-yellow-500 block">Cukup</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="rating" value="3" class="hidden peer">
-                                        <div class="text-3xl grayscale peer-checked:grayscale-0 group-hover:scale-125 transition">😃</div>
-                                        <span class="text-[10px] text-gray-400 peer-checked:text-blue-500 block">Baik</span>
-                                    </label>
-                                    <label class="cursor-pointer group">
-                                        <input type="radio" name="rating" value="4" class="hidden peer">
-                                        <div class="text-3xl grayscale peer-checked:grayscale-0 group-hover:scale-125 transition">🤩</div>
-                                        <span class="text-[10px] text-gray-400 peer-checked:text-green-500 block">Sangat Baik</span>
-                                    </label>
-                                </div>
-                            </div>
-        
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kritik & Saran</label>
-                                <textarea name="saran" rows="3" class="w-full text-sm rounded-lg border-gray-300 focus:border-yellow-500 focus:ring-yellow-500 shadow-sm" placeholder="Tulis masukan Anda disini..."></textarea>
-                            </div>
-        
-                            <button type="submit" id="submitSurvey" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-2 rounded-lg transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                                <span id="submitText">Kirim Penilaian</span>
-                                <span id="loadingText" class="hidden">
-                                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-900 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Mengirim...
-                                </span>
-                            </button>
-                        </form>
-                    </div>
+    {{-- Modal Form with 3D animation --}}
+    <div x-show="openSurvey"
+        @survey-success.window="openSurvey = false"
+        x-transition:enter="transition ease-out duration-300 transform"
+        x-transition:enter-start="opacity-0 translate-y-4 scale-90"
+        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+        x-transition:leave="transition ease-in duration-200 transform"
+        x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+        x-transition:leave-end="opacity-0 translate-y-4 scale-90"
+        class="absolute bottom-16 right-0 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
+        style="display: none; perspective: 1000px;">
+        <div class="transform transition-transform duration-500" :class="openSurvey ? 'rotate-x-0' : '-rotate-x-12'">
+
+            {{-- Header Modal --}}
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-4 flex justify-between items-center">
+                <div>
+                    <h3 class="text-white font-bold text-lg">IKM Online</h3>
+                    <p class="text-xs text-yellow-500">Indeks Kepuasan Masyarakat</p>
                 </div>
+                <button @click="openSurvey = false" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
             </div>
+
+            {{-- Body Form --}}
+            <div class="p-5 bg-slate-50">
+                <form action="{{ route('survey.store') }}" method="POST" id="surveyForm">
+                    @csrf
+
+                    <div class="mb-5 text-center">
+                        <label class="block text-sm font-bold text-slate-700 mb-3">Bagaimana pelayanan kami?</label>
+                        <div class="flex justify-center gap-3">
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="rating" value="1" class="hidden peer" required>
+                                <div class="text-4xl grayscale peer-checked:grayscale-0 peer-checked:animate-bounce transition-transform duration-300 group-hover:scale-125">😡</div>
+                                <span class="text-xs font-semibold text-slate-400 peer-checked:text-red-500 block">Buruk</span>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="rating" value="2" class="hidden peer">
+                                <div class="text-4xl grayscale peer-checked:grayscale-0 peer-checked:animate-bounce transition-transform duration-300 group-hover:scale-125">😐</div>
+                                <span class="text-xs font-semibold text-slate-400 peer-checked:text-yellow-500 block">Cukup</span>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="rating" value="3" class="hidden peer">
+                                <div class="text-4xl grayscale peer-checked:grayscale-0 peer-checked:animate-bounce transition-transform duration-300 group-hover:scale-125">😃</div>
+                                <span class="text-xs font-semibold text-slate-400 peer-checked:text-blue-500 block">Baik</span>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="rating" value="4" class="hidden peer">
+                                <div class="text-4xl grayscale peer-checked:grayscale-0 peer-checked:animate-bounce transition-transform duration-300 group-hover:scale-125">🤩</div>
+                                <span class="text-xs font-semibold text-slate-400 peer-checked:text-green-500 block">Sangat Baik</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 relative">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Kritik & Saran</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-pen-to-square absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <textarea name="saran" rows="3" class="w-full text-sm rounded-lg border-slate-300 focus:border-yellow-500 focus:ring-yellow-500 shadow-sm pl-9 placeholder-slate-400 bg-white" placeholder="Tulis masukan Anda disini..."></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitSurvey" class="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-slate-900 font-bold py-3 rounded-lg transition-all shadow-lg hover:shadow-yellow-500/30 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="submitText">Kirim Penilaian</span>
+                        <span id="loadingText" class="hidden items-center justify-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-900 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Mengirim...
+                        </span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
         
             {{-- FOOTER --}}
             <footer class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-16 pb-8 border-t border-slate-800/50 relative overflow-hidden">
