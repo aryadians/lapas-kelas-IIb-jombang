@@ -211,4 +211,54 @@ class KunjunganController extends Controller
             ])->withErrors(['qr_token' => 'Token QR Code tidak valid atau tidak ditemukan.']);
         }
     }
+
+    /**
+     * Menampilkan halaman kalender kunjungan.
+     */
+    public function kalender()
+    {
+        return view('admin.kunjungan.kalender');
+    }
+
+    /**
+     * Menyediakan data kunjungan untuk FullCalendar.
+     */
+    public function kalenderData()
+    {
+        // 1. Ambil hanya kunjungan yang sudah disetujui.
+        $kunjungans = Kunjungan::where('status', 'approved')->get();
+
+        $events = [];
+
+        // 2. Definisikan jam sesi
+        $sesiTimes = [
+            'pagi' => ['start' => '08:00:00', 'end' => '12:00:00'],
+            'siang' => ['start' => '13:00:00', 'end' => '16:00:00'],
+        ];
+
+        foreach ($kunjungans as $kunjungan) {
+            // Ambil tanggal dari record
+            $date = $kunjungan->tanggal_kunjungan->toDateString();
+            
+            // Ambil sesi (lowercase) dan cek di definisi
+            $sesi = strtolower($kunjungan->sesi);
+
+            if (isset($sesiTimes[$sesi])) {
+                $times = $sesiTimes[$sesi];
+
+                // 3. Buat format event untuk FullCalendar
+                $events[] = [
+                    'title' => 'Pengunjung: ' . $kunjungan->nama_pengunjung . ' (WBP: ' . $kunjungan->wbp->nama . ')',
+                    'start' => $date . 'T' . $times['start'],
+                    'end'   => $date . 'T' . $times['end'],
+                    'url'   => route('admin.kunjungan.show', $kunjungan->id),
+                    'backgroundColor' => '#28a745', // Hijau untuk acara yang disetujui
+                    'borderColor' => '#28a745'
+                ];
+            }
+        }
+
+        // 4. Return sebagai JSON
+        return response()->json($events);
+    }
 }
