@@ -123,6 +123,25 @@
                 </div>
             </div>
 
+            {{-- NEW CHARTS ROW --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Monthly Visits Chart --}}
+                <div class="glass-panel p-6 rounded-2xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Kunjungan Bulanan {{ date('Y') }}</h3>
+                    <div class="h-80 w-full">
+                        <canvas id="monthlyVisitsChart"></canvas>
+                    </div>
+                </div>
+
+                {{-- Survey Ratings Chart --}}
+                <div class="glass-panel p-6 rounded-2xl shadow-sm">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4">Statistik Survey IKM</h3>
+                    <div class="h-80 w-full">
+                        <canvas id="surveyRatingsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
             {{-- KUOTA HARI INI --}}
             <div class="glass-panel p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
                 <div class="flex justify-between items-start mb-6">
@@ -383,6 +402,64 @@
                             ticks: { font: { family: "'Inter', sans-serif" } }
                         }
                     }
+                }
+            });
+        }
+
+        const monthlyVisitsCtx = document.getElementById('monthlyVisitsChart')?.getContext('2d');
+        if (monthlyVisitsCtx) {
+            new Chart(monthlyVisitsCtx, {
+                type: 'bar',
+                data: {
+                    labels: @json($monthlyVisitsLabels),
+                    datasets: [{
+                        label: 'Kunjungan',
+                        data: @json($monthlyVisits),
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: '#3b82f6',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        const surveyRatingsCtx = document.getElementById('surveyRatingsChart')?.getContext('2d');
+        if (surveyRatingsCtx) {
+            new Chart(surveyRatingsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: @json($surveyRatingsLabels),
+                    datasets: [{
+                        label: 'Rating',
+                        data: @json($surveyRatings),
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(34, 197, 94, 0.7)'
+                        ],
+                        borderColor: [
+                            '#ef4444',
+                            '#f59e0b',
+                            '#3b82f6',
+                            '#22c55e'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
                 }
             });
         }

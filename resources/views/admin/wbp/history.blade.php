@@ -9,7 +9,7 @@
             <h1 class="text-2xl font-bold text-slate-800">📜 Riwayat Warga Binaan</h1>
             <p class="text-slate-500 text-sm mt-1">Detail profil dan log kunjungan WBP.</p>
         </div>
-        <a href="{{ route('wbp.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
+        <a href="{{ route('admin.wbp.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-700 text-sm font-medium hover:bg-slate-50 transition shadow-sm">
             <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
         </a>
     </div>
