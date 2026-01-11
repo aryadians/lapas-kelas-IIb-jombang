@@ -254,9 +254,16 @@
                         @if($kunjungan->foto_ktp)
                         <div>
                             <p class="data-label">Foto KTP</p>
-                            <a href="{{ asset('storage/' . $kunjungan->foto_ktp) }}" target="_blank">
-                                <img src="{{ asset('storage/' . $kunjungan->foto_ktp) }}" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
-                            </a>
+                            <div class="relative group">
+                                <a href="{{ asset('storage/' . $kunjungan->foto_ktp) }}" target="_blank" class="block w-full">
+                                    <img src="{{ asset('storage/' . $kunjungan->foto_ktp) }}" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
+                                </a>
+                                <div class="mt-2 text-center">
+                                    <a href="{{ asset('storage/' . $kunjungan->foto_ktp) }}" download class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
+                                        <i class="fas fa-download"></i> Download KTP
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                         @endif
                     </div>
@@ -313,6 +320,11 @@
                                         </span>
                                         @endif
                                     </div>
+                                    @if($pengikut->foto_ktp)
+                                    <a href="{{ asset('storage/' . $pengikut->foto_ktp) }}" download class="text-[10px] text-blue-600 hover:underline mt-1 block">
+                                        Download KTP
+                                    </a>
+                                    @endif
                                 </div>
                             </div>
                             @endforeach

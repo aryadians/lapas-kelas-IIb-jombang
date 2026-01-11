@@ -167,6 +167,16 @@
                         <td class="px-6 py-4">
                             <div class="font-bold text-slate-800">{{ $kunjungan->nama_pengunjung }}</div>
                             <div class="text-xs text-slate-500">NIK: {{ $kunjungan->nik_ktp }}</div>
+                            
+                            {{-- BUTTON LIHAT FOTO KTP --}}
+                            @if($kunjungan->foto_ktp)
+                                <button type="button" onclick="showKtp('{{ asset('storage/' . $kunjungan->foto_ktp) }}', '{{ $kunjungan->nama_pengunjung }}')" 
+                                        class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1 flex items-center gap-1">
+                                    <i class="fas fa-id-card"></i> Lihat Foto KTP
+                                </button>
+                            @else
+                                <span class="text-xs text-gray-400 italic mt-1 block">Foto tidak tersedia</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                              <div class="font-semibold text-slate-800">{{ $kunjungan->wbp->nama ?? 'WBP Dihapus' }}</div>
@@ -242,6 +252,36 @@
 
 </div>
 
+{{-- MODAL POPUP LIHAT FOTO KTP --}}
+<div id="ktpModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeKtp()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            Foto KTP: <span id="ktpNama" class="font-bold text-blue-600"></span>
+                        </h3>
+                        <div class="mt-4 flex justify-center bg-gray-100 rounded-lg p-2 border border-gray-300">
+                            <img id="ktpImage" src="" alt="Foto KTP" class="max-h-[400px] w-auto rounded shadow-sm object-contain">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                <a id="downloadLink" href="#" download class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                    <i class="fas fa-download mr-2 mt-1"></i> Download
+                </a>
+                <button type="button" onclick="closeKtp()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- HIDDEN FORM FOR SINGLE ACTION --}}
 <form id="single-action-form" method="POST" class="hidden">
     @csrf
@@ -252,6 +292,18 @@
 {{-- SCRIPT --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// --- LOGIC KTP MODAL ---
+function showKtp(url, nama) {
+    document.getElementById('ktpImage').src = url;
+    document.getElementById('ktpNama').innerText = nama;
+    document.getElementById('downloadLink').href = url;
+    document.getElementById('ktpModal').classList.remove('hidden');
+}
+
+function closeKtp() {
+    document.getElementById('ktpModal').classList.add('hidden');
+}
+
 // --- 1. LOGIC CHECKBOX ---
 document.addEventListener('DOMContentLoaded', function() {
     const selectAll = document.getElementById('selectAll');
