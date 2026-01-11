@@ -305,7 +305,8 @@ class KunjunganController extends Controller
 
     public function riwayat()
     {
-        $kunjungans = Kunjungan::where('email_pengunjung', auth()->user()->email)
+        $kunjungans = Kunjungan::with('wbp')
+            ->where('email_pengunjung', auth()->user()->email)
             ->orderBy('tanggal_kunjungan', 'desc')
             ->paginate(10);
 

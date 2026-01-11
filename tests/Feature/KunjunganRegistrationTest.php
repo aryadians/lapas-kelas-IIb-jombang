@@ -120,4 +120,32 @@ class KunjunganRegistrationTest extends TestCase
 
         $response->assertSessionHasErrors('tanggal_kunjungan');
     }
+
+    /**
+     * @test
+     * @dataProvider validation_provider
+     */
+    public function test_registration_fails_with_invalid_data($field, $value)
+    {
+        $data = $this->validKunjunganData([$field => $value]);
+
+        $response = $this->post(route('kunjungan.store'), $data);
+
+        $response->assertSessionHasErrors($field);
+        $this->assertDatabaseCount('kunjungans', 0);
+    }
+
+    public function validation_provider()
+    {
+        return [
+            'nama_pengunjung is null' => ['nama_pengunjung', null],
+            'nik_pengunjung is null' => ['nik_pengunjung', null],
+            'nik_pengunjung is not 16 digits' => ['nik_pengunjung', '12345'],
+            'nik_pengunjung contains letters' => ['nik_pengunjung', '123456789012345a'],
+            'no_wa_pengunjung is null' => ['no_wa_pengunjung', null],
+            'tanggal_kunjungan is null' => ['tanggal_kunjungan', null],
+            'tanggal_kunjungan is in the past' => ['tanggal_kunjungan', Carbon::yesterday()->format('Y-m-d')],
+            'hubungan is null' => ['hubungan', null],
+        ];
+    }
 }

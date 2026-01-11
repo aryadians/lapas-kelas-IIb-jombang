@@ -17,7 +17,7 @@ class KunjunganController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Kunjungan::query();
+        $query = Kunjungan::with('wbp');
 
         // 1. Filter Status
         if ($request->filled('status')) {
@@ -39,8 +39,10 @@ class KunjunganController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('nama_pengunjung', 'like', '%' . $search . '%')
-                    ->orWhere('nama_wbp', 'like', '%' . $search . '%')
-                    ->orWhere('nik_pengunjung', 'like', '%' . $search . '%');
+                    ->orWhereHas('wbp', function ($wbpQuery) use ($search) {
+                        $wbpQuery->where('nama', 'like', '%' . $search . '%');
+                    })
+                    ->orWhere('nik_ktp', 'like', '%' . $search . '%');
             });
         }
 
@@ -116,7 +118,7 @@ class KunjunganController extends Controller
      */
     public function show($id)
     {
-        $kunjungan = Kunjungan::findOrFail($id);
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->findOrFail($id);
         return view('admin.kunjungan.show', compact('kunjungan'));
     }
 
@@ -134,7 +136,7 @@ class KunjunganController extends Controller
         $ids = $request->input('ids');
         $status = $request->input('status');
 
-        $kunjungans = Kunjungan::whereIn('id', $ids)->get();
+        $kunjungans = Kunjungan::with('wbp')->whereIn('id', $ids)->get();
         $count = 0;
 
         foreach ($kunjungans as $kunjungan) {
@@ -146,7 +148,6 @@ class KunjunganController extends Controller
             }
 
             $kunjungan->update($updateData);
-            $kunjungan->refresh(); // Refresh untuk ambil data terbaru sebelum kirim email
 
             // Kirim Email
             try {
@@ -226,7 +227,7 @@ class KunjunganController extends Controller
     public function kalenderData()
     {
         // 1. Ambil hanya kunjungan yang sudah disetujui.
-        $kunjungans = Kunjungan::where('status', 'approved')->get();
+        $kunjungans = Kunjungan::with('wbp')->where('status', 'approved')->get();
 
         $events = [];
 

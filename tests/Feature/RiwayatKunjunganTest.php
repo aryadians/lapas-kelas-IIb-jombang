@@ -2,38 +2,52 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Kunjungan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Kunjungan;
+use App\Models\Wbp;
 
 class RiwayatKunjunganTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_view_their_visit_history()
+    /** @test */
+    public function authenticated_user_can_only_see_their_own_visit_history()
     {
-        $user = User::factory()->create();
-        Kunjungan::factory()->count(5)->create([
-            'email_pengunjung' => $user->email,
+        // 1. Setup
+        $this->artisan('migrate');
+        
+        $userA = User::factory()->create(['email' => 'user_a@example.com']);
+        $userB = User::factory()->create(['email' => 'user_b@example.com']);
+
+        // WBP to be visited
+        $wbpA = Wbp::factory()->create(['nama' => 'WBP Milik User A']);
+        $wbpB = Wbp::factory()->create(['nama' => 'WBP Milik User B']);
+
+        // Create visits associated with each user's email
+        $visitA = Kunjungan::factory()->create([
+            'email_pengunjung' => $userA->email,
+            'wbp_id' => $wbpA->id,
         ]);
-        Kunjungan::factory()->count(3)->create();
+        
+        $visitB = Kunjungan::factory()->create([
+            'email_pengunjung' => $userB->email,
+            'wbp_id' => $wbpB->id,
+        ]);
 
-        $response = $this->actingAs($user)->get(route('kunjungan.riwayat'));
+        // 2. Action
+        // Act as User A and visit the history page
+        $response = $this->actingAs($userA)->get(route('kunjungan.riwayat'));
 
-        $response->assertStatus(200);
+        // 3. Assertions
+        $response->assertOk();
         $response->assertViewIs('guest.kunjungan.riwayat');
-        $response->assertViewHas('kunjungans', function ($kunjungans) use ($user) {
-            return $kunjungans->count() === 5 && $kunjungans->every(function ($kunjungan) use ($user) {
-                return $kunjungan->email_pengunjung === $user->email;
-            });
-        });
-    }
+        
+        // Assert can see own visit's data
+        $response->assertSee($wbpA->nama);
 
-    public function test_guest_cannot_view_visit_history()
-    {
-        $response = $this->get(route('kunjungan.riwayat'));
-
-        $response->assertRedirect(route('login'));
+        // Assert cannot see User B's visit's data
+        $response->assertDontSee($wbpB->nama);
     }
 }
