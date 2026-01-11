@@ -142,111 +142,94 @@
             </div>
         </div>
 
-        {{-- GRID CARD --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
-            @forelse ($kunjungans as $kunjungan)
-            <div class="card-3d bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden relative group">
-                {{-- Colored Top Bar --}}
-                <div class="absolute top-0 left-0 w-full h-1.5 
-                    {{ $kunjungan->status == 'approved' ? 'bg-emerald-500' : ($kunjungan->status == 'rejected' ? 'bg-red-500' : 'bg-amber-400') }}">
-                </div>
-
-                <div class="p-6">
-                    {{-- Header Card --}}
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-start gap-3">
-                            <div class="pt-1">
-                                <input type="checkbox" name="ids[]" class="kunjungan-checkbox w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" value="{{ $kunjungan->id }}">
+        {{-- TABLE --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 mt-6 overflow-x-auto">
+            <table class="w-full text-sm text-left text-slate-500">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                    <tr>
+                        <th scope="col" class="p-4">
+                            {{-- Checkbox is in the toolbar --}}
+                        </th>
+                        <th scope="col" class="px-6 py-3">Pengunjung</th>
+                        <th scope="col" class="px-6 py-3">Warga Binaan</th>
+                        <th scope="col" class="px-6 py-3">Jadwal Kunjungan</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                        <th scope="col" class="px-6 py-3 text-center">Antrian</th>
+                        <th scope="col" class="px-6 py-3 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($kunjungans as $kunjungan)
+                    <tr class="bg-white border-b hover:bg-slate-50">
+                        <td class="w-4 p-4">
+                            <input type="checkbox" name="ids[]" class="kunjungan-checkbox w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer" value="{{ $kunjungan->id }}">
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-slate-800">{{ $kunjungan->nama_pengunjung }}</div>
+                            <div class="text-xs text-slate-500">NIK: {{ $kunjungan->nik_ktp }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                             <div class="font-semibold text-slate-800">{{ $kunjungan->wbp->nama ?? 'WBP Dihapus' }}</div>
+                             <div class="text-xs">Hubungan: {{ $kunjungan->hubungan }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-semibold">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d F Y') }}</div>
+                            <div class="text-xs uppercase font-bold text-purple-700">{{ $kunjungan->sesi }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($kunjungan->status == 'approved')
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-check-circle"></i> Disetujui
+                                </span>
+                            @elseif($kunjungan->status == 'rejected')
+                                <span class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-times-circle"></i> Ditolak
+                                </span>
+                            @else
+                                <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-clock"></i> Menunggu
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            @if($kunjungan->nomor_antrian_harian)
+                            <span class="text-base font-extrabold bg-slate-200 text-slate-700 px-3 py-1 rounded-lg">#{{ $kunjungan->nomor_antrian_harian }}</span>
+                            @else
+                            <span class="text-slate-400">-</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Detail">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                @if($kunjungan->status == 'pending')
+                                    <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'approved', 'PATCH')" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Setujui">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                    <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tolak">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                @endif
+                                <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Hapus">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
                             </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-slate-800 leading-tight">{{ $kunjungan->nama_pengunjung }}</h3>
-                                {{-- UPDATED: Menggunakan nik_ktp --}}
-                                <p class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded mt-1 inline-block">
-                                    NIK: {{ $kunjungan->nik_ktp }}
-                                </p>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="py-20 text-center">
+                            <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 animate__animated animate__pulse animate__infinite">
+                                <i class="fas fa-inbox text-4xl text-slate-300"></i>
                             </div>
-                        </div>
-                        
-                        {{-- Status Badge --}}
-                        @if($kunjungan->status == 'approved')
-                            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-1">
-                                <i class="fas fa-check-circle"></i> OK
-                            </span>
-                        @elseif($kunjungan->status == 'rejected')
-                            <span class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1">
-                                <i class="fas fa-times-circle"></i> NO
-                            </span>
-                        @else
-                            <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold flex items-center gap-1">
-                                <i class="fas fa-clock"></i> Wait
-                            </span>
-                        @endif
-                    </div>
-
-                    {{-- Body Card --}}
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-blue-500 shadow-sm">
-                                <i class="fas fa-user-friends"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Mengunjungi</p>
-                                {{-- UPDATED: Menggunakan Relasi WBP --}}
-                                <p class="text-sm font-bold text-slate-700 truncate max-w-[150px]">
-                                    {{ $kunjungan->wbp->nama ?? 'WBP Dihapus' }}
-                                </p>
-                                <p class="text-xs text-slate-500">Hubungan: {{ $kunjungan->hubungan }}</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-purple-500 shadow-sm">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">Jadwal</p>
-                                <p class="text-sm font-bold text-slate-700">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d F Y') }}</p>
-                                <div class="flex gap-2 mt-0.5">
-                                    <span class="text-[10px] font-bold bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded uppercase">{{ $kunjungan->sesi }}</span>
-                                    @if($kunjungan->nomor_antrian_harian)
-                                    <span class="text-[10px] font-bold bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded">#{{ $kunjungan->nomor_antrian_harian }}</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Footer Card --}}
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1">
-                        Detail <i class="fas fa-arrow-right text-xs"></i>
-                    </a>
-
-                    <div class="flex gap-2">
-                        @if($kunjungan->status == 'pending')
-                            <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'approved', 'PATCH')" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Setujui">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tolak">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        @endif
-                        <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Hapus">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            @empty
-            <div class="lg:col-span-3 py-20 text-center">
-                <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 animate__animated animate__pulse animate__infinite">
-                    <i class="fas fa-inbox text-4xl text-slate-300"></i>
-                </div>
-                <h3 class="text-xl font-bold text-slate-700">Tidak ada data ditemukan</h3>
-                <p class="text-slate-500 mt-1">Coba ubah filter pencarian Anda.</p>
-            </div>
-            @endforelse
+                            <h3 class="text-xl font-bold text-slate-700">Tidak ada data ditemukan</h3>
+                            <p class="text-slate-500 mt-1">Coba ubah filter pencarian Anda.</p>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </form> {{-- END FORM BULK --}}
 

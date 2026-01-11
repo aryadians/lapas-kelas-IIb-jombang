@@ -115,6 +115,14 @@
                     <span class="font-medium">Data Warga Binaan</span>
                 </a>
 
+                <a href="{{ route('admin.visitors.index') }}"
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.visitors.index') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.visitors.index') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197" />
+                    </svg>
+                    <span class="font-medium">Database Pengunjung</span>
+                </a>
+
             </nav>
 
             <div class="p-6 border-t border-slate-800 bg-slate-900">

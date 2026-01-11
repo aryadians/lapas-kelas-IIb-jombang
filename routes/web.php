@@ -139,6 +139,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // G. MANAJEMEN SURVEY IKM
     Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
 
+    // H. MANAJEMEN PENGUNJUNG
+    Route::get('pengunjung', [\App\Http\Controllers\Admin\VisitorController::class, 'index'])->name('admin.visitors.index');
+
     // F. PROFIL ADMIN
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
