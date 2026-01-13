@@ -232,6 +232,49 @@
 
         {{-- KOLOM KANAN (QUICK ACCESS & ACTIVITY) --}}
         <div class="space-y-8 animate__animated animate__fadeInRight delay-300">
+
+            {{-- KONTROL ANTRIAN (REAL-TIME) --}}
+            <div x-data="antrianController()" class="glass-panel p-6 rounded-2xl shadow-sm">
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-users-cog text-purple-500"></i> Kontrol Antrian Hari Ini
+                </h3>
+                <div class="space-y-6">
+                    {{-- Sesi Pagi --}}
+                    <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-bold text-blue-800">SESI PAGI</p>
+                                <p class="text-4xl font-black text-blue-900" x-text="nomorPagi">...</p>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button @click="panggil('pagi')" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md flex items-center gap-2">
+                                    <i class="fas fa-bullhorn"></i> Panggil
+                                </button>
+                                <button @click="reset('pagi')" class="px-4 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Sesi Siang --}}
+                    <div class="bg-orange-50 p-4 rounded-xl border-2 border-orange-100">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-bold text-orange-800">SESI SIANG</p>
+                                <p class="text-4xl font-black text-orange-900" x-text="nomorSiang">...</p>
+                            </div>
+                            <div class="flex flex-col gap-2">
+                                <button @click="panggil('siang')" class="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition shadow-md flex items-center gap-2">
+                                    <i class="fas fa-bullhorn"></i> Panggil
+                                </button>
+                                <button @click="reset('siang')" class="px-4 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             {{-- AKSES CEPAT --}}
             <div class="glass-panel p-6 rounded-2xl shadow-sm">
@@ -484,5 +527,56 @@
             updateCount();
         });
     });
+
+    function antrianController() {
+        return {
+            nomorPagi: '...',
+            nomorSiang: '...',
+            init() {
+                this.fetchStatus();
+            },
+            async fetchStatus() {
+                try {
+                    const response = await fetch('{{ route("admin.antrian.status") }}');
+                    const data = await response.json();
+                    this.nomorPagi = data.pagi;
+                    this.nomorSiang = data.siang;
+                } catch (e) { console.error(e); this.nomorPagi = 'err'; this.nomorSiang = 'err'; }
+            },
+            async postAction(action, sesi) {
+                try {
+                    const response = await fetch(`{{ url('/antrian') }}/${action}`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ sesi: sesi })
+                    });
+                    const data = await response.json();
+                    if (data.sesi === 'pagi') this.nomorPagi = data.nomor_terpanggil;
+                    if (data.sesi === 'siang') this.nomorSiang = data.nomor_terpanggil;
+                } catch (e) { console.error(e); }
+            },
+            panggil(sesi) {
+                this.postAction('panggil', sesi);
+            },
+            reset(sesi) {
+                Swal.fire({
+                    title: `Reset Antrian Sesi ${sesi.toUpperCase()}?`,
+                    text: "Nomor antrian akan kembali ke 0.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Reset!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.postAction('reset', sesi);
+                    }
+                });
+            }
+        }
+    }
 </script>
 @endsection

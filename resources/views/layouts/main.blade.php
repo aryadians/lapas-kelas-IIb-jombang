@@ -59,8 +59,8 @@
             <div class="flex justify-between items-center h-20">
 
                 {{-- Logo Kiri --}}
-                <div class="flex-shrink-0 flex items-center gap-4">
-                    <a href="{{ url('/') }}" class="flex items-center gap-4 group">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <a href="{{ url('/') }}" class="flex items-center gap-3 group">
                         <div class="relative">
                             <img class="h-12 w-12 rounded-full border-2 border-yellow-500 shadow-lg group-hover:scale-105 transition-transform duration-300 bg-white p-1"
                                 src="{{ asset('img/logo.png') }}"
@@ -69,7 +69,10 @@
                         </div>
 
                         <div class="flex flex-col">
-                            <span class="font-bold text-white text-lg md:text-xl tracking-wide group-hover:text-yellow-400 transition-colors duration-300">LAPAS KELAS IIB JOMBANG</span>
+                            <span class="font-bold text-white text-base tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
+                                <span class="hidden lg:inline">LAPAS KELAS IIB JOMBANG</span>
+                                <span class="lg:hidden">LAPAS JOMBANG</span>
+                            </span>
                             <span class="text-[11px] text-yellow-500 uppercase tracking-wider font-semibold hidden md:block">Kementerian Imigrasi dan Pemasyarakatan RI</span>
                         </div>
                     </a>
@@ -81,6 +84,13 @@
                     <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Profil</a>
                     <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Berita</a>
                     <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Pengumuman</a>
+                    <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300 flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                        </span>
+                        Live Antrian
+                    </a>
                     {{-- TAMBAHAN: MENU GALERI (Disisipkan disini) --}}
     <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-bold transition-all duration-300 flex items-center gap-2">
         <i class="fas fa-store"></i> Galeri
@@ -138,6 +148,13 @@
                 <a href="{{ route('profile.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Profil</a>
                 <a href="{{ route('news.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Berita</a>
                 <a href="{{ route('announcements.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Pengumuman</a>
+                <a href="{{ route('live.antrian') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    Live Antrian
+                </a>
                 {{-- TAMBAHAN: MENU GALERI MOBILE --}}
         <a href="{{ route('gallery.index') }}" class="block px-3 py-2 rounded-md text-base font-bold text-yellow-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
             <i class="fas fa-store mr-2"></i> Galeri Karya

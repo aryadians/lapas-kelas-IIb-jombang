@@ -24,4 +24,9 @@ class HomeController extends Controller
     {
         return view('profile.index');
     }
+
+    public function liveAntrian()
+    {
+        return view('guest.kunjungan.live-antrian');
+    }
 }

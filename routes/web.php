@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController; 
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\WbpController; // Admin WBP (Import & Manajemen)
+use App\Http\Controllers\Admin\AntrianController;
 use App\Http\Controllers\FaqController;
 use App\Models\News;
 use App\Models\Announcement;
@@ -48,6 +49,8 @@ Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
+Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
+Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
 
 // Berita & Pengumuman (Publik)
 Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index');
@@ -73,7 +76,8 @@ Route::get('/api/kunjungan/quota', [KunjunganController::class, 'getQuotaStatus'
 // Route ini mencari data WBP agar sinkron dengan database admin
 Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('api.search.wbp');
 
-
+// API PUBLIK UNTUK ANTRIAN
+Route::get('/api/antrian/status', [App\Http\Controllers\Admin\AntrianController::class, 'getStatus'])->name('api.antrian.status');
 
 
 // =========================================================================
@@ -111,6 +115,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+    
+    // I. MANAJEMEN ANTRIAN
+    Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
+    Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
+    Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');
+
     // B. MANAJEMEN DATA WBP (WARGA BINAAN)
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
     Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
