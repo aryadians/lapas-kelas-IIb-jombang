@@ -101,15 +101,19 @@
             <br>Belanja mudah melalui marketplace favorit Anda.
         </p>
 
-        {{-- BUTTONS MARKETPLACE (DESAIN BARU & MENARIK) --}}
+     {{-- BUTTONS MARKETPLACE (DENGAN GAMBAR PNG) --}}
         <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="200">
             
-            {{-- Shopee Button --}}
-            <a href="{{ $shopeeLink }}" target="_blank" class="btn-market-pro btn-shopee-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white">
+            {{-- Shopee Button (Orange) --}}
+            <a href="{{ $shopeeLink }}" target="_blank" 
+               class="btn-market-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 bg-gradient-to-br from-[#EE4D2D] to-[#FF7337] shadow-orange-500/40 hover:shadow-orange-600/60">
+                
                 {{-- Icon Container (Glass Effect) --}}
-                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 group-hover:rotate-6 transition-transform duration-300">
-                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.8 7.3C18.4 4.5 16.4 2.8 13.9 2.8C10.6 2.8 9.3 5.4 9.3 5.4C5.6 5.8 2.6 8.5 2.6 12.8C2.6 16.5 4.9 20.3 8.8 20.3C12 20.3 14 18.2 14 18.2V18.7H18.3V12.6C18.3 10.3 19.3 8.3 18.8 7.3ZM12.9 14.5C12.3 15.6 11.1 16.2 9.8 16.2C7.9 16.2 6.6 14.8 6.6 12.9C6.6 11.2 7.8 9.7 9.5 9.4C9.5 9.4 9.7 7.1 12 6.5C12.6 6.3 13.6 6.3 14 7.6C14.3 8.8 13.9 10.3 13.9 10.3C13.9 10.3 12.4 10.3 11.4 10.9C10.8 11.3 10.6 12 10.7 12.6C10.7 12.6 11.8 12 12.9 12.5C13.8 12.9 14.1 13.8 14 14.1C13.9 14.3 13.6 14.2 12.9 14.5Z"/></svg>
+                <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/30 group-hover:rotate-6 transition-transform duration-300">
+                    {{-- GANTI SVG DENGAN GAMBAR PNG --}}
+                    <img src="{{ asset('img/shopee.png') }}" alt="Shopee Logo" class="w-10 h-10 object-contain drop-shadow-sm">
                 </div>
+
                 {{-- Text --}}
                 <div class="text-left">
                     <div class="flex items-center gap-2">
@@ -120,12 +124,16 @@
                 </div>
             </a>
 
-            {{-- Tokopedia Button --}}
-            <a href="{{ $tokpedLink }}" target="_blank" class="btn-market-pro btn-tokped-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white">
+            {{-- Tokopedia Button (Green) --}}
+            <a href="{{ $tokpedLink }}" target="_blank" 
+               class="btn-market-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 bg-gradient-to-br from-[#00AA5B] to-[#42B549] shadow-green-500/40 hover:shadow-green-600/60">
+                
                 {{-- Icon Container (Glass Effect) --}}
-                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 group-hover:-rotate-6 transition-transform duration-300">
-                    <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19.8 6.4C19.2 5.3 18.1 4.5 16.8 4L13.7 2.4C13.2 2.1 12.6 2 12 2C11.4 2 10.8 2.1 10.3 2.4L7.2 4C5.9 4.5 4.8 5.3 4.2 6.4C3.6 7.5 3.4 8.7 3.6 10L4.5 15.3C4.8 17.5 6.1 19.4 8 20.6L11.1 22.4C11.4 22.6 11.7 22.7 12 22.7C12.3 22.7 12.6 22.6 12.9 22.4L16 20.6C17.9 19.4 19.2 17.5 19.5 15.3L20.4 10C20.6 8.7 20.4 7.5 19.8 6.4ZM12 13C10.9 13 10 12.1 10 11C10 9.9 10.9 9 12 9C13.1 9 14 9.9 14 11C14 12.1 13.1 13 12 13Z"/><path d="M8.5 9.5C8.5 9.5 9.5 8 12 8C14.5 8 15.5 9.5 15.5 9.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/30 group-hover:-rotate-6 transition-transform duration-300">
+                    {{-- GANTI SVG DENGAN GAMBAR PNG --}}
+                    <img src="{{ asset('img/tokopedia.png') }}" alt="Tokopedia Logo" class="w-10 h-10 object-contain drop-shadow-sm">
                 </div>
+
                 {{-- Text --}}
                 <div class="text-left">
                     <div class="flex items-center gap-2">
@@ -135,7 +143,10 @@
                     <p class="text-2xl md:text-3xl font-black font-sans tracking-tight">Tokopedia</p>
                 </div>
             </a>
+
         </div>
+
+          
 
     </div>
 </section>
