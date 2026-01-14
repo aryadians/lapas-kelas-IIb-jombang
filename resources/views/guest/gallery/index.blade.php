@@ -23,7 +23,18 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <style>
-        /* --- A. PREMIUM BUTTON STYLES (UTAMA) --- */
+        /* --- A. ANIMASI TEXT SHIMMER (Kilauan Berjalan) --- */
+        @keyframes text-shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        
+        .animate-text-shimmer {
+            background-size: 200% auto;
+            animation: text-shimmer 3s linear infinite;
+        }
+
+        /* --- B. PREMIUM BUTTON STYLES --- */
         .btn-market-pro {
             position: relative;
             overflow: hidden;
@@ -32,7 +43,6 @@
             border: 0;
         }
 
-        /* Efek Kilatan Cahaya (Shine) saat Hover */
         .btn-market-pro::after {
             content: '';
             position: absolute;
@@ -44,21 +54,7 @@
         .btn-market-pro:hover::after { left: 120%; }
         .btn-market-pro:hover { transform: translateY(-5px) scale(1.03); }
 
-        /* WARNA SHOPEE (Orange) */
-        .btn-shopee-pro {
-            background: linear-gradient(135deg, #EE4D2D 0%, #FF7337 100%);
-            box-shadow: 0 8px 20px -6px rgba(238, 77, 45, 0.6);
-        }
-        .btn-shopee-pro:hover { box-shadow: 0 15px 30px -8px rgba(238, 77, 45, 0.8); }
-
-        /* WARNA TOKOPEDIA (Hijau) */
-        .btn-tokped-pro {
-            background: linear-gradient(135deg, #00AA5B 0%, #42B549 100%);
-            box-shadow: 0 8px 20px -6px rgba(0, 170, 91, 0.6);
-        }
-        .btn-tokped-pro:hover { box-shadow: 0 15px 30px -8px rgba(0, 170, 91, 0.8); }
-
-        /* --- B. CARD STYLES --- */
+        /* --- C. CARD STYLES --- */
         .product-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -77,23 +73,31 @@
     </style>
 @endpush
 
-{{-- 2. HERO SECTION --}}
-<section class="relative pt-36 pb-24 bg-slate-900 overflow-hidden">
-    {{-- Background Animated --}}
+{{-- 2. HERO SECTION (UPDATED: ANIMASI SHIMMER & PATTERN) --}}
+<section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white min-h-[50vh] flex items-center justify-center overflow-hidden pt-32 pb-20">
+    
+    {{-- Background Pattern (Titik-titik SVG) --}}
     <div class="absolute inset-0 z-0">
-        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[100px]" style="animation-delay: 1.5s"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-blue-900/50 to-slate-900/90"></div>
     </div>
 
+    {{-- Floating Elements (Bola-bola Cahaya) --}}
+    <div class="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1.5s;"></div>
+
     <div class="container mx-auto px-6 relative z-10 text-center">
+        
+        {{-- Badge Kecil Glassmorphism --}}
         <div data-aos="fade-down" class="mb-8">
-            <span class="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-slate-800 border border-slate-700 text-yellow-400 text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+            <span class="inline-flex items-center gap-2 py-2 px-5 rounded-full bg-white/5 backdrop-blur-md border border-white/10 text-yellow-300 text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(250,204,21,0.2)]">
                 <i class="fas fa-star animate-spin-slow"></i> KARYA WARGA BINAAN
             </span>
         </div>
 
+        {{-- Judul dengan Animasi Text Shimmer --}}
         <h1 class="text-4xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-2xl" data-aos="zoom-in">
-            Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 animate-gradient">Bimker</span> Lapas
+            Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-300 animate-text-shimmer">Bimker</span> Lapas
         </h1>
 
         <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-12" data-aos="fade-up">
@@ -101,20 +105,17 @@
             <br>Belanja mudah melalui marketplace favorit Anda.
         </p>
 
-     {{-- BUTTONS MARKETPLACE (DENGAN GAMBAR PNG) --}}
+        {{-- BUTTONS MARKETPLACE --}}
         <div class="flex flex-col md:flex-row justify-center gap-6 w-full max-w-4xl mx-auto" data-aos="fade-up" data-aos-delay="200">
             
-            {{-- Shopee Button (Orange) --}}
+            {{-- Shopee Button --}}
             <a href="{{ $shopeeLink }}" target="_blank" 
                class="btn-market-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 bg-gradient-to-br from-[#EE4D2D] to-[#FF7337] shadow-orange-500/40 hover:shadow-orange-600/60">
                 
-                {{-- Icon Container (Glass Effect) --}}
                 <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/30 group-hover:rotate-6 transition-transform duration-300">
-                    {{-- GANTI SVG DENGAN GAMBAR PNG --}}
                     <img src="{{ asset('img/shopee.png') }}" alt="Shopee Logo" class="w-10 h-10 object-contain drop-shadow-sm">
                 </div>
 
-                {{-- Text --}}
                 <div class="text-left">
                     <div class="flex items-center gap-2">
                         <p class="text-[10px] md:text-xs opacity-90 uppercase tracking-[0.2em] font-bold">Official Store</p>
@@ -124,17 +125,14 @@
                 </div>
             </a>
 
-            {{-- Tokopedia Button (Green) --}}
+            {{-- Tokopedia Button --}}
             <a href="{{ $tokpedLink }}" target="_blank" 
                class="btn-market-pro group w-full md:w-auto px-8 py-5 rounded-2xl flex items-center justify-center md:justify-start gap-5 text-white transition-all duration-300 shadow-lg hover:shadow-2xl hover:-translate-y-1 bg-gradient-to-br from-[#00AA5B] to-[#42B549] shadow-green-500/40 hover:shadow-green-600/60">
                 
-                {{-- Icon Container (Glass Effect) --}}
                 <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/30 group-hover:-rotate-6 transition-transform duration-300">
-                    {{-- GANTI SVG DENGAN GAMBAR PNG --}}
                     <img src="{{ asset('img/tokopedia.png') }}" alt="Tokopedia Logo" class="w-10 h-10 object-contain drop-shadow-sm">
                 </div>
 
-                {{-- Text --}}
                 <div class="text-left">
                     <div class="flex items-center gap-2">
                         <p class="text-[10px] md:text-xs opacity-90 uppercase tracking-[0.2em] font-bold">Official Store</p>
@@ -145,9 +143,6 @@
             </a>
 
         </div>
-
-          
-
     </div>
 </section>
 
@@ -209,12 +204,11 @@
     </div>
 </section>
 
-{{-- 4. CUSTOM ORDER CTA (SESUAI REQUEST) --}}
+{{-- 4. CUSTOM ORDER CTA --}}
 <section class="py-20 bg-white border-t border-slate-200">
     <div class="container mx-auto px-6">
         <div class="bg-gradient-to-br from-blue-800 to-slate-900 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden shadow-2xl" data-aos="zoom-in-up">
             
-            {{-- Background Elements --}}
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 animate-pulse"></div>
             <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow-400/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
 
@@ -242,7 +236,7 @@
 <script>
     AOS.init({ once: true, duration: 800 });
 
-    // --- SWING ALERT LOGIC (KLIK GAMBAR) ---
+    // --- SWING ALERT LOGIC ---
     document.querySelectorAll('.swing-trigger').forEach(item => {
         item.addEventListener('click', function() {
             let img = this.dataset.img;
@@ -255,14 +249,12 @@
                 imageAlt: title,
                 showConfirmButton: false,
                 showCloseButton: true,
-                // ANIMASI SWING
                 showClass: { popup: 'animate__animated animate__swing animate__fast' },
                 hideClass: { popup: 'animate__animated animate__fadeOutUp animate__faster' },
                 customClass: {
                     popup: 'rounded-2xl overflow-hidden',
                     image: 'rounded-lg mt-4 shadow-lg border border-slate-200'
                 },
-                // FOOTER TOMBOL
                 footer: `
                     <div class="flex justify-center gap-3 w-full pb-2">
                         <a href="{{ $shopeeLink }}" target="_blank" class="px-5 py-2 bg-[#ff5722] text-white rounded-full font-bold shadow hover:bg-orange-700 transition">

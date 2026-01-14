@@ -53,55 +53,62 @@
           'acc-cursor': bigCursor 
       }">
 
-    {{-- NAVBAR --}}
+{{-- NAVBAR --}}
     <nav class="bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 backdrop-blur-md fixed w-full z-50 shadow-2xl border-b border-slate-800/50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {{-- PERBAIKAN 1: Gunakan 'w-full' (lebar penuh) dan kurangi padding 'px-2' agar logo bisa lebih ke pojok kiri --}}
+        <div class="w-full mx-auto px-2 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
 
                 {{-- Logo Kiri --}}
-                <div class="flex-shrink-0 flex items-center gap-3">
-                    <a href="{{ url('/') }}" class="flex items-center gap-3 group">
+                {{-- PERBAIKAN 2: Margin negatif diperbesar (-ml-4 di mobile, -ml-10 di desktop) untuk menggeser paksa ke kiri --}}
+              <div class="flex-shrink-0 flex items-center gap-2 -ml-2 lg:-ml-6 pl-6">
+                    <a href="{{ url('/') }}" class="flex items-center gap-2 group">
                         <div class="relative">
-                            <img class="h-12 w-12 rounded-full border-2 border-yellow-500 shadow-lg group-hover:scale-105 transition-transform duration-300 bg-white p-1"
+                            {{-- Logo Image --}}
+                            <img class="h-10 w-10 lg:h-12 lg:w-12 rounded-full border-2 border-yellow-500 shadow-lg group-hover:scale-105 transition-transform duration-300 bg-white p-1"
                                 src="{{ asset('img/logo.png') }}"
                                 alt="Logo Lapas">
                             <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
                         </div>
 
                         <div class="flex flex-col">
-                            <span class="font-bold text-white text-base tracking-wide group-hover:text-yellow-400 transition-colors duration-300">
-                                <span class="hidden lg:inline">LAPAS KELAS IIB JOMBANG</span>
-                                <span class="lg:hidden">LAPAS JOMBANG</span>
+                            {{-- Teks Logo --}}
+                            <span class="font-bold text-white text-sm lg:text-base tracking-wide group-hover:text-yellow-400 transition-colors duration-300 whitespace-nowrap">
+                                <span class="hidden xl:inline">LAPAS KELAS IIB JOMBANG</span> {{-- Tampil di layar sangat besar --}}
+                                <span class="xl:hidden">LAPAS JOMBANG</span> {{-- Tampil di layar laptop biasa agar tidak nabrak --}}
                             </span>
-                            <span class="text-[11px] text-yellow-500 uppercase tracking-wider font-semibold hidden md:block">Kementerian Imigrasi dan Pemasyarakatan RI</span>
+                            <span class="text-[10px] text-yellow-500 uppercase tracking-wider font-semibold hidden md:block whitespace-nowrap">
+                                KEMENTRIAN IMIGRASI DAN PEMASYARAKATAN RI
+                            </span>
                         </div>
                     </a>
                 </div>
 
                 {{-- Menu Tengah --}}
-                <div class="hidden md:flex space-x-8 items-center">
-                    <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Beranda</a>
-                    <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Profil</a>
-                    <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Berita</a>
-                    <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300">Pengumuman</a>
-                    <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-semibold transition-all duration-300 flex items-center gap-2">
-                        <span class="relative flex h-3 w-3">
+                <div class="hidden md:flex space-x-4 lg:space-x-8 items-center justify-center flex-1"> 
+                    {{-- Tambahkan flex-1 agar menu tengah berusaha mengambil ruang tengah, tapi logo tetap di kiri --}}
+                    <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Beranda</a>
+                    <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Profil</a>
+                    <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Berita</a>
+                    <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Pengumuman</a>
+                    <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-2">
+                        <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 lg:h-3 lg:w-3 bg-red-500"></span>
                         </span>
                         Live Antrian
                     </a>
-                    {{-- TAMBAHAN: MENU GALERI (Disisipkan disini) --}}
-    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-base font-bold transition-all duration-300 flex items-center gap-2">
-        <i class="fas fa-store"></i> Galeri
+                    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                        <i class="fas fa-store"></i> Galeri
+                    </a>
                 </div>
 
                 {{-- Menu Kanan --}}
                 <div class="hidden md:flex items-center gap-4">
                     {{-- Button Pendaftaran --}}
                     <a href="{{ route('kunjungan.create') }}"
-                        class="text-base font-extrabold text-slate-900 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 px-7 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-yellow-500/30 transform hover:-translate-y-1 whitespace-nowrap inline-flex items-center gap-2 group">
-                        Daftar Kunjungan <i class="fa-solid fa-arrow-right-long text-sm group-hover:translate-x-1 transition-transform"></i>
+                        class="text-sm lg:text-base font-extrabold text-slate-900 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 px-5 lg:px-7 py-2 lg:py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-yellow-500/30 transform hover:-translate-y-1 whitespace-nowrap inline-flex items-center gap-2 group">
+                        Daftar <span class="hidden lg:inline">Kunjungan</span> <i class="fa-solid fa-arrow-right-long text-sm group-hover:translate-x-1 transition-transform"></i>
                     </a>
 
                     <div class="h-6 w-px bg-slate-700/50 mx-1"></div>
@@ -125,6 +132,19 @@
                     @endauth
                     @endif
                 </div>
+
+                {{-- Mobile Toggle --}}
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-slate-800/50 focus:outline-none transition-all duration-300 hover:scale-110">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        {{-- ... Kode Mobile Menu di bawah ini tetap sama ... --}}
 
                 {{-- Mobile Toggle --}}
                 <div class="-mr-2 flex md:hidden">

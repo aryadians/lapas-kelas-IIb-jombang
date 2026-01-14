@@ -1,316 +1,465 @@
 @extends('layouts.main')
 
 @section('content')
-<section class="relative bg-gradient-to-br from-blue-900 via-slate-900 to-blue-900 text-white min-h-[350px] flex items-center justify-center overflow-hidden">
+
+@push('styles')
+    {{-- ANIMASI & STYLE LIBRARIES --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* --- 1. ANIMASI TEXT SHIMMER (Kilauan Teks) --- */
+        @keyframes text-shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .animate-text-shimmer {
+            background-size: 200% auto;
+            animation: text-shimmer 3s linear infinite;
+        }
+
+        /* --- 2. FAQ CARD STYLING --- */
+        .faq-card {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Efek Hover: Naik sedikit + Bayangan + Border berwarna sesuai tema icon */
+        .faq-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #e2e8f0;
+        }
+
+        /* Indikator Garis Kiri saat Aktif */
+        .faq-card.active {
+            border-left: 4px solid #3b82f6; /* Warna biru */
+        }
+
+        /* --- 3. CUSTOM SCROLLBAR --- */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+@endpush
+
+{{-- ================================================================= --}}
+{{-- 1. HERO SECTION (HEADER) --}}
+{{-- ================================================================= --}}
+<section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white min-h-[50vh] flex items-center justify-center overflow-hidden pt-32 pb-20">
+    
     {{-- Background Pattern --}}
     <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-blue-900/70 via-blue-900/80 to-blue-900/95"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-900/20 to-cyan-900/20"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-blue-900/60 to-slate-900/95"></div>
     </div>
 
     {{-- Floating Elements --}}
-    <div class="absolute top-20 left-10 w-20 h-20 bg-blue-500/10 rounded-full blur-xl animate-pulse"></div>
-    <div class="absolute bottom-20 right-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl animate-pulse" style="animation-delay: 1s;"></div>
+    <div class="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1.5s;"></div>
 
-    <div class="container mx-auto px-6 text-center relative z-10">
-        <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-semibold mb-6">
-            <i class="fas fa-question-circle mr-2"></i>
-            Bantuan & Dukungan
+    <div class="container mx-auto px-6 text-center relative z-10" data-aos="fade-down">
+        
+        {{-- Badge --}}
+        <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-blue-200 text-sm font-semibold mb-6 shadow-lg">
+            <i class="fas fa-life-ring mr-2 animate-bounce"></i>
+            Pusat Bantuan & Informasi
         </div>
-        <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight">
-            Pertanyaan yang <span class="bg-gradient-to-r from-cyan-400 to-cyan-600 bg-clip-text text-transparent animate-text-shimmer">Sering Diajukan</span>
+
+        {{-- Title dengan Animasi Shimmer --}}
+        <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight leading-tight">
+            Pertanyaan <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-cyan-400 animate-text-shimmer">Umum</span>
         </h1>
-        <p class="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Temukan jawaban atas pertanyaan umum seputar layanan kunjungan dan informasi penting lainnya.
+        
+        <p class="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Temukan jawaban cepat seputar layanan, jadwal, dan tata tertib kunjungan di Lapas Kelas IIB Jombang.
         </p>
     </div>
 </section>
 
-<section class="py-20 bg-gradient-to-b from-gray-50 to-white mb-16">
-    <div class="container mx-auto px-6 max-w-4xl">
-        {{-- Section Header --}}
-        <div class="text-center mb-16">
-            <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-6">
-                ❓ FAQ
-            </div>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                Pertanyaan Umum
+{{-- ================================================================= --}}
+{{-- 2. FAQ LIST SECTION --}}
+{{-- ================================================================= --}}
+<section class="py-20 bg-slate-50 min-h-screen relative">
+    
+    {{-- Background Decoration --}}
+    <div class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-slate-900 to-slate-50 z-0 opacity-10"></div>
+
+    <div class="container mx-auto px-6 max-w-4xl relative z-10">
+        
+        {{-- Section Intro --}}
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-slate-800 mb-4 flex items-center justify-center gap-3">
+                <span class="text-blue-600"><i class="fas fa-comments"></i></span> Yang Sering Ditanyakan
             </h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                Kami telah mengumpulkan pertanyaan-pertanyaan yang sering diajukan untuk membantu Anda.
-            </p>
+            <div class="h-1.5 w-24 bg-gradient-to-r from-blue-500 to-cyan-500 mx-auto rounded-full shadow-sm"></div>
         </div>
 
-        <div class="space-y-4">
-            {{-- FAQ Item 1 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-blue-50 group-hover:to-cyan-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <span class="text-white font-bold text-lg">1</span>
+        {{-- FAQ List Container --}}
+        <div class="space-y-5">
+
+            {{-- Item 1: Sistem Online --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-blue-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="100">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Info', 'Tentang pendaftaran online')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        {{-- Icon Box --}}
+                        <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-globe text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-700 transition-colors">Apa itu sistem pendaftaran kunjungan online?</h3>
+                        <span class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Apa itu sistem pendaftaran kunjungan online?</span>
                     </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-blue-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-blue-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
+                    {{-- Chevron Icon --}}
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" 
+                         :class="{'rotate-180 bg-blue-100 text-blue-600': open}">
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                 </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-blue-200 to-cyan-200 mb-4"></div>
-                        <p class="text-gray-600 leading-relaxed">
-                            Sistem pendaftaran kunjungan online adalah platform digital yang memungkinkan Anda mendaftar kunjungan ke Lembaga Pemasyarakatan Kelas 2B Jombang secara mudah dan cepat melalui website resmi kami. Sistem ini dirancang untuk meningkatkan efisiensi pelayanan dan meminimalkan antrian fisik.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            {{-- FAQ Item 2 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-emerald-50 group-hover:to-lime-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <i class="fas fa-file-alt text-white font-bold text-lg"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-emerald-700 transition-colors">Bagaimana cara melakukan pendaftaran kunjungan?</h3>
-                    </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-emerald-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-emerald-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
-                    </div>
-                </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-emerald-200 to-lime-200 mb-4"></div>
-                        <p class="pt-6 leading-relaxed text-gray-600">Pendaftaran kunjungan dapat dilakukan secara online melalui website ini pada menu "Pendaftaran Kunjungan". Ikuti langkah-langkah yang tertera pada formulir pendaftaran dengan mengisi data diri, data narapidana yang akan dikunjungi, dan memilih jadwal kunjungan yang tersedia.</p>
+
+                <div x-show="open" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-y-2 max-h-0"
+                     x-transition:enter-end="opacity-100 translate-y-0 max-h-[500px]"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 max-h-[500px]"
+                     x-transition:leave-end="opacity-0 -translate-y-2 max-h-0"
+                     class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Sistem pendaftaran kunjungan online adalah platform digital inovatif yang memungkinkan Anda mendaftar kunjungan ke Lapas Kelas IIB Jombang secara praktis dari mana saja. Tujuannya untuk mengurangi antrian fisik dan mempercepat proses verifikasi data pengunjung.
                     </div>
                 </div>
             </div>
 
-            {{-- FAQ Item 3 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-yellow-50 group-hover:to-orange-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <i class="fas fa-id-card text-white font-bold text-lg"></i>
+            {{-- Item 2: Cara Daftar --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-cyan-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="200">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Panduan', 'Cara daftar kunjungan')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-desktop text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-yellow-700 transition-colors">Apa saja persyaratan untuk kunjungan?</h3>
+                        <span class="text-lg font-bold text-slate-800">Bagaimana cara mendaftar kunjungan?</span>
                     </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-yellow-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-yellow-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-cyan-100 text-cyan-600': open}">
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                 </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-yellow-200 to-orange-200 mb-4"></div>
-                        <p class="pt-6 leading-relaxed text-gray-600">Persyaratan kunjungan meliputi kartu identitas yang berlaku (KTP/SIM/Paspor), bukti hubungan keluarga dengan narapidana, dan mematuhi tata tertib kunjungan yang telah ditetapkan. Detail lebih lanjut akan ditampilkan saat pendaftaran online dan dapat berubah sewaktu-waktu.</p>
+
+                <div x-show="open" 
+                     x-collapse
+                     class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        <ol class="list-decimal pl-5 space-y-2 marker:text-cyan-600 marker:font-bold">
+                            <li>Buka menu <strong>"Daftar Kunjungan"</strong> di website ini.</li>
+                            <li>Isi formulir data diri pengunjung dan data warga binaan yang dituju.</li>
+                            <li>Pilih tanggal dan sesi kunjungan yang tersedia.</li>
+                            <li>Kirim pendaftaran dan tunggu konfirmasi melalui email atau cek status secara berkala.</li>
+                        </ol>
                     </div>
                 </div>
             </div>
 
-            {{-- FAQ Item 4 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-purple-50 group-hover:to-pink-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <i class="fas fa-users text-white font-bold text-lg"></i>
+            {{-- Item 3: Syarat --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-orange-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="300">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Syarat', 'Dokumen yang diperlukan')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-id-card text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-purple-700 transition-colors">Apakah ada batasan jumlah pengunjung per narapidana?</h3>
+                        <span class="text-lg font-bold text-slate-800">Apa saja syarat berkunjung?</span>
                     </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-purple-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-purple-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-orange-100 text-orange-600': open}">
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                 </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-purple-200 to-pink-200 mb-4"></div>
-                        <p class="pt-6 leading-relaxed text-gray-600">Ya, ada batasan jumlah pengunjung per narapidana untuk menjaga ketertiban dan keamanan. Batasan ini biasanya maksimal 3-5 orang per narapidana per jadwal kunjungan. Informasi detail mengenai batasan ini akan diberikan pada saat pendaftaran atau dapat dilihat di pengumuman resmi.</p>
+
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Pengunjung wajib membawa dokumen asli berikut:
+                        <ul class="list-none mt-3 space-y-2">
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i> Kartu Identitas Asli (KTP/SIM/Paspor) yang masih berlaku.</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i> Bukti Pendaftaran Online (screenshot/cetak).</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-check-circle text-orange-500"></i> Kartu Keluarga (jika mengunjungi keluarga inti).</li>
+                            <li class="flex items-center gap-2"><i class="fas fa-tshirt text-orange-500"></i> Berpakaian sopan dan rapi (No celana pendek/kaos oblong).</li>
+                        </ul>
                     </div>
                 </div>
             </div>
 
-            {{-- FAQ Item 6 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-indigo-50 group-hover:to-purple-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <span class="text-white font-bold text-lg">6</span>
+            {{-- Item 4: Maksimal Pengunjung --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-purple-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="400">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Aturan', 'Maksimal 4 orang')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-users text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-indigo-700 transition-colors">Berapa lama proses verifikasi pendaftaran?</h3>
+                        <span class="text-lg font-bold text-slate-800">Berapa maksimal jumlah pengunjung?</span>
                     </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-indigo-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-indigo-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-purple-100 text-purple-600': open}">
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                 </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-indigo-200 to-purple-200 mb-4"></div>
-                        <p class="text-gray-600 leading-relaxed mb-4">
-                            Proses verifikasi pendaftaran biasanya memakan waktu maksimal 1x24 jam pada hari kerja. Anda akan menerima email notifikasi mengenai status pendaftaran Anda. Pastikan email yang Anda daftarkan aktif dan cek folder spam jika belum menerima email konfirmasi.
-                        </p>
-                        <div class="bg-indigo-50 rounded-lg p-4 border border-indigo-200">
-                            <p class="text-sm text-indigo-800 font-medium">
-                                💡 <strong>Tips:</strong> Simpan nomor pendaftaran Anda untuk memudahkan pengecekan status secara manual.
-                            </p>
-                        </div>
+
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Demi ketertiban dan kenyamanan, jumlah pengunjung dibatasi maksimal <strong class="text-purple-600">4 orang (dewasa)</strong> untuk satu kali kunjungan per Warga Binaan. Anak-anak di bawah umur tetap dihitung namun mendapat prioritas kenyamanan.
                     </div>
                 </div>
             </div>
 
-            {{-- FAQ Item 7 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-pink-50 group-hover:to-rose-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <span class="text-white font-bold text-lg">7</span>
+             {{-- Item 5: Barang Terlarang --}}
+             <div x-data="{ open: false }" 
+                  :class="open ? 'border-l-4 border-l-red-500 shadow-lg' : ''"
+                  class="faq-card bg-white rounded-2xl overflow-hidden" 
+                  data-aos="fade-up" data-aos-delay="500">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Peringatan', 'Barang terlarang!')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-ban text-xl"></i>
                         </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-pink-700 transition-colors">Apakah bisa membatalkan atau mengubah jadwal kunjungan?</h3>
+                        <span class="text-lg font-bold text-slate-800">Barang apa saja yang dilarang?</span>
                     </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-pink-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-pink-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-red-100 text-red-600': open}">
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                 </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-pink-200 to-rose-200 mb-4"></div>
-                        <p class="text-gray-600 leading-relaxed mb-4">
-                            Pembatalan atau perubahan jadwal kunjungan dapat dilakukan maksimal 2 hari sebelum tanggal kunjungan yang dijadwalkan. Untuk melakukan pembatalan atau perubahan, silakan hubungi petugas melalui kontak yang tersedia atau datang langsung ke lokasi dengan membawa bukti pendaftaran.
-                        </p>
-                        <div class="bg-rose-50 rounded-lg p-4 border border-rose-200">
-                            <p class="text-sm text-rose-800 font-medium">
-                                ⚠️ <strong>Penting:</strong> Pembatalan di hari H atau tanpa pemberitahuan dapat mengakibatkan pembatasan akses sistem pendaftaran di masa mendatang.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            {{-- FAQ Item 8 --}}
-            <div x-data="{ open: false }" class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 overflow-hidden card-3d card-hover-scale">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-8 py-6 text-left focus:outline-none group-hover:bg-gradient-to-r group-hover:from-teal-50 group-hover:to-cyan-50 transition-all duration-300">
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:scale-110 transition-transform">
-                            <span class="text-white font-bold text-lg">8</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-slate-800 group-hover:text-teal-700 transition-colors">Apa yang harus dibawa saat berkunjung?</h3>
-                    </div>
-                    <div class="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full group-hover:bg-teal-100 transition-colors">
-                        <i class="fas fa-chevron-down text-gray-500 group-hover:text-teal-600 transition-all duration-300" :class="{'rotate-180': open}"></i>
-                    </div>
-                </button>
-                <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-screen" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 max-h-screen" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
-                    <div class="px-8 pb-6">
-                        <div class="h-px bg-gradient-to-r from-teal-200 to-cyan-200 mb-4"></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div class="bg-teal-50 rounded-lg p-4 border border-teal-200">
-                                <h4 class="font-semibold text-teal-800 mb-2">Dokumen Wajib:</h4>
-                                <ul class="text-sm text-teal-700 space-y-1">
-                                    <li>• Kartu identitas asli (KTP/SIM)</li>
-                                    <li>• Bukti pendaftaran online</li>
-                                    <li>• Email konfirmasi (jika ada)</li>
-                                </ul>
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        <p class="mb-3 text-red-600 font-bold uppercase tracking-wider text-xs">DILARANG KERAS MEMBAWA:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                            <div class="flex items-center gap-2 bg-white p-2 rounded border border-red-100 text-red-700">
+                                <i class="fas fa-times-circle"></i> Narkoba & Obat Terlarang
                             </div>
-                            <div class="bg-cyan-50 rounded-lg p-4 border border-cyan-200">
-                                <h4 class="font-semibold text-cyan-800 mb-2">Barang Terlarang:</h4>
-                                <ul class="text-sm text-cyan-700 space-y-1">
-                                    <li>• Telepon genggam</li>
-                                    <li>• Kamera</li>
-                                    <li>• Makanan/minuman</li>
-                                    <li>• Barang tajam</li>
-                                </ul>
+                            <div class="flex items-center gap-2 bg-white p-2 rounded border border-red-100 text-red-700">
+                                <i class="fas fa-times-circle"></i> Senjata Tajam / Api
+                            </div>
+                            <div class="flex items-center gap-2 bg-white p-2 rounded border border-red-100 text-red-700">
+                                <i class="fas fa-times-circle"></i> Handphone / Kamera
+                            </div>
+                            <div class="flex items-center gap-2 bg-white p-2 rounded border border-red-100 text-red-700">
+                                <i class="fas fa-times-circle"></i> Minuman Beralkohol
                             </div>
                         </div>
-                        <p class="text-gray-600 leading-relaxed">
-                            Pastikan semua dokumen dalam keadaan baik dan mudah dibaca. Barang-barang terlarang akan disimpan di tempat penitipan dan dapat diambil kembali setelah kunjungan selesai.
-                        </p>
+                        <p class="mt-4 text-xs text-slate-400 italic">*Semua barang bawaan akan diperiksa secara ketat oleh petugas di pintu utama.</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Item 6: Verifikasi --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-indigo-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="600">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Verifikasi', 'Maksimal 1x24 Jam')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-check-double text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-slate-800">Berapa lama proses verifikasi?</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-indigo-100 text-indigo-600': open}">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </button>
+
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Proses verifikasi maksimal <strong>1x24 jam</strong> pada hari kerja. Notifikasi akan dikirim ke email atau dapat dicek melalui menu "Cek Status" di halaman utama.
+                    </div>
+                </div>
+            </div>
+
+            {{-- Item 7: Pembatalan --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-rose-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="700">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Pembatalan', 'Hubungi Admin')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-times-circle text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-slate-800">Bisakah membatalkan jadwal?</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-rose-100 text-rose-600': open}">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </button>
+
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Bisa, namun harus dikonfirmasi minimal <strong>H-1</strong> sebelum jadwal kunjungan. Silakan hubungi nomor layanan kami untuk proses pembatalan atau penjadwalan ulang.
+                    </div>
+                </div>
+            </div>
+
+            {{-- Item 8: Jam Layanan --}}
+            <div x-data="{ open: false }" 
+                 :class="open ? 'border-l-4 border-l-teal-500 shadow-lg' : ''"
+                 class="faq-card bg-white rounded-2xl overflow-hidden" 
+                 data-aos="fade-up" data-aos-delay="800">
+                
+                <button @click="open = !open; if(open) showSwingAlert('Waktu', 'Senin - Sabtu')" 
+                        class="w-full flex justify-between items-center p-6 text-left focus:outline-none hover:bg-slate-50 transition-colors duration-300">
+                    <div class="flex items-center gap-5">
+                        <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fas fa-clock text-xl"></i>
+                        </div>
+                        <span class="text-lg font-bold text-slate-800">Kapan jam layanan kunjungan?</span>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 transition-transform duration-300" :class="{'rotate-180 bg-teal-100 text-teal-600': open}">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </button>
+
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/50">
+                    <div class="p-6 pl-[5.5rem] text-slate-600 leading-relaxed">
+                        Layanan kunjungan tatap muka tersedia setiap hari <strong>Senin - Sabtu</strong>.
+                        <br>Sesi Pagi: 08.30 - 11.30 WIB
+                        <br>Sesi Siang: 13.00 - 14.30 WIB
+                        <br><em>(Minggu & Hari Libur Nasional Tutup)</em>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {{-- CALL TO ACTION --}}
+        <div class="mt-24" data-aos="zoom-in-up">
+            <div class="bg-gradient-to-br from-slate-900 to-blue-900 rounded-[2.5rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl border border-slate-700">
+                
+                {{-- Decorative Blob --}}
+                <div class="absolute top-0 right-0 w-80 h-80 bg-blue-500/20 rounded-full blur-[80px] -mr-20 -mt-20 animate-pulse"></div>
+                <div class="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[80px] -ml-20 -mb-20 animate-pulse" style="animation-delay: 1s"></div>
+
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-full mb-6 backdrop-blur-sm border border-white/20">
+                        <i class="fas fa-headset text-3xl text-cyan-300"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black mb-4 tracking-tight">Masih Butuh Bantuan?</h2>
+                    <p class="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
+                        Jika pertanyaan Anda belum terjawab di atas, tim layanan kami siap membantu Anda melalui saluran resmi berikut.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-green-500/40 transform hover:-translate-y-1">
+                            <i class="fab fa-whatsapp text-2xl"></i> Chat WhatsApp
+                        </a>
+                        <button onclick="showContactModal()" class="inline-flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 border border-transparent px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-white/20 transform hover:-translate-y-1">
+                            <i class="fas fa-envelope text-2xl text-blue-600"></i> Hubungi Kami
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Contact CTA --}}
-        <div class="mt-16 text-center">
-            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 border border-blue-100">
-                <h3 class="text-2xl font-bold text-gray-900 mb-4">Masih ada pertanyaan?</h3>
-                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
-                    Jika pertanyaan Anda tidak terjawab di atas, jangan ragu untuk menghubungi kami melalui informasi kontak yang tersedia.
-                </p>
-                <a href="{{ route('contact.index') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl btn-hover-lift">
-                    <i class="fas fa-phone mr-2"></i>
-                    Hubungi Kami
-                </a>
-            </div>
-        </div>
+    </div>
+</section>
 
-        {{-- Contact Support Section --}}
-        <div class="mt-20 bg-gradient-to-br from-slate-50 to-blue-50 rounded-3xl p-8 md:p-12 border border-slate-200">
-            <div class="text-center mb-12">
-                <div class="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-semibold mb-6">
-                    <i class="fas fa-headset mr-2"></i>
-                    Butuh Bantuan Lebih Lanjut?
-                </div>
-                <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4">
-                    Hubungi Kami
-                </h2>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-                    Jika pertanyaan Anda belum terjawab, tim kami siap membantu Anda dengan pelayanan terbaik.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {{-- Phone Support --}}
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform">
-                        <i class="fas fa-phone text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Telepon</h3>
-                    <p class="text-gray-600 mb-4">Hubungi kami untuk informasi langsung</p>
-                    <a href="tel:+62321512345" class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-full transition-all btn-hover-lift hover:shadow-lg">
-                        <i class="fas fa-phone mr-2"></i>
-                        (0321) 512345
-                    </a>
-                </div>
-
-                {{-- Email Support --}}
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform">
-                        <i class="fas fa-envelope text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Email</h3>
-                    <p class="text-gray-600 mb-4">Kirim email untuk pertanyaan detail</p>
-                    <a href="mailto:info@lapas-jombang.go.id" class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-all btn-hover-lift hover:shadow-lg">
-                        <i class="fas fa-envelope mr-2"></i>
-                        info@lapas-jombang.go.id
-                    </a>
-                </div>
-
-                {{-- Live Chat --}}
-                <div class="text-center group">
-                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform">
-                        <i class="fas fa-comments text-2xl text-white"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2">Live Chat</h3>
-                    <p class="text-gray-600 mb-4">Chat langsung dengan petugas kami</p>
-                    <button onclick="alert('Fitur live chat akan segera hadir!')" class="inline-flex items-center px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-full transition-all btn-hover-lift hover:shadow-lg">
-                        <i class="fas fa-comments mr-2"></i>
-                        Mulai Chat
-                    </button>
-                </div>
-            </div>
-
-            {{-- Operating Hours --}}
-            <div class="mt-12 bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                <h4 class="text-lg font-bold text-slate-800 mb-4 text-center">Jam Operasional Layanan</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="text-center">
-                        <h5 class="font-semibold text-gray-800 mb-2">Pendaftaran Online</h5>
-                        <p class="text-gray-600">24 Jam / 7 Hari</p>
-                    </div>
-                    <div class="text-center">
-                        <h5 class="font-semibold text-gray-800 mb-2">Layanan Telepon & Email</h5>
-                        <p class="text-gray-600">Senin - Jumat: 08:00 - 16:00 WIB</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 @endsection
+
+@push('scripts')
+{{-- Script Libraries --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+{{-- Alpine.js (Pastikan hanya di-load sekali di layout utama jika sudah ada) --}}
+{{-- <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
+
+<script>
+    // 1. Initialize AOS (Animate On Scroll)
+    AOS.init({
+        once: true,
+        duration: 800,
+        offset: 50,
+    });
+
+    // 2. Swing Alert untuk Tombol Kontak (POPUP BESAR)
+    function showContactModal() {
+        Swal.fire({
+            title: '<span class="text-2xl font-bold text-slate-800">Hubungi Kami</span>',
+            html: `
+                <div class="text-left mt-4 space-y-3">
+                    <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-blue-500 font-bold uppercase tracking-wider">Layanan Telepon</p>
+                            <p class="text-lg text-slate-800 font-black">(0321) 123456</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-4 p-4 bg-red-50 rounded-2xl border border-red-100">
+                        <div class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white shadow-md">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-red-500 font-bold uppercase tracking-wider">Email Resmi</p>
+                            <p class="text-lg text-slate-800 font-black">info@lapasjombang.go.id</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            showConfirmButton: false,
+            showCloseButton: true,
+            // LOGIKA ANIMASI SWING
+            showClass: {
+                popup: 'animate__animated animate__swing animate__fast'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp animate__faster'
+            },
+            customClass: {
+                popup: 'rounded-[2rem] p-6 border-4 border-white shadow-2xl'
+            }
+        });
+    }
+
+    // 3. Mini Swing Alert untuk FAQ Items (TOAST NOTIFICATION)
+    function showSwingAlert(title, text) {
+        Swal.fire({
+            title: title,
+            text: text,
+            timer: 2000,
+            showConfirmButton: false,
+            backdrop: false, // Background tetap transparan
+            position: 'top-end', // Muncul di pojok kanan atas
+            toast: true,
+            icon: 'info',
+            iconColor: '#3b82f6',
+            // LOGIKA ANIMASI SWING PADA TOAST
+            showClass: { popup: 'animate__animated animate__swing' },
+            hideClass: { popup: 'animate__animated animate__fadeOutRight' },
+            customClass: {
+                popup: 'rounded-xl shadow-lg border border-slate-100'
+            }
+        });
+    }
+</script>
+@endpush

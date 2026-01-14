@@ -64,8 +64,8 @@
                 <div class="text-xs md:text-sm text-gray-300 font-medium">Warga Binaan</div>
             </div>
             <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all card-hover-scale group card-3d hover:shadow-xl hover:shadow-blue-500/20">
-                <div class="text-2xl md:text-3xl font-black text-blue-400 mb-1 group-hover:animate-float-up">95%</div>
-                <div class="text-xs md:text-sm text-gray-300 font-medium">Keberhasilan</div>
+                <div class="text-2xl md:text-3xl font-black text-blue-400 mb-1 group-hover:animate-float-up">100+</div>
+                <div class="text-xs md:text-sm text-gray-300 font-medium">Pegawai</div>
             </div>
             <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-4 text-center hover:bg-white/20 transition-all card-hover-scale group card-3d hover:shadow-xl hover:shadow-purple-500/20">
                 <div class="text-2xl md:text-3xl font-black text-purple-400 mb-1 group-hover:animate-float-up">12+</div>
