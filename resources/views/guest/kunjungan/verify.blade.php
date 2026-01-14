@@ -11,6 +11,9 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
 <body class="bg-slate-100">
     <div class="max-w-lg mx-auto my-8 bg-white rounded-lg shadow-lg p-6">
         <div class="text-center mb-6 border-b pb-4">
@@ -18,11 +21,11 @@
             <p class="text-sm text-slate-500">Lapas Kelas IIB Jombang</p>
         </div>
 
-        @if($kunjungan->status == 'approved')
+        @if($kunjungan->status == KunjunganStatus::APPROVED)
             <div class="bg-green-100 border-4 border-green-500 text-green-800 text-center font-bold text-2xl py-4 rounded-lg mb-6">
                 DISETUJUI
             </div>
-        @elseif($kunjungan->status == 'rejected')
+        @elseif($kunjungan->status == KunjunganStatus::REJECTED)
             <div class="bg-red-100 border-4 border-red-500 text-red-800 text-center font-bold text-2xl py-4 rounded-lg mb-6">
                 DITOLAK
             </div>

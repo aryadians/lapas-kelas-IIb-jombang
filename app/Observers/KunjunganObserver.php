@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Kunjungan;
+use App\Enums\KunjunganStatus;
 use App\Notifications\SendSurveyLink;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +15,7 @@ class KunjunganObserver
     public function updated(Kunjungan $kunjungan): void
     {
         // Check if the status was changed to 'completed'
-        if ($kunjungan->wasChanged('status') && $kunjungan->status === 'completed') {
+        if ($kunjungan->wasChanged('status') && $kunjungan->status === KunjunganStatus::COMPLETED) {
             try {
                 $kunjungan->notify(new SendSurveyLink());
                 Log::info("Survey notification sent for Kunjungan ID: {$kunjungan->id}");

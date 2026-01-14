@@ -8,6 +8,7 @@ use App\Models\Announcement;
 use App\Models\Kunjungan;
 use App\Models\User;
 use App\Models\Survey;
+use App\Enums\KunjunganStatus;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,12 +24,12 @@ class DashboardController extends Controller
         $latestNews = News::latest()->take(5)->get();
         
         // Data Kunjungan
-        $totalPendingKunjungans = Kunjungan::where('status', 'pending')->count();
-        $totalApprovedKunjungans = Kunjungan::where('status', 'approved')->count(); // Add this line
-        $totalApprovedToday = Kunjungan::where('status', 'approved')->whereDate('updated_at', Carbon::today())->count();
-        $totalRejectedKunjungans = Kunjungan::where('status', 'rejected')->count();
+        $totalPendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->count();
+        $totalApprovedKunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->count(); // Add this line
+        $totalApprovedToday = Kunjungan::where('status', KunjunganStatus::APPROVED)->whereDate('updated_at', Carbon::today())->count();
+        $totalRejectedKunjungans = Kunjungan::where('status', KunjunganStatus::REJECTED)->count();
         $totalKunjungans = Kunjungan::count();
-        $pendingKunjungans = Kunjungan::where('status', 'pending')->latest()->take(5)->get();
+        $pendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->latest()->take(5)->get();
 
         // Data Kuota Harian untuk Tampilan Dashboard
         $today = Carbon::today();
@@ -38,12 +39,12 @@ class DashboardController extends Controller
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
 
         if ($isMonday) {
-            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', 'approved')->count();
+            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaPagi = config('kunjungan.quota_senin_pagi');
-            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', 'approved')->count();
+            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaSiang = config('kunjungan.quota_senin_siang');
         } elseif ($isVisitingDay) {
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', 'approved')->count();
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaBiasa = config('kunjungan.quota_hari_biasa');
         }
 
@@ -53,7 +54,7 @@ class DashboardController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $chartLabels[] = $date->translatedFormat('D, j M'); // Format: Sen, 22 Des
-            $chartData[] = Kunjungan::where('status', 'approved')
+            $chartData[] = Kunjungan::where('status', KunjunganStatus::APPROVED)
                                       ->whereDate('updated_at', $date)
                                       ->count();
         }
@@ -152,10 +153,10 @@ class DashboardController extends Controller
     public function getStats()
     {
         // Real-time stats
-        $totalPendingKunjungans = Kunjungan::where('status', 'pending')->count();
-        $totalApprovedKunjungans = Kunjungan::where('status', 'approved')->count();
-        $totalApprovedToday = Kunjungan::where('status', 'approved')->whereDate('updated_at', Carbon::today())->count();
-        $totalRejectedKunjungans = Kunjungan::where('status', 'rejected')->count();
+        $totalPendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->count();
+        $totalApprovedKunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->count();
+        $totalApprovedToday = Kunjungan::where('status', KunjunganStatus::APPROVED)->whereDate('updated_at', Carbon::today())->count();
+        $totalRejectedKunjungans = Kunjungan::where('status', KunjunganStatus::REJECTED)->count();
         $totalKunjungans = Kunjungan::count();
         $totalNews = News::count();
         $totalAnnouncements = Announcement::count();
@@ -169,12 +170,12 @@ class DashboardController extends Controller
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
 
         if ($isMonday) {
-            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', 'approved')->count();
+            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaPagi = config('kunjungan.quota_senin_pagi');
-            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', 'approved')->count();
+            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaSiang = config('kunjungan.quota_senin_siang');
         } elseif ($isVisitingDay) {
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', 'approved')->count();
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->count();
             $kuotaBiasa = config('kunjungan.quota_hari_biasa');
         }
 
@@ -201,7 +202,7 @@ class DashboardController extends Controller
     public function rekapitulasi()
     {
         // 1. Visitor Gender Statistics (Primary Visitor)
-        $genderCounts = Kunjungan::where('status', 'approved')
+        $genderCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
             ->select('jenis_kelamin', DB::raw('count(*) as total'))
             ->groupBy('jenis_kelamin')
             ->pluck('total', 'jenis_kelamin')
@@ -213,7 +214,7 @@ class DashboardController extends Controller
         ];
 
         // 2. Most Visited WBP
-        $mostVisitedWbp = Kunjungan::where('status', 'approved')
+        $mostVisitedWbp = Kunjungan::where('status', KunjunganStatus::APPROVED)
             ->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
             ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar', DB::raw('count(kunjungans.wbp_id) as visit_count'))
             ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar')
@@ -222,7 +223,7 @@ class DashboardController extends Controller
             ->get();
 
         // 3. Busiest Visit Sessions
-        $sessionCounts = Kunjungan::where('status', 'approved')
+        $sessionCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
             ->get()
             ->mapToGroups(function ($item) {
                 // Use Carbon for reliable day translation

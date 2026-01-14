@@ -6,6 +6,7 @@ use App\Models\Kunjungan;
 use App\Models\Wbp;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use App\Enums\KunjunganStatus;
 
 class KunjunganFactory extends Factory
 {
@@ -34,7 +35,7 @@ class KunjunganFactory extends Factory
             'hubungan' => $this->faker->randomElement(['Keluarga', 'Teman']),
             'tanggal_kunjungan' => $this->faker->dateTimeBetween('+1 day', '+1 month'),
             'sesi' => 'pagi',
-            'status' => $this->faker->randomElement(['pending', 'approved', 'rejected']),
+            'status' => $this->faker->randomElement([KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::REJECTED]),
             'kode_kunjungan' => 'VIS-' . strtoupper(Str::random(6)),
             'qr_token' => Str::uuid(),
             'nomor_antrian_harian' => $this->faker->numberBetween(1, 100),

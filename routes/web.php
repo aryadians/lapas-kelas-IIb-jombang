@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\WbpController; // Admin WBP (Import & Manajemen)
 use App\Http\Controllers\Admin\AntrianController;
+use App\Http\Controllers\Admin\QueueController;
 use App\Http\Controllers\FaqController;
 use App\Models\News;
 use App\Models\Announcement;
@@ -125,6 +126,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
     Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');
 
+    // J. MANAJEMEN ANTRIAN KUNJUNGAN (REALTIME)
+    Route::get('/antrian/kontrol', [QueueController::class, 'index'])->name('admin.antrian.kontrol');
+    Route::get('/api/admin/antrian/state', [QueueController::class, 'getState'])->name('admin.api.antrian.state');
+    Route::post('/api/admin/antrian/{kunjungan}/start', [QueueController::class, 'start'])->name('admin.api.antrian.start');
+    Route::post('/api/admin/antrian/{kunjungan}/finish', [QueueController::class, 'finish'])->name('admin.api.antrian.finish');
+
     // B. MANAJEMEN DATA WBP (WARGA BINAAN)
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
     Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
@@ -138,6 +145,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
     Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
+    
+    // --> PENDAFTARAN OFFLINE OLEH ADMIN <--
+    Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');
+    Route::post('kunjungan/create-offline', [AdminKunjunganController::class, 'storeOffline'])->name('admin.kunjungan.storeOffline');
+    
     Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
 
     // D. KELOLA KONTEN (BERITA & PENGUMUMAN)

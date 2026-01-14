@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status Pendaftaran Kunjungan</title>
+    @php
+        use App\Enums\KunjunganStatus;
+    @endphp
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
@@ -115,12 +118,12 @@
                 $statusText = '';
                 $statusIcon = '';
                 switch ($kunjungan->status) {
-                    case 'approved':
+                    case KunjunganStatus::APPROVED:
                         $statusClass = 'status-approved';
                         $statusText = 'DISETUJUI';
                         $statusIcon = '✅';
                         break;
-                    case 'rejected':
+                    case KunjunganStatus::REJECTED:
                         $statusClass = 'status-rejected';
                         $statusText = 'DITOLAK';
                         $statusIcon = '❌';
@@ -135,9 +138,9 @@
 
             <div class="status-section {{ $statusClass }}">
                 <h2>{{ $statusIcon }} Status Kunjungan: {{ $statusText }}</h2>
-                @if($kunjungan->status == 'pending')
+                @if($kunjungan->status == KunjunganStatus::PENDING)
                     <p>Pendaftaran Anda telah kami terima dan sedang dalam proses verifikasi oleh petugas. Anda akan menerima email notifikasi selanjutnya setelah proses verifikasi selesai.</p>
-                @elseif($kunjungan->status == 'approved')
+                @elseif($kunjungan->status == KunjunganStatus::APPROVED)
                     <p>Selamat! Pendaftaran kunjungan Anda telah disetujui. Silakan tunjukkan QR Code di bawah ini kepada petugas pada saat jadwal kunjungan.</p>
                 @else
                     <p>Mohon maaf, pendaftaran kunjungan Anda ditolak. Silakan hubungi petugas untuk informasi lebih lanjut atau lakukan pendaftaran ulang dengan data yang benar.</p>
@@ -168,7 +171,7 @@
                 </tr>
             </table>
 
-            @if($kunjungan->status == 'approved' || $kunjungan->status == 'pending')
+            @if($kunjungan->status == KunjunganStatus::APPROVED || $kunjungan->status == KunjunganStatus::PENDING)
                 <div class="qr-code">
                     <h3>QR Code Anda</h3>
                     <p>Gunakan kode ini untuk verifikasi di Lapas.</p>

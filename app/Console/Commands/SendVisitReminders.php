@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\SendReminderNotification;
 use App\Models\Kunjungan;
+use App\Enums\KunjunganStatus;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 
@@ -34,7 +35,7 @@ class SendVisitReminders extends Command
 
         // Get approved visits scheduled for tomorrow
         $kunjungans = Kunjungan::where('tanggal_kunjungan', $tomorrow->toDateString())
-                               ->where('status', 'approved')
+                               ->where('status', KunjunganStatus::APPROVED)
                                ->get();
 
         if ($kunjungans->isEmpty()) {

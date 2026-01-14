@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Kunjungan;
+use App\Enums\KunjunganStatus;
 use Carbon\Carbon;
 
 class MarkVisitsAsCompleted extends Command
@@ -29,7 +30,7 @@ class MarkVisitsAsCompleted extends Command
     {
         $yesterday = Carbon::yesterday()->toDateString();
         
-        $visits = Kunjungan::where('status', 'approved')
+        $visits = Kunjungan::where('status', KunjunganStatus::APPROVED)
                            ->whereDate('tanggal_kunjungan', $yesterday)
                            ->get();
 
@@ -40,7 +41,7 @@ class MarkVisitsAsCompleted extends Command
 
         $count = 0;
         foreach ($visits as $visit) {
-            $visit->status = 'completed';
+            $visit->status = KunjunganStatus::COMPLETED;
             $visit->save(); // This will trigger the observer
             $count++;
         }

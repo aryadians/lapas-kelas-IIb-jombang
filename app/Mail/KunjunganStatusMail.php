@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Kunjungan;
+use App\Enums\KunjunganStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -39,14 +40,14 @@ class KunjunganStatusMail extends Mailable implements ShouldQueue
 
         // 1. Tentukan Konten Berdasarkan Status
         switch ($this->kunjungan->status) {
-            case 'approved':
+            case KunjunganStatus::APPROVED:
                 $subject = '✅ Tiket Kunjungan Disetujui - Lapas Kelas IIB Jombang';
                 $headline = 'Kunjungan Disetujui';
                 $message = 'Selamat! Pendaftaran kunjungan Anda telah disetujui. Silakan tunjukkan QR Code terlampir kepada petugas saat kedatangan.';
                 $color = '#10B981'; // Hijau
                 break;
 
-            case 'rejected':
+            case KunjunganStatus::REJECTED:
                 $subject = '❌ Pendaftaran Kunjungan Ditolak - Lapas Kelas IIB Jombang';
                 $headline = 'Mohon Maaf';
                 $message = 'Pendaftaran kunjungan Anda tidak dapat kami setujui saat ini. Hal ini mungkin dikarenakan kuota penuh atau data tidak sesuai.';

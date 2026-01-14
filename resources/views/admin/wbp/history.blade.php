@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('content')
 <div class="space-y-6">
 
@@ -141,11 +145,11 @@
                             {{ $kunjungan->pengikuts->count() }} Orang
                         </td>
                         <td class="p-4 text-center">
-                            @if($kunjungan->status == 'approved' || $kunjungan->status == 'selesai')
+                            @if($kunjungan->status == KunjunganStatus::APPROVED || $kunjungan->status == KunjunganStatus::COMPLETED)
                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">
                                     Disetujui
                                 </span>
-                            @elseif($kunjungan->status == 'rejected')
+                            @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">
                                     Ditolak
                                 </span>

@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('title', 'Detail Kunjungan')
 
 @section('content')
@@ -86,8 +90,8 @@
             <div class="card-3d relative overflow-hidden rounded-[2rem] shadow-xl animate__animated animate__fadeInLeft">
                 {{-- Background Gradient --}}
                 <div class="absolute inset-0 
-                    @if($kunjungan->status == 'approved') bg-gradient-to-br from-emerald-500 to-teal-600
-                    @elseif($kunjungan->status == 'rejected') bg-gradient-to-br from-red-500 to-rose-600
+                    @if($kunjungan->status == KunjunganStatus::APPROVED) bg-gradient-to-br from-emerald-500 to-teal-600
+                    @elseif($kunjungan->status == KunjunganStatus::REJECTED) bg-gradient-to-br from-red-500 to-rose-600
                     @else bg-gradient-to-br from-amber-400 to-orange-500
                     @endif opacity-100"></div>
                 
@@ -97,9 +101,9 @@
                 <div class="relative z-10 p-8 text-center text-white">
                     {{-- Status Icon --}}
                     <div class="w-24 h-24 mx-auto bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-6 shadow-lg border border-white/30 animate__animated animate__zoomIn">
-                        @if($kunjungan->status == 'approved')
+                        @if($kunjungan->status == KunjunganStatus::APPROVED)
                             <i class="fas fa-check text-5xl drop-shadow-md"></i>
-                        @elseif($kunjungan->status == 'rejected')
+                        @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                             <i class="fas fa-times text-5xl drop-shadow-md"></i>
                         @else
                             <i class="fas fa-hourglass-half text-5xl drop-shadow-md"></i>
@@ -108,8 +112,8 @@
                     
                     <h2 class="text-xs font-bold uppercase tracking-[0.2em] opacity-80 mb-2">Status Saat Ini</h2>
                     <h3 class="text-3xl font-black tracking-tight mb-2 drop-shadow-sm">
-                        @if($kunjungan->status == 'approved') DISETUJUI
-                        @elseif($kunjungan->status == 'rejected') DITOLAK
+                        @if($kunjungan->status == KunjunganStatus::APPROVED) DISETUJUI
+                        @elseif($kunjungan->status == KunjunganStatus::REJECTED) DITOLAK
                         @else MENUNGGU
                         @endif
                     </h3>
@@ -119,7 +123,7 @@
                 </div>
 
                 {{-- Action Buttons (Pending) --}}
-                @if($kunjungan->status == 'pending')
+                @if($kunjungan->status == KunjunganStatus::PENDING)
                 <div class="relative z-10 bg-white/95 backdrop-blur-xl p-4 flex gap-3 justify-center border-t border-white/20">
                     <button onclick="confirmSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'PATCH', 'approved', '{{ $kunjungan->nama_pengunjung }}')" 
                         class="flex-1 inline-flex justify-center items-center gap-2 px-4 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg active:scale-95">
@@ -134,7 +138,7 @@
             </div>
 
             {{-- CARD QR CODE & TIKET --}}
-            @if($kunjungan->status == 'approved' && $kunjungan->qr_token)
+            @if($kunjungan->status == KunjunganStatus::APPROVED && $kunjungan->qr_token)
             <div id="ticketCard" class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden animate__animated animate__fadeInUp delay-200">
                 <div class="glass-header p-5 flex items-center gap-4 bg-slate-50/50">
                     <div class="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center text-white shadow-md">

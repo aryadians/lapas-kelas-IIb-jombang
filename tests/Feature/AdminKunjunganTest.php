@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\Models\Kunjungan;
+use App\Enums\KunjunganStatus;
 use App\Mail\KunjunganStatusMail;
 use Tests\TestCase;
 
@@ -35,12 +36,12 @@ class AdminKunjunganTest extends TestCase
         Mail::fake();
 
         // Create a pending visit
-        $kunjungan = Kunjungan::factory()->create(['status' => 'pending', 'qr_token' => null]);
+        $kunjungan = Kunjungan::factory()->create(['status' => KunjunganStatus::PENDING, 'qr_token' => null]);
 
         // Act as the admin and hit the update endpoint
         $response = $this->actingAs($this->admin)
                          ->patch(route('admin.kunjungan.update', $kunjungan), [
-                             'status' => 'approved',
+                             'status' => KunjunganStatus::APPROVED->value,
                          ]);
 
         // Assertions
@@ -49,7 +50,7 @@ class AdminKunjunganTest extends TestCase
 
         $this->assertDatabaseHas('kunjungans', [
             'id' => $kunjungan->id,
-            'status' => 'approved',
+            'status' => KunjunganStatus::APPROVED->value,
         ]);
 
         $kunjungan->refresh();
@@ -68,7 +69,7 @@ class AdminKunjunganTest extends TestCase
     {
         // Create an approved visit with a token
         $kunjungan = Kunjungan::factory()->create([
-            'status' => 'approved',
+            'status' => KunjunganStatus::APPROVED->value,
             'qr_token' => 'valid-token-123',
             'nama_pengunjung' => 'Budi Hartono'
         ]);
@@ -111,12 +112,12 @@ class AdminKunjunganTest extends TestCase
         Mail::fake();
 
         // Create a pending visit
-        $kunjungan = Kunjungan::factory()->create(['status' => 'pending']);
+        $kunjungan = Kunjungan::factory()->create(['status' => KunjunganStatus::PENDING]);
 
         // Act as the admin and hit the update endpoint to reject
         $response = $this->actingAs($this->admin)
                          ->patch(route('admin.kunjungan.update', $kunjungan), [
-                             'status' => 'rejected',
+                             'status' => KunjunganStatus::REJECTED->value,
                          ]);
 
         // Assertions
@@ -124,7 +125,7 @@ class AdminKunjunganTest extends TestCase
         $response->assertSessionHas('success');
 
         $kunjungan->refresh();
-        $this->assertEquals('rejected', $kunjungan->status);
+        $this->assertEquals(KunjunganStatus::REJECTED, $kunjungan->status);
         $this->assertNull($kunjungan->qr_token);
 
         Mail::assertSent(KunjunganStatusMail::class, function ($mail) use ($kunjungan) {
@@ -155,13 +156,13 @@ class AdminKunjunganTest extends TestCase
      */
     public function test_admin_can_bulk_approve_visits(): void
     {
-        $kunjungans = Kunjungan::factory(3)->create(['status' => 'pending']);
+        $kunjungans = Kunjungan::factory(3)->create(['status' => KunjunganStatus::PENDING]);
         $ids = $kunjungans->pluck('id')->toArray();
 
         $response = $this->actingAs($this->admin)
             ->post(route('admin.kunjungan.bulk-update'), [
                 'ids' => $ids,
-                'status' => 'approved',
+                'status' => KunjunganStatus::APPROVED->value,
             ]);
 
         $response->assertRedirect(route('admin.kunjungan.index'));
@@ -170,7 +171,7 @@ class AdminKunjunganTest extends TestCase
         foreach ($kunjungans as $kunjungan) {
             $this->assertDatabaseHas('kunjungans', [
                 'id' => $kunjungan->id,
-                'status' => 'approved',
+                'status' => KunjunganStatus::APPROVED->value,
             ]);
         }
     }
@@ -180,13 +181,13 @@ class AdminKunjunganTest extends TestCase
      */
     public function test_admin_can_bulk_reject_visits(): void
     {
-        $kunjungans = Kunjungan::factory(3)->create(['status' => 'pending']);
+        $kunjungans = Kunjungan::factory(3)->create(['status' => KunjunganStatus::PENDING]);
         $ids = $kunjungans->pluck('id')->toArray();
 
         $response = $this->actingAs($this->admin)
             ->post(route('admin.kunjungan.bulk-update'), [
                 'ids' => $ids,
-                'status' => 'rejected',
+                'status' => KunjunganStatus::REJECTED->value,
             ]);
 
         $response->assertRedirect(route('admin.kunjungan.index'));
@@ -195,7 +196,7 @@ class AdminKunjunganTest extends TestCase
         foreach ($kunjungans as $kunjungan) {
             $this->assertDatabaseHas('kunjungans', [
                 'id' => $kunjungan->id,
-                'status' => 'rejected',
+                'status' => KunjunganStatus::REJECTED->value,
             ]);
         }
     }

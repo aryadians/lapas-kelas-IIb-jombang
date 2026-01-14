@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('content')
 {{-- Load Animate.css & FontAwesome --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -59,6 +63,11 @@
                 <i class="fas fa-qrcode"></i>
                 <span>Scan QR</span>
             </a>
+
+            <a href="{{ route('admin.kunjungan.createOffline') }}" class="flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-slate-900 font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-yellow-500/20 transition-all hover:-translate-y-0.5 active:scale-95">
+                <i class="fas fa-plus"></i>
+                <span>Daftar Offline</span>
+            </a>
         </div>
     </header>
 
@@ -106,6 +115,8 @@
                         <option value="">Semua</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏳ Menunggu</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>✅ Disetujui</option>
+                        <option value="called" {{ request('status') == 'called' ? 'selected' : '' }}>📣 Dipanggil</option>
+                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>▶️ Berlangsung</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>❌ Ditolak</option>
                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>🏁 Selesai</option>
                     </select>
@@ -198,16 +209,24 @@
                             <div class="text-xs uppercase font-bold text-purple-700">{{ $kunjungan->sesi }}</div>
                         </td>
                         <td class="px-6 py-4">
-                            @if($kunjungan->status == 'approved')
+                            @if($kunjungan->status == KunjunganStatus::APPROVED)
                                 <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center gap-1 w-fit">
                                     <i class="fas fa-check-circle"></i> Disetujui
                                 </span>
-                            @elseif($kunjungan->status == 'rejected')
+                            @elseif($kunjungan->status == KunjunganStatus::CALLED)
+                                <span class="px-2.5 py-1 rounded-lg bg-yellow-100 text-yellow-800 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-bullhorn"></i> Dipanggil
+                                </span>
+                            @elseif($kunjungan->status == KunjunganStatus::IN_PROGRESS)
+                                <span class="px-2.5 py-1 rounded-lg bg-sky-100 text-sky-800 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-hourglass-start"></i> Berlangsung
+                                </span>
+                            @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                                 <span class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 w-fit">
                                     <i class="fas fa-times-circle"></i> Ditolak
                                 </span>
-                            @elseif($kunjungan->status == 'completed')
-                                <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1 w-fit">
+                            @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
+                                <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold flex items-center gap-1 w-fit">
                                     <i class="fas fa-flag-checkered"></i> Selesai
                                 </span>
                             @else
@@ -228,14 +247,14 @@
                                 <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Detail">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                @if($kunjungan->status == 'pending')
+                                @if($kunjungan->status == KunjunganStatus::PENDING)
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'approved', 'PATCH')" class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Setujui">
                                         <i class="fas fa-check"></i>
                                     </button>
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tolak">
                                         <i class="fas fa-times"></i>
                                     </button>
-                                @elseif($kunjungan->status == 'approved')
+                                @elseif($kunjungan->status == KunjunganStatus::APPROVED)
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tandai Selesai">
                                         <i class="fas fa-flag-checkered"></i>
                                     </button>
@@ -373,6 +392,119 @@ function closeKtp() {
     document.getElementById('ktpModal').classList.add('hidden');
 }
 
+// --- 3. LOGIC SINGLE ACTION ---
+function submitSingleAction(url, actionType, method) {
+    const form = document.getElementById('single-action-form');
+    const methodInput = document.getElementById('single_method');
+    const statusInput = document.getElementById('single_status');
+
+    let title, text, btnColor, btnText;
+
+    if(actionType === 'delete') {
+        title = 'Hapus Data?';
+        text = "Data akan dihapus permanen.";
+        btnColor = '#ef4444';
+        btnText = 'Ya, Hapus';
+    } else if (actionType === 'completed') {
+        title = 'Tandai Selesai?';
+        text = "Status akan diubah menjadi Selesai dan link survei akan dikirim (jika ada email).";
+        btnColor = '#3b82f6';
+        btnText = 'Ya, Tandai Selesai';
+    }
+    else {
+        title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
+        text = "Notifikasi email akan dikirim ke pengunjung.";
+        btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
+        btnText = 'Ya, Proses';
+    }
+
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: btnColor,
+        cancelButtonColor: '#64748b',
+        confirmButtonText: btnText,
+        cancelButtonText: 'Batal',
+        showClass: { popup: 'animate__animated animate__zoomInDown' },
+        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.action = url;
+            methodInput.value = method;
+            statusInput.value = actionType === 'delete' ? '' : actionType;
+            form.submit();
+        }
+    });
+}
+
+// --- 2. LOGIC BULK ACTION ---
+function submitBulkAction(actionType) {
+    const form = document.getElementById('bulk-action-form');
+    const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
+
+    if(count === 0) return;
+
+    let url, title, text, btnColor, btnText;
+
+    if(actionType === 'delete') {
+        url = "{{ route('admin.kunjungan.bulk-delete') }}";
+        title = `Hapus ${count} Data?`;
+        text = "Data yang dihapus tidak dapat dikembalikan!";
+        btnColor = '#ef4444';
+        btnText = 'Ya, Hapus!';
+    } else {
+        url = "{{ route('admin.kunjungan.bulk-update') }}";
+        if (actionType === 'approved') {
+            title = `Setujui ${count} Data?`;
+            text = `Status data akan diubah menjadi Disetujui.`;
+            btnColor = '#10b981';
+            btnText = 'Ya, Lanjutkan';
+        } else if (actionType === 'rejected') {
+            title = `Tolak ${count} Data?`;
+            text = `Status data akan diubah menjadi Ditolak.`;
+            btnColor = '#f59e0b';
+            btnText = 'Ya, Lanjutkan';
+        } else { // completed
+            title = `Tandai Selesai ${count} Data?`;
+            text = `Status data akan diubah menjadi Selesai.`;
+            btnColor = '#3b82f6';
+            btnText = 'Ya, Lanjutkan';
+        }
+        
+        // Hapus input status lama jika ada
+        const oldInput = document.getElementById('bulk_status_input');
+        if(oldInput) oldInput.remove();
+
+        // Tambah input status baru
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'status';
+        input.value = actionType;
+        input.id = 'bulk_status_input';
+        form.appendChild(input);
+    }
+
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: btnColor,
+        cancelButtonColor: '#64748b',
+        confirmButtonText: btnText,
+        cancelButtonText: 'Batal',
+        showClass: { popup: 'animate__animated animate__zoomInDown' },
+        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.action = url;
+            form.submit();
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // --- 1. LOGIC CHECKBOX ---
     const selectAll = document.getElementById('selectAll');
@@ -436,119 +568,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (modalExportPeriodSelect) {
         modalExportPeriodSelect.addEventListener('change', toggleModalExportDateInput);
-    }
-    
-    // --- 2. LOGIC BULK ACTION ---
-    function submitBulkAction(actionType) {
-        const form = document.getElementById('bulk-action-form');
-        const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
-
-        if(count === 0) return;
-
-        let url, title, text, btnColor, btnText;
-
-        if(actionType === 'delete') {
-            url = "{{ route('admin.kunjungan.bulk-delete') }}";
-            title = `Hapus ${count} Data?`;
-            text = "Data yang dihapus tidak dapat dikembalikan!";
-            btnColor = '#ef4444';
-            btnText = 'Ya, Hapus!';
-        } else {
-            url = "{{ route('admin.kunjungan.bulk-update') }}";
-            if (actionType === 'approved') {
-                title = `Setujui ${count} Data?`;
-                text = `Status data akan diubah menjadi Disetujui.`;
-                btnColor = '#10b981';
-                btnText = 'Ya, Lanjutkan';
-            } else if (actionType === 'rejected') {
-                title = `Tolak ${count} Data?`;
-                text = `Status data akan diubah menjadi Ditolak.`;
-                btnColor = '#f59e0b';
-                btnText = 'Ya, Lanjutkan';
-            } else { // completed
-                title = `Tandai Selesai ${count} Data?`;
-                text = `Status data akan diubah menjadi Selesai.`;
-                btnColor = '#3b82f6';
-                btnText = 'Ya, Lanjutkan';
-            }
-            
-            // Hapus input status lama jika ada
-            const oldInput = document.getElementById('bulk_status_input');
-            if(oldInput) oldInput.remove();
-
-            // Tambah input status baru
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'status';
-            input.value = actionType;
-            input.id = 'bulk_status_input';
-            form.appendChild(input);
-        }
-
-        Swal.fire({
-            title: title,
-            text: text,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: btnColor,
-            cancelButtonColor: '#64748b',
-            confirmButtonText: btnText,
-            cancelButtonText: 'Batal',
-            showClass: { popup: 'animate__animated animate__zoomInDown' },
-            hideClass: { popup: 'animate__animated animate__zoomOutUp' }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.action = url;
-                form.submit();
-            }
-        });
-    }
-
-    // --- 3. LOGIC SINGLE ACTION ---
-    function submitSingleAction(url, actionType, method) {
-        const form = document.getElementById('single-action-form');
-        const methodInput = document.getElementById('single_method');
-        const statusInput = document.getElementById('single_status');
-
-        let title, text, btnColor, btnText;
-
-        if(actionType === 'delete') {
-            title = 'Hapus Data?';
-            text = "Data akan dihapus permanen.";
-            btnColor = '#ef4444';
-            btnText = 'Ya, Hapus';
-        } else if (actionType === 'completed') {
-            title = 'Tandai Selesai?';
-            text = "Status akan diubah menjadi Selesai dan link survei akan dikirim (jika ada email).";
-            btnColor = '#3b82f6';
-            btnText = 'Ya, Tandai Selesai';
-        }
-        else {
-            title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
-            text = "Notifikasi email akan dikirim ke pengunjung.";
-            btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
-            btnText = 'Ya, Proses';
-        }
-
-        Swal.fire({
-            title: title,
-            text: text,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: btnColor,
-            cancelButtonColor: '#64748b',
-            confirmButtonText: btnText,
-            cancelButtonText: 'Batal',
-            showClass: { popup: 'animate__animated animate__zoomInDown' },
-            hideClass: { popup: 'animate__animated animate__zoomOutUp' }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.action = url;
-                methodInput.value = method;
-                statusInput.value = actionType === 'delete' ? '' : actionType;
-                form.submit();
-            }
-        });
     }
 });
 </script>

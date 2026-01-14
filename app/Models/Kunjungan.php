@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\KunjunganStatus;
 
 class Kunjungan extends Model
 {
@@ -41,11 +42,17 @@ class Kunjungan extends Model
         'qr_token',
         'pengikut_laki',
         'pengikut_perempuan',
-        'pengikut_anak'
+        'pengikut_anak',
+        'registration_type',
+        'visit_started_at',
+        'visit_ended_at'
     ];
 
     protected $casts = [
         'tanggal_kunjungan' => 'date',
+        'visit_started_at' => 'datetime',
+        'visit_ended_at' => 'datetime',
+        'status' => KunjunganStatus::class,
     ];
 
     /**

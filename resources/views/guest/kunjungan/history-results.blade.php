@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('content')
 <div class="bg-slate-50 min-h-screen pb-20">
     <div class="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -25,9 +29,9 @@
                             
                             {{-- Status --}}
                             <div class="flex justify-start md:justify-center">
-                                @if($kunjungan->status == 'approved')
+                                @if($kunjungan->status == KunjunganStatus::APPROVED)
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Disetujui</span>
-                                @elseif($kunjungan->status == 'rejected')
+                                @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">Ditolak</span>
                                 @else
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">Menunggu</span>

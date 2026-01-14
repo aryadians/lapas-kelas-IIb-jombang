@@ -1,5 +1,9 @@
 @extends('layouts.admin')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('title', 'Verifikasi Kunjungan')
 
 @section('content')
@@ -169,11 +173,11 @@
                                     <p class="text-emerald-600 font-bold mt-1">Kode QR Terverifikasi</p>
                                 </div>
                                 <div class="flex flex-col items-end">
-                                    @if($kunjungan->status == 'approved')
+                                    @if($kunjungan->status == KunjunganStatus::APPROVED)
                                         <span class="px-5 py-2 rounded-xl bg-emerald-500 text-white font-bold shadow-lg shadow-emerald-500/30 flex items-center gap-2">
                                             <i class="fas fa-check-circle"></i> DISETUJUI
                                         </span>
-                                    @elseif($kunjungan->status == 'rejected')
+                                    @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                                         <span class="px-5 py-2 rounded-xl bg-red-500 text-white font-bold shadow-lg shadow-red-500/30 flex items-center gap-2">
                                             <i class="fas fa-times-circle"></i> DITOLAK
                                         </span>

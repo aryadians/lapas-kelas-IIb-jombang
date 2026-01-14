@@ -1,5 +1,9 @@
 @extends('layouts.main')
 
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
+
 @section('content')
 <div class="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
@@ -24,15 +28,15 @@
                     
                     {{-- LOGIC STATUS BADGE --}}
                     <div class="inline-block">
-                        @if($kunjungan->status == 'pending')
+                        @if($kunjungan->status == KunjunganStatus::PENDING)
                             <span class="bg-yellow-400 text-yellow-900 text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
                                 <i class="fa-solid fa-clock"></i> MENUNGGU VERIFIKASI
                             </span>
-                        @elseif($kunjungan->status == 'approved')
+                        @elseif($kunjungan->status == KunjunganStatus::APPROVED)
                             <span class="bg-green-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
                                 <i class="fa-solid fa-check-circle"></i> DISETUJUI / SIAP DATANG
                             </span>
-                        @elseif($kunjungan->status == 'rejected')
+                        @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                             <span class="bg-red-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
                                 <i class="fa-solid fa-circle-xmark"></i> DITOLAK
                             </span>
@@ -187,7 +191,7 @@
                     <span>Simpan halaman ini. Tombol cetak aktif setelah disetujui Admin.</span>
                 </div>
 
-                @if($kunjungan->status == 'approved')
+                @if($kunjungan->status == KunjunganStatus::APPROVED)
                     {{-- TOMBOL AKTIF (HIJAU/BIRU) --}}
                     <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
                         <i class="fa-solid fa-print"></i> CETAK TIKET

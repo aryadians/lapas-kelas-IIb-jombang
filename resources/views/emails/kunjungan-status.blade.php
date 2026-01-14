@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+@php
+    use App\Enums\KunjunganStatus;
+@endphp
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -41,7 +44,7 @@
             </div>
 
             <div class="body">
-                @if ($kunjungan->status === 'approved')
+                @if ($kunjungan->status === KunjunganStatus::APPROVED)
                     {{-- STATUS: APPROVED --}}
                     <div style="text-align: center; margin-bottom: 25px;">
                         <span class="badge badge-success">✅ PENDAFTARAN DISETUJUI</span>
@@ -50,7 +53,7 @@
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
                     <p>Selamat! Pendaftaran kunjungan tatap muka Anda telah kami terima dan disetujui. Berikut adalah detail tiket kunjungan Anda:</p>
 
-                @elseif ($kunjungan->status === 'pending')
+                @elseif ($kunjungan->status === KunjunganStatus::PENDING)
                     {{-- STATUS: PENDING --}}
                     <div style="text-align: center; margin-bottom: 25px;">
                         <span class="badge badge-pending">⏳ MENUNGGU VERIFIKASI</span>
@@ -69,7 +72,7 @@
                     <p>Mohon maaf, pendaftaran kunjungan Anda untuk tanggal <strong>{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d F Y') }}</strong> belum dapat kami setujui saat ini.</p>
                 @endif
 
-                @if ($kunjungan->status !== 'rejected')
+                @if ($kunjungan->status !== KunjunganStatus::REJECTED)
                     {{-- TABEL DETAIL (Untuk Approved & Pending) --}}
                     <table class="info-table">
                         <tr>
@@ -98,7 +101,7 @@
                     {{-- Kita menggunakan CID Attachment, BUKAN generate on-the-fly --}}
                     <div style="text-align: center; margin: 25px 0; padding: 20px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px;">
                         <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px;">
-                            {{ $kunjungan->status === 'approved' ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Menunggu Aktivasi):' }}
+                            {{ $kunjungan->status === KunjunganStatus::APPROVED ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Menunggu Aktivasi):' }}
                         </p>
                         
                         {{-- Logika untuk menampilkan gambar yang di-attach di Mailable --}}
@@ -107,7 +110,7 @@
                         
                         @if(isset($message) && $kunjungan->qr_token)
                              {{-- PERBAIKAN UTAMA: Menggunakan CID Attachment agar aman dari error Imagick --}}
-                             <img src="{{ $message->embed(storage_path('app/public/qrcodes/' . $kunjungan->id . ($kunjungan->status == 'approved' ? '.png' : '.svg'))) }}" 
+                             <img src="{{ $message->embed(storage_path('app/public/qrcodes/' . $kunjungan->id . ($kunjungan->status == KunjunganStatus::APPROVED ? '.png' : '.svg'))) }}" 
                                   alt="QR Code" 
                                   style="width: 200px; height: 200px;"
                                   onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">

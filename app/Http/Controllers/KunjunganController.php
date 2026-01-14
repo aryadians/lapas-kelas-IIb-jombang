@@ -7,6 +7,7 @@ use App\Mail\KunjunganStatusMail;
 use App\Models\Kunjungan;
 use App\Models\Wbp;
 use App\Models\Pengikut;
+use App\Enums\KunjunganStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -147,7 +148,7 @@ class KunjunganController extends Controller
         // Cek Lock WBP 1 Minggu
         $startWindow = $requestDate->copy()->subDays(6);
         $recentVisit = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
-            ->whereIn('status', ['pending', 'approved'])
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
             ->whereBetween('tanggal_kunjungan', [$startWindow->format('Y-m-d'), $requestDate->format('Y-m-d')])
             ->orderBy('tanggal_kunjungan', 'desc')
             ->first();
@@ -160,7 +161,7 @@ class KunjunganController extends Controller
         // Cek NIK Ganda (Per Hari)
         $existingVisitor = Kunjungan::where('nik_ktp', $validatedData['nik_ktp'])
             ->whereDate('tanggal_kunjungan', $requestDate)
-            ->whereIn('status', ['pending', 'approved'])
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
             ->first();
 
         if ($existingVisitor) {
@@ -190,7 +191,7 @@ class KunjunganController extends Controller
             $kunjungan = Kunjungan::create(array_merge($fullData, [
                 'kode_kunjungan'       => 'VIS-' . strtoupper(Str::random(6)),
                 'nomor_antrian_harian' => $nomorAntrian,
-                'status'               => 'pending',
+                'status'               => KunjunganStatus::PENDING,
                 'qr_token'             => Str::uuid(),
                 'foto_ktp'             => $pathFotoUtama,
             ]));
@@ -281,7 +282,7 @@ class KunjunganController extends Controller
         $oldStatus = $kunjungan->status;
         $newStatus = $request->status;
 
-        if ($oldStatus === $newStatus) return back();
+        if ($oldStatus->value === $newStatus) return back();
 
         $kunjungan->status = $newStatus;
         $kunjungan->save();
@@ -298,7 +299,7 @@ class KunjunganController extends Controller
             }
 
             // Jika Approved & File tidak ada -> Generate Ulang (Fallback)
-            if ($newStatus == 'approved') {
+            if ($newStatus == KunjunganStatus::APPROVED->value) {
                 $fullQrPath = Storage::disk('public')->path($qrCodePath);
 
                 // Jika file fisik benar-benar tidak ada, buat baru
@@ -319,18 +320,18 @@ class KunjunganController extends Controller
 
             // Kirim Notifikasi
             if ($kunjungan->preferred_notification_channel === 'whatsapp') {
-                if ($newStatus == 'approved') {
+                if ($newStatus == KunjunganStatus::APPROVED->value) {
                     $whatsAppService->sendApproved($kunjungan, Storage::disk('public')->url($qrCodePath));
-                } elseif ($newStatus == 'rejected') {
+                } elseif ($newStatus == KunjunganStatus::REJECTED->value) {
                     $whatsAppService->sendRejected($kunjungan);
                 }
             } else {
                 // Email Notification
-                if ($newStatus == 'approved') {
+                if ($newStatus == KunjunganStatus::APPROVED->value) {
                     // Pastikan path fisik digunakan
                     $fullQrPath = Storage::disk('public')->path($qrCodePath);
                     Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, $fullQrPath));
-                } elseif ($newStatus == 'rejected') {
+                } elseif ($newStatus == KunjunganStatus::REJECTED->value) {
                     Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, null));
                 }
             }
@@ -366,7 +367,7 @@ class KunjunganController extends Controller
         }
 
         $query = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
-            ->whereIn('status', ['pending', 'approved']);
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
 
         if ($tanggal->isMonday()) {
             $query->where('sesi', $sesi);
@@ -379,7 +380,7 @@ class KunjunganController extends Controller
 
     public function printProof(Kunjungan $kunjungan)
     {
-        if ($kunjungan->status != 'approved') {
+        if ($kunjungan->status != KunjunganStatus::APPROVED) {
             return redirect()->route('kunjungan.status', $kunjungan->id)
                 ->with('error', 'Tiket belum tersedia.');
         }
@@ -411,8 +412,8 @@ class KunjunganController extends Controller
 
         if ($kunjungan) {
             $message = null;
-            if ($kunjungan->status === 'pending') {
-                $kunjungan->status = 'approved';
+            if ($kunjungan->status === KunjunganStatus::PENDING) {
+                $kunjungan->status = KunjunganStatus::APPROVED;
                 $kunjungan->save();
                 $message = 'Kunjungan otomatis DISETUJUI saat scan.';
 

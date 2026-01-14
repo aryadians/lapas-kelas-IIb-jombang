@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
+use App\Models\Wbp;
+use App\Enums\KunjunganStatus;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\KunjunganStatusMail;
@@ -64,14 +67,14 @@ class KunjunganController extends Controller
 
         // 2. Validasi Input
         $request->validate([
-            'status' => 'required|in:approved,rejected,pending,completed',
+            'status' => 'required|in:approved,rejected,pending,completed,called,in_progress',
         ]);
 
         $statusBaru = $request->status;
         $updateData = ['status' => $statusBaru];
 
         // 3. Generate QR Token jika Approved & belum punya token
-        if ($statusBaru === 'approved' && is_null($kunjungan->qr_token)) {
+        if ($statusBaru === KunjunganStatus::APPROVED->value && is_null($kunjungan->qr_token)) {
             $updateData['qr_token'] = Str::random(40);
         }
 
@@ -83,7 +86,7 @@ class KunjunganController extends Controller
 
         // 5. Logika Kirim Email
         // Email dikirim HANYA jika status Approved atau Rejected
-        if (in_array($statusBaru, ['approved', 'rejected'])) {
+        if (in_array($statusBaru, [KunjunganStatus::APPROVED->value, KunjunganStatus::REJECTED->value])) {
 
             if (!empty($kunjungan->email_pengunjung)) {
                 try {
@@ -132,7 +135,7 @@ class KunjunganController extends Controller
         $request->validate([
             'ids'   => 'required|array|min:1',
             'ids.*' => 'integer|exists:kunjungans,id',
-            'status' => 'required|in:approved,rejected,completed',
+            'status' => 'required|in:approved,rejected,completed,called,in_progress',
         ]);
 
         $ids = $request->input('ids');
@@ -145,7 +148,7 @@ class KunjunganController extends Controller
             $updateData = ['status' => $status];
 
             // Generate Token jika Approved
-            if ($status === 'approved' && is_null($kunjungan->qr_token)) {
+            if ($status === KunjunganStatus::APPROVED->value && is_null($kunjungan->qr_token)) {
                 $updateData['qr_token'] = Str::random(40);
             }
 
@@ -205,8 +208,8 @@ class KunjunganController extends Controller
         if ($kunjungan) {
             $message = 'Kunjungan valid dan sudah disetujui sebelumnya.';
             // Automatically approve if status is pending
-            if ($kunjungan->status === 'pending') {
-                $kunjungan->status = 'approved';
+            if ($kunjungan->status === KunjunganStatus::PENDING) {
+                $kunjungan->status = KunjunganStatus::APPROVED;
                 $kunjungan->save();
                 $message = 'Kunjungan berhasil disetujui secara otomatis!';
             }
@@ -257,7 +260,7 @@ class KunjunganController extends Controller
     public function kalenderData()
     {
         // 1. Ambil hanya kunjungan yang sudah disetujui.
-        $kunjungans = Kunjungan::with('wbp')->where('status', 'approved')->get();
+        $kunjungans = Kunjungan::with('wbp')->where('status', KunjunganStatus::APPROVED)->get();
 
         $events = [];
 
@@ -340,5 +343,78 @@ class KunjunganController extends Controller
         // For PDF export, you would typically use a library like barryvdh/laravel-dompdf
         // and render a view into PDF. This is a placeholder for now.
         return back()->with('info', 'PDF export is not yet implemented.');
+    }
+
+    /**
+     * Menampilkan form untuk pendaftaran kunjungan offline oleh admin.
+     */
+    public function createOffline()
+    {
+        $wbps = Wbp::orderBy('nama')->get();
+        return view('admin.kunjungan.create_offline', compact('wbps'));
+    }
+
+    /**
+     * Menyimpan data pendaftaran kunjungan offline dari admin.
+     */
+    public function storeOffline(Request $request)
+    {
+        $request->validate([
+            'wbp_id' => 'required|exists:wbps,id',
+            'tanggal_kunjungan' => 'required|date|after_or_equal:today',
+            'sesi' => 'required|in:pagi,siang',
+            'nama_pengunjung' => 'required|string|max:255',
+            'nik_ktp' => 'required|string|digits:16',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'alamat_pengunjung' => 'required|string',
+            'hubungan' => 'required|string|max:100',
+            'no_wa_pengunjung' => 'nullable|string|max:20',
+            'email_pengunjung' => 'nullable|email',
+            'pengikut_laki' => 'nullable|integer|min:0',
+            'pengikut_perempuan' => 'nullable|integer|min:0',
+            'pengikut_anak' => 'nullable|integer|min:0',
+            'barang_bawaan' => 'nullable|string',
+        ]);
+
+        $tanggalKunjungan = Carbon::parse($request->tanggal_kunjungan);
+
+        // Cek Kuota Offline (maksimal 20 per hari)
+        $offlineCount = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
+            ->where('registration_type', 'offline')
+            ->count();
+
+        if ($offlineCount >= 20) {
+            return redirect()->back()->withInput()->with('error', 'Kuota pendaftaran offline untuk tanggal tersebut sudah penuh.');
+        }
+
+        // Generate Kode Kunjungan Unik
+        $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
+        while (Kunjungan::where('kode_kunjungan', $kodeKunjungan)->exists()) {
+            $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
+        }
+        
+        // Buat Kunjungan Baru
+        $kunjungan = Kunjungan::create([
+            'wbp_id' => $request->wbp_id,
+            'tanggal_kunjungan' => $tanggalKunjungan,
+            'sesi' => $request->sesi,
+            'nama_pengunjung' => $request->nama_pengunjung,
+            'nik_ktp' => $request->nik_ktp,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'alamat_pengunjung' => $request->alamat_pengunjung,
+            'hubungan' => $request->hubungan,
+            'no_wa_pengunjung' => $request->no_wa_pengunjung,
+            'email_pengunjung' => $request->email_pengunjung,
+            'pengikut_laki' => $request->pengikut_laki ?? 0,
+            'pengikut_perempuan' => $request->pengikut_perempuan ?? 0,
+            'pengikut_anak' => $request->pengikut_anak ?? 0,
+            'barang_bawaan' => $request->barang_bawaan,
+            'status' => KunjunganStatus::APPROVED, // Langsung disetujui
+            'registration_type' => 'offline', // Tandai sebagai offline
+            'qr_token' => Str::random(40), // Langsung generate QR
+            'kode_kunjungan' => $kodeKunjungan,
+        ]);
+
+        return redirect()->route('admin.kunjungan.index')->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui.');
     }
 }
