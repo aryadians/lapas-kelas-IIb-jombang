@@ -107,6 +107,7 @@
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏳ Menunggu</option>
                         <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>✅ Disetujui</option>
                         <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>❌ Ditolak</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>🏁 Selesai</option>
                     </select>
                 </div>
                 <div class="space-y-1">
@@ -142,6 +143,9 @@
                 </button>
                 <button type="button" onclick="submitBulkAction('rejected')" class="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all active:scale-95">
                     <i class="fas fa-times"></i> Tolak
+                </button>
+                <button type="button" onclick="submitBulkAction('completed')" class="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all active:scale-95">
+                    <i class="fas fa-flag-checkered"></i> Selesai
                 </button>
                 <button type="button" onclick="submitBulkAction('delete')" class="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg transition-all active:scale-95">
                     <i class="fas fa-trash-alt"></i> Hapus
@@ -202,6 +206,10 @@
                                 <span class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 w-fit">
                                     <i class="fas fa-times-circle"></i> Ditolak
                                 </span>
+                            @elseif($kunjungan->status == 'completed')
+                                <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-bold flex items-center gap-1 w-fit">
+                                    <i class="fas fa-flag-checkered"></i> Selesai
+                                </span>
                             @else
                                 <span class="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-700 text-xs font-bold flex items-center gap-1 w-fit">
                                     <i class="fas fa-clock"></i> Menunggu
@@ -226,6 +234,10 @@
                                     </button>
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tolak">
                                         <i class="fas fa-times"></i>
+                                    </button>
+                                @elseif($kunjungan->status == 'approved')
+                                    <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tandai Selesai">
+                                        <i class="fas fa-flag-checkered"></i>
                                     </button>
                                 @endif
                                 <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" class="w-8 h-8 rounded-lg bg-red-100 text-red-600 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Hapus">
@@ -443,10 +455,22 @@ document.addEventListener('DOMContentLoaded', function() {
             btnText = 'Ya, Hapus!';
         } else {
             url = "{{ route('admin.kunjungan.bulk-update') }}";
-            title = actionType === 'approved' ? `Setujui ${count} Data?` : `Tolak ${count} Data?`;
-            text = `Status data akan diubah menjadi ${actionType}.`;
-            btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
-            btnText = 'Ya, Lanjutkan';
+            if (actionType === 'approved') {
+                title = `Setujui ${count} Data?`;
+                text = `Status data akan diubah menjadi Disetujui.`;
+                btnColor = '#10b981';
+                btnText = 'Ya, Lanjutkan';
+            } else if (actionType === 'rejected') {
+                title = `Tolak ${count} Data?`;
+                text = `Status data akan diubah menjadi Ditolak.`;
+                btnColor = '#f59e0b';
+                btnText = 'Ya, Lanjutkan';
+            } else { // completed
+                title = `Tandai Selesai ${count} Data?`;
+                text = `Status data akan diubah menjadi Selesai.`;
+                btnColor = '#3b82f6';
+                btnText = 'Ya, Lanjutkan';
+            }
             
             // Hapus input status lama jika ada
             const oldInput = document.getElementById('bulk_status_input');
@@ -486,16 +510,24 @@ document.addEventListener('DOMContentLoaded', function() {
         const methodInput = document.getElementById('single_method');
         const statusInput = document.getElementById('single_status');
 
-        let title, text, btnColor;
+        let title, text, btnColor, btnText;
 
         if(actionType === 'delete') {
             title = 'Hapus Data?';
             text = "Data akan dihapus permanen.";
             btnColor = '#ef4444';
-        } else {
+            btnText = 'Ya, Hapus';
+        } else if (actionType === 'completed') {
+            title = 'Tandai Selesai?';
+            text = "Status akan diubah menjadi Selesai dan link survei akan dikirim (jika ada email).";
+            btnColor = '#3b82f6';
+            btnText = 'Ya, Tandai Selesai';
+        }
+        else {
             title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
             text = "Notifikasi email akan dikirim ke pengunjung.";
             btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
+            btnText = 'Ya, Proses';
         }
 
         Swal.fire({
@@ -505,7 +537,8 @@ document.addEventListener('DOMContentLoaded', function() {
             showCancelButton: true,
             confirmButtonColor: btnColor,
             cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Proses',
+            confirmButtonText: btnText,
+            cancelButtonText: 'Batal',
             showClass: { popup: 'animate__animated animate__zoomInDown' },
             hideClass: { popup: 'animate__animated animate__zoomOutUp' }
         }).then((result) => {

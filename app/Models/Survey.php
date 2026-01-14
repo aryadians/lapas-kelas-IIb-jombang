@@ -13,6 +13,7 @@ class Survey extends Model
         'rating',
         'saran',
         'ip_address',
-        'user_agent'
+        'user_agent',
     ];
+
 }

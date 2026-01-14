@@ -64,7 +64,7 @@ class KunjunganController extends Controller
 
         // 2. Validasi Input
         $request->validate([
-            'status' => 'required|in:approved,rejected,pending',
+            'status' => 'required|in:approved,rejected,pending,completed',
         ]);
 
         $statusBaru = $request->status;
@@ -132,7 +132,7 @@ class KunjunganController extends Controller
         $request->validate([
             'ids'   => 'required|array|min:1',
             'ids.*' => 'integer|exists:kunjungans,id',
-            'status' => 'required|in:approved,rejected',
+            'status' => 'required|in:approved,rejected,completed',
         ]);
 
         $ids = $request->input('ids');

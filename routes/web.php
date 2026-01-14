@@ -46,7 +46,11 @@ Route::get('/', function () {
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/kontak', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact.index');
 Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
-Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+
+// Route untuk Survey IKM
+Route::get('/survei/isi', [SurveyController::class, 'create'])->name('survey.create');
+Route::post('/survei/simpan', [SurveyController::class, 'store'])->name('survey.store');
+
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
 Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
