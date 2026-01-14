@@ -55,9 +55,9 @@ class KunjunganStatusMail extends Mailable implements ShouldQueue
                 break;
 
             default: // pending
-                $subject = '⏳ Menunggu Verifikasi - Lapas Kelas IIB Jombang';
-                $headline = 'Pendaftaran Berhasil';
-                $message = 'Data pendaftaran Anda telah kami terima. Mohon tunggu verifikasi dari admin. Anda akan menerima email notifikasi selanjutnya setelah status disetujui.';
+                $subject = '⏳ Pendaftaran Kunjungan Diterima - Lapas Kelas IIB Jombang';
+                $headline = 'Terima Kasih, Pendaftaran Diterima';
+                $message = 'Terima kasih sudah mendaftar kunjungan. Pendaftaran Anda telah kami terima. Mohon tunggu verifikasi dari admin. Berikut adalah data lengkap pendaftaran Anda.';
                 $color = '#F59E0B'; // Kuning/Orange
                 break;
         }

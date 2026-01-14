@@ -62,6 +62,35 @@
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
                     <p>Terima kasih telah mendaftar. Data Anda sedang kami verifikasi. Mohon menunggu email selanjutnya untuk status persetujuan.</p>
 
+                    <div style="margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Data Pengunjung</h3>
+                    </div>
+                    <table class="info-table">
+                        <tr>
+                            <td>Nama Lengkap</td>
+                            <td>{{ $kunjungan->nama_pengunjung }}</td>
+                        </tr>
+                        <tr>
+                            <td>NIK</td>
+                            <td>{{ $kunjungan->nik_ktp }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor HP</td>
+                            <td>{{ $kunjungan->no_wa_pengunjung }}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>{{ $kunjungan->email_pengunjung }}</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>{{ $kunjungan->alamat_pengunjung }}</td>
+                        </tr>
+                    </table>
+                    <div style="margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+                        <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Detail Kunjungan</h3>
+                    </div>
+
                 @else
                     {{-- STATUS: REJECTED --}}
                     <div style="text-align: center; margin-bottom: 25px;">
