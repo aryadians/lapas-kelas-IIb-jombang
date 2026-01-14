@@ -267,7 +267,7 @@ function queueControl() {
 
         speakVisitor(kunjungan) {
             if ('speechSynthesis' in window) {
-                const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. Silahkan menuju ruang kunjungan.`;
+                const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
                 utterance.rate = 0.9;

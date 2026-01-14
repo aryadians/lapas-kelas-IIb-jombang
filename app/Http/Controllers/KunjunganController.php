@@ -174,9 +174,8 @@ class KunjunganController extends Controller
 
             $pathFotoUtama = $request->file('foto_ktp')->store('uploads/ktp', 'public');
 
-            // Antrian (Reset per Sesi)
+            // Antrian Harian (Gabungan Online & Offline)
             $lastQueue = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
-                ->where('sesi', $validatedData['sesi'])
                 ->lockForUpdate()
                 ->orderBy('nomor_antrian_harian', 'desc')
                 ->first();

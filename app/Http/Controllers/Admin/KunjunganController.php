@@ -392,6 +392,14 @@ class KunjunganController extends Controller
         while (Kunjungan::where('kode_kunjungan', $kodeKunjungan)->exists()) {
             $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
         }
+
+        // Ambil Nomor Antrian Harian Terakhir
+        $lastQueue = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
+            ->lockForUpdate()
+            ->orderBy('nomor_antrian_harian', 'desc')
+            ->first();
+
+        $nomorAntrian = $lastQueue ? $lastQueue->nomor_antrian_harian + 1 : 1;
         
         // Buat Kunjungan Baru
         $kunjungan = Kunjungan::create([
@@ -411,6 +419,7 @@ class KunjunganController extends Controller
             'barang_bawaan' => $request->barang_bawaan,
             'status' => KunjunganStatus::APPROVED, // Langsung disetujui
             'registration_type' => 'offline', // Tandai sebagai offline
+            'nomor_antrian_harian' => $nomorAntrian,
             'qr_token' => Str::random(40), // Langsung generate QR
             'kode_kunjungan' => $kodeKunjungan,
         ]);
