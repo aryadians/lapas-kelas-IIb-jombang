@@ -23,6 +23,15 @@
         from { box-shadow: 0 0 10px -5px #ef4444; }
         to { box-shadow: 0 0 20px 5px #ef4444; }
     }
+    /* 3D Button Effect */
+    .btn-3d {
+        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .btn-3d:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
 </style>
 @endpush
 
@@ -65,13 +74,18 @@
                                 <p class="text-xs text-slate-500">WBP: <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span></p>
                             </div>
                         </div>
-                        <div class="flex justify-center items-center gap-2 mt-4 pt-3 border-t border-slate-100">
-                           <button @click="speak(kunjungan)" title="Panggil via Suara" class="w-1/2 h-12 bg-blue-100 text-blue-600 font-bold rounded-lg hover:bg-blue-200 hover:text-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2">
-                                <i class="fas fa-bullhorn text-xl"></i>
-                            </button>
-                             <button @click="startVisit(kunjungan.id)" title="Mulai Kunjungan" class="w-1/2 h-12 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-all active:scale-95 flex items-center justify-center gap-2">
-                                <i class="fas fa-play text-xl"></i>
-                            </button>
+                        <div class="mt-4 pt-3 border-t border-slate-100">
+                            <div class="grid grid-cols-3 gap-2">
+                                <button @click="speakVisitor(kunjungan)" title="Panggil Pengunjung & Antrian" class="btn-3d w-full h-12 bg-blue-100 text-blue-600 font-bold rounded-lg hover:bg-blue-200 active:scale-95 flex items-center justify-center">
+                                    <i class="fas fa-bullhorn text-xl"></i>
+                                </button>
+                                <button @click="speakInmate(kunjungan)" title="Panggil WBP" class="btn-3d w-full h-12 bg-indigo-100 text-indigo-600 font-bold rounded-lg hover:bg-indigo-200 active:scale-95 flex items-center justify-center">
+                                    <i class="fas fa-user-lock text-xl"></i>
+                                </button>
+                                <button @click="startVisit(kunjungan.id)" title="Mulai Kunjungan" class="btn-3d w-full h-12 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 active:scale-95 flex items-center justify-center">
+                                    <i class="fas fa-play text-xl"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </template>
@@ -153,6 +167,7 @@ function queueControl() {
         timers: {},
         isPolling: false,
         voices: [],
+        finishing: [],
 
         init() {
             this.fetchState();
@@ -190,7 +205,12 @@ function queueControl() {
         },
 
         async finishVisit(id) {
-             try {
+            if (this.finishing.includes(id)) {
+                return;
+            }
+
+            try {
+                this.finishing.push(id);
                 const response = await this.postData(`{{ url('api/admin/antrian') }}/${id}/finish`);
                 if (response.success) {
                     delete this.timers[id];
@@ -201,6 +221,8 @@ function queueControl() {
             } catch(error) {
                  console.error('Error finishing visit:', error);
                 Swal.fire('Error', `Terjadi kesalahan koneksi: ${error.message}`, 'error');
+            } finally {
+                this.finishing = this.finishing.filter(i => i !== id);
             }
         },
 
@@ -243,10 +265,26 @@ function queueControl() {
             }
         },
 
-        speak(kunjungan) {
+        speakVisitor(kunjungan) {
+            if ('speechSynthesis' in window) {
+                const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. Silahkan menuju ruang kunjungan.`;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                if (this.voices.length > 0) {
+                    utterance.voice = this.voices[0];
+                }
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            } else {
+                Swal.fire('Not Supported', 'Browser Anda tidak mendukung fitur suara.', 'warning');
+            }
+        },
+
+        speakInmate(kunjungan) {
             if ('speechSynthesis' in window) {
                 const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
-                const text = `Panggilan untuk Warga Binaan ${wbpName}. Nomor antrian ${kunjungan.nomor_antrian_harian}. Silahkan menuju ruang kunjungan.`;
+                const text = `Panggilan untuk Warga Binaan atas nama ${wbpName}. Ditunggu di ruang kunjungan sekarang.`;
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
                 utterance.rate = 0.9;
@@ -275,7 +313,7 @@ function queueControl() {
                 try {
                     // Try to parse as JSON, it might be a structured error from Laravel
                     const errorJson = JSON.parse(errorText);
-                    throw new Error(errorJson.message || 'Terjadi error di server.');
+                    throw new Error(errorJson.error || 'Terjadi error di server.');
                 } catch (e) {
                     // If not JSON, throw the raw text
                     throw new Error(errorText || `HTTP error! status: ${response.status}`);
