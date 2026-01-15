@@ -12,6 +12,8 @@ use App\Enums\KunjunganStatus;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Models\Activity; // Tambahkan ini
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -292,4 +294,105 @@ class DashboardController extends Controller
 
         return view('admin.rekapitulasi.index', compact('visitorGender', 'mostVisitedWbp', 'sessionCounts'));
     }
+
+    public function demografi(Request $request)
+    {
+        $kunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->get();
+
+        // 1. Age Distribution
+        $ageGroups = [
+            '<20' => 0,
+            '20-30' => 0,
+            '30-40' => 0,
+            '40-50' => 0,
+            '50-60' => 0,
+            '>60' => 0,
+        ];
+
+        foreach ($kunjungans as $kunjungan) {
+            $age = $this->getAgeFromNik($kunjungan->nik_ktp);
+            if ($age !== null) {
+                if ($age < 20) $ageGroups['<20']++;
+                elseif ($age <= 30) $ageGroups['20-30']++;
+                elseif ($age <= 40) $ageGroups['30-40']++;
+                elseif ($age <= 50) $ageGroups['40-50']++;
+                elseif ($age <= 60) $ageGroups['50-60']++;
+                else $ageGroups['>60']++;
+            }
+        }
+
+        // 2. Gender Distribution
+        $genderCounts = $kunjungans->groupBy('jenis_kelamin')->map->count();
+        $visitorGender = [
+            'Laki-laki' => $genderCounts['Laki-laki'] ?? 0,
+            'Perempuan' => $genderCounts['Perempuan'] ?? 0,
+        ];
+
+        // 3. City Distribution
+        $cityCounts = $kunjungans->pluck('alamat_pengunjung')
+            ->map(function ($alamat) {
+                $parts = explode(' ', $alamat);
+                return trim(end($parts));
+            })
+            ->countBy()
+            ->sortDesc()
+            ->take(10);
+
+        return view('admin.rekapitulasi.demografi', compact('ageGroups', 'visitorGender', 'cityCounts'));
+    }
+
+    private function getAgeFromNik($nik)
+    {
+        if (strlen($nik) !== 16) {
+            return null;
+        }
+
+        $day = (int) substr($nik, 6, 2);
+        $month = (int) substr($nik, 8, 2);
+        $year = (int) substr($nik, 10, 2);
+
+        if ($day > 40) {
+            $day -= 40;
+        }
+
+        $currentYear = (int) date('y');
+        $birthYear = $year > $currentYear ? '19' . $year : '20' . str_pad($year, 2, '0', STR_PAD_LEFT);
+
+        try {
+            $birthDate = Carbon::createFromDate($birthYear, $month, $day);
+            return $birthDate->age;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    public function barangBawaan(Request $request)
+    {
+        $itemCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
+            ->whereNotNull('barang_bawaan')
+            ->where('barang_bawaan', '!=', '')
+            ->get()
+            ->pluck('barang_bawaan')
+            ->flatMap(function ($itemString) {
+                return array_map('trim', explode(',', strtolower($itemString)));
+            })
+            ->countBy()
+            ->sortDesc()
+            ->take(20);
+
+        return view('admin.rekapitulasi.barang_bawaan', compact('itemCounts'));
+    }
+
+    /**
+     * Menampilkan daftar log aktivitas.
+     */
+    public function activityLogs(Request $request)
+    {
+        $activityLogs = Activity::with('causer', 'subject') // eager load causer dan subject
+            ->latest() // Urutkan dari yang terbaru
+            ->paginate(20); // Paginate 20 item per halaman
+
+        return view('admin.activity_logs.index', compact('activityLogs'));
+    }
 }
+

@@ -424,7 +424,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-id-card text-blue-500"></i> Nama Lengkap (Sesuai KTP)
                                 </label>
-                                <input type="text" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nama_pengunjung') border-red-500 @enderror" required placeholder="Budi Santoso">
+                                <input id="nama_pengunjung" type="text" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nama_pengunjung') border-red-500 @enderror" required placeholder="Budi Santoso">
                             </div>
 
                             {{-- NIK KTP --}}
@@ -432,7 +432,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-hashtag text-blue-500"></i> NIK (16 Digit)
                                 </label>
-                                <input type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
+                                <input id="nik_ktp" type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
                             </div>
 
                             {{-- Jenis Kelamin --}}
@@ -440,7 +440,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-venus-mars text-blue-500"></i> Jenis Kelamin
                                 </label>
-                                <select name="jenis_kelamin" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required>
+                                <select id="jenis_kelamin" name="jenis_kelamin" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required>
                                     <option value="">- Pilih -</option>
                                     <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                     <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
@@ -452,7 +452,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-brands fa-whatsapp text-green-500"></i> Nomor WhatsApp
                                 </label>
-                                <input type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
+                                <input id="nomor_hp" type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
                             </div>
 
                             {{-- Email --}}
@@ -460,7 +460,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
                                 </label>
-                                <input type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
+                                <input id="email_pengunjung" type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
                                 <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
                             </div>
 
@@ -469,7 +469,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-map-marker-alt text-red-500"></i> Alamat Lengkap
                                 </label>
-                                <input type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
+                                <input id="alamat_lengkap" type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
                             </div>
 
                             {{-- Pilihan Notifikasi --}}
@@ -927,6 +927,71 @@
                         text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.',
                         confirmButtonColor: '#1e3a8a'
                     });
+                }
+            });
+        }
+    });
+</script>
+
+{{-- SCRIPT BARU UNTUK AUTO-FILL NIK --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nikInput = document.getElementById('nik_ktp');
+        const namaInput = document.getElementById('nama_pengunjung');
+        const hpInput = document.getElementById('nomor_hp');
+        const emailInput = document.getElementById('email_pengunjung');
+        const alamatInput = document.getElementById('alamat_lengkap');
+        const jenisKelaminSelect = document.getElementById('jenis_kelamin');
+        
+        // Buat elemen untuk menampilkan status
+        const statusMessage = document.createElement('p');
+        statusMessage.className = 'text-xs mt-1';
+        nikInput.parentElement.appendChild(statusMessage);
+
+        if (nikInput) {
+            nikInput.addEventListener('blur', function () {
+                const nik = this.value;
+
+                // Reset status message
+                statusMessage.textContent = '';
+
+                // Validasi panjang NIK
+                if (nik.length === 16 && /^\d+$/.test(nik)) {
+                    statusMessage.textContent = 'Mencari data...';
+                    statusMessage.className = 'text-xs mt-1 text-blue-600';
+
+                    fetch(`/api/profil-by-nik/${nik}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                if(response.status === 404){
+                                    statusMessage.textContent = 'Profil baru, silahkan lengkapi data.';
+                                    statusMessage.className = 'text-xs mt-1 text-gray-500';
+                                } else {
+                                    statusMessage.textContent = 'Gagal memeriksa data.';
+                                    statusMessage.className = 'text-xs mt-1 text-red-600';
+                                }
+                                return Promise.reject('Profil tidak ditemukan atau error server');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            statusMessage.textContent = 'Data profil ditemukan dan dimuat!';
+                            statusMessage.className = 'text-xs mt-1 text-green-600 font-bold';
+
+                            // Isi form dengan data yang diterima
+                            if (data.nama) namaInput.value = data.nama;
+                            if (data.nomor_hp) hpInput.value = data.nomor_hp;
+                            if (data.email) emailInput.value = data.email;
+                            if (data.alamat) alamatInput.value = data.alamat;
+                            if (data.jenis_kelamin) jenisKelaminSelect.value = data.jenis_kelamin;
+                            
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                        });
+                } else if (nik.length > 0) {
+                    statusMessage.textContent = 'NIK harus 16 digit angka.';
+                    statusMessage.className = 'text-xs mt-1 text-red-600';
                 }
             });
         }

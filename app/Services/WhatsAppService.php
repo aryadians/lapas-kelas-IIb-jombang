@@ -106,4 +106,20 @@ class WhatsAppService
         
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
+
+    /**
+     * Sends a notification for a completed visit.
+     *
+     * @param Kunjungan $kunjungan
+     */
+    public function sendCompleted(Kunjungan $kunjungan)
+    {
+        $message = "Terima kasih atas kunjungan Anda di Lapas Jombang!\n\n"
+                 . "Kunjungan Anda pada tanggal " . \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') . " untuk WBP {$kunjungan->wbp->nama} telah selesai.\n\n"
+                 . "Kami sangat menghargai waktu Anda. Mohon kesediaannya untuk mengisi survei kepuasan layanan kami melalui link berikut:\n"
+                 . route('survey.create') . "\n\n"
+                 . "Masukan Anda sangat berarti bagi kami untuk menjadi lebih baik.";
+
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+    }
 }

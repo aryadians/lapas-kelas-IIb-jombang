@@ -22,6 +22,7 @@ use App\Models\Announcement;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Guest\GalleryController;
+use Spatie\Activitylog\Models\Activity; // Tambahkan ini
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +59,7 @@ Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.
 Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
 Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
 Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
+Route::get('/papan-pengumuman', [App\Http\Controllers\HomeController::class, 'papanPengumuman'])->name('papan.pengumuman');
 
 // Berita & Pengumuman (Publik)
 Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index');
@@ -82,6 +84,7 @@ Route::get('/kunjungan/verify/{kunjungan}', [KunjunganController::class, 'verify
 // API Routes (Dipakai AJAX di Frontend)
 Route::get('/api/kunjungan/{kunjungan}/status', [KunjunganController::class, 'getStatusApi'])->name('kunjungan.status.api');
 Route::get('/api/kunjungan/quota', [KunjunganController::class, 'getQuotaStatus'])->name('kunjungan.quota.api');
+Route::get('/api/profil-by-nik/{nik}', [KunjunganController::class, 'findProfilByNik'])->name('api.profil.by-nik');
 
 // [PENTING] API Search WBP untuk Select2 di Formulir Pendaftaran
 // Route ini mencari data WBP agar sinkron dengan database admin
@@ -125,7 +128,12 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // A. DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
+    Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
+    Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+    // Log Aktivitas
+    Route::get('/activity-logs', [DashboardController::class, 'activityLogs'])->name('admin.activity_logs.index');
+    
     
     // I. MANAJEMEN ANTRIAN
     Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
@@ -178,6 +186,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Routes for managing followers
+    Route::get('/profile/pengikut', [ProfileController::class, 'pengikut'])->name('profile.pengikut');
+    Route::post('/profile/pengikut', [ProfileController::class, 'storePengikut'])->name('profile.pengikut.store');
+    Route::delete('/profile/pengikut/{id}', [ProfileController::class, 'destroyPengikut'])->name('profile.pengikut.destroy');
 });
 
 // Load auth routes bawaan Laravel Breeze (opsional, jika ada konflik bisa dikomentari)

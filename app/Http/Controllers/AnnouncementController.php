@@ -10,9 +10,14 @@ class AnnouncementController extends Controller
     /**
      * Display a listing of the announcements.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $allAnnouncements = Announcement::where('status', 'published')->latest('date')->paginate(10);
+        $allAnnouncements = Announcement::where('status', 'published')->latest('date')->paginate(5);
+
+        if ($request->query('json') === 'true') {
+            return response()->json($allAnnouncements);
+        }
+
         return view('announcements.index', compact('allAnnouncements'));
     }
 

@@ -21,6 +21,7 @@ use App\Jobs\SendWhatsAppRejectedNotification;
 use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\File;
+use App\Models\ProfilPengunjung;
 
 class KunjunganController extends Controller
 {
@@ -175,6 +176,18 @@ class KunjunganController extends Controller
         try {
             DB::beginTransaction();
 
+            // LANGKAH BARU: Cari atau buat ProfilPengunjung berdasarkan NIK.
+            $profil = ProfilPengunjung::updateOrCreate(
+                ['nik' => $validatedData['nik_ktp']],
+                [
+                    'nama'          => $validatedData['nama_pengunjung'],
+                    'nomor_hp'      => $validatedData['nomor_hp'],
+                    'email'         => $validatedData['email_pengunjung'],
+                    'alamat'        => $validatedData['alamat_lengkap'],
+                    'jenis_kelamin' => $validatedData['jenis_kelamin'],
+                ]
+            );
+
             $pathFotoUtama = $request->file('foto_ktp')->store('uploads/ktp', 'public');
 
             // Antrian Harian (Gabungan Online & Offline)
@@ -190,7 +203,9 @@ class KunjunganController extends Controller
                 'alamat_pengunjung' => $request->alamat_lengkap,
             ]);
 
+            // Tambahkan profil_pengunjung_id saat membuat Kunjungan
             $kunjungan = Kunjungan::create(array_merge($fullData, [
+                'profil_pengunjung_id' => $profil->id, // <- DATA PROFIL DITAUTKAN
                 'kode_kunjungan'       => 'VIS-' . strtoupper(Str::random(6)),
                 'nomor_antrian_harian' => $nomorAntrian,
                 'status'               => KunjunganStatus::PENDING,
@@ -440,5 +455,33 @@ class KunjunganController extends Controller
                 'qr_token' => $token
             ]);
         }
+    }
+
+    /**
+     * Cari profil pengunjung berdasarkan NIK untuk auto-fill form.
+     * Endpoint: GET /api/profil-by-nik/{nik}
+     */
+    public function findProfilByNik($nik)
+    {
+        // Validasi sederhana untuk NIK
+        if (!is_numeric($nik) || strlen($nik) !== 16) {
+            return response()->json(['message' => 'Format NIK tidak valid.'], 400);
+        }
+
+        $profil = ProfilPengunjung::where('nik', $nik)->first();
+
+        if ($profil) {
+            // Hanya kembalikan data yang relevan untuk diisi ke form
+            return response()->json([
+                'nama' => $profil->nama,
+                'nik' => $profil->nik,
+                'nomor_hp' => $profil->nomor_hp,
+                'email' => $profil->email,
+                'alamat' => $profil->alamat,
+                'jenis_kelamin' => $profil->jenis_kelamin,
+            ]);
+        }
+
+        return response()->json(['message' => 'Profil tidak ditemukan'], 404);
     }
 }

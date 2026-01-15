@@ -6,10 +6,24 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\KunjunganStatus;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Kunjungan extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
+
+    /**
+     * Konfigurasi logging aktivitas untuk model Kunjungan.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable() // Log semua atribut yang ada di $fillable
+            ->logOnlyDirty() // Hanya log atribut yang berubah
+            ->setDescriptionForEvent(fn(string $eventName) => "Data Kunjungan telah di{$eventName}")
+            ->useLogName('kunjungan'); // Nama log kustom
+    }
 
     /**
      * Nama tabel di database (Opsional, jika default 'kunjungans' tidak perlu ditulis)

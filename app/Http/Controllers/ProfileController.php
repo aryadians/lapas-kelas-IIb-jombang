@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\ProfilPengunjung;
 
 class ProfileController extends Controller
 {
@@ -19,6 +20,38 @@ class ProfileController extends Controller
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
+    }
+
+    /**
+     * Display the user's followers page.
+     */
+    public function pengikut(Request $request): View
+    {
+        $user = $request->user();
+        $profil = ProfilPengunjung::firstOrCreate(['user_id' => $user->id]);
+        $profil->load('pengikuts');
+
+        return view('profile.pengikut', [
+            'user' => $user,
+            'profil' => $profil,
+        ]);
+    }
+
+    public function storePengikut(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'nama' => ['required', 'string', 'max:255'],
+            'nik' => ['required', 'string', 'digits:16'],
+            'hubungan' => ['required', 'string', 'max:100'],
+        ]);
+
+        $user = $request->user();
+        $profil = $user->profilPengunjung;
+
+        $pengikut = \App\Models\Pengikut::create($request->all());
+        $profil->pengikuts()->attach($pengikut);
+
+        return Redirect::route('profile.pengikut')->with('status', 'pengikut-saved');
     }
 
     /**

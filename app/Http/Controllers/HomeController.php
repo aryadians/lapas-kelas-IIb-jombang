@@ -38,4 +38,14 @@ class HomeController extends Controller
     {
         return view('guest.live_antrian');
     }
+
+    /**
+     * Display the digital announcement board.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function papanPengumuman(): View
+    {
+        return view('guest.papan_pengumuman');
+    }
 }
