@@ -663,7 +663,8 @@
                 });
             </script>
         
-        </body>
+            @stack('scripts')
+    </body>
         
         </html>
         

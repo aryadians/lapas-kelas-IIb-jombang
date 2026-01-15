@@ -188,20 +188,25 @@
             <div class="bg-slate-50 px-6 md:px-10 py-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="text-sm text-slate-500 italic flex items-center gap-2">
                     <i class="fa-solid fa-circle-info text-blue-500"></i>
-                    <span>Simpan halaman ini. Tombol cetak aktif setelah disetujui Admin.</span>
+                    <span>Simpan halaman ini untuk cek status atau cetak tiket.</span>
                 </div>
 
-                @if($kunjungan->status == KunjunganStatus::APPROVED)
-                    {{-- TOMBOL AKTIF (HIJAU/BIRU) --}}
-                    <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-print"></i> CETAK TIKET
+                <div class="w-full sm:w-auto flex items-center gap-3">
+                    <a href="{{ route('kunjungan.status', $kunjungan->id) }}" class="w-full sm:w-auto bg-white text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-100 transition flex items-center justify-center gap-2 border border-slate-300">
+                        <i class="fa-solid fa-arrows-rotate"></i> Cek Status
                     </a>
-                @else
-                    {{-- TOMBOL MATI (ABU-ABU) --}}
-                    <button disabled class="w-full sm:w-auto bg-slate-200 text-slate-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
-                        <i class="fa-solid fa-lock"></i> TIKET BELUM TERSEDIA
-                    </button>
-                @endif
+                    @if($kunjungan->status == KunjunganStatus::APPROVED)
+                        {{-- TOMBOL AKTIF (HIJAU/BIRU) --}}
+                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-print"></i> CETAK TIKET
+                        </a>
+                    @else
+                        {{-- TOMBOL MATI (ABU-ABU) --}}
+                        <button disabled class="w-full sm:w-auto bg-slate-200 text-slate-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
+                            <i class="fa-solid fa-lock"></i> TIKET BELUM TERSEDIA
+                        </button>
+                    @endif
+                </div>
             </div>
 
         </div>

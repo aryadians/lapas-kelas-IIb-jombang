@@ -15,6 +15,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Services\WhatsAppService;
+use App\Jobs\SendWhatsAppPendingNotification;
+use App\Jobs\SendWhatsAppApprovedNotification;
+use App\Jobs\SendWhatsAppRejectedNotification;
 use Illuminate\Support\Facades\Log;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\File;
@@ -251,7 +254,7 @@ class KunjunganController extends Controller
             // KIRIM NOTIFIKASI
             try {
                 if ($kunjungan->preferred_notification_channel === 'whatsapp') {
-                    (new WhatsAppService())->sendPending($kunjungan, Storage::disk('public')->url($qrCodePath));
+                    SendWhatsAppPendingNotification::dispatch($kunjungan, Storage::disk('public')->url($qrCodePath));
                 } else {
                     $fullQrPath = Storage::disk('public')->path($qrCodePath);
                     Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, $fullQrPath));
@@ -320,9 +323,9 @@ class KunjunganController extends Controller
             // Kirim Notifikasi
             if ($kunjungan->preferred_notification_channel === 'whatsapp') {
                 if ($newStatus == KunjunganStatus::APPROVED->value) {
-                    $whatsAppService->sendApproved($kunjungan, Storage::disk('public')->url($qrCodePath));
+                    SendWhatsAppApprovedNotification::dispatch($kunjungan, Storage::disk('public')->url($qrCodePath));
                 } elseif ($newStatus == KunjunganStatus::REJECTED->value) {
-                    $whatsAppService->sendRejected($kunjungan);
+                    SendWhatsAppRejectedNotification::dispatch($kunjungan);
                 }
             } else {
                 // Email Notification

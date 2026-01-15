@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\KunjunganStatus;
+use Illuminate\Notifications\Notifiable;
 
 class Kunjungan extends Model
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     /**
      * Nama tabel di database (Opsional, jika default 'kunjungans' tidak perlu ditulis)
@@ -67,5 +68,17 @@ class Kunjungan extends Model
     public function pengikuts()
     {
         return $this->hasMany(Pengikut::class);
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return array|string
+     */
+    public function routeNotificationForMail($notification)
+    {
+        // Return email address and name...
+        return [$this->email_pengunjung => $this->nama_pengunjung];
     }
 }

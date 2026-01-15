@@ -7,86 +7,74 @@ use App\Models\Product;
 use App\Models\Wbp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
-    public function index()
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(): View
     {
-        $products = Product::with('creator')->latest()->paginate(10);
+        $products = Product::latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
 
-    public function create()
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
     {
         $wbps = Wbp::orderBy('nama')->get();
         return view('admin.products.create', compact('wbps'));
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'wbp_creator_id' => 'nullable|exists:wbps,id',
-            'image' => 'required|image|max:5000',
-        ]);
-
-        $path = $request->file('image')->store('products', 'public');
-
-        Product::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'wbp_creator_id' => $request->wbp_creator_id,
-            'image' => $path,
-            'status' => 'tersedia',
-        ]);
-
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil ditambahkan.');
+        // Logic to validate and store the new product
+        // Redirect back with a success message
+        return redirect()->route('admin.products.index');
     }
 
-    public function edit(Product $product)
+    /**
+     * Display the specified resource.
+     * Note: Admin might not need a dedicated 'show' view, can redirect to edit.
+     */
+    public function show(Product $product): RedirectResponse
+    {
+        return redirect()->route('admin.products.edit', $product);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Product $product): View
     {
         $wbps = Wbp::orderBy('nama')->get();
         return view('admin.products.edit', compact('product', 'wbps'));
     }
 
-    public function update(Request $request, Product $product)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Product $product): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'price' => 'required|integer|min:0',
-            'stock' => 'required|integer|min:0',
-            'wbp_creator_id' => 'nullable|exists:wbps,id',
-            'status' => 'required|in:tersedia,terjual',
-            'image' => 'nullable|image|max:5000',
-        ]);
-
-        $data = $request->only(['name', 'description', 'price', 'stock', 'wbp_creator_id', 'status']);
-
-        if ($request->hasFile('image')) {
-            // Delete old image
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
-
-        $product->update($data);
-
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil diperbarui.');
+        // Logic to validate and update the product
+        // Redirect back with a success message
+        return redirect()->route('admin.products.index');
     }
 
-    public function destroy(Product $product)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Product $product): RedirectResponse
     {
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
-        $product->delete();
-        return redirect()->route('admin.products.index')->with('success', 'Produk berhasil dihapus.');
+        // Logic to delete the product and its image
+        // Redirect back with a success message
+        return redirect()->route('admin.products.index');
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\NewsController; // Public News
 use App\Http\Controllers\AnnouncementController; // Public Announcement
 use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController; // Admin Announcement
 use App\Http\Controllers\Admin\NewsController as AdminNewsController; // Admin News
+use App\Http\Controllers\Admin\ProductController as AdminProductController; // Admin Products
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KunjunganController; // Public Kunjungan
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController; // Admin Kunjungan
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\WbpController; // Admin WBP (Import & Manajemen)
 use App\Http\Controllers\Admin\AntrianController;
 use App\Http\Controllers\Admin\QueueController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\ProductController;
 use App\Models\News;
 use App\Models\Announcement;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -62,6 +64,10 @@ Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index
 Route::get('/berita/{news:slug}', [NewsController::class, 'show'])->name('news.public.show');
 Route::get('/pengumuman', [AnnouncementController::class, 'index'])->name('announcements.public.index');
 Route::get('/pengumuman/{announcement}', [AnnouncementController::class, 'show'])->name('announcements.public.show');
+
+// Produk & Galeri Karya (Publik)
+Route::get('/produk', [ProductController::class, 'index'])->name('products.index');
+Route::get('/produk/{product}', [ProductController::class, 'show'])->name('products.show');
 
 
 // =========================================================================
@@ -155,6 +161,9 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // D. KELOLA KONTEN (BERITA & PENGUMUMAN)
     Route::resource('news', AdminNewsController::class);
     Route::resource('announcements', AdminAnnouncementController::class);
+
+    // MANAJEMEN PRODUK
+    Route::resource('products', AdminProductController::class)->names('admin.products');
 
     // E. MANAJEMEN USER (ADMIN & PETUGAS)
     Route::resource('users', AdminUserController::class)->names('admin.users');
