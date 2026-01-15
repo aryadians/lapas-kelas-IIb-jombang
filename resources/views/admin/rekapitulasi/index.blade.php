@@ -2,11 +2,48 @@
 
 @section('content')
 <div class="space-y-8">
-    <div class="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 rounded-[2rem] p-8 md:p-10 text-white shadow-2xl overflow-hidden">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">Rekapitulasi Kunjungan</h1>
-        <p class="text-blue-100/80 mt-3 text-lg font-light max-w-xl leading-relaxed">
-            Analisis data kunjungan, demografi pengunjung, dan WBP paling sering dikunjungi.
-        </p>
+    <div class="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 rounded-[2rem] p-8 md:p-10 text-white shadow-2xl">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">Rekapitulasi Kunjungan</h1>
+                <p class="text-blue-100/80 mt-3 text-lg font-light max-w-xl leading-relaxed">
+                    Analisis data kunjungan, demografi pengunjung, dan WBP paling sering dikunjungi.
+                </p>
+            </div>
+            <div class="flex-shrink-0">
+                <!-- Custom Dropdown with Alpine.js -->
+                <div x-data="{ open: false, selected: '{{ ucfirst(request('registration_type', 'all')) }}' }" class="relative">
+                    <!-- Label -->
+                    <label for="registration_type_filter" class="text-sm font-medium text-blue-200">Jenis Pendaftaran</label>
+                    
+                    <!-- Dropdown Button -->
+                    <button @click="open = !open" id="registration_type_filter" class="flex items-center justify-between w-48 mt-1 px-4 py-2 bg-slate-800/50 border border-slate-700 text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75 transition-transform transform hover:scale-105">
+                        <span x-text="selected"></span>
+                        <svg class="w-5 h-5 ml-2 -mr-1 text-slate-400" fill="currentColor" viewBox="0 0 20 20" :class="{'rotate-180': open}">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown Panel -->
+                    <div x-show="open"
+                         @click.away="open = false"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="transform opacity-0 scale-95"
+                         x-transition:enter-end="transform opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="transform opacity-100 scale-100"
+                         x-transition:leave-end="transform opacity-0 scale-95"
+                         class="absolute z-10 w-48 mt-2 origin-top-right bg-slate-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                         style="display: none;">
+                        <div class="py-1">
+                            <a href="{{ route('admin.rekapitulasi', ['registration_type' => 'all']) }}" class="block px-4 py-2 text-sm text-slate-300 hover:bg-blue-600 hover:text-white">Semua</a>
+                            <a href="{{ route('admin.rekapitulasi', ['registration_type' => 'online']) }}" class="block px-4 py-2 text-sm text-slate-300 hover:bg-blue-600 hover:text-white">Online</a>
+                            <a href="{{ route('admin.rekapitulasi', ['registration_type' => 'offline']) }}" class="block px-4 py-2 text-sm text-slate-300 hover:bg-blue-600 hover:text-white">Offline</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
