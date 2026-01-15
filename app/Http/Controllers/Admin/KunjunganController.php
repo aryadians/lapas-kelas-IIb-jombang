@@ -286,8 +286,8 @@ class KunjunganController extends Controller
                     'start' => $date . 'T' . $times['start'],
                     'end'   => $date . 'T' . $times['end'],
                     'url'   => route('admin.kunjungan.show', $kunjungan->id),
-                    'backgroundColor' => '#28a745', // Hijau untuk acara yang disetujui
-                    'borderColor' => '#28a745'
+                    'backgroundColor' => $kunjungan->registration_type === 'offline' ? '#20c997' : '#28a745', // Hijau beda untuk offline
+                    'borderColor' => $kunjungan->registration_type === 'offline' ? '#20c997' : '#28a745'
                 ];
             }
         }

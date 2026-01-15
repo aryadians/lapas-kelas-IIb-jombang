@@ -37,15 +37,29 @@ class DashboardController extends Controller
         $isVisitingDay = $today->isTuesday() || $today->isWednesday() || $today->isThursday();
         
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
+        $pendaftarOfflinePagi = $kuotaOfflinePagi = $pendaftarOfflineSiang = $kuotaOfflineSiang = $pendaftarOfflineBiasa = $kuotaOfflineBiasa = null;
 
         if ($isMonday) {
-            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->count();
+            // Online
+            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaPagi = config('kunjungan.quota_senin_pagi');
-            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->count();
+            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaSiang = config('kunjungan.quota_senin_siang');
+            
+            // Offline
+            $pendaftarOfflinePagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflinePagi = config('kunjungan.quota_offline_senin_pagi');
+            $pendaftarOfflineSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflineSiang = config('kunjungan.quota_offline_senin_siang');
+
         } elseif ($isVisitingDay) {
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->count();
+            // Online
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaBiasa = config('kunjungan.quota_hari_biasa');
+            
+            // Offline
+            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflineBiasa = config('kunjungan.quota_offline_hari_biasa');
         }
 
         // Data untuk Chart Kunjungan 7 Hari Terakhir
@@ -137,6 +151,12 @@ class DashboardController extends Controller
             'kuotaSiang',
             'pendaftarBiasa',
             'kuotaBiasa',
+            'pendaftarOfflinePagi',
+            'kuotaOfflinePagi',
+            'pendaftarOfflineSiang',
+            'kuotaOfflineSiang',
+            'pendaftarOfflineBiasa',
+            'kuotaOfflineBiasa',
             'chartLabels',
             'chartData',
             'chartKunjunganStatusLabels',
@@ -168,15 +188,29 @@ class DashboardController extends Controller
         $isVisitingDay = $today->isTuesday() || $today->isWednesday() || $today->isThursday();
         
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
+        $pendaftarOfflinePagi = $kuotaOfflinePagi = $pendaftarOfflineSiang = $kuotaOfflineSiang = $pendaftarOfflineBiasa = $kuotaOfflineBiasa = null;
 
         if ($isMonday) {
-            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->count();
+            // Online
+            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaPagi = config('kunjungan.quota_senin_pagi');
-            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->count();
+            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaSiang = config('kunjungan.quota_senin_siang');
+
+            // Offline
+            $pendaftarOfflinePagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflinePagi = config('kunjungan.quota_offline_senin_pagi');
+            $pendaftarOfflineSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflineSiang = config('kunjungan.quota_offline_senin_siang');
+
         } elseif ($isVisitingDay) {
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->count();
+            // Online
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
             $kuotaBiasa = config('kunjungan.quota_hari_biasa');
+            
+            // Offline
+            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
+            $kuotaOfflineBiasa = config('kunjungan.quota_offline_hari_biasa');
         }
 
         return response()->json([
@@ -196,6 +230,12 @@ class DashboardController extends Controller
             'kuotaSiang' => $kuotaSiang,
             'pendaftarBiasa' => $pendaftarBiasa,
             'kuotaBiasa' => $kuotaBiasa,
+            'pendaftarOfflinePagi' => $pendaftarOfflinePagi,
+            'kuotaOfflinePagi' => $kuotaOfflinePagi,
+            'pendaftarOfflineSiang' => $pendaftarOfflineSiang,
+            'kuotaOfflineSiang' => $kuotaOfflineSiang,
+            'pendaftarOfflineBiasa' => $pendaftarOfflineBiasa,
+            'kuotaOfflineBiasa' => $kuotaOfflineBiasa,
         ]);
     }
 
