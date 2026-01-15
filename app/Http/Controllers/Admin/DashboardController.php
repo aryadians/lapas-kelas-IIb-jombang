@@ -199,11 +199,17 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function rekapitulasi()
+    public function rekapitulasi(Request $request)
     {
+        $registrationType = $request->input('registration_type', 'all');
+
         // 1. Visitor Gender Statistics (Primary Visitor)
-        $genderCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
-            ->select('jenis_kelamin', DB::raw('count(*) as total'))
+        $genderCountsQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+            ->when($registrationType !== 'all', function ($query) use ($registrationType) {
+                return $query->where('registration_type', $registrationType);
+            });
+
+        $genderCounts = $genderCountsQuery->select('jenis_kelamin', DB::raw('count(*) as total'))
             ->groupBy('jenis_kelamin')
             ->pluck('total', 'jenis_kelamin')
             ->all();
@@ -214,8 +220,12 @@ class DashboardController extends Controller
         ];
 
         // 2. Most Visited WBP
-        $mostVisitedWbp = Kunjungan::where('status', KunjunganStatus::APPROVED)
-            ->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
+        $mostVisitedWbpQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+            ->when($registrationType !== 'all', function ($query) use ($registrationType) {
+                return $query->where('registration_type', $registrationType);
+            });
+        
+        $mostVisitedWbp = $mostVisitedWbpQuery->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
             ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar', DB::raw('count(kunjungans.wbp_id) as visit_count'))
             ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar')
             ->orderBy('visit_count', 'desc')
@@ -223,8 +233,12 @@ class DashboardController extends Controller
             ->get();
 
         // 3. Busiest Visit Sessions
-        $sessionCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
-            ->get()
+        $sessionCountsQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+            ->when($registrationType !== 'all', function ($query) use ($registrationType) {
+                return $query->where('registration_type', $registrationType);
+            });
+
+        $sessionCounts = $sessionCountsQuery->get()
             ->mapToGroups(function ($item) {
                 // Use Carbon for reliable day translation
                 $dayName = Carbon::parse($item->tanggal_kunjungan)->getTranslatedDayName();
