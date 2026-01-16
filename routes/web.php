@@ -12,11 +12,13 @@ use App\Http\Controllers\KunjunganController; // Public Kunjungan
 use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController; // Admin Kunjungan
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExecutiveDashboardController;
 use App\Http\Controllers\Admin\WbpController; // Admin WBP (Import & Manajemen)
 use App\Http\Controllers\Admin\AntrianController;
 use App\Http\Controllers\Admin\QueueController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DisplayController;
 use App\Models\News;
 use App\Models\Announcement;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -60,6 +62,9 @@ Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->
 Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
 Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
 Route::get('/papan-pengumuman', [App\Http\Controllers\HomeController::class, 'papanPengumuman'])->name('papan.pengumuman');
+
+// Halaman Display Antrian Publik (TV)
+Route::get('/display-antrian', [DisplayController::class, 'antrian'])->name('display.antrian');
 
 // Berita & Pengumuman (Publik)
 Route::get('/berita', [NewsController::class, 'index'])->name('news.public.index');
@@ -127,6 +132,16 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
 
     // A. DASHBOARD
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Executive Dashboard
+    Route::get('/dashboard/executive', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'index'])->name('admin.dashboard.executive');
+    Route::get('/api/executive/kunjungan-trend', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'kunjunganTrend'])->name('api.executive.kunjungan-trend');
+    Route::get('/api/executive/kunjungan-heatmap', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'kunjunganHeatmap'])->name('api.executive.kunjungan-heatmap');
+    Route::get('/api/executive/demographics', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'demographics'])->name('api.executive.demographics');
+    Route::get('/api/executive/kpis', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getKpis'])->name('api.executive.kpis');
+    Route::get('/api/executive/visitor-demographics', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getVisitorDemographics'])->name('api.executive.visitor-demographics');
+    Route::get('/api/executive/most-visited-wbp', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getMostVisitedWbp'])->name('api.executive.most-visited-wbp');
+
     Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
     Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
     Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
