@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('profil_pengunjungs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nik')->unique(); // NIK sebagai identifier unik
+            $table->string('nama');
+            $table->string('nomor_hp');
+            $table->string('email')->nullable();
+            $table->string('alamat')->nullable();
+            $table->string('jenis_kelamin');
             $table->timestamps();
         });
     }

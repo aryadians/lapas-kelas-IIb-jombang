@@ -442,6 +442,8 @@ class KunjunganController extends Controller
                     }
                 } catch (\Exception $e) {
                 }
+                // Redirect to print page after approval
+                return redirect()->route('kunjungan.print', $kunjungan->id);
             }
 
             return view('admin.kunjungan.verifikasi', [

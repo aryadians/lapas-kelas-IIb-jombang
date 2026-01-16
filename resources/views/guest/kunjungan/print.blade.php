@@ -34,9 +34,28 @@
         }
 
         @media print {
-            body { background: white; }
-            .ticket { box-shadow: none; margin: 0; width: 100%; max-width: 100%; }
-            .no-print { display: none !important; }
+            body { 
+                background: white; 
+                /* Set a specific width for thermal printers, e.g., 58mm ~ 220px */
+                width: 220px; 
+                margin: 0;
+                padding: 0;
+                overflow: hidden; /* Prevent scrollbars */
+            }
+            .ticket { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 100%; 
+                max-width: 100%; 
+                padding: 10px; /* Reduced padding for print */
+                position: static; /* Remove relative positioning for print */
+            }
+            .ticket::after { /* Remove serrated edge effect for print */
+                display: none; 
+            }
+            .no-print { 
+                display: none !important; 
+            }
         }
     </style>
 </head>
@@ -46,6 +65,7 @@
         
         {{-- HEADER --}}
         <div class="text-center border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo Lapas" class="mx-auto w-16 h-16 mb-2">
             <h2 class="font-bold text-xl uppercase text-gray-800">LAPAS KELAS IIB</h2>
             <h3 class="font-bold text-lg uppercase text-gray-800">JOMBANG</h3>
             <p class="text-xs text-gray-500 mt-1">Jl. KH. Wahid Hasyim No.123, Jombang</p>
@@ -55,7 +75,7 @@
         {{-- NOMOR ANTRIAN --}}
         <div class="text-center mb-6">
             <p class="text-sm font-bold text-gray-500 uppercase">Nomor Antrian</p>
-            <h1 class="text-6xl font-black text-gray-900 my-2">{{ $kunjungan->nomor_antrian_harian }}</h1>
+            <h1 class="text-6xl font-black text-gray-900 my-2">A-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}</h1>
             <span class="inline-block bg-black text-white px-3 py-1 text-sm font-bold rounded uppercase">
                 Sesi: {{ $kunjungan->sesi ?? 'Umum' }}
             </span>
@@ -64,8 +84,8 @@
         {{-- QR CODE --}}
         <div class="flex justify-center mb-6">
             {{-- Menggunakan API QR Code Server (Gratis & Stabil) --}}
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $kunjungan->qr_token }}&bgcolor=ffffff" 
-                 alt="QR Code" class="w-40 h-40 border-4 border-gray-800 p-1 rounded">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ $kunjungan->qr_token }}&bgcolor=ffffff" 
+                 alt="QR Code" class="w-24 h-24 border-4 border-gray-800 p-1 rounded">
         </div>
         <p class="text-center text-xs font-mono mb-6">{{ $kunjungan->qr_token }}</p>
 
@@ -73,7 +93,7 @@
         <div class="space-y-2 border-t border-dashed border-gray-300 pt-4 text-sm">
             <div class="flex justify-between">
                 <span class="text-gray-500">Tanggal</span>
-                <span class="font-bold">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->format('d/m/Y') }}</span>
+                <span class="font-bold">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->format('d/m/Y') }} Pukul {{ $kunjungan->sesi === 'pagi' ? '08:00 - 12:00' : '13:00 - 16:00' }}</span>
             </div>
             <div class="flex justify-between">
                 <span class="text-gray-500">Pengunjung</span>
@@ -97,17 +117,6 @@
             <p class="mt-4 font-bold text-gray-300">--- TERIMA KASIH ---</p>
         </div>
 
-    </div>
-
-    {{-- TOMBOL PRINT (Hanya tampil di layar) --}}
-    <div class="fixed bottom-6 right-6 no-print flex gap-2">
-        <button onclick="window.close()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition">
-            Tutup
-        </button>
-        <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-            Cetak Tiket
-        </button>
     </div>
 
     <script>

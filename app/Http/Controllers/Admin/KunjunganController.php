@@ -430,6 +430,7 @@ class KunjunganController extends Controller
             'kode_kunjungan' => $kodeKunjungan,
         ]);
 
-        return redirect()->route('admin.kunjungan.index')->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui.');
+        return redirect()->route('kunjungan.print', $kunjungan->id) // Changed redirect
+            ->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui. Silakan cetak struk.');
     }
 }

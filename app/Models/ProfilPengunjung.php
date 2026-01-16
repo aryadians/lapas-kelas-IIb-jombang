@@ -9,7 +9,14 @@ class ProfilPengunjung extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id'];
+    protected $fillable = [
+        'nik',
+        'nama',
+        'nomor_hp',
+        'email',
+        'alamat',
+        'jenis_kelamin',
+    ];
 
     public function user()
     {
