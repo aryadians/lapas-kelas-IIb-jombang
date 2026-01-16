@@ -115,7 +115,29 @@ class KunjunganController extends Controller
         }
         $validatedData = $validator->validated();
 
-        // 2. LOGIKA BISNIS
+        // 2. CEK KUOTA (FIXED)
+        $tanggal = Carbon::parse($validatedData['tanggal_kunjungan']);
+        $sesi = strtolower(trim($validatedData['sesi'])); // Trim whitespace and force lowercase
+        $isMonday = $tanggal->isMonday();
+
+        // Tentukan total kuota berdasarkan hari dan sesi
+        $totalQuota = 150;
+        if ($isMonday) {
+            $totalQuota = ($sesi === 'siang') ? 40 : 120;
+        }
+
+        // Hitung kunjungan yang terdaftar (hanya yang aktif) untuk tanggal dan sesi tersebut
+        $registeredCount = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
+            ->where('sesi', $sesi)
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+            ->count();
+
+        // Bandingkan dengan kuota
+        if ($registeredCount >= $totalQuota) {
+            return back()->with('error', 'Mohon maaf, kuota untuk sesi yang Anda pilih sudah penuh. Silakan pilih jadwal atau sesi lain.')->withInput();
+        }
+
+        // 3. LOGIKA BISNIS
         $requestDate = Carbon::parse($validatedData['tanggal_kunjungan'])->startOfDay();
         $today = Carbon::now()->startOfDay();
         $wbp = Wbp::find($validatedData['wbp_id']);
@@ -190,13 +212,27 @@ class KunjunganController extends Controller
 
             $pathFotoUtama = $request->file('foto_ktp')->store('uploads/ktp', 'public');
 
-            // Antrian Harian (Gabungan Online & Offline)
-            $lastQueue = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
-                ->lockForUpdate()
-                ->orderBy('nomor_antrian_harian', 'desc')
-                ->first();
+            // [FIX] SET NOMOR ANTRIAN BERDASARKAN SESI
+            // Pagi: Lanjut dari 1 (Normal)
+            // Siang: Start dari 121
+            if ($sesi == 'pagi') {
+                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
+                    ->where('sesi', 'pagi')
+                    ->lockForUpdate()
+                    ->max('nomor_antrian_harian');
 
-            $nomorAntrian = $lastQueue ? $lastQueue->nomor_antrian_harian + 1 : 1;
+                $nomorAntrian = ($maxAntrian ?? 0) + 1;
+            } else {
+                // Sesi Siang
+                $maxAntrian = Kunjungan::where('tanggal_kunjungan', $validatedData['tanggal_kunjungan'])
+                    ->where('sesi', 'siang')
+                    ->lockForUpdate()
+                    ->max('nomor_antrian_harian');
+
+                // Jika belum ada antrian siang, mulai dari 121
+                // Jika sudah ada (misal 121), maka lanjut 122
+                $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
+            }
 
             $fullData = array_merge($validatedData, [
                 'no_wa_pengunjung'  => $request->nomor_hp,
@@ -285,7 +321,7 @@ class KunjunganController extends Controller
             Log::error('Error storing visit: ' . $e->getMessage());
 
             if (str_contains($e->getMessage(), 'Duplicate entry')) {
-                return back()->with('error', 'Terjadi kepadatan antrian. Mohon klik tombol kirim sekali lagi.')->withInput();
+                return back()->with('error_duplicate_entry', 'Terjadi kepadatan pada slot waktu yang Anda pilih. Mohon periksa kembali jadwal dan coba kirim ulang formulir.')->withInput();
             }
 
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage())->withInput();

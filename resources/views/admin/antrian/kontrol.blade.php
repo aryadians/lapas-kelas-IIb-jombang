@@ -168,12 +168,16 @@ function queueControl() {
         isPolling: false,
         voices: [],
         finishing: [],
+        speechQueue: [],
+        isSpeaking: false,
 
         init() {
             this.fetchState();
             setInterval(() => this.fetchState(), 5000);
             setInterval(() => this.updateTimers(), 1000);
             this.loadVoices();
+            // Start the queue processor check
+            setInterval(() => this.processSpeechQueue(), 300);
         },
 
         async fetchState() {
@@ -204,77 +208,113 @@ function queueControl() {
             }
         },
 
-        async finishVisit(id) {
+        async finishVisitApi(id) {
             if (this.finishing.includes(id)) {
                 return;
             }
-
             try {
                 this.finishing.push(id);
                 const response = await this.postData(`{{ url('api/admin/antrian') }}/${id}/finish`);
                 if (response.success) {
-                    const finishedKunjungan = this.queues.in_progress.find(k => k.id === id);
-                    if (finishedKunjungan) {
-                        this.speakNotification(finishedKunjungan);
-                    }
                     delete this.timers[id];
                 } else {
-                    Swal.fire('Gagal', response.error || 'Gagal menyelesaikan kunjungan.', 'error');
+                     Swal.fire('Gagal', response.error || 'Gagal menyelesaikan kunjungan via API.', 'error');
                 }
                 await this.fetchState();
-            } catch(error) {
-                 console.error('Error finishing visit:', error);
+            } catch (error) {
+                console.error('Error finishing visit via API:', error);
                 Swal.fire('Error', `Terjadi kesalahan koneksi: ${error.message}`, 'error');
             } finally {
                 this.finishing = this.finishing.filter(i => i !== id);
             }
         },
-
-        speakNotification(kunjungan) {
-            if ('speechSynthesis' in window) {
-                const visitorName = kunjungan.nama_pengunjung;
-                const queueNumber = kunjungan.nomor_antrian_harian;
-                const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
-                const message = `Kunjungan atas nama ${visitorName} nomor antrian ${queueNumber}, nama WBP ${wbpName} telah selesai, silahkan meninggalkan tempat kunjungan.`;
-
-                const utterance = new SpeechSynthesisUtterance(message);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                if (this.voices.length > 0) {
-                    utterance.voice = this.voices[0];
-                }
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utterance);
-            } else {
-                console.warn('Browser does not support speech synthesis for notifications.');
+        
+        // Wrapper for manual finish button
+        finishVisit(id) {
+            const kunjungan = this.queues.in_progress.find(k => k.id === id);
+            if (kunjungan) {
+                this.speak(`Kunjungan atas nama ${kunjungan.nama_pengunjung} telah diselesaikan secara manual.`, true);
             }
+            this.finishVisitApi(id);
         },
 
         updateTimers() {
+            const newlyFinished = [];
+            
             this.queues.in_progress.forEach(kunjungan => {
                 if (!kunjungan.visit_started_at) return;
 
                 const startTime = new Date(kunjungan.visit_started_at).getTime();
                 const now = new Date().getTime();
                 const elapsed = Math.floor((now - startTime) / 1000);
-                const visitDuration = 15 * 60; // 15 minutes in seconds
+                const visitDuration = 15 * 60;
                 const remaining = visitDuration - elapsed;
 
                 if (remaining <= 0) {
                     if (!this.timers[kunjungan.id] || !this.timers[kunjungan.id].isFinished) {
                         this.timers[kunjungan.id] = { display: 'WAKTU HABIS', isEnding: true, isFinished: true };
-                        this.finishVisit(kunjungan.id);
+                        // Don't call finishVisit directly, queue it up
+                        newlyFinished.push(kunjungan);
                     }
                 } else {
                     const minutes = Math.floor(remaining / 60).toString().padStart(2, '0');
                     const seconds = (remaining % 60).toString().padStart(2, '0');
                     this.timers[kunjungan.id] = {
                         display: `${minutes}:${seconds}`,
-                        isEnding: remaining < 120, // less than 2 minutes
+                        isEnding: remaining < 120,
                         isFinished: false
                     };
                 }
             });
+
+            // Now process all newly finished visits
+            if (newlyFinished.length > 0) {
+                newlyFinished.forEach(kunjungan => {
+                    // Call the API to mark as finished
+                    this.finishVisitApi(kunjungan.id);
+                    // Add the notification to the speech queue
+                    const visitorName = kunjungan.nama_pengunjung;
+                    const queueNumber = kunjungan.nomor_antrian_harian;
+                    const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
+                    const message = `Waktu kunjungan untuk ${visitorName}, nomor antrian ${queueNumber}, dengan WBP ${wbpName} telah selesai. Silahkan meninggalkan tempat kunjungan.`;
+                    this.speak(message);
+                });
+            }
+        },
+
+        // --- SPEECH SYNTHESIS QUEUE SYSTEM ---
+        speak(text, priority = false) {
+            if (!('speechSynthesis' in window)) return;
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.9;
+            if (this.voices.length > 0) {
+                utterance.voice = this.voices[0];
+            }
+
+            // Handle onend event to manage queue
+            utterance.onend = () => {
+                setTimeout(() => {
+                    this.isSpeaking = false;
+                }, 1500); // 1.5 second pause between announcements
+            };
+            
+            if (priority) {
+                window.speechSynthesis.cancel();
+                this.speechQueue.unshift(utterance);
+            } else {
+                this.speechQueue.push(utterance);
+            }
+        },
+
+        processSpeechQueue() {
+            if (this.isSpeaking || this.speechQueue.length === 0) {
+                return;
+            }
+            this.isSpeaking = true;
+            const utteranceToSpeak = this.speechQueue.shift();
+            window.speechSynthesis.speak(utteranceToSpeak);
         },
         
         loadVoices() {
@@ -290,38 +330,16 @@ function queueControl() {
         },
 
         speakVisitor(kunjungan) {
-            if ('speechSynthesis' in window) {
-                const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                if (this.voices.length > 0) {
-                    utterance.voice = this.voices[0];
-                }
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utterance);
-            } else {
-                Swal.fire('Not Supported', 'Browser Anda tidak mendukung fitur suara.', 'warning');
-            }
+            const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
+            this.speak(text, true); // Priority call
         },
 
         speakInmate(kunjungan) {
-            if ('speechSynthesis' in window) {
-                const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
-                const text = `Panggilan untuk Warga Binaan atas nama ${wbpName}. Ditunggu di ruang kunjungan sekarang.`;
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'id-ID';
-                utterance.rate = 0.9;
-                if (this.voices.length > 0) {
-                    utterance.voice = this.voices[0];
-                }
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utterance);
-            } else {
-                Swal.fire('Not Supported', 'Browser Anda tidak mendukung fitur suara.', 'warning');
-            }
+            const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
+            const text = `Panggilan untuk Warga Binaan atas nama ${wbpName}. Ditunggu di ruang kunjungan sekarang.`;
+            this.speak(text, true); // Priority call
         },
-
+        
         async postData(url = '', data = {}) {
             const response = await fetch(url, {
                 method: 'POST',
@@ -335,11 +353,9 @@ function queueControl() {
             if (!response.ok) {
                 const errorText = await response.text();
                 try {
-                    // Try to parse as JSON, it might be a structured error from Laravel
                     const errorJson = JSON.parse(errorText);
                     throw new Error(errorJson.error || 'Terjadi error di server.');
                 } catch (e) {
-                    // If not JSON, throw the raw text
                     throw new Error(errorText || `HTTP error! status: ${response.status}`);
                 }
             }

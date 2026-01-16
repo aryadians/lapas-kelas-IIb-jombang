@@ -129,9 +129,9 @@
                         $statusIcon = '❌';
                         break;
                     default:
-                        $statusClass = 'status-pending';
-                        $statusText = 'MENUNGGU PERSETUJUAN';
-                        $statusIcon = '⏳';
+                        $statusClass = 'status-approved'; // Use green style for success
+                        $statusText = 'Selamat Telah Berhasil Mendaftar';
+                        $statusIcon = '✅';
                         break;
                 }
             @endphp
@@ -139,7 +139,7 @@
             <div class="status-section {{ $statusClass }}">
                 <h2>{{ $statusIcon }} Status Kunjungan: {{ $statusText }}</h2>
                 @if($kunjungan->status == KunjunganStatus::PENDING)
-                    <p>Pendaftaran Anda telah kami terima dan sedang dalam proses verifikasi oleh petugas. Anda akan menerima email notifikasi selanjutnya setelah proses verifikasi selesai.</p>
+                    <p>Terima kasih telah mendaftar. Silakan datang ke Lapas Jombang sesuai jadwal yang dipilih untuk melakukan verifikasi data dan mendapatkan tiket antrian.</p>
                 @elseif($kunjungan->status == KunjunganStatus::APPROVED)
                     <p>Selamat! Pendaftaran kunjungan Anda telah disetujui. Silakan tunjukkan QR Code di bawah ini kepada petugas pada saat jadwal kunjungan.</p>
                 @else

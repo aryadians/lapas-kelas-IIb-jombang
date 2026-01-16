@@ -212,29 +212,22 @@ class KunjunganController extends Controller
                 $kunjungan->status = KunjunganStatus::APPROVED;
                 $kunjungan->save();
                 $message = 'Kunjungan berhasil disetujui secara otomatis!';
-                
-                // Redirect to print page if not an AJAX request
-                if (!$request->wantsJson()) {
-                    return redirect()->route('kunjungan.print', $kunjungan->id);
-                }
             }
 
+            // Handle AJAX requests separately
             if ($request->wantsJson()) {
+                // Return the full kunjungan object, which includes the ID and relations
                 return response()->json([
                     'status' => 'success',
                     'message' => $message,
-                    'kunjungan' => [
-                        'nama_pengunjung' => $kunjungan->nama_pengunjung,
-                        'wbp_nama' => $kunjungan->wbp->nama ?? '-',
-                        'tanggal_kunjungan' => \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y'),
-                    ]
+                    'kunjungan' => $kunjungan->load('wbp'), // Ensure wbp relation is loaded
                 ]);
             }
 
-            return view('admin.kunjungan.verifikasi', [
+            // For all standard web requests, show the new dedicated success page
+            return view('admin.kunjungan.verify_success', [
                 'kunjungan' => $kunjungan,
-                'status_verifikasi' => 'success',
-                'approval_message' => $message
+                'message' => $message
             ]);
         } else {
             if ($request->wantsJson()) {
@@ -412,8 +405,9 @@ class KunjunganController extends Controller
             $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
         }
 
-        // Ambil Nomor Antrian Harian Terakhir
+        // Ambil Nomor Antrian Harian Terakhir (berdasarkan sesi)
         $lastQueue = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
+            ->where('sesi', $request->sesi) // Ditambahkan filter sesi
             ->lockForUpdate()
             ->orderBy('nomor_antrian_harian', 'desc')
             ->first();

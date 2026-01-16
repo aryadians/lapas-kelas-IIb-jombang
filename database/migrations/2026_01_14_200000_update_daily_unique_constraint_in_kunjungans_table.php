@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('kunjungans', function (Blueprint $table) {
-            // Drop the old session-based unique key
-            $table->dropUnique('kunjungan_unik_per_sesi');
+            // Drop the daily unique key if it exists
+            $table->dropUnique('kunjungan_unik_per_hari');
 
-            // Add the new daily unique key
-            $table->unique(['tanggal_kunjungan', 'nomor_antrian_harian'], 'kunjungan_unik_per_hari');
+            // Add the new session-based unique key
+            $table->unique(['tanggal_kunjungan', 'sesi', 'nomor_antrian_harian'], 'kunjungan_unik_per_sesi');
         });
     }
 
@@ -30,11 +30,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('kunjungans', function (Blueprint $table) {
-            // Drop the new daily unique key
-            $table->dropUnique('kunjungan_unik_per_hari');
+            // Drop the session-based unique key
+            $table->dropUnique('kunjungan_unik_per_sesi');
 
-            // Re-add the old session-based unique key
-            $table->unique(['tanggal_kunjungan', 'sesi', 'nomor_antrian_harian'], 'kunjungan_unik_per_sesi');
+            // Re-add the daily unique key for rollback
+            $table->unique(['tanggal_kunjungan', 'nomor_antrian_harian'], 'kunjungan_unik_per_hari');
         });
     }
 };

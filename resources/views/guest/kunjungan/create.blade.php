@@ -790,6 +790,17 @@
     // --- 1. SCRIPT SWEETALERT (JARING PENGAMAN) ---
     document.addEventListener('DOMContentLoaded', function() {
         
+        // C. Cek Error Kepadatan Antrian (Duplicate Entry)
+        @if(session('error_duplicate_entry'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Antrian Padat',
+                text: "{!! session('error_duplicate_entry') !!}",
+                confirmButtonText: 'Baik, Saya Coba Lagi',
+                confirmButtonColor: '#3085d6',
+            });
+        @endif
+
         // A. Cek Error Logic dari Controller (Misal: H-1, Lock, dll)
         @if(session('error'))
             Swal.fire({

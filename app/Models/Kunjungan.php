@@ -36,6 +36,7 @@ class Kunjungan extends Model
      */
     // PASTIKAN ISINYA SAMA PERSIS SEPERTI INI
     protected $fillable = [
+        'profil_pengunjung_id',
         'kode_kunjungan',
         'nomor_antrian_harian',
         'wbp_id',
