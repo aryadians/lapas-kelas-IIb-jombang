@@ -301,16 +301,18 @@
 
             {{-- KONTROL ANTRIAN (REAL-TIME) --}}
             <div x-data="antrianController()" class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <a href="{{ route('admin.antrian.kontrol') }}" class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                     <i class="fas fa-users-cog text-purple-500"></i> Kontrol Antrian Hari Ini
-                </h3>
+                </a>
                 <div class="space-y-6">
                     {{-- Sesi Pagi --}}
                     <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="text-sm font-bold text-blue-800">SESI PAGI</p>
-                                <p class="text-4xl font-black text-blue-900" x-text="nomorPagi">...</p>
+                                <a href="{{ route('admin.antrian.kontrol') }}">
+                                    <p class="text-4xl font-black text-blue-900" x-text="nomorPagi">...</p>
+                                </a>
                             </div>
                             <div class="flex flex-col gap-2">
                                 <button @click="panggil('pagi')" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md flex items-center gap-2">
@@ -327,7 +329,9 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 <p class="text-sm font-bold text-orange-800">SESI SIANG</p>
+                                <a href="{{ route('admin.antrian.kontrol') }}">
                                 <p class="text-4xl font-black text-orange-900" x-text="nomorSiang">...</p>
+                                </a>
                             </div>
                             <div class="flex flex-col gap-2">
                                 <button @click="panggil('siang')" class="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition shadow-md flex items-center gap-2">

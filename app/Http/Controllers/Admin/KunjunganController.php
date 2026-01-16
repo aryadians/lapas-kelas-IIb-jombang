@@ -360,6 +360,14 @@ class KunjunganController extends Controller
     }
 
     /**
+     * Menampilkan halaman sukses setelah pendaftaran offline.
+     */
+    public function offlineSuccess(Kunjungan $kunjungan)
+    {
+        return view('admin.kunjungan.offline_success', compact('kunjungan'));
+    }
+
+    /**
      * Menyimpan data pendaftaran kunjungan offline dari admin.
      */
     public function storeOffline(Request $request)
@@ -435,7 +443,7 @@ class KunjunganController extends Controller
             'kode_kunjungan' => $kodeKunjungan,
         ]);
 
-        return redirect()->route('kunjungan.print', $kunjungan->id) // Changed redirect
-            ->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui. Silakan cetak struk.');
+        return redirect()->route('admin.kunjungan.offline.success', $kunjungan->id)
+            ->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui.');
     }
 }

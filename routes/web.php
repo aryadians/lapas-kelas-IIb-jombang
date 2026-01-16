@@ -164,6 +164,7 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     // --> PENDAFTARAN OFFLINE OLEH ADMIN <--
     Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');
     Route::post('kunjungan/create-offline', [AdminKunjunganController::class, 'storeOffline'])->name('admin.kunjungan.storeOffline');
+    Route::get('kunjungan/offline/success/{kunjungan}', [AdminKunjunganController::class, 'offlineSuccess'])->name('admin.kunjungan.offline.success');
     
     Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
+use App\Models\AntrianStatus;
+use App\Events\AntrianUpdated;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Enums\KunjunganStatus;
@@ -55,6 +57,21 @@ class QueueController extends Controller
         $kunjungan->status = KunjunganStatus::IN_PROGRESS;
         $kunjungan->visit_started_at = now();
         $kunjungan->save();
+
+        // Update AntrianStatus
+        if ($kunjungan->sesi) {
+            $antrian = AntrianStatus::firstOrCreate(
+                [
+                    'tanggal' => Carbon::today(),
+                    'sesi' => $kunjungan->sesi,
+                ]
+            );
+            $antrian->nomor_terpanggil = $kunjungan->nomor_antrian_harian;
+            $antrian->save();
+
+            // Broadcast the event
+            AntrianUpdated::dispatch($kunjungan->sesi, $antrian->nomor_terpanggil);
+        }
 
         return response()->json([
             'success' => true,
