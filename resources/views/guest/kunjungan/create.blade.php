@@ -377,7 +377,7 @@
             </div>
 
             <div class="p-4 sm:p-10">
-                {{-- ALERT BAWAAN (Bootstrap Style) --}}
+                {{-- ALERT BAWAAN --}}
                 @if (session('success'))
                     <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8" role="alert">
                         <p class="font-bold">Berhasil!</p>
@@ -390,9 +390,8 @@
                         <p>{{ session('error') }}</p>
                     </div>
                 @endif
-                {{-- END ALERT BAWAAN --}}
 
-                {{-- ALERT VALIDASI INPUT LARAVEL --}}
+                {{-- ALERT VALIDASI --}}
                 @if ($errors->any())
                 <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r shadow-md">
                     <div class="ml-3">
@@ -406,8 +405,8 @@
                 </div>
                 @endif
 
-                {{-- FORM START --}}
-                <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in">
+                {{-- FORM START (Tambahkan x-data untuk handling loading) --}}
+                <form method="POST" action="{{ route('kunjungan.store') }}" enctype="multipart/form-data" class="space-y-8 animate-fade-in" x-data="{ isSubmitting: false }" @submit="isSubmitting = true">
                     @csrf
 
                     {{-- Data Pengunjung --}}
@@ -419,7 +418,6 @@
                             <span class="text-blue-800">Data Pengunjung</span>
                         </h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {{-- Nama Lengkap --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-id-card text-blue-500"></i> Nama Lengkap (Sesuai KTP)
@@ -427,7 +425,6 @@
                                 <input id="nama_pengunjung" type="text" name="nama_pengunjung" value="{{ old('nama_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nama_pengunjung') border-red-500 @enderror" required placeholder="Budi Santoso">
                             </div>
 
-                            {{-- NIK KTP --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-hashtag text-blue-500"></i> NIK (16 Digit)
@@ -435,7 +432,6 @@
                                 <input id="nik_ktp" type="text" name="nik_ktp" value="{{ old('nik_ktp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 transition-all duration-300 shadow-sm py-3 px-4 bg-white @error('nik_ktp') border-red-500 @enderror" required placeholder="351xxxxxxxxx" maxlength="16">
                             </div>
 
-                            {{-- Jenis Kelamin --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-venus-mars text-blue-500"></i> Jenis Kelamin
@@ -447,7 +443,6 @@
                                 </select>
                             </div>
 
-                            {{-- Nomor HP --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-brands fa-whatsapp text-green-500"></i> Nomor WhatsApp
@@ -455,7 +450,6 @@
                                 <input id="nomor_hp" type="text" name="nomor_hp" value="{{ old('nomor_hp') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="08xxxxxxxx">
                             </div>
 
-                            {{-- Email --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
@@ -464,7 +458,6 @@
                                 <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
                             </div>
 
-                            {{-- Alamat --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-map-marker-alt text-red-500"></i> Alamat Lengkap
@@ -472,7 +465,6 @@
                                 <input id="alamat_lengkap" type="text" name="alamat_lengkap" value="{{ old('alamat_lengkap') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" required placeholder="Jalan, RT/RW, Desa, Kecamatan">
                             </div>
 
-                            {{-- Pilihan Notifikasi --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-paper-plane text-purple-500"></i> Kanal Notifikasi Pilihan
@@ -494,7 +486,6 @@
                                 <p class="text-[10px] text-slate-400 mt-1">*Pilih metode pengiriman status pendaftaran dan tiket barcode.</p>
                             </div>
 
-                            {{-- Input Barang Bawaan (BARU) --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-box-open text-orange-500"></i> Barang Bawaan (Opsional)
@@ -503,7 +494,6 @@
                                 <p class="text-[10px] text-slate-400 mt-1">*Sebutkan barang yang dibawa untuk pemeriksaan petugas.</p>
                             </div>
 
-                            {{-- Upload Foto KTP --}}
                             <div class="md:col-span-2 group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-camera text-slate-500"></i> Upload Foto KTP (Wajib, Max 2MB)
@@ -513,7 +503,7 @@
                         </div>
                     </div>
 
-                    {{-- Data WBP (AUTOCOMPLETE FIX) --}}
+                    {{-- Data WBP (AUTOCOMPLETE) --}}
                     <div class="mt-8 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 sm:p-6 rounded-2xl border border-yellow-100 animate-slide-up-delay">
                         <h3 class="text-base sm:text-lg font-bold text-slate-800 border-b-2 border-yellow-200 pb-3 mb-6 flex items-center gap-3">
                             <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
@@ -536,7 +526,6 @@
                             </div>
                         </div>
                         
-                        {{-- X-DATA ALPINE UNTUK KALENDER & KUOTA --}}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
                                 datesByDay: {{ json_encode($datesByDay) }},
@@ -572,7 +561,7 @@
                                     try {
                                         const params = new URLSearchParams({
                                             tanggal_kunjungan: this.selectedDate,
-                                            sesi: this.isMonday ? this.selectedSesi : 'pagi', // Explisit kirim 'pagi' untuk hari lain
+                                            sesi: this.isMonday ? this.selectedSesi : 'pagi', 
                                         });
                                         const response = await fetch(`{{ route('kunjungan.quota.api') }}?${params}`);
                                         if (!response.ok) throw new Error('Gagal');
@@ -590,7 +579,6 @@
                                 }
                             }">
 
-                            {{-- PENCARIAN WBP (CUSTOM JS) --}}
                             <div class="group relative">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-user-tie text-yellow-600"></i> Cari Nama WBP
@@ -601,13 +589,9 @@
                                     aria-expanded="false"
                                     aria-controls="wbp_results_list">
                                 
-                                {{-- HIDDEN INPUT UNTUK WBP ID --}}
                                 <input type="hidden" name="wbp_id" id="wbp_id_hidden">
-
-                                {{-- HASIL PENCARIAN --}}
                                 <div id="wbp_results" role="listbox" class="search-results" aria-label="Hasil pencarian WBP"></div>
 
-                                {{-- INFO WBP TERPILIH --}}
                                 <div id="selected_wbp_info" class="hidden mt-2 p-3 bg-yellow-100 rounded-lg border border-yellow-300 text-sm text-yellow-800 flex justify-between items-center">
                                     <div>
                                         <strong>Terpilih:</strong> <span id="disp_nama"></span><br>
@@ -617,7 +601,6 @@
                                 </div>
                             </div>
 
-                            {{-- Hubungan --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-heart text-red-500"></i> Hubungan
@@ -632,7 +615,6 @@
                                 </select>
                             </div>
 
-                            {{-- HARI --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-calendar-day text-blue-500"></i> Pilih Hari
@@ -645,7 +627,6 @@
                                 </select>
                             </div>
 
-                            {{-- TANGGAL --}}
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-calendar-alt text-green-500"></i> Pilih Tanggal
@@ -659,7 +640,6 @@
                                 <div class="mt-2 text-sm" x-html="quotaInfo"></div>
                             </div>
 
-                            {{-- SESI (SENIN) --}}
                             <div x-show="isMonday" class="md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-200">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">
                                     <i class="fa-solid fa-clock text-blue-600"></i> Sesi Kunjungan (Senin)
@@ -673,7 +653,7 @@
                         </div>
                     </div>
 
-                   {{-- DATA PENGIKUT (DINAMIS DENGAN FOTO & DETAIL) --}}
+                   {{-- DATA PENGIKUT --}}
                     <div class="mt-8 bg-gradient-to-r from-emerald-50 to-green-50 p-4 sm:p-6 rounded-2xl border border-emerald-100 animate-slide-up-delay" 
                          x-data="{ 
                              followers: []
@@ -687,7 +667,6 @@
                                 <span class="text-emerald-800">Data Pengikut (Maksimal 4 Orang)</span>
                             </h3>
                             
-                            {{-- Tombol Tambah dengan limit --}}
                             <div>
                                 <button type="button" 
                                     @click="if(followers.length < 4) followers.push({id: Date.now()})"
@@ -700,12 +679,10 @@
                             </div>
                         </div>
 
-                        {{-- Pesan Peringatan Limit --}}
                         <p x-show="followers.length >= 4" x-transition class="text-center text-sm font-semibold text-red-600 bg-red-100 border border-red-300 rounded-lg p-2 mb-4">
                             <i class="fa-solid fa-exclamation-circle mr-1"></i> Anda telah mencapai batas maksimal 4 pengikut.
                         </p>
 
-                        {{-- AREA LOOPING FORM --}}
                         <div class="space-y-6">
                             <template x-for="(follower, index) in followers" :key="follower.id">
                                 <div class="bg-white p-5 rounded-xl shadow-sm border border-emerald-200 relative transition-all duration-300 hover:shadow-md animate-fade-in">
@@ -720,19 +697,16 @@
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {{-- Nama --}}
                                         <div>
                                             <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
                                             <input type="text" name="pengikut_nama[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Nama sesuai KTP" required>
                                         </div>
 
-                                        {{-- NIK --}}
                                         <div>
                                             <label class="block text-xs font-semibold text-slate-600 mb-1">NIK (KTP/KIA)</label>
                                             <input type="number" name="pengikut_nik[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Nomor Induk Kependudukan">
                                         </div>
 
-                                        {{-- Hubungan --}}
                                         <div>
                                             <label class="block text-xs font-semibold text-slate-600 mb-1">Hubungan</label>
                                             <select name="pengikut_hubungan[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2">
@@ -744,13 +718,11 @@
                                             </select>
                                         </div>
 
-                                        {{-- Barang Bawaan --}}
                                         <div>
                                             <label class="block text-xs font-semibold text-slate-600 mb-1">Barang Bawaan</label>
                                             <input type="text" name="pengikut_barang[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Contoh: Baju ganti, Susu bayi">
                                         </div>
 
-                                        {{-- Upload Foto KTP Pengikut --}}
                                         <div class="md:col-span-2">
                                             <label class="block text-xs font-semibold text-slate-600 mb-1">Foto KTP/Identitas Pengikut</label>
                                             <input type="file" name="pengikut_foto[]" accept="image/*" class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 border border-gray-300 rounded-lg cursor-pointer">
@@ -768,13 +740,24 @@
                         </div>
                     </div>
 
-                    {{-- Tombol Kirim --}}
+                    {{-- Tombol Kirim dengan Loading --}}
                     <div class="pt-8 border-t-2 border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-between items-stretch sm:items-center gap-4 bg-gradient-to-r from-gray-50 to-blue-50 p-4 sm:p-6 rounded-2xl">
                         <button type="button" @click="showForm = false" class="w-full sm:w-auto px-6 py-3 text-slate-600 font-bold hover:text-slate-900 transition bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center gap-2">
                             <i class="fa-solid fa-arrow-left"></i> Kembali
                         </button>
-                        <button type="submit" class="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-xl hover:scale-105 transition transform flex items-center justify-center gap-3 text-base sm:text-lg">
-                            <i class="fa-solid fa-paper-plane sm:text-xl"></i> KIRIM
+                        <button type="submit" :disabled="isSubmitting" :class="isSubmitting ? 'opacity-75 cursor-wait' : 'hover:scale-105'" class="w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-yellow-600 text-slate-900 font-bold px-8 py-4 rounded-xl shadow-xl transition transform flex items-center justify-center gap-3 text-base sm:text-lg">
+                            <template x-if="!isSubmitting">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-paper-plane sm:text-xl"></i> KIRIM</span>
+                            </template>
+                            <template x-if="isSubmitting">
+                                <span class="flex items-center gap-2">
+                                    <svg class="animate-spin h-5 w-5 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Mengirim...
+                                </span>
+                            </template>
                         </button>
                     </div>
                 </form>
@@ -787,63 +770,24 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // --- 1. SCRIPT SWEETALERT (JARING PENGAMAN) ---
     document.addEventListener('DOMContentLoaded', function() {
-        
-        // C. Cek Error Kepadatan Antrian (Duplicate Entry)
         @if(session('error_duplicate_entry'))
-            Swal.fire({
-                icon: 'warning',
-                title: 'Antrian Padat',
-                text: "{!! session('error_duplicate_entry') !!}",
-                confirmButtonText: 'Baik, Saya Coba Lagi',
-                confirmButtonColor: '#3085d6',
-            });
+            Swal.fire({ icon: 'warning', title: 'Antrian Padat', text: "{!! session('error_duplicate_entry') !!}", confirmButtonText: 'Baik, Saya Coba Lagi', confirmButtonColor: '#3085d6' });
         @endif
-
-        // A. Cek Error Logic dari Controller (Misal: H-1, Lock, dll)
         @if(session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Pendaftaran Ditolak',
-                text: "{!! session('error') !!}", // Menggunakan !! agar karakter aman
-                confirmButtonText: 'Saya Mengerti',
-                confirmButtonColor: '#d33',
-                background: '#fff',
-                allowOutsideClick: false
-            });
+            Swal.fire({ icon: 'error', title: 'Pendaftaran Ditolak', text: "{!! session('error') !!}", confirmButtonText: 'Saya Mengerti', confirmButtonColor: '#d33', background: '#fff', allowOutsideClick: false });
         @endif
-
-        // B. Cek Error Validasi Input (Required, Numeric, dll)
         @if($errors->any())
             let pesanError = '<ul style="text-align: left; margin-left: 20px;">';
-            @foreach($errors->all() as $error)
-                pesanError += '<li>{{ $error }}</li>';
-            @endforeach
+            @foreach($errors->all() as $error) pesanError += '<li>{{ $error }}</li>'; @endforeach
             pesanError += '</ul>';
-
-            Swal.fire({
-                icon: 'warning',
-                title: 'Data Belum Lengkap / Salah',
-                html: pesanError,
-                confirmButtonText: 'Perbaiki',
-                confirmButtonColor: '#f59e0b'
-            });
+            Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
-
-        // C. Cek Sukses
         @if(session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                confirmButtonText: 'Lihat Status',
-                confirmButtonColor: '#10b981'
-            });
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'Lihat Status', confirmButtonColor: '#10b981' });
         @endif
     });
 
-    // --- 2. SCRIPT AUTOCOMPLETE WBP ---
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('wbp_search_input');
         const resultsDiv = document.getElementById('wbp_results');
@@ -851,11 +795,10 @@
         const infoDiv = document.getElementById('selected_wbp_info');
         const btnReset = document.getElementById('btn_reset_wbp');
 
-        // Logic Autocomplete
         if(searchInput) {
             searchInput.addEventListener('keyup', function() {
                 let query = this.value;
-                hiddenId.value = ''; // Reset ID jika user mengetik ulang
+                hiddenId.value = ''; 
                 
                 if(query.length > 2) {
                     fetch(`{{ route('api.search.wbp') }}?q=${query}`)
@@ -876,17 +819,12 @@
                                 div.innerHTML = `<div><strong>${item.nama}</strong><br><span class="text-xs text-gray-500">${item.no_registrasi}</span></div>`;
                                 
                                 div.onclick = () => {
-                                    // Set Values
-                                    searchInput.value = item.nama; // Tampilkan nama di input
-                                    hiddenId.value = item.id;      // Simpan ID di input hidden
-                                    
-                                    // Show Info Box
+                                    searchInput.value = item.nama; 
+                                    hiddenId.value = item.id;      
                                     infoDiv.classList.remove('hidden');
                                     document.getElementById('disp_nama').innerText = item.nama;
                                     document.getElementById('disp_noreg').innerText = item.no_registrasi;
                                     document.getElementById('disp_blok').innerText = item.blok || '-'; 
-                                    
-                                    // Hide Search & Results
                                     searchInput.classList.add('hidden');
                                     resultsDiv.style.display = 'none';
                                     searchInput.setAttribute('aria-expanded', 'false');
@@ -905,7 +843,6 @@
             });
         }
 
-        // Reset Pilihan WBP
         if(btnReset) {
             btnReset.addEventListener('click', function() {
                 hiddenId.value = '';
@@ -916,7 +853,6 @@
             });
         }
 
-        // Klik di luar menutup dropdown
         document.addEventListener('click', function(e) {
             if (searchInput && resultsDiv) {
                 if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
@@ -926,83 +862,84 @@
             }
         });
 
-        // Validasi Submit (WBP Wajib Dipilih)
         const mainForm = document.querySelector('form');
         if(mainForm) {
             mainForm.addEventListener('submit', function(e) {
                 if (!hiddenId.value) {
                     e.preventDefault();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'WBP Belum Dipilih',
-                        text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.',
-                        confirmButtonColor: '#1e3a8a'
-                    });
+                    // Reset loading state if validation fails
+                    if(this.__x) this.__x.$data.isSubmitting = false; 
+                    Swal.fire({ icon: 'error', title: 'WBP Belum Dipilih', text: 'Silahkan cari dan klik nama WBP dari daftar pencarian yang muncul.', confirmButtonColor: '#1e3a8a' });
                 }
             });
         }
     });
-</script>
 
-{{-- SCRIPT BARU UNTUK AUTO-FILL NIK --}}
-<script>
+    // SCRIPT AUTO-FILL NIK (DIPERBAIKI)
     document.addEventListener('DOMContentLoaded', function () {
         const nikInput = document.getElementById('nik_ktp');
-        const namaInput = document.getElementById('nama_pengunjung');
-        const hpInput = document.getElementById('nomor_hp');
-        const emailInput = document.getElementById('email_pengunjung');
-        const alamatInput = document.getElementById('alamat_lengkap');
-        const jenisKelaminSelect = document.getElementById('jenis_kelamin');
+        const inputsToFill = {
+            'nama_pengunjung': document.getElementById('nama_pengunjung'),
+            'nomor_hp': document.getElementById('nomor_hp'),
+            'email_pengunjung': document.getElementById('email_pengunjung'),
+            'alamat_lengkap': document.getElementById('alamat_lengkap'),
+            'jenis_kelamin': document.getElementById('jenis_kelamin')
+        };
         
-        // Buat elemen untuk menampilkan status
         const statusMessage = document.createElement('p');
-        statusMessage.className = 'text-xs mt-1';
+        statusMessage.className = 'text-xs mt-1 transition-all duration-300';
         nikInput.parentElement.appendChild(statusMessage);
 
         if (nikInput) {
-            nikInput.addEventListener('blur', function () {
+            nikInput.addEventListener('keyup', function () { 
                 const nik = this.value;
+                
+                if (nik.length !== 16) {
+                    statusMessage.textContent = 'NIK harus 16 digit angka.';
+                    statusMessage.className = 'text-xs mt-1 text-slate-400';
+                    return;
+                }
 
-                // Reset status message
-                statusMessage.textContent = '';
-
-                // Validasi panjang NIK
-                if (nik.length === 16 && /^\d+$/.test(nik)) {
-                    statusMessage.textContent = 'Mencari data...';
-                    statusMessage.className = 'text-xs mt-1 text-blue-600';
+                if (/^\d{16}$/.test(nik)) {
+                    statusMessage.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Mencari data profil...';
+                    statusMessage.className = 'text-xs mt-1 text-blue-600 font-medium';
 
                     fetch(`/api/profil-by-nik/${nik}`)
                         .then(response => {
-                            if (!response.ok) {
-                                if(response.status === 404){
-                                    statusMessage.textContent = 'Profil baru, silahkan lengkapi data.';
-                                    statusMessage.className = 'text-xs mt-1 text-gray-500';
-                                } else {
-                                    statusMessage.textContent = 'Gagal memeriksa data.';
-                                    statusMessage.className = 'text-xs mt-1 text-red-600';
-                                }
-                                return Promise.reject('Profil tidak ditemukan atau error server');
-                            }
+                            if (!response.ok) throw new Error(response.status);
                             return response.json();
                         })
                         .then(data => {
-                            statusMessage.textContent = 'Data profil ditemukan dan dimuat!';
+                            statusMessage.innerHTML = '<i class="fa-solid fa-check-circle"></i> Data ditemukan! Silakan lengkapi sisa form.';
                             statusMessage.className = 'text-xs mt-1 text-green-600 font-bold';
 
-                            // Isi form dengan data yang diterima
-                            if (data.nama) namaInput.value = data.nama;
-                            if (data.nomor_hp) hpInput.value = data.nomor_hp;
-                            if (data.email) emailInput.value = data.email;
-                            if (data.alamat) alamatInput.value = data.alamat;
-                            if (data.jenis_kelamin) jenisKelaminSelect.value = data.jenis_kelamin;
-                            
+                            Object.keys(inputsToFill).forEach(key => {
+                                if (inputsToFill[key]) { 
+                                    let jsonKey = key;
+                                    if(key === 'nama_pengunjung') jsonKey = 'nama';
+                                    if(key === 'email_pengunjung') jsonKey = 'email';
+                                    if(key === 'alamat_lengkap') jsonKey = 'alamat';
+                                    
+                                    if(data[jsonKey]) {
+                                        inputsToFill[key].value = data[jsonKey];
+                                        inputsToFill[key].classList.add('bg-blue-50', 'border-blue-300');
+                                        setTimeout(() => inputsToFill[key].classList.remove('bg-blue-50', 'border-blue-300'), 1500);
+                                    }
+                                }
+                            });
                         })
                         .catch(error => {
-                            console.error('Fetch error:', error);
+                            if(error.message == '404') {
+                                statusMessage.innerHTML = '<i class="fa-solid fa-user-plus"></i> Profil baru. Silakan isi data secara manual.';
+                                statusMessage.className = 'text-xs mt-1 text-slate-500 italic';
+                            } else {
+                                statusMessage.textContent = 'Gagal memuat data. Silakan isi manual.';
+                                statusMessage.className = 'text-xs mt-1 text-red-500';
+                            }
                         });
-                } else if (nik.length > 0) {
-                    statusMessage.textContent = 'NIK harus 16 digit angka.';
-                    statusMessage.className = 'text-xs mt-1 text-red-600';
+                } else {
+                     statusMessage.textContent = 'Format NIK harus angka.';
+                     statusMessage.className = 'text-xs mt-1 text-red-500';
                 }
             });
         }

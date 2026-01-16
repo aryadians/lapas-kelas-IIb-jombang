@@ -110,13 +110,37 @@
                                 <p class="text-slate-600 text-sm leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p>
                             </div>
 
-                            {{-- Foto KTP Preview --}}
+                            {{-- FOTO KTP (BASE64) --}}
                             <div>
                                 <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Foto KTP</label>
-                                <div class="w-32 h-20 bg-slate-100 rounded-lg overflow-hidden border border-slate-200 relative group">
-                                    <img src="{{ asset('storage/' . $kunjungan->foto_ktp) }}" alt="KTP" class="w-full h-full object-cover">
+                                
+                                {{-- Container Gambar dengan Lightbox --}}
+                                <div class="block w-full sm:w-48 h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 relative group shadow-sm hover:shadow-md transition-all">
+                                    
+                                    @if(!empty($kunjungan->foto_ktp))
+                                        {{-- Tampilkan Gambar dari Base64 --}}
+                                        <a href="#" onclick="showImageModal('{{ $kunjungan->foto_ktp }}'); return false;">
+                                            <img src="{{ $kunjungan->foto_ktp }}" 
+                                                 alt="Foto KTP" 
+                                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Gambar+Rusak';">
+                                            
+                                            {{-- Efek Hover --}}
+                                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow-lg mb-1"></i>
+                                                <span class="text-white text-xs font-bold bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Lihat</span>
+                                            </div>
+                                        </a>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center h-full text-slate-400">
+                                            <i class="fa-solid fa-image-slash text-3xl mb-2"></i>
+                                            <span class="text-xs">Tidak ada foto</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
+                            {{-- END FOTO KTP --}}
+
                         </div>
                     </div>
 
@@ -212,4 +236,54 @@
         </div>
     </div>
 </div>
+
+{{-- MODAL POPUP GAMBAR FULL SCREEN --}}
+<div id="imageModal" class="fixed inset-0 z-[9999] hidden bg-black/95 flex items-center justify-center p-4 backdrop-blur-md transition-opacity duration-300 opacity-0" onclick="hideImageModal()">
+    <div class="relative max-w-5xl w-full max-h-screen flex justify-center">
+        {{-- Tombol Close --}}
+        <button class="absolute -top-12 right-0 text-white hover:text-red-400 transition-colors" onclick="hideImageModal()">
+            <i class="fa-solid fa-xmark text-4xl"></i>
+        </button>
+        
+        {{-- Gambar Utama --}}
+        <img id="modalImage" src="" class="max-w-full max-h-[85vh] rounded-lg shadow-2xl border border-slate-700 object-contain transform scale-95 transition-transform duration-300">
+    </div>
+</div>
+
+{{-- SCRIPT MODAL --}}
+<script>
+    function showImageModal(src) {
+        const modal = document.getElementById('imageModal');
+        const img = document.getElementById('modalImage');
+        
+        // Set source gambar
+        img.src = src;
+        
+        // Tampilkan modal
+        modal.classList.remove('hidden');
+        
+        // Animasi Fade In (sedikit delay agar class hidden hilang dulu)
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            img.classList.remove('scale-95');
+            img.classList.add('scale-100');
+        }, 10);
+    }
+
+    function hideImageModal() {
+        const modal = document.getElementById('imageModal');
+        const img = document.getElementById('modalImage');
+
+        // Animasi Fade Out
+        modal.classList.add('opacity-0');
+        img.classList.remove('scale-100');
+        img.classList.add('scale-95');
+
+        // Sembunyikan setelah animasi selesai
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            img.src = ''; // Reset gambar agar tidak flash saat dibuka lagi
+        }, 300);
+    }
+</script>
 @endsection

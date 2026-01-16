@@ -505,6 +505,7 @@ function submitBulkAction(actionType) {
     });
 }
 
+
 document.addEventListener('DOMContentLoaded', function() {
     // --- 1. LOGIC CHECKBOX ---
     const selectAll = document.getElementById('selectAll');

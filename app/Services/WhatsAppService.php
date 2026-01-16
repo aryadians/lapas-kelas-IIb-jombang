@@ -3,122 +3,111 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use App\Models\Kunjungan;
+use Carbon\Carbon;
 
 class WhatsAppService
 {
     /**
-     * Simulates sending a WhatsApp notification.
-     * In a real application, this would make an HTTP call to a WhatsApp API provider.
-     *
-     * @param string $to The recipient's phone number.
-     * @param string $message The message content.
+     * Mengirim pesan asli ke API Fonnte.
      */
-    protected function sendMessage(string $to, string $message)
+    protected function sendMessage(string $to, string $message, ?string $fileUrl = null)
     {
-        // Format the phone number if necessary (e.g., remove leading +, add country code)
-        $formattedTo = preg_replace('/[^0-9]/', '', $to);
+        // 1. Bersihkan Nomor HP (08xx -> 628xx)
+        $target = $this->normalizePhoneNumber($to);
 
-        // Log the message for simulation purposes.
-        // In a real app, replace this with your WhatsApp API provider's SDK or HTTP client.
-        Log::info("--- SIMULATING WHATSAPP MESSAGE ---");
-        Log::info("To: " . $formattedTo);
-        Log::info("Message: " . $message);
-        Log::info("---------------------------------");
+        // 2. Ambil Token dari .env
+        $token = env('WHATSAPP_API_TOKEN');
 
-        // Example with Twilio:
-        // $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-        // $twilio->messages->create('whatsapp:' . $formattedTo, [
-        //     'from' => 'whatsapp:' . env('TWILIO_WHATSAPP_FROM'),
-        //     'body' => $message
-        // ]);
+        if (empty($token)) {
+            Log::error("WhatsApp GAGAL: Token WHATSAPP_API_TOKEN belum diisi di file .env");
+            return;
+        }
+
+        // 3. Kirim Request ke Fonnte
+        try {
+            $payload = [
+                'target' => $target,
+                'message' => $message,
+                'countryCode' => '62',
+            ];
+
+            // [MODIFIKASI SEMENTARA]
+            // Jangan kirim URL gambar jika masih di localhost, karena Fonnte akan menolaknya.
+            // Kita matikan fitur kirim gambar sementara agar pesan teks tetap masuk.
+            if ($fileUrl && !str_contains($fileUrl, 'localhost') && !str_contains($fileUrl, '127.0.0.1')) {
+                 $payload['url'] = $fileUrl;
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => $token,
+            ])->post('https://api.fonnte.com/send', $payload);
+
+            // Cek apakah berhasil
+            if ($response->successful()) {
+                Log::info("WA Terkirim ke $target: " . $response->body());
+            } else {
+                Log::error("WA Gagal ke $target. Response: " . $response->body());
+            }
+
+        } catch (\Exception $e) {
+            Log::error("Error Koneksi WhatsApp: " . $e->getMessage());
+        }
     }
 
     /**
-     * Sends a notification for a pending visit registration.
-     *
-     * @param Kunjungan $kunjungan
+     * Ubah 08xxx jadi 628xxx
      */
+    private function normalizePhoneNumber($number)
+    {
+        $number = preg_replace('/[^0-9]/', '', $number); // Hapus spasi/strip
+        if (str_starts_with($number, '0')) {
+            $number = '62' . substr($number, 1);
+        }
+        return $number;
+    }
+
+    // --- TEMPLATE PESAN ---
+
     public function sendPending(Kunjungan $kunjungan, string $qrCodeUrl)
     {
-        $message = "Pendaftaran Anda berhasil! Simpan QR Code Anda.\n\n"
-                 . "Kode Pendaftaran: *{$kunjungan->kode_kunjungan}*\n"
-                 . "Status: MENUNGGU KEDATANGAN\n\n"
-                 . "Tunjukkan QR Code dari link di bawah ini kepada petugas saat tiba di Lapas untuk persetujuan final.\n"
-                 . $qrCodeUrl . "\n\n"
-                 . "Terima kasih.";
+        $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        
+        $message = "*PENDAFTARAN BERHASIL* ⏳\n\n"
+                 . "Halo {$kunjungan->nama_pengunjung},\n"
+                 . "Pendaftaran kunjungan Anda telah kami terima.\n\n"
+                 . "📋 Kode: *{$kunjungan->kode_kunjungan}*\n"
+                 . "📅 Tanggal: {$tanggal}\n"
+                 . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
+                 . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
+                 . "Mohon tunggu verifikasi petugas. Kami akan mengabari Anda jika status berubah.";
 
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+        // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
-    /**
-     * Sends a notification for an approved visit, including a link to the QR code.
-     *
-     * @param Kunjungan $kunjungan
-     * @param string $qrCodeUrl The publicly accessible URL to the generated QR code image.
-     */
-    public function sendApproved(Kunjungan $kunjungan, string $qrCodeUrl)
+    public function sendApproved(Kunjungan $kunjungan, ?string $qrCodeUrl = null)
     {
-        $message = "Pendaftaran kunjungan Anda telah DISETUJUI.\n\n"
-                 . "Kode Pendaftaran: *{$kunjungan->kode_kunjungan}*\n"
-                 . "Nama WBP: {$kunjungan->wbp->nama}\n"
-                 . "Tanggal: " . Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') . "\n\n"
-                 . "Silakan tunjukkan QR Code pada link di bawah ini kepada petugas saat melakukan kunjungan:\n"
-                 . $qrCodeUrl . "\n\n"
-                 . "Terima kasih.";
+        $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
 
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+        $message = "*KUNJUNGAN DISETUJUI* ✅\n\n"
+                 . "Halo {$kunjungan->nama_pengunjung},\n"
+                 . "Pendaftaran Anda telah *DISETUJUI*.\n\n"
+                 . "📅 Tanggal: {$tanggal}\n"
+                 . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
+                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
+                 . "Harap datang tepat waktu dengan membawa KTP Asli dan Bukti QR Code (Cek Email Anda untuk QR Code).";
+
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
-    /**
-     * Sends a notification for a rejected visit.
-     *
-     * @param Kunjungan $kunjungan
-     */
     public function sendRejected(Kunjungan $kunjungan)
     {
-        $message = "Mohon maaf, pendaftaran kunjungan Anda dengan kode *{$kunjungan->kode_kunjungan}* telah DITOLAK.\n\n"
-                 . "Silakan cek alasan penolakan dan lakukan pendaftaran ulang di website kami.\n"
-                 . "Lihat detail pendaftaran Anda di sini: " . route('kunjungan.status', $kunjungan->id);
-
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
-    }
-
-    /**
-     * Sends a reminder notification for an upcoming visit.
-     *
-     * @param Kunjungan $kunjungan
-     */
-    public function sendReminder(Kunjungan $kunjungan)
-    {
-        // Ensure WBP relationship is loaded for message content
-        $kunjungan->load('wbp');
-
-        $message = "Halo {$kunjungan->nama_pengunjung},\n\n"
-                 . "Ini adalah pengingat bahwa jadwal kunjungan tatap muka Anda adalah *BESOK*.\n"
-                 . "Detail Kunjungan:\n"
-                 . "Tanggal: " . \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') . "\n"
-                 . "Sesi: " . ucfirst($kunjungan->sesi) . "\n"
-                 . "Warga Binaan: " . $kunjungan->wbp->nama . "\n\n"
-                 . "Mohon siapkan diri Anda dan pastikan membawa identitas asli serta QR Code Anda.\n"
-                 . "Link QR Code: " . route('kunjungan.verify', $kunjungan->qr_token) . "\n\n"
-                 . "Terima kasih atas perhatiannya.";
-        
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
-    }
-
-    /**
-     * Sends a notification for a completed visit.
-     *
-     * @param Kunjungan $kunjungan
-     */
-    public function sendCompleted(Kunjungan $kunjungan)
-    {
-        $message = "Terima kasih atas kunjungan Anda di Lapas Jombang!\n\n"
-                 . "Kunjungan Anda pada tanggal " . \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') . " untuk WBP {$kunjungan->wbp->nama} telah selesai.\n\n"
-                 . "Kami sangat menghargai waktu Anda. Mohon kesediaannya untuk mengisi survei kepuasan layanan kami melalui link berikut:\n"
-                 . route('survey.create') . "\n\n"
-                 . "Masukan Anda sangat berarti bagi kami untuk menjadi lebih baik.";
+        $message = "*KUNJUNGAN DITOLAK* ❌\n\n"
+                 . "Mohon maaf {$kunjungan->nama_pengunjung},\n"
+                 . "Pendaftaran kunjungan Anda untuk tanggal " . $kunjungan->tanggal_kunjungan . " tidak dapat kami proses.\n\n"
+                 . "Silakan hubungi petugas untuk informasi lebih lanjut.";
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
