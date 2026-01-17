@@ -11,6 +11,8 @@
     <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql" alt="MySQL 8.0">
     <img src="https://img.shields.io/badge/Vite-5.0-purple?style=for-the-badge&logo=vite" alt="Vite">
     <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-cyan?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
+    <img src="https://img.shields.io/badge/Alpine.js-3.x-blueviolet?style=for-the-badge&logo=alpine-dot-js&logoColor=white" alt="Alpine.js 3.x">
+    <img src="https://img.shields.io/badge/Redis-6.x-red?style=for-the-badge&logo=redis&logoColor=white" alt="Redis 6.x">
   </p>
 </div>
 
@@ -21,15 +23,29 @@
 Aplikasi ini dirancang dengan berbagai fitur untuk meningkatkan pelayanan di Lapas Jombang:
 
 | Fitur                 | Deskripsi                                                                    | Ikon |
-| --------------------- | ---------------------------------------------------------------------------- | :--: |
+| :-------------------- | :--------------------------------------------------------------------------- | :--: |
 | **Pendaftaran Kunjungan** | Pengunjung dapat mendaftar kunjungan secara online, memilih WBP, dan tanggal. | 📅   |
 | **Manajemen Kunjungan** | Admin dapat menyetujui, menolak, atau menjadwalkan ulang kunjungan.          | ⚙️   |
-| **Notifikasi Real-time**  | Pengunjung mendapatkan notifikasi status kunjungan melalui email.            | 📧   |
+| **Notifikasi Real-time**  | Pengunjung mendapatkan notifikasi status kunjungan secara instan.           | 🔔   |
 | **QR Code Tiket**         | Setiap pendaftaran yang disetujui akan mendapatkan QR Code untuk check-in.   | 🎟️   |
 | **Manajemen WBP**         | Admin dapat mengelola data Warga Binaan Pemasyarakatan (WBP).                | 👥   |
 | **Berita & Pengumuman**   | Publikasi berita dan pengumuman penting langsung dari website.               | 📰   |
 | **Survei Layanan**        | Mengumpulkan feedback dari pengunjung untuk evaluasi layanan.                | 📊   |
+| **Voice Announcer**       | Sistem pengumuman suara cerdas untuk antrian dan informasi penting secara real-time. | 🎤   |
+| **Control Room**          | Dashboard terpusat untuk monitoring dan manajemen real-time antrian, notifikasi, dan operasional. | 🖥️   |
+| **WA Gateway**            | Integrasi WhatsApp Gateway untuk pengiriman notifikasi otomatis kepada pengunjung. | 💬   |
 | **Desain Responsif**      | Tampilan yang optimal di berbagai perangkat, baik desktop maupun mobile.     | 📱   |
+
+---
+
+## 🔗 Teknologi Integrasi Canggih
+
+Proyek ini memanfaatkan kombinasi teknologi modern untuk menghadirkan pengalaman real-time dan interaktif yang kaya:
+
+-   **Laravel & Redis (Backend Real-time):** Laravel Queue System dipadukan dengan Redis sebagai driver antrian, memungkinkan pemrosesan tugas latar belakang yang efisien seperti pengiriman notifikasi, pengelolaan data real-time, dan pemicuan Voice Announcer. Redis juga dimanfaatkan untuk _broadcasting events_, memastikan notifikasi real-time ke _Control Room_ dan _Voice Announcer_.
+-   **Alpine.js (Frontend Interaktif):** Digunakan untuk menambahkan interaktivitas langsung pada antarmuka pengguna tanpa _full page reload_. Alpine.js bekerja secara harmonis dengan event Laravel Echo yang didorong oleh Redis, memungkinkan _real-time updates_ pada _Control Room_ dan _display_ antrian.
+-   **WhatsApp API (WA Gateway):** Mengintegrasikan WhatsApp Gateway untuk mengirim notifikasi otomatis kepada pengunjung mengenai status kunjungan, informasi penting, dan pengingat. Ini memastikan komunikasi yang efektif dan langsung dengan pengguna.
+-   **JavaScript Kustom (Voice Announcer & 3D Animation):** Logika JavaScript khusus dikembangkan untuk fungsionalitas Voice Announcer (text-to-speech) di Control Room dan Display Antrian, serta untuk menghadirkan efek 3D yang menarik di halaman tertentu seperti FAQ, meningkatkan estetika dan pengalaman pengguna.
 
 ---
 
