@@ -14,44 +14,54 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Setup PHP 8.2 sesuai kebutuhan Laravel 11/12
+    # 1. Setup PHP 8.2
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
         extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, fileinfo, gd
+        coverage: none
 
-    # Setup Node.js untuk compile aset Vite (Tailwind/Alpine)
+    # 2. Setup Node.js (Vite)
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
 
+    # 3. Copy .env
+    # Pastikan file .env.example ADA di repository Anda.
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
 
+    # 4. Install Composer (Backend)
     - name: Install Composer Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-    # Install NPM & Build Aset Frontend
-    - name: Install NPM Dependencies & Build
-      run: |
-        npm ci
-        npm run build
-
+    # 5. Generate Application Key
     - name: Generate key
       run: php artisan key:generate
 
+    # 6. Install NPM & Build (Frontend)
+    # Kita ubah 'npm ci' jadi 'npm install' agar lebih aman jika package-lock.json tidak ada
+    - name: Install NPM Dependencies & Build
+      run: |
+        npm install
+        npm run build
+
+    # 7. Setup Directory Permissions
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
+    # 8. Create Database (SQLite)
     - name: Create Database
       run: |
         mkdir -p database
         touch database/database.sqlite
 
+    # 9. Run Tests
     - name: Execute tests (Unit and Feature tests) via PHPUnit/Pest
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
+        APP_ENV: testing
       run: php artisan test
