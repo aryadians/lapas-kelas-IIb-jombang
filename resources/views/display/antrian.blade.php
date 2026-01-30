@@ -389,6 +389,34 @@
                     setInterval(() => this.fetchQueueNumbers(), 3000);
                     setInterval(() => this.fetchVisitingStatus(), 5000);
 
+                    // Realtime updates via Laravel Echo (Reverb/Pusher)
+                    if (window.Echo) {
+                        console.log('Echo detected - subscribing to antrian.public');
+                        window.Echo.channel('antrian.public')
+                            .listen('.antrian.updated', (e) => {
+                                console.log('Realtime AntrianUpdated received:', e);
+                                const antrian = e.antrian || {};
+                                const nomor = antrian.nomor ?? antrian.no_antrian ?? antrian.nomor_terpanggil ?? 0;
+                                const sesi = antrian.sesi ?? null;
+                                if (sesi === 'pagi') {
+                                    if (this.nomorPagi != nomor) {
+                                        this.pingPagi = true;
+                                        setTimeout(() => this.pingPagi = false, 800);
+                                    }
+                                    this.nomorPagi = nomor;
+                                } else if (sesi === 'siang') {
+                                    if (this.nomorSiang != nomor) {
+                                        this.pingSiang = true;
+                                        setTimeout(() => this.pingSiang = false, 800);
+                                    }
+                                    this.nomorSiang = nomor;
+                                }
+                                this.playNotificationSound();
+                            });
+                    } else {
+                        console.warn('Laravel Echo is not initialized. Falling back to polling.');
+                    }
+
                     // If YouTube API is already ready by the time Alpine init runs
                     if (window.YT_API_READY && !this.youTubePlayerInitialized) {
                         this.initPlayer();
@@ -477,6 +505,24 @@
                         this.visitingList = data.in_progress || [];
                     } catch (e) {
                         console.error('Gagal mengambil status kunjungan:', e);
+                    }
+                },
+
+                playNotificationSound() {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        const ctx = new AudioContext();
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'sine';
+                        o.frequency.value = 880;
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        g.gain.value = 0.05;
+                        o.start();
+                        setTimeout(() => { o.stop(); ctx.close(); }, 300);
+                    } catch (err) {
+                        console.error('playNotificationSound failed:', err);
                     }
                 }
             }

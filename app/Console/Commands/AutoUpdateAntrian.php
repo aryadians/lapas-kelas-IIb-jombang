@@ -124,7 +124,13 @@ class AutoUpdateAntrian extends Command
         $newNumber = $antrianStatus->nomor_terpanggil + 1;
         $antrianStatus->update(['nomor_terpanggil' => $newNumber]);
 
-        AntrianUpdated::dispatch($antrianStatus->sesi, $newNumber);
+        $payload = [
+            'nomor' => $newNumber,
+            'loket' => null,
+            'status' => 'auto',
+            'sesi' => $antrianStatus->sesi,
+        ];
+        AntrianUpdated::dispatch($payload);
 
         Log::info("Auto-updated queue for session '{$antrianStatus->sesi}' to number {$newNumber}.");
         $this->info("Updated queue for session '{$antrianStatus->sesi}' to number {$newNumber}.");

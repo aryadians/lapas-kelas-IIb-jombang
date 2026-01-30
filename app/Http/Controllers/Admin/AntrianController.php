@@ -30,7 +30,13 @@ class AntrianController extends Controller
         $antrian = $this->getStatusForSesi($sesi);
         $antrian->increment('nomor_terpanggil');
 
-        AntrianUpdated::dispatch($sesi, $antrian->nomor_terpanggil);
+        $payload = [
+            'nomor' => $antrian->nomor_terpanggil,
+            'loket' => $request->input('loket', null),
+            'status' => 'panggil',
+            'sesi' => $sesi,
+        ];
+        AntrianUpdated::dispatch($payload);
 
         return response()->json([
             'sesi' => $sesi,
@@ -46,7 +52,13 @@ class AntrianController extends Controller
         $antrian = $this->getStatusForSesi($sesi);
         $antrian->update(['nomor_terpanggil' => 0]);
 
-        AntrianUpdated::dispatch($sesi, 0);
+        $payload = [
+            'nomor' => 0,
+            'loket' => $request->input('loket', null),
+            'status' => 'reset',
+            'sesi' => $sesi,
+        ];
+        AntrianUpdated::dispatch($payload);
 
         return response()->json([
             'sesi' => $sesi,

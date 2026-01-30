@@ -70,7 +70,13 @@ class QueueController extends Controller
             $antrian->save();
 
             // Broadcast the event
-            AntrianUpdated::dispatch($kunjungan->sesi, $antrian->nomor_terpanggil);
+            $payload = [
+                'nomor' => $antrian->nomor_terpanggil,
+                'loket' => null,
+                'status' => 'start',
+                'sesi' => $kunjungan->sesi,
+            ];
+            AntrianUpdated::dispatch($payload);
         }
 
         return response()->json([

@@ -47,13 +47,14 @@
             init() {
                 // Listen for AntrianUpdated event via Laravel Echo
                 if (window.Echo) {
-                    window.Echo.channel('antrian-channel')
+                    window.Echo.channel('antrian.public')
                         .listen('.antrian.updated', (e) => {
                             console.log('AntrianUpdated event received:', e);
-                            if (e.sesi === 'pagi') {
-                                this.nomorPagi = e.nomor_terpanggil;
-                            } else if (e.sesi === 'siang') {
-                                this.nomorSiang = e.nomor_terpanggil;
+                            const antrian = e.antrian || {};
+                            if ((antrian.sesi || '') === 'pagi') {
+                                this.nomorPagi = antrian.nomor ?? antrian.no_antrian ?? antrian.nomor_terpanggil ?? 0;
+                            } else if ((antrian.sesi || '') === 'siang') {
+                                this.nomorSiang = antrian.nomor ?? antrian.no_antrian ?? antrian.nomor_terpanggil ?? 0;
                             }
                         });
                 } else {

@@ -12,30 +12,44 @@ class AntrianUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $sesi;
-    public $nomor_terpanggil;
+    /**
+     * Payload with keys: nomor, loket, status, sesi
+     * @var array
+     */
+    public $antrian;
 
     /**
      * Create a new event instance.
      *
-     * @param string $sesi
-     * @param int $nomor_terpanggil
+     * @param array $antrian
      * @return void
      */
-    public function __construct(string $sesi, int $nomor_terpanggil)
+    public function __construct(array $antrian)
     {
-        $this->sesi = $sesi;
-        $this->nomor_terpanggil = $nomor_terpanggil;
+        $this->antrian = $antrian;
     }
 
     /**
      * Get the channels the event should broadcast on.
+     * Public channel so visitor display doesn't need auth.
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn()
     {
-        return new Channel('antrian-channel');
+        return new Channel('antrian.public');
+    }
+
+    /**
+     * Data to broadcast to clients
+     *
+     * @return array
+     */
+    public function broadcastWith()
+    {
+        return [
+            'antrian' => $this->antrian,
+        ];
     }
 
     /**
