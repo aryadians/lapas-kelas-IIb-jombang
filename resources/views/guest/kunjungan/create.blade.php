@@ -783,21 +783,26 @@
             pesanError += '</ul>';
             Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
+        
+        // --- BAGIAN INI YANG DIPERBAIKI ---
         @if(session('success') && session('kunjungan_id'))
             Swal.fire({
                 icon: 'success',
                 title: 'Berhasil!',
                 text: "{{ session('success') }}",
                 confirmButtonText: 'Lihat Status',
-                confirmButtonColor: '#10b981'
+                confirmButtonColor: '#10b981', // Koma ditambahkan di sini
+                allowOutsideClick: false // Supaya user terpaksa klik tombol
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Redirect ke halaman status menggunakan ID dari session
                     window.location.href = "{{ route('kunjungan.status', session('kunjungan_id')) }}";
                 }
             });
         @elseif(session('success'))
             Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'OK', confirmButtonColor: '#10b981' });
         @endif
+        // ----------------------------------
 
         // Client-side validation: ukuran file maksimal 2MB
         const MAX_BYTES = 2 * 1024 * 1024;
@@ -1064,8 +1069,8 @@
                             }
                         });
                 } else {
-                     statusMessage.textContent = 'Format NIK harus angka.';
-                     statusMessage.className = 'text-xs mt-1 text-red-500';
+                      statusMessage.textContent = 'Format NIK harus angka.';
+                      statusMessage.className = 'text-xs mt-1 text-red-500';
                 }
             });
         }

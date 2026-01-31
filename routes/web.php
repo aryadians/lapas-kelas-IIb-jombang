@@ -1,31 +1,43 @@
 <?php
 
-use App\Http\Controllers\SurveyController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\NewsController; // Public News
-use App\Http\Controllers\AnnouncementController; // Public Announcement
-use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController; // Admin Announcement
-use App\Http\Controllers\Admin\NewsController as AdminNewsController; // Admin News
-use App\Http\Controllers\Admin\ProductController as AdminProductController; // Admin Products
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KunjunganController; // Public Kunjungan
-use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController; // Admin Kunjungan
-use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ExecutiveDashboardController;
-use App\Http\Controllers\Admin\WbpController; // Admin WBP (Import & Manajemen)
-use App\Http\Controllers\Admin\AntrianController;
-use App\Http\Controllers\Admin\QueueController;
+use Illuminate\Support\Facades\Route;
+use Spatie\Activitylog\Models\Activity;
+
+// Controllers - Public / Guest
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\DisplayController;
-use App\Models\News;
-use App\Models\Announcement;
+use App\Http\Controllers\KunjunganController;
+use App\Http\Controllers\Guest\GalleryController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
+
+// Controllers - Auth
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
-use App\Http\Controllers\Guest\GalleryController;
-use Spatie\Activitylog\Models\Activity; // Tambahkan ini
-use Illuminate\Support\Facades\Route;
+
+// Controllers - Admin
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExecutiveDashboardController;
+use App\Http\Controllers\Admin\AntrianController;
+use App\Http\Controllers\Admin\QueueController;
+use App\Http\Controllers\Admin\WbpController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\KunjunganController as AdminKunjunganController;
+use App\Http\Controllers\Admin\VisitorController as AdminVisitorController;
+use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
+
+// Models
+use App\Models\News;
+use App\Models\Announcement;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,20 +62,22 @@ Route::get('/', function () {
 
 // Halaman Statis Publik
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
-Route::get('/kontak', [App\Http\Controllers\HomeController::class, 'contact'])->name('contact.index');
-Route::post('/kontak', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+Route::get('/kontak', [HomeController::class, 'contact'])->name('contact.index');
+Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
 
 // Route untuk Survey IKM
 Route::get('/survei/isi', [SurveyController::class, 'create'])->name('survey.create');
 Route::post('/survei/simpan', [SurveyController::class, 'store'])->name('survey.store');
 
+// Galeri & Profil
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
-Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile.index');
-Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
-Route::get('/live-antrian', [App\Http\Controllers\HomeController::class, 'liveAntrian'])->name('live.antrian');
-Route::get('/papan-pengumuman', [App\Http\Controllers\HomeController::class, 'papanPengumuman'])->name('papan.pengumuman');
+Route::get('/profil', [HomeController::class, 'profile'])->name('profile.index');
 
-// Halaman Display Antrian Publik (TV)
+// Fitur Informasi Realtime Publik
+Route::get('/live-antrian', [HomeController::class, 'liveAntrian'])->name('live.antrian');
+Route::get('/papan-pengumuman', [HomeController::class, 'papanPengumuman'])->name('papan.pengumuman');
+
+// Halaman Display Antrian Publik (TV Ruang Tunggu)
 Route::get('/display-antrian', [DisplayController::class, 'antrian'])->name('display.antrian');
 
 // Berita & Pengumuman (Publik)
@@ -82,9 +96,14 @@ Route::get('/produk/{product}', [ProductController::class, 'show'])->name('produ
 // =========================================================================
 Route::get('/kunjungan/daftar', [KunjunganController::class, 'create'])->name('kunjungan.create');
 Route::post('/kunjungan/daftar', [KunjunganController::class, 'store'])->name('kunjungan.store')->middleware('throttle:10,1');
+
+// Status & Tiket Kunjungan
 Route::get('/kunjungan/status/{kunjungan}', [KunjunganController::class, 'status'])->name('kunjungan.status');
 Route::get('/kunjungan/{kunjungan}/print', [KunjunganController::class, 'printProof'])->name('kunjungan.print');
 Route::get('/kunjungan/verify/{kunjungan}', [KunjunganController::class, 'verify'])->name('kunjungan.verify');
+
+// Halaman Cek Status Tanpa ID (Form Pencarian)
+Route::get('/kunjungan/cek-status', [KunjunganController::class, 'status'])->name('kunjungan.cek_status');
 
 // API Routes (Dipakai AJAX di Frontend)
 Route::get('/api/kunjungan/{kunjungan}/status', [KunjunganController::class, 'getStatusApi'])->name('kunjungan.status.api');
@@ -92,11 +111,10 @@ Route::get('/api/kunjungan/quota', [KunjunganController::class, 'getQuotaStatus'
 Route::get('/api/profil-by-nik/{nik}', [KunjunganController::class, 'findProfilByNik'])->name('api.profil.by-nik');
 
 // [PENTING] API Search WBP untuk Select2 di Formulir Pendaftaran
-// Route ini mencari data WBP agar sinkron dengan database admin
 Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('api.search.wbp');
 
 // API PUBLIK UNTUK ANTRIAN
-Route::get('/api/antrian/status', [App\Http\Controllers\Admin\AntrianController::class, 'getStatus'])->name('api.antrian.status');
+Route::get('/api/antrian/status', [AntrianController::class, 'getStatus'])->name('api.antrian.status');
 
 
 // =========================================================================
@@ -117,7 +135,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout')->middle
 
 
 // =========================================================================
-// 5. USER AREA (RIWAYAT KUNJUNGAN, ETC)
+// 4. USER AREA (RIWAYAT KUNJUNGAN, ETC)
 // =========================================================================
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/kunjungan/riwayat', [KunjunganController::class, 'riwayat'])->name('kunjungan.riwayat');
@@ -135,7 +153,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 // =========================================================================
-// 4. ADMIN PANEL (DASHBOARD & MANAJEMEN)
+// 5. ADMIN PANEL (DASHBOARD & MANAJEMEN)
 // =========================================================================
 // Semua route di dalam grup ini wajib LOGIN dan punya role ADMIN/SUPERADMIN
 Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function () {
@@ -144,23 +162,23 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Executive Dashboard
-    Route::get('/dashboard/executive', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'index'])->name('admin.dashboard.executive');
-    Route::get('/api/executive/kunjungan-trend', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'kunjunganTrend'])->name('api.executive.kunjungan-trend');
-    Route::get('/api/executive/kunjungan-heatmap', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'kunjunganHeatmap'])->name('api.executive.kunjungan-heatmap');
-    Route::get('/api/executive/demographics', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'demographics'])->name('api.executive.demographics');
-    Route::get('/api/executive/kpis', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getKpis'])->name('api.executive.kpis');
-    Route::get('/api/executive/visitor-demographics', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getVisitorDemographics'])->name('api.executive.visitor-demographics');
-    Route::get('/api/executive/most-visited-wbp', [App\Http\Controllers\Admin\ExecutiveDashboardController::class, 'getMostVisitedWbp'])->name('api.executive.most-visited-wbp');
+    Route::get('/dashboard/executive', [ExecutiveDashboardController::class, 'index'])->name('admin.dashboard.executive');
+    Route::get('/api/executive/kunjungan-trend', [ExecutiveDashboardController::class, 'kunjunganTrend'])->name('api.executive.kunjungan-trend');
+    Route::get('/api/executive/kunjungan-heatmap', [ExecutiveDashboardController::class, 'kunjunganHeatmap'])->name('api.executive.kunjungan-heatmap');
+    Route::get('/api/executive/demographics', [ExecutiveDashboardController::class, 'demographics'])->name('api.executive.demographics');
+    Route::get('/api/executive/kpis', [ExecutiveDashboardController::class, 'getKpis'])->name('api.executive.kpis');
+    Route::get('/api/executive/visitor-demographics', [ExecutiveDashboardController::class, 'getVisitorDemographics'])->name('api.executive.visitor-demographics');
+    Route::get('/api/executive/most-visited-wbp', [ExecutiveDashboardController::class, 'getMostVisitedWbp'])->name('api.executive.most-visited-wbp');
 
     Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
     Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
     Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+
     // Log Aktivitas
     Route::get('/activity-logs', [DashboardController::class, 'activityLogs'])->name('admin.activity_logs.index');
     Route::post('/activity-logs/reset', [DashboardController::class, 'resetActivityLogs'])->name('admin.activity_logs.reset');
-    
-    
+
     // I. MANAJEMEN ANTRIAN
     Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
     Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
@@ -180,17 +198,17 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     // C. MANAJEMEN KUNJUNGAN (VERIFIKASI & LAPORAN)
     Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
     Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
-    Route::get('kunjungan/export', [\App\Http\Controllers\Admin\KunjunganController::class, 'export'])->name('admin.kunjungan.export');
+    Route::get('kunjungan/export', [AdminKunjunganController::class, 'export'])->name('admin.kunjungan.export');
     Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');
     Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
     Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
-    
+
     // --> PENDAFTARAN OFFLINE OLEH ADMIN <--
     Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');
     Route::post('kunjungan/create-offline', [AdminKunjunganController::class, 'storeOffline'])->name('admin.kunjungan.storeOffline');
     Route::get('kunjungan/offline/success/{kunjungan}', [AdminKunjunganController::class, 'offlineSuccess'])->name('admin.kunjungan.offline.success');
-    
+
     Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
 
     // D. KELOLA KONTEN (BERITA & PENGUMUMAN)
@@ -204,11 +222,10 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::resource('users', AdminUserController::class)->names('admin.users');
 
     // G. MANAJEMEN SURVEY IKM
-    Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
+    Route::resource('surveys', AdminSurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
 
     // H. MANAJEMEN PENGUNJUNG
-    Route::get('pengunjung', [\App\Http\Controllers\Admin\VisitorController::class, 'index'])->name('admin.visitors.index');
-
+    Route::get('pengunjung', [AdminVisitorController::class, 'index'])->name('admin.visitors.index');
 });
 
 // Load auth routes bawaan Laravel Breeze
