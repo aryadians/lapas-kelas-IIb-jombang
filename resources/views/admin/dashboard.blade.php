@@ -66,6 +66,48 @@
         </div>
     </div>
 
+    {{-- Akses Cepat (Quick Access) --}}
+    <div class="mt-6 animate__animated animate__fadeInDown">
+        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <i class="fas fa-rocket text-blue-500"></i>
+            Akses Cepat
+        </h3>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {{-- Kontrol Antrian --}}
+            <a href="{{ route('admin.antrian.kontrol') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Kontrol Antrian">
+                <div class="w-20 h-20 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
+                    <i class="fa-solid fa-desktop"></i>
+                </div>
+                <span class="block text-sm font-semibold text-slate-700">Kontrol Antrian</span>
+            </a>
+
+            {{-- Verifikasi Kunjungan --}}
+            <a href="{{ route('admin.kunjungan.verifikasi') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Verifikasi Kunjungan">
+                <div class="w-20 h-20 mx-auto rounded-full bg-green-50 text-green-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <span class="block text-sm font-semibold text-slate-700">Verifikasi Kunjungan</span>
+            </a>
+
+            {{-- Data WBP --}}
+            <a href="{{ route('admin.wbp.index') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Data WBP">
+                <div class="w-20 h-20 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <span class="block text-sm font-semibold text-slate-700">Data WBP</span>
+            </a>
+
+            {{-- Manajemen Berita --}}
+            <a href="{{ route('news.index') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Manajemen Berita">
+                <div class="w-20 h-20 mx-auto rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
+                    <i class="fa-solid fa-newspaper"></i>
+                </div>
+                <span class="block text-sm font-semibold text-slate-700">Manajemen Berita</span>
+            </a>
+        </div>
+    </div>
+
     {{-- 2. STATISTIK CARDS --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeInUp delay-100">
         @php
