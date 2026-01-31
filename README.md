@@ -148,6 +148,37 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 --- 
 
+## ⚙️ Deployment & Production Notes ✅
+
+**Ringkas:** pastikan server production dikonfigurasi untuk menangani unggahan gambar, menjalankan queue worker, dan memiliki ekstensi yang diperlukan.
+
+- **PHP & Extensions**: Pastikan PHP >= **8.2** dan ekstensi **GD** terpasang (dibutuhkan oleh ImageService). Cek dengan: `php -m | grep gd`.
+- **PHP ini**: Set nilai yang cukup di `php.ini` untuk menghindari POST body terpotong:
+  - `upload_max_filesize = 8M`
+  - `post_max_size = 10M`
+  - `memory_limit` sesuai kebutuhan (mis. `128M` atau lebih)
+
+- **Queue** (recommended): Gunakan driver non-`sync` (Redis atau database) di `.env`:
+  - `QUEUE_CONNECTION=redis`
+  - Jalankan worker di production (mis. **NSSM** di Windows atau **systemd/supervisor** di Linux). Contoh singkat NSSM (Windows):
+    ```powershell
+    nssm install laravel-queue C:\php\php.exe "C:\path\to\project\artisan queue:work redis --sleep=3 --tries=3 --timeout=90"
+    nssm set laravel-queue AppDirectory C:\path\to\project
+    nssm start laravel-queue
+    ```
+
+  Contoh file konfigurasi dan skrip deploy tersedia di folder `examples/` pada repository (systemd, supervisor, NSSM instructions, dan skrip deploy untuk Linux/Windows).
+- **Migrations & Setup**:
+  - Jalankan migrasi: `php artisan migrate --force` sebelum membuka produksi.
+  - Saat deploy, beri sinyal worker untuk restart: `php artisan queue:restart`.
+  - Pastikan `ADMIN_EMAIL` (untuk alert WA provider failures) dan `WHATSAPP_API_TOKEN` ter-set di `.env`.
+
+- **KTP / Pengikut Image Handling**: Aplikasi sekarang menyimpan file asli sementara dan memproses kompresi di background (job queue). Pastikan worker berjalan agar `foto_ktp` ter-processed dan tidak menumpuk file sementara.
+
+- **Monitoring & Logs**: Pantau `storage/logs/laravel.log` dan worker logs (`storage/logs/worker.log`) untuk deteksi cepat kegagalan.
+
+--- 
+
 ## ☕ Dukungan & Donasi
 
 Jika aplikasi ini bermanfaat untuk instansi atau pembelajaran Anda, Anda bisa mentraktir saya kopi melalui:

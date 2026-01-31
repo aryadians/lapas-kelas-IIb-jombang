@@ -1,0 +1,15 @@
+[Unit]
+Description=Laravel Queue Worker
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+ExecStart=/usr/bin/php /var/www/your-project-path/artisan queue:work redis --sleep=3 --tries=3 --timeout=90
+WorkingDirectory=/var/www/your-project-path
+Environment=APP_ENV=production
+Environment=QUEUE_CONNECTION=redis
+
+[Install]
+WantedBy=multi-user.target
