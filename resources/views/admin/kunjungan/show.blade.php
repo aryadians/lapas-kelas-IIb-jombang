@@ -259,7 +259,7 @@
                             <p class="data-label">Foto KTP</p>
                             <div class="relative group">
                                 <a href="{{ $kunjungan->foto_ktp }}" target="_blank" class="block w-full">
-                                    <img src="{{ $kunjungan->foto_ktp }}" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
+                                    <img src="{{ $kunjungan->foto_ktp }}" loading="lazy" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
                                 </a>
                                 <div class="mt-2 text-center">
                                     <a href="{{ $kunjungan->foto_ktp }}" download="KTP_{{ $kunjungan->nama_pengunjung }}.png" class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
@@ -303,7 +303,7 @@
                                 <div class="flex-shrink-0">
                                     @if(!empty($pengikut->foto_ktp))
                                         <a href="{{ $pengikut->foto_ktp }}" target="_blank">
-                                            <img src="{{ $pengikut->foto_ktp }}" class="w-12 h-12 rounded-full object-cover border border-slate-300 shadow-sm hover:scale-110 transition-transform">
+                                            <img src="{{ $pengikut->foto_ktp }}" loading="lazy" class="w-12 h-12 rounded-full object-cover border border-slate-300 shadow-sm hover:scale-110 transition-transform">
                                         </a>
                                     @else
                                         <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">

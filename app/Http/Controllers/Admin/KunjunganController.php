@@ -22,7 +22,13 @@ class KunjunganController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Kunjungan::with('wbp');
+        // Jangan ambil kolom foto_ktp di index karena ukurannya besar (Base64)
+        // Ini akan mempercepat loading tabel secara signifikan
+        $query = Kunjungan::select(
+            'id', 'profil_pengunjung_id', 'kode_kunjungan', 'nama_pengunjung', 
+            'nik_ktp', 'tanggal_kunjungan', 'sesi', 'status', 'nomor_antrian_harian',
+            'wbp_id', 'registration_type', 'created_at'
+        )->with('wbp');
 
         // 1. Filter Status
         if ($request->filled('status')) {
