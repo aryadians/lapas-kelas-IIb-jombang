@@ -179,40 +179,40 @@ class ExecutiveDashboardController extends Controller
             }
         }
 
-        // 2. Kecamatan Distribution
+        // 2. Kecamatan Distribution (Optimized for Jombang Area)
+        $jombangKecamatan = [
+            'Bandar Kedungmulyo', 'Perak', 'Gudo', 'Diwek', 'Ngoro', 'Mojowarno', 'Bareng', 'Wonosalam', 
+            'Mojoagung', 'Sumobito', 'Jogoroto', 'Peterongan', 'Jombang', 'Megaluh', 'Tembelang', 
+            'Kesamben', 'Kudu', 'Ngusikan', 'Ploso', 'Kabuh', 'Plandaan'
+        ];
+
         $kecamatanCounts = $kunjungans->pluck('alamat_pengunjung')
-            ->map(function ($alamat) {
-                if (!$alamat) return 'Tidak Diketahui';
+            ->map(function ($alamat) use ($jombangKecamatan) {
+                if (!$alamat) return 'Luar Jombang / Tidak Diketahui';
 
-                $lowerAlamat = strtolower($alamat);
-                $kecamatan = null;
-
-                // Try to find "kecamatan" or "kec."
-                $pos = strpos($lowerAlamat, 'kecamatan ');
-                if ($pos === false) {
-                    $pos = strpos($lowerAlamat, 'kec. ');
-                    if ($pos !== false) {
-                        $pos += strlen('kec. ');
+                $cleanAlamat = strtolower(str_replace(['.', ',', '/'], ' ', $alamat));
+                
+                // Prioritas 1: Cari kecocokan langsung dengan daftar kecamatan Jombang
+                foreach ($jombangKecamatan as $kec) {
+                    if (str_contains($cleanAlamat, strtolower($kec))) {
+                        return $kec;
                     }
-                } else {
-                    $pos += strlen('kecamatan ');
                 }
+
+                // Prioritas 2: Cari keyword "Kecamatan" atau "Kec"
+                $pos = strpos($cleanAlamat, 'kecamatan ');
+                if ($pos === false) $pos = strpos($cleanAlamat, 'kec ');
 
                 if ($pos !== false) {
                     $substring = substr($alamat, $pos);
-                    $parts = preg_split('/, | /', $substring, 2, PREG_SPLIT_NO_EMPTY);
-                    $kecamatan = trim($parts[0]);
-                } else {
-                    // Fallback: take the second to last word, assuming address is "..., Kecamatan, Kabupaten"
-                    $parts = explode(' ', trim($alamat));
-                    if (count($parts) > 1) {
-                        $kecamatan = $parts[count($parts) - 2];
-                    } else {
-                        $kecamatan = end($parts); // a single word address
+                    $parts = preg_split('/[\s,]+/', trim($substring));
+                    if (isset($parts[1]) && strlen($parts[1]) > 2) {
+                        return ucfirst(strtolower($parts[1]));
                     }
                 }
-                
-                return ucfirst(strtolower(trim(str_replace(',', '', $kecamatan))));
+
+                // Fallback: Jika tidak ditemukan, anggap luar kota atau tidak terdeteksi
+                return 'Lainnya / Luar Jombang';
             })
             ->countBy()
             ->sortDesc()
@@ -223,7 +223,7 @@ class ExecutiveDashboardController extends Controller
                 'labels' => array_keys($ageGroups),
                 'data' => array_values($ageGroups),
             ],
-            'city_distribution' => [ // Keep key as city_distribution for frontend compatibility for now
+            'city_distribution' => [
                 'labels' => $kecamatanCounts->keys(),
                 'data' => $kecamatanCounts->values(),
             ],
