@@ -40,143 +40,45 @@ Aplikasi ini dirancang dengan berbagai fitur untuk meningkatkan pelayanan di Lap
 
 ## 🔗 Teknologi Integrasi Canggih
 
-Proyek ini memanfaatkan kombinasi teknologi modern untuk menghadirkan pengalaman real-time dan interaktif yang kaya:
+Proyek ini memanfaatkan kombinasi teknologi modern untuk menghadirkan pengalaman real-time dan performa tinggi:
 
--   **Laravel & Redis (Backend Real-time):** Laravel Queue System dipadukan dengan Redis sebagai driver antrian, memungkinkan pemrosesan tugas latar belakang yang efisien seperti pengiriman notifikasi, pengelolaan data real-time, dan pemicuan Voice Announcer. Redis juga dimanfaatkan untuk _broadcasting events_, memastikan notifikasi real-time ke _Control Room_ dan _Voice Announcer_.
--   **Alpine.js (Frontend Interaktif):** Digunakan untuk menambahkan interaktivitas langsung pada antarmuka pengguna tanpa _full page reload_. Alpine.js bekerja secara harmonis dengan event Laravel Echo yang didorong oleh Redis, memungkinkan _real-time updates_ pada _Control Room_ dan _display_ antrian.
--   **WhatsApp API (WA Gateway):** Mengintegrasikan WhatsApp Gateway untuk mengirim notifikasi otomatis kepada pengunjung mengenai status kunjungan, informasi penting, dan pengingat. Ini memastikan komunikasi yang efektif dan langsung dengan pengguna.
--   **JavaScript Kustom (Voice Announcer & 3D Animation):** Logika JavaScript khusus dikembangkan untuk fungsionalitas Voice Announcer (text-to-speech) di Control Room dan Display Antrian, serta untuk menghadirkan efek 3D yang menarik di halaman tertentu seperti FAQ, meningkatkan estetika dan pengalaman pengguna.
+-   **Laravel & Redis (Backend Real-time):** Memungkinkan pemrosesan tugas latar belakang yang efisien dan broadcasting event untuk update real-time pada Control Room.
+-   **Optimasi Performa Tinggi (Speed & UX):** 
+    -   **Instant Navigation:** Menggunakan `instant.page` untuk prefetching halaman, membuat perpindahan menu terasa instan.
+    -   **Visual Feedback:** Integrasi `NProgress` untuk indikator loading bar yang modern.
+    -   **Data Caching:** Implementasi caching pada level aplikasi untuk mempercepat pemuatan data statis.
+    -   **Database Indexing:** Optimasi query pada ribuan data kunjungan untuk akses cepat.
+-   **Instant Image Processing:** Foto KTP pengunjung dan pengikut langsung diproses menjadi format **Base64** secara instan dengan kompresi otomatis untuk efisiensi penyimpanan database.
+-   **Advanced Analytics:** Dashboard Executive yang akurat dengan deteksi otomatis usia berdasarkan NIK dan ekstraksi cerdas wilayah kecamatan asal pengunjung.
+-   **WhatsApp API (WA Gateway):** Notifikasi otomatis dengan link tiket QR langsung ke perangkat pengunjung.
+-   **JavaScript Kustom (Voice Announcer & 3D Animation):** Fungsionalitas Voice Announcer (text-to-speech) dan efek 3D pada halaman FAQ.
 
 ---
 
 ## 🛠️ Instalasi & Konfigurasi
 
-Ikuti langkah-langkah berikut untuk menjalankan aplikasi ini di lingkungan lokal Anda.
+### **1. Persiapan**
+Aplikasi ini berjalan optimal pada PHP 8.2 ke atas dengan ekstensi GD aktif untuk pemrosesan gambar.
 
-### **1. Clone Repository**
-Gunakan `git clone` untuk mengunduh repository ini ke mesin lokal Anda.
+### **2. Setup Cepat**
+Gunakan script setup otomatis:
 ```bash
-git clone https://github.com/username/lapas-jombang.git
-cd lapas-jombang
+composer run setup
 ```
 
-### **2. Instalasi Dependensi**
-Instal semua dependensi yang dibutuhkan oleh Composer dan NPM.
+### **3. Jalankan Mode Development**
 ```bash
-# Instal dependensi PHP
-composer install
-
-# Instal dependensi JavaScript
-npm install
+# Menjalankan server, queue, dan vite secara bersamaan
+composer run dev
 ```
-### **3. Konfigurasi Lingkungan**
-Salin file `.env.example` dan buat file `.env` baru. Kemudian, generate application key.
-```bash
-# Salin file environment
-cp .env.example .env
-
-# Generate APP_KEY
-php artisan key:generate
-```
-
-### **4. Konfigurasi Database**
-Buka file `.env` dan sesuaikan konfigurasi database Anda.
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=lapas_jombang
-DB_USERNAME=root
-DB_PASSWORD=
-```
-Pastikan Anda sudah membuat database dengan nama `lapas_jombang` atau sesuaikan dengan nama yang Anda inginkan.
-
-### **5. Migrasi & Seeding Database**
-Jalankan migrasi untuk membuat tabel-tabel yang diperlukan dan seeding untuk mengisi data awal (jika ada).
-```bash
-php artisan migrate --seed
-```
-
-### **6. Build Aset Frontend**
-Kompilasi aset frontend seperti CSS dan JavaScript menggunakan Vite.
-```bash
-# Jalankan build untuk production
-npm run build
-
-# Atau jalankan dalam mode development
-npm run dev
-```
-
-### **7. Jalankan Server Lokal**
-Terakhir, jalankan server development Laravel.
-```bash
-php artisan serve
-```
-🎉 Aplikasi sekarang akan berjalan di **http://127.0.0.1:8000**.
 
 ---
-
-## 🎨 Tampilan Aplikasi
-
-Berikut adalah beberapa tampilan dari aplikasi Lapas Jombang:
-
-| Halaman Utama | Form Pendaftaran | Dashboard Admin |
-| :---: | :---: | :---: |
-| <img src="/public/img/HomePage.png" alt="Halaman Utama" width="300"> | <img src="/public/img/PageDaftar.png" alt="Form Pendaftaran" width="300"> | <img src="./public/img/DashboardAdmin.png" alt="Dashboard Admin" width="300"> |
-
----
-
-## 🤝 Kontribusi
-
-Kontribusi sangat kami harapkan! Jika Anda menemukan bug atau memiliki ide untuk fitur baru, silakan buat *issue* atau *pull request*.
-
-1.  **Fork** repository ini.
-2.  Buat *branch* fitur baru (`git checkout -b fitur/nama-fitur`).
-3.  **Commit** perubahan Anda (`git commit -m 'Menambahkan fitur X'`).
-4.  **Push** ke *branch* Anda (`git push origin fitur/nama-fitur`).
-5.  Buka **Pull Request**.
-
----
-
-## 📜 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
-<div align="center">
-  <small>Dibuat dengan ❤️ untuk pelayanan publik yang lebih baik.</small>
-</div>
-
---- 
 
 ## ⚙️ Deployment & Production Notes ✅
 
-**Ringkas:** pastikan server production dikonfigurasi untuk menangani unggahan gambar, menjalankan queue worker, dan memiliki ekstensi yang diperlukan.
-
-- **PHP & Extensions**: Pastikan PHP >= **8.2** dan ekstensi **GD** terpasang (dibutuhkan oleh ImageService). Cek dengan: `php -m | grep gd`.
-- **PHP ini**: Set nilai yang cukup di `php.ini` untuk menghindari POST body terpotong:
-  - `upload_max_filesize = 8M`
-  - `post_max_size = 10M`
-  - `memory_limit` sesuai kebutuhan (mis. `128M` atau lebih)
-
-- **Queue** (recommended): Gunakan driver non-`sync` (Redis atau database) di `.env`:
-  - `QUEUE_CONNECTION=redis`
-  - Jalankan worker di production (mis. **NSSM** di Windows atau **systemd/supervisor** di Linux). Contoh singkat NSSM (Windows):
-    ```powershell
-    nssm install laravel-queue C:\php\php.exe "C:\path\to\project\artisan queue:work redis --sleep=3 --tries=3 --timeout=90"
-    nssm set laravel-queue AppDirectory C:\path\to\project
-    nssm start laravel-queue
-    ```
-
-  Contoh file konfigurasi dan skrip deploy tersedia di folder `examples/` pada repository (systemd, supervisor, NSSM instructions, dan skrip deploy untuk Linux/Windows).
-- **Migrations & Setup**:
-  - Jalankan migrasi: `php artisan migrate --force` sebelum membuka produksi.
-  - Saat deploy, beri sinyal worker untuk restart: `php artisan queue:restart`.
-  - Pastikan `ADMIN_EMAIL` (untuk alert WA provider failures) dan `WHATSAPP_API_TOKEN` ter-set di `.env`.
-
-- **KTP / Pengikut Image Handling**: Aplikasi sekarang menyimpan file asli sementara dan memproses kompresi di background (job queue). Pastikan worker berjalan agar `foto_ktp` ter-processed dan tidak menumpuk file sementara.
-
-- **Monitoring & Logs**: Pantau `storage/logs/laravel.log` dan worker logs (`storage/logs/worker.log`) untuk deteksi cepat kegagalan.
-
+- **Optimasi Server**: Pastikan **Gzip Compression** dan **Browser Caching** aktif pada web server (Nginx/Apache) untuk mendukung pengiriman aset yang sangat cepat. Aturan dasar sudah tersedia di file `.htaccess`.
+- **Base64 Handling**: Foto KTP disimpan langsung di database dalam format string. Pastikan `post_max_size` pada PHP disesuaikan jika menangani pendaftaran massal.
+- **Queue**: Jalankan worker untuk menangani notifikasi WA dan Email agar tidak menghambat request utama.
 --- 
 
 ## ☕ Dukungan & Donasi
