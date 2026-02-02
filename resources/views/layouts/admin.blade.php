@@ -406,5 +406,6 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @stack('scripts')
+    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
 </body>
 </html>

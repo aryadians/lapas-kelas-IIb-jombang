@@ -53,9 +53,14 @@ use App\Models\Announcement;
 // 1. HALAMAN DEPAN (PUBLIK - PENGUNJUNG)
 // =========================================================================
 Route::get('/', function () {
-    // Ambil Berita & Pengumuman Terbaru untuk Landing Page
-    $news = News::where('status', 'published')->latest()->take(4)->get();
-    $announcements = Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
+    // Gunakan Cache untuk meningkatkan performa halaman utama
+    $news = Cache::remember('homepage_news', 3600, function() {
+        return News::where('status', 'published')->latest()->take(4)->get();
+    });
+
+    $announcements = Cache::remember('homepage_announcements', 3600, function() {
+        return Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
+    });
 
     return view('welcome', compact('news', 'announcements'));
 });

@@ -68,5 +68,6 @@
     {{-- Alpine.js --}}
     <script src="//unpkg.com/alpinejs" defer></script>
 
+    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
 </body>
 </html>
