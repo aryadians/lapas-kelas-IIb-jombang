@@ -55,10 +55,7 @@
             {{ $slot }}
         </div>
 
-        {{-- COPYRIGHT --}}
-        <div class="mt-8 text-slate-500 text-sm">
-            &copy; {{ date('Y') }} Lapas Kelas IIB Jombang.
-        </div>
+
     </div>
 
     {{-- WIDGET AKSESIBILITAS --}}

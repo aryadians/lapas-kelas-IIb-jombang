@@ -66,47 +66,7 @@
         </div>
     </div>
 
-    {{-- Akses Cepat (Quick Access) --}}
-    <div class="mt-6 animate__animated animate__fadeInDown">
-        <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fas fa-rocket text-blue-500"></i>
-            Akses Cepat
-        </h3>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {{-- Kontrol Antrian --}}
-            <a href="{{ route('admin.antrian.kontrol') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Kontrol Antrian">
-                <div class="w-20 h-20 mx-auto rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
-                    <i class="fa-solid fa-desktop"></i>
-                </div>
-                <span class="block text-sm font-semibold text-slate-700">Kontrol Antrian</span>
-            </a>
-
-            {{-- Verifikasi Kunjungan --}}
-            <a href="{{ route('admin.kunjungan.verifikasi') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Verifikasi Kunjungan">
-                <div class="w-20 h-20 mx-auto rounded-full bg-green-50 text-green-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
-                    <i class="fa-solid fa-check-circle"></i>
-                </div>
-                <span class="block text-sm font-semibold text-slate-700">Verifikasi Kunjungan</span>
-            </a>
-
-            {{-- Data WBP --}}
-            <a href="{{ route('admin.wbp.index') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Data WBP">
-                <div class="w-20 h-20 mx-auto rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
-                    <i class="fa-solid fa-users"></i>
-                </div>
-                <span class="block text-sm font-semibold text-slate-700">Data WBP</span>
-            </a>
-
-            {{-- Manajemen Berita --}}
-            <a href="{{ route('news.index') }}" class="group block bg-white/60 hover:bg-white border border-slate-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transform hover:-translate-y-1 transition-all" title="Manajemen Berita">
-                <div class="w-20 h-20 mx-auto rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-4xl mb-3 transform transition-transform group-hover:scale-105" aria-hidden="true">
-                    <i class="fa-solid fa-newspaper"></i>
-                </div>
-                <span class="block text-sm font-semibold text-slate-700">Manajemen Berita</span>
-            </a>
-        </div>
-    </div>
 
     {{-- 2. STATISTIK CARDS --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeInUp delay-100">
@@ -395,7 +355,7 @@
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @php $userRole = Auth::user()->role ?? 'user'; @endphp
-                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
                     <a href="{{ route('news.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-pen-nib text-xl"></i>
@@ -404,7 +364,7 @@
                     </a>
                     @endif
                     
-                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
                     <a href="{{ route('announcements.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-yellow-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-bullhorn text-xl"></i>
@@ -413,7 +373,7 @@
                     </a>
                     @endif
                     
-                    @if(in_array($userRole, ['super_admin', 'admin_registrasi']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_registrasi']))
                     <a href="{{ route('admin.kunjungan.verifikasi') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-green-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-qrcode text-xl"></i>
@@ -422,7 +382,7 @@
                     </a>
                     @endif
                     
-                    @if(in_array($userRole, ['super_admin', 'admin_registrasi', 'admin_umum']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_registrasi', 'admin_umum']))
                     <a href="{{ route('admin.users.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-purple-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-user-plus text-xl"></i>
@@ -431,7 +391,7 @@
                     </a>
                     @endif
 
-                    @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
                     <a href="{{ route('admin.surveys.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-cyan-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-chart-pie text-xl"></i>
@@ -440,7 +400,7 @@
                     </a>
                     @endif
 
-                    @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin_registrasi']))
+                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_umum', 'admin_registrasi']))
                     <a href="{{ route('admin.wbp.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-rose-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
                         <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-users-viewfinder text-xl"></i>
