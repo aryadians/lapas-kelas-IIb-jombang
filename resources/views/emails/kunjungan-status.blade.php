@@ -40,7 +40,7 @@
                 {{-- Menggunakan embed untuk logo agar tidak di-block email client --}}
                 <img src="{{ $message->embed(public_path('img/logo.png')) }}" alt="Logo Lapas" class="logo-img">
                 <h1>Lapas Kelas IIB Jombang</h1>
-                <div style="color: #cbd5e1; font-size: 12px; margin-top: 5px;">Kementerian Hukum dan HAM Republik Indonesia</div>
+                <div style="color: #cbd5e1; font-size: 12px; margin-top: 5px;">Kementrian Imigrasi dan Pemasyarakatan Kelas IIb Jombang</div>
             </div>
 
             <div class="body">
@@ -60,7 +60,7 @@
                     </div>
 
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
-                    <p>Terima kasih telah mendaftar. Data Anda sedang kami verifikasi. Mohon menunggu email selanjutnya untuk status persetujuan.</p>
+                    <p>Terima kasih telah mendaftar, silahkan tunjukan email ini dan Qr code kepada petugas</p>
 
                     <div style="margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
                         <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Data Pengunjung</h3>
