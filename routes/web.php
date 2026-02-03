@@ -14,6 +14,9 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\Guest\GalleryController;
+use App\Models\Kunjungan;
+
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 

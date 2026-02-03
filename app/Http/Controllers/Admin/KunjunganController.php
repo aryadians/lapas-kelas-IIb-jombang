@@ -214,7 +214,13 @@ class KunjunganController extends Controller
         ]);
 
         $token = trim($request->qr_token);
-        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->where('qr_token', $token)->first();
+        // Remove '#' if present (common confusion with ID format)
+        $token = ltrim($token, '#');
+
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])
+            ->where('qr_token', $token)
+            ->orWhere('kode_kunjungan', $token)
+            ->first();
 
         if ($kunjungan) {
             $message = 'Kunjungan valid dan sudah disetujui sebelumnya.';

@@ -485,7 +485,10 @@ class KunjunganController extends Controller
 
     public function verifikasiSubmit(Request $request, WhatsAppService $whatsAppService)
     {
-        $token = $request->qr_token;
+        $token = trim($request->qr_token);
+        // Remove '#' if present (common confusion with ID format)
+        $token = ltrim($token, '#');
+
         $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])
             ->where('qr_token', $token)
             ->orWhere('kode_kunjungan', $token)
@@ -505,7 +508,19 @@ class KunjunganController extends Controller
                     Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, null));
                 } catch (\Exception $e) {
                 }
-                return redirect()->route('kunjungan.print', $kunjungan->id);
+            }
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'success',
+                    'kunjungan' => $kunjungan,
+                    'message' => $message
+                ]);
+            }
+
+            if ($message) {
+                 // If status changed, maybe redirect to print, but for consistency let's show success page
+                 // return redirect()->route('kunjungan.print', $kunjungan->id);
             }
 
             return view('admin.kunjungan.verifikasi', [
@@ -514,6 +529,13 @@ class KunjunganController extends Controller
                 'approval_message' => $message
             ]);
         } else {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Token tidak valid atau tidak ditemukan.'
+                ], 404);
+            }
+
             return view('admin.kunjungan.verifikasi', [
                 'status_verifikasi' => 'failed',
                 'qr_token' => $token
