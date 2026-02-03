@@ -34,10 +34,17 @@ class KunjunganService
         return DB::transaction(function () use ($data, $fileKtp, $filesPengikut, $nomorAntrian) {
             
             // 1. Process Main KTP Image
+            $fotoKtpPath = null;
             $base64FotoUtama = null;
             if ($fileKtp) {
                 $compressed = ImageService::compressUploadedFile($fileKtp, 1200, 80);
-                $base64FotoUtama = 'data:image/jpeg;base64,' . base64_encode($compressed);
+                // SAVE TO DISK
+                $filename = 'ktp_' . time() . '_' . Str::random(10) . '.jpg';
+                $path = 'uploads/ktp/' . $filename;
+                Storage::disk('public')->put($path, $compressed);
+                $fotoKtpPath = $path;
+                // Keep backward compatibility for variable checking if needed, but we use path now
+                $base64FotoUtama = $path; 
             }
 
             // 2. Update/Create Profil Pengunjung
@@ -80,9 +87,9 @@ class KunjunganService
                 'no_wa_pengunjung'  => $data['nomor_hp'],
                 'alamat_pengunjung' => $data['alamat_lengkap'],
                 
-                'foto_ktp'              => $base64FotoUtama,
-                'foto_ktp_path'         => null,
-                'foto_ktp_processed_at' => $base64FotoUtama ? now() : null,
+                'foto_ktp'              => $fotoKtpPath,
+                'foto_ktp_path'         => $fotoKtpPath,
+                'foto_ktp_processed_at' => $fotoKtpPath ? now() : null,
             ]);
 
             // 5. Process Pengikut
@@ -96,7 +103,11 @@ class KunjunganService
                         if (isset($filesPengikut[$index])) {
                              $fileP = $filesPengikut[$index];
                              $compressedP = ImageService::compressUploadedFile($fileP, 1000, 80);
-                             $base64FotoPengikut = 'data:image/jpeg;base64,' . base64_encode($compressedP);
+                             
+                             $filenameP = 'pengikut_' . time() . '_' . Str::random(10) . '.jpg';
+                             $pathP = 'uploads/pengikut/' . $filenameP;
+                             Storage::disk('public')->put($pathP, $compressedP);
+                             $base64FotoPengikut = $pathP;
                         }
 
                         Pengikut::create([
@@ -106,7 +117,7 @@ class KunjunganService
                             'hubungan'      => $data['pengikut_hubungan'][$index] ?? null,
                             'barang_bawaan' => null, // Assuming not passed in form as array based on controller logic
                             'foto_ktp'      => $base64FotoPengikut,
-                            'foto_ktp_path' => null,
+                            'foto_ktp_path' => $base64FotoPengikut,
                             'foto_ktp_processed_at' => $base64FotoPengikut ? now() : null,
                         ]);
                     }

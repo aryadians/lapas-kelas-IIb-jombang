@@ -122,7 +122,12 @@
                     {{-- MENAMPILKAN FOTO KTP --}}
                     <td class="px-6 py-4 text-center">
                         @if($visitor->foto_ktp)
-                            <button onclick="showKtp('{{ asset('storage/' . $visitor->foto_ktp) }}', '{{ $visitor->nama_pengunjung }}')" 
+                            @php
+                                $fotoUrl = \Illuminate\Support\Str::startsWith($visitor->foto_ktp, 'data:') 
+                                    ? $visitor->foto_ktp 
+                                    : asset('storage/' . $visitor->foto_ktp);
+                            @endphp
+                            <button onclick="showKtp('{{ $fotoUrl }}', '{{ $visitor->nama_pengunjung }}')" 
                                     class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors border border-blue-100">
                                 <i class="fas fa-id-card"></i> Lihat KTP
                             </button>
