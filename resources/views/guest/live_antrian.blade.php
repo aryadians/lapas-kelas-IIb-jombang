@@ -71,6 +71,37 @@
         const lastUpdatedEl = document.getElementById('last-updated');
 
         let initialLoad = true;
+        let lastCallUuid = null;
+        let voices = [];
+        
+        // Load Voices
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                const getVoices = () => {
+                    voices = window.speechSynthesis.getVoices().filter(v => v.lang === 'id-ID');
+                };
+                getVoices();
+                if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                    window.speechSynthesis.onvoiceschanged = getVoices;
+                }
+            }
+        }
+        loadVoices();
+
+        function speak(text) {
+            if (!('speechSynthesis' in window)) return;
+            // Cancel previous to avoid backlog on refresh
+            window.speechSynthesis.cancel(); 
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.9;
+            utterance.volume = 1;
+            if (voices.length > 0) {
+                utterance.voice = voices[0];
+            }
+            window.speechSynthesis.speak(utterance);
+        }
 
         function updateAntrian() {
             // Add a loading indicator effect
@@ -91,14 +122,31 @@
                     updateNumber(nomorPagiEl, data.pagi);
                     updateNumber(nomorSiangEl, data.siang);
                     
+                    // VOICE ANNOUNCEMENT LOGIC
+                    if (data.call && data.call.uuid !== lastCallUuid) {
+                        lastCallUuid = data.call.uuid;
+                        
+                        // Prevent speaking on first load to avoid noise bomb
+                        if (!initialLoad) {
+                            const callText = `Panggilan untuk nomor antrian ${data.call.nomor}, atas nama ${data.call.nama}. silahkan menuju ke ${data.call.loket}.`;
+                            speak(callText);
+                            
+                            // Visual cue? Maybe flash the number?
+                            // For now just sound.
+                        }
+                    }
+                    
                     lastUpdatedEl.textContent = new Date().toLocaleTimeString('id-ID');
                     initialLoad = false;
                 })
                 .catch(error => {
                     console.error('Error fetching antrian status:', error);
-                    nomorPagiEl.textContent = 'Error';
-                    nomorSiangEl.textContent = 'Error';
-                    lastUpdatedEl.textContent = 'Gagal memuat';
+                    // Only show error on text if it persists
+                    if(initialLoad) {
+                         nomorPagiEl.textContent = 'Error';
+                         nomorSiangEl.textContent = 'Error';
+                         lastUpdatedEl.textContent = 'Gagal memuat';
+                    }
                 });
         }
         

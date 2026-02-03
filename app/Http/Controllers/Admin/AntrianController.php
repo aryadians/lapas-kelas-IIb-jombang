@@ -74,6 +74,7 @@ class AntrianController extends Controller
         return response()->json([
             'pagi' => $statusPagi->nomor_terpanggil,
             'siang' => $statusSiang->nomor_terpanggil,
+            'call' => Cache::get('latest_call'), // <--- Auto-announcement trigger
         ]);
     }
 }

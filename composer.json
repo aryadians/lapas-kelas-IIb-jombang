@@ -10,6 +10,7 @@
         "dedoc/scramble": "^0.13.11",
         "doctrine/dbal": "^4.0",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "*",
         "maatwebsite/excel": "^3.1",

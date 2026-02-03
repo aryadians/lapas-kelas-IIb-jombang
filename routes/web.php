@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Activitylog\Models\Activity;
 
 // Controllers - Public / Guest
@@ -197,6 +198,7 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::get('/api/admin/antrian/state', [QueueController::class, 'getState'])->name('admin.api.antrian.state');
     Route::post('/api/admin/antrian/{kunjungan}/start', [QueueController::class, 'start'])->name('admin.api.antrian.start');
     Route::post('/api/admin/antrian/{kunjungan}/finish', [QueueController::class, 'finish'])->name('admin.api.antrian.finish');
+    Route::post('/api/admin/antrian/{kunjungan}/call', [QueueController::class, 'call'])->name('admin.api.antrian.call');
 
     // B. MANAJEMEN DATA WBP (WARGA BINAAN)
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');

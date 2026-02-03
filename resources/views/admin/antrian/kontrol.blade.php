@@ -332,6 +332,10 @@ function queueControl() {
         speakVisitor(kunjungan) {
             const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
             this.speak(text, true); // Priority call
+            
+            // Trigger Remote Call (TV Display)
+            this.postData(`{{ url('api/admin/antrian') }}/${kunjungan.id}/call`)
+                .catch(err => console.error('Gagal mengirim sinyal panggil ke server:', err));
         },
 
         speakInmate(kunjungan) {
