@@ -443,6 +443,7 @@
                                                         <div>
                                                             <h4 class="text-lg font-bold text-white mb-4">Internal Links</h4>
                                                             <ul class="space-y-2">
+                                                                <li><a href="{{ route('kunjungan.cek_status') }}" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Cek Status Kunjungan</a></li>
                                                                 <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Display Antrian</a></li>
                                                             </ul>
                                                         </div>

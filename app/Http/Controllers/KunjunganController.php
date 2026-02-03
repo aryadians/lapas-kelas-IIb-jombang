@@ -270,6 +270,26 @@ class KunjunganController extends Controller
         return view('guest.kunjungan.status', compact('kunjungan'));
     }
 
+    public function checkStatus(Request $request)
+    {
+        if ($request->has('keyword')) {
+            $keyword = trim($request->get('keyword'));
+            
+            $kunjungan = Kunjungan::where('kode_kunjungan', $keyword)
+                ->orWhere('nik_ktp', $keyword)
+                ->latest()
+                ->first();
+
+            if ($kunjungan) {
+                return redirect()->route('kunjungan.status', $kunjungan->id);
+            } else {
+                return back()->with('error', 'Data kunjungan tidak ditemukan. Periksa Kode Booking atau NIK Anda.');
+            }
+        }
+
+        return view('guest.kunjungan.cek_status');
+    }
+
     public function getQuotaStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [

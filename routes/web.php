@@ -111,7 +111,7 @@ Route::get('/kunjungan/{kunjungan}/print', [KunjunganController::class, 'printPr
 Route::get('/kunjungan/verify/{kunjungan}', [KunjunganController::class, 'verify'])->name('kunjungan.verify');
 
 // Halaman Cek Status Tanpa ID (Form Pencarian)
-Route::get('/kunjungan/cek-status', [KunjunganController::class, 'status'])->name('kunjungan.cek_status');
+Route::get('/kunjungan/cek-status', [KunjunganController::class, 'checkStatus'])->name('kunjungan.cek_status');
 
 // API Routes (Dipakai AJAX di Frontend)
 Route::get('/api/kunjungan/{kunjungan}/status', [KunjunganController::class, 'getStatusApi'])->name('kunjungan.status.api');

@@ -185,4 +185,24 @@ class WhatsAppService
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
+
+    /**
+     * Kirim notifikasi pengingat H-1.
+     */
+    public function sendReminder(Kunjungan $kunjungan)
+    {
+        $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
+        $statusUrl = route('kunjungan.status', $kunjungan->id);
+
+        $message = "*PENGINGAT JADWAL KUNJUNGAN* 🔔\n\n"
+                 . "Halo {$kunjungan->nama_pengunjung},\n"
+                 . "Mengingatkan bahwa jadwal kunjungan Anda adalah *BESOK*.\n\n"
+                 . "📅 Tanggal: {$tanggal}\n"
+                 . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
+                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
+                 . "Mohon datang tepat waktu dan bawa KTP Asli serta tunjukkan kode QR pada tiket ini:\n{$statusUrl}\n\n"
+                 . "Terima kasih.";
+
+        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+    }
 }

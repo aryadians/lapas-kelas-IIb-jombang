@@ -348,6 +348,7 @@
                 <div class="footer-section">
                     <h4>Internal Links</h4>
                     <ul>
+                        <li><a href="{{ route('kunjungan.cek_status') }}">Cek Status Kunjungan</a></li>
                         <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer">Display Antrian</a></li>
                     </ul>
                 </div>
