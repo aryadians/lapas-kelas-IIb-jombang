@@ -24,10 +24,12 @@ class KunjunganController extends Controller
     {
         // Jangan ambil kolom foto_ktp di index karena ukurannya besar (Base64)
         // Ini akan mempercepat loading tabel secara signifikan
+        // UPDATE: User meminta foto tampil di list, jadi kita include 'foto_ktp' sementara.
+        // Idealnya gunakan AJAX fetch.
         $query = Kunjungan::select(
             'id', 'profil_pengunjung_id', 'kode_kunjungan', 'nama_pengunjung', 
             'nik_ktp', 'tanggal_kunjungan', 'sesi', 'status', 'nomor_antrian_harian',
-            'wbp_id', 'registration_type', 'created_at'
+            'wbp_id', 'registration_type', 'created_at', 'foto_ktp'
         )->with('wbp');
 
         // 1. Filter Status

@@ -75,7 +75,7 @@ class KunjunganController extends Controller
         return response()->json($results);
     }
 
-    public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService)
+    public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService, \App\Services\QuotaService $quotaService)
     {
         // Log summary
         Log::debug('KunjunganStore request', array_merge($request->except(['foto_ktp','pengikut_foto']), ['files_count' => count($request->allFiles())]));
@@ -91,22 +91,8 @@ class KunjunganController extends Controller
         $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : null; 
         $isMonday = $tanggal->isMonday();
 
-        // 2. CEK KUOTA (Keep in Controller for redirect handling)
-        $totalQuota = config('kunjungan.quota_hari_biasa', 150);
-        if ($isMonday) {
-            $totalQuota = ($sesi === 'siang') ? config('kunjungan.quota_senin_siang', 40) : config('kunjungan.quota_senin_pagi', 120);
-        }
-
-        $query = Kunjungan::whereDate('tanggal_kunjungan', $tanggal->format('Y-m-d'))
-            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value]);
-
-        if (!is_null($sesi) ) {
-            $query->where('sesi', $sesi);
-        }
-
-        $registeredCount = $query->count();
-        
-        if ($registeredCount >= $totalQuota) {
+        // 2. CEK KUOTA (Optimized via Redis)
+        if (!$quotaService->checkAvailability($tanggal->format('Y-m-d'), $sesi)) {
             if ($isMonday) {
                 return back()->withErrors(['sesi' => 'Mohon maaf, kuota untuk sesi yang Anda pilih sudah penuh.'])->withInput();
             }
@@ -188,6 +174,9 @@ class KunjunganController extends Controller
                 $filesPengikut,
                 $nomorAntrian
             );
+
+            // Decrement Quota in Redis
+            $quotaService->decrementQuota($tanggal->format('Y-m-d'), $sesi);
 
             return redirect()->route('kunjungan.create')
                 ->with('success', "PENDAFTARAN BERHASIL! Antrian: {$nomorAntrian}.")

@@ -789,23 +789,35 @@
             Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
         
-        // --- BAGIAN INI YANG DIPERBAIKI ---
-        @if(session('success') && session('kunjungan_id'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: "{{ session('success') }}",
-                confirmButtonText: 'Lihat Status',
-                confirmButtonColor: '#10b981', // Koma ditambahkan di sini
-                allowOutsideClick: false // Supaya user terpaksa klik tombol
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke halaman status menggunakan ID dari session
-                    window.location.href = "{{ route('kunjungan.status', session('kunjungan_id')) }}";
-                }
-            });
-        @elseif(session('success'))
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'OK', confirmButtonColor: '#10b981' });
+        // --- LOGIKA POPUP BERHASIL ---
+        @if(session('success'))
+            @if(session('kunjungan_id'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pendaftaran Berhasil!',
+                    html: `<p class="mb-4">{{ session('success') }}</p><p class="text-sm text-gray-500">Silakan cek status dan unduh tiket Anda.</p>`,
+                    confirmButtonText: '<i class="fa-solid fa-ticket mr-2"></i> Lihat Status & Tiket',
+                    confirmButtonColor: '#10b981',
+                    showCancelButton: true,
+                    cancelButtonText: 'Tutup',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Gunakan URL manual jika route helper bermasalah, tapi helper lebih aman
+                        window.location.href = "{{ route('kunjungan.status', ['kunjungan' => session('kunjungan_id')]) }}";
+                    }
+                });
+            @else
+                // Fallback jika ID tidak terbawa session (jarang terjadi)
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Berhasil!', 
+                    text: "{{ session('success') }}", 
+                    confirmButtonText: 'OK', 
+                    confirmButtonColor: '#10b981' 
+                });
+            @endif
         @endif
         // ----------------------------------
 

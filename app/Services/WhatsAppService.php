@@ -132,7 +132,7 @@ class WhatsAppService
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
                  . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
                  . "Lihat Status: {$statusUrl}\n\n"
-                 . "Mohon tunggu verifikasi petugas. Kami akan mengabari Anda jika status berubah.";
+                 . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
 
         // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
@@ -150,7 +150,7 @@ class WhatsAppService
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
                  . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
                  . "Lihat Tiket QR: {$statusUrl}\n\n"
-                 . "Harap datang tepat waktu dengan membawa KTP Asli dan Bukti QR Code.";
+                 . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
 
         $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
