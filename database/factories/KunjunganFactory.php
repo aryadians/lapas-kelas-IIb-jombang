@@ -33,14 +33,21 @@ class KunjunganFactory extends Factory
             'jenis_kelamin' => $this->faker->randomElement(['Laki-laki', 'Perempuan']),
             'wbp_id' => Wbp::factory(),
             'hubungan' => $this->faker->randomElement(['Keluarga', 'Teman']),
-            'tanggal_kunjungan' => $this->faker->dateTimeBetween('+1 day', '+1 month'),
+            'tanggal_kunjungan' => $this->faker->dateTimeBetween('-1 month', 'now'), // Changed to past dates for charts
             'sesi' => 'pagi',
-            'status' => KunjunganStatus::PENDING,
+            'status' => KunjunganStatus::APPROVED, // Approved by default for charts
             'kode_kunjungan' => 'VIS-' . strtoupper(Str::random(6)),
             'qr_token' => Str::uuid(),
             'nomor_antrian_harian' => $this->faker->numberBetween(1, 100),
             'preferred_notification_channel' => 'email',
             'foto_ktp' => 'uploads/ktp/default.jpg',
+            // Sync timestamps for charts
+            'created_at' => function (array $attributes) {
+                return $attributes['tanggal_kunjungan'];
+            },
+            'updated_at' => function (array $attributes) {
+                return $attributes['tanggal_kunjungan'];
+            },
         ];
     }
 }
