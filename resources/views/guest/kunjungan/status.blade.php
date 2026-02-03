@@ -201,6 +201,14 @@
 
                         {{-- NOMOR ANTRIAN --}}
                         <div class="mt-8 pt-6 border-t border-dashed border-slate-300 text-center">
+                            @if($kunjungan->status == KunjunganStatus::APPROVED || $kunjungan->status == KunjunganStatus::PENDING)
+                                <div class="mb-4 flex flex-col items-center">
+                                    <div class="p-3 bg-white border-2 border-slate-900 rounded-lg inline-block">
+                                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate($kunjungan->qr_token ?? $kunjungan->kode_kunjungan) !!}
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 mt-2 font-mono">Scan QR Code di Loket</p>
+                                </div>
+                            @endif
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Nomor Antrian Anda</label>
                             <div class="text-6xl font-black text-slate-800 tracking-tighter">{{ $kunjungan->nomor_antrian_harian }}</div>
                         </div>
