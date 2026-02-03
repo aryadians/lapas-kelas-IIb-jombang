@@ -3,575 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display Antrian - Lapas Jombang</title>
-    <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700,900&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Display Antrian - Lapas Kelas IIB Jombang</title>
+    
+    {{-- Fonts --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {{-- Tailwind & Vite --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script src="https://www.youtube.com/iframe_api"></script>
+
     <style>
-        :root {
-            --bg-color: #0d1117; /* Keep dark background */
-            --primary-color: #FFD700; /* Gold */
-            --secondary-color: #1a202c; /* Dark Blue-Gray */
-            --accent-color: #00BFFF; /* Deep Sky Blue */
-            --text-color: #E0E0E0; /* Lighter Gray for text */
-            --glow-color-soft: rgba(0, 191, 255, 0.3); /* Soft blue glow based on accent */
-            --glow-color-strong: rgba(0, 191, 255, 0.6); /* Stronger blue glow based on accent */
-            --glow-color-primary: rgba(255, 215, 0, 0.4); /* Primary color glow based on gold */
+        body { font-family: 'Outfit', sans-serif; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* Premium Background Animation */
+        .bg-animated {
+            background: radial-gradient(circle at center, #1e293b, #0f172a, #020617);
+            background-size: 200% 200%;
+            animation: gradientPulse 15s ease infinite;
         }
-        html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Exo 2', sans-serif;
-        }
-        .main-container {
-            display: grid;
-            grid-template-columns: 60fr 40fr;
-            grid-template-rows: auto 1fr auto;
-            grid-template-areas: "header header" "video queue" "footer footer";
-            height: 100vh; width: 100vw;
-        }
-                .header {
-                    grid-area: header; display: flex; align-items: center; padding: 1.5rem 3rem; /* Increased padding */
-                    background: linear-gradient(to right, #1a202c, #0d1117); /* More solid gradient */
-                    z-index: 100;
-                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7); /* Added prominent shadow */
-                    animation: header-fade-in 1s ease-out;
-                }
-                @keyframes header-fade-in {
-                    from { opacity: 0; transform: translateY(-50px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .header img { height: 60px; margin-right: 1.5rem; filter: drop-shadow(0 0 10px var(--glow-color-primary)); }
-                .header h1 {
-                    font-size: 2.5rem; text-transform: uppercase; letter-spacing: 3px;
-                    font-family: 'Orbitron', sans-serif; color: var(--text-color);
-                    text-shadow: 0 0 8px var(--glow-color-strong);
-                }        
-        .video-container {
-            grid-area: video; background-color: #000; position: relative;
-            border-right: 4px solid var(--primary-color);
-            box-shadow: 10px 0 35px -5px rgba(0,0,0,0.7);
-            z-index: 50; /* Ensure overlay is below mute button */
-            animation: video-slide-in 1s ease-out 0.5s forwards;
-            opacity: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        @keyframes video-slide-in {
-            from { opacity: 0; transform: translateX(-100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .video-container #player { width: 100%; height: 100%; border: none; object-fit: cover; }
-                #unmuteButton {
-                    position: absolute; top: 25px; right: 25px; z-index: 150;
-                    background: rgba(0,0,0,0.6); border: 2px solid var(--accent-color); color: var(--text-color);
-                    width: 50px; height: 50px; border-radius: 50%; cursor: pointer;
-                    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
-                    backdrop-filter: blur(8px); transition: all 0.3s;
-                    box-shadow: 0 0 10px var(--glow-color-strong); /* Softer shadow */
-                }
-                #unmuteButton:hover {
-                    background: rgba(0, 191, 255, 0.7); /* Use new accent color */
-                    transform: scale(1.1); /* Simpler hover effect */
-                    box-shadow: 0 0 20px var(--glow-color-strong);
-                }
-        .queue-container {
-            grid-area: queue; display: flex; flex-direction: column;
-            padding: 1.5rem 2rem; gap: 1.8rem;
-            background: radial-gradient(circle, var(--secondary-color) 0%, var(--bg-color) 100%);
-            transform: translateZ(10px); /* Bring queue slightly forward */
-            animation: queue-slide-in 1s ease-out 0.7s forwards;
-            opacity: 0;
-        }
-        @keyframes queue-slide-in {
-            from { opacity: 0; transform: translateX(100px) translateZ(10px); }
-            to { opacity: 1; transform: translateX(0) translateZ(10px); }
-        }
-        .queue-boxes { display: flex; gap: 1.5rem; flex-grow: 1; }
-        .queue-box {
-            background: rgba(10, 42, 67, 0.4); /* Softer background */
-            border: 1px solid var(--accent-color); /* Thinner border */
-            border-radius: 15px; /* Softer corners */
-            text-align: center; padding: 1.5rem;
-            box-shadow: 0 0 15px var(--glow-color-strong), inset 0 0 10px rgba(0, 191, 255, 0.2); /* Softer shadows */
-            flex: 1; transition: transform 0.3s ease-out;
-            animation: box-appear 0.8s ease-out forwards;
-            animation-delay: 1s;
-        }
-        @keyframes box-appear {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .queue-box:hover {
-            transform: translateY(-5px) scale(1.02); /* Lift slightly on hover */
-            box-shadow: 0 0 25px var(--glow-color-strong), inset 0 0 15px rgba(0, 191, 255, 0.3);
-        }
-        .queue-box h3 {
-            font-size: 2.2rem; margin: 0; text-transform: uppercase; color: var(--primary-color);
-            text-shadow: 0 0 10px var(--glow-color-primary); /* Softer text shadow */
-        }
-        .queue-number {
-            font-family: 'Orbitron', sans-serif; font-size: 7rem; font-weight: 900; line-height: 1.2;
-            color: var(--text-color); transition: transform 0.3s ease;
-            text-shadow: 0 0 8px var(--text-color), 0 0 15px var(--glow-color-strong), 0 0 25px var(--glow-color-strong); /* Softer shadows */
-        }
-        .ping { animation: ping-effect 0.8s ease-out; }
-        @keyframes ping-effect {
-            0% { transform: scale3d(1, 1, 1); }
-            30% { transform: scale3d(1.25, 0.75, 1); text-shadow: 0 0 10px var(--text-color), 0 0 35px var(--primary-color), 0 0 60px var(--primary-color); }
-            40% { transform: scale3d(0.75, 1.25, 1); }
-            50% { transform: scale3d(1.15, 0.85, 1); text-shadow: 0 0 10px var(--text-color), 0 0 30px var(--glow-color-strong); }
-            65% { transform: scale3d(0.95, 1.05, 1); }
-            75% { transform: scale3d(1.05, 0.95, 1); }
-            100% { transform: scale3d(1, 1, 1); }
+        @keyframes gradientPulse {
+            0% { background-position: 50% 50%; }
+            50% { background-position: 50% 60%; }
+            100% { background-position: 50% 50%; }
         }
 
-        .visiting-container {
-            background: rgba(10, 42, 67, 0.4); /* Softer background */
-            border: 1px solid var(--accent-color); /* Thinner border */
-            border-radius: 15px; /* Softer corners */
-            padding: 1.5rem; flex: 1; display: flex; flex-direction: column;
-            box-shadow: 0 0 15px var(--glow-color-strong); /* Softer shadow */
-            animation: box-appear 0.8s ease-out forwards;
-            animation-delay: 1.2s;
-        }
-        .visiting-container:hover {
-            transform: translateY(-3px) scale(1.01); /* Lift slightly on hover */
-            box-shadow: 0 0 25px var(--glow-color-strong), inset 0 0 15px rgba(0, 191, 255, 0.3);
-        }
-        .visiting-container h3 {
-            font-size: 2.2rem; text-align: center; margin: 0 0 1rem 0;
-            text-transform: uppercase; color: var(--primary-color);
-            text-shadow: 0 0 10px var(--glow-color-primary); /* Softer text shadow */
-        }
-        .visiting-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
-        .visiting-item {
-            background-color: rgba(0, 191, 255, 0.1); /* Default background color */
-            border-radius: 10px;
-            padding: 1rem 1.5rem; margin-bottom: 0.7rem;
-            font-size: 1.6rem; display: flex; justify-content: space-between;
-            border-left: 4px solid var(--accent-color);
-            box-shadow: 0 0 8px var(--glow-color-soft);
-            transition: all 0.3s ease;
-        }
-        .visiting-item:nth-child(odd) {
-            background-color: rgba(0, 191, 255, 0.1);
-        }
-        .visiting-item:nth-child(even) {
-            background-color: rgba(0, 191, 255, 0.05); /* Slightly lighter/darker for contrast */
-        }
-        .visiting-item:hover {
-            transform: translateX(3px) scale(1.005); /* Subtle lift and translate */
-            box-shadow: 0 0 15px var(--glow-color-strong);
-        }
-        .visiting-item .visitor { font-weight: 700; text-transform: uppercase; color: var(--text-color); }
-        .visiting-item .wbp { font-weight: 400; color: #B0B0B0; font-size: 1.2rem; } /* Slightly darker gray */
-
-                .footer {
-                    grid-area: footer; background-color: var(--bg-color); /* Darker background */
-                    color: var(--text-color); /* White text for contrast */
-                    padding: 2rem 0; /* More vertical padding */
-                    z-index: 10;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    height: auto;
-                    overflow: visible;
-                    white-space: normal;
-                    box-shadow: 0 -5px 20px rgba(0,0,0,0.5); /* Shadow for separation */
-                }
-@keyframes marquee-scroll {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
-                .footer .marquee span {
-                    display: inline-block; /* Essential for transform to work */
-                    padding-left: 100%; /* Start off-screen */
-                    animation: marquee-scroll 30s linear infinite; /* Adjust duration as needed */
-                }
-                .footer .marquee {
-                    width: 100%;
-                    margin-bottom: 1.5rem; /* More space */
-                    padding-left: 0;
-                    font-size: 1.8rem; /* Retain larger font for marquee */
-                    color: var(--primary-color); /* Marquee text in primary color */
-                    text-shadow: 0 0 10px var(--glow-color-primary);
-                    font-weight: 700;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    box-sizing: border-box; /* Ensures padding doesn't affect width calculation */
-                }
-                .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            width: 90%;
-            max-width: 1200px;
-            /* Remove justify-content: space-around; and flex-wrap: wrap; as they are not needed with grid */
-            margin-top: 1rem;
-            color: var(--text-color);
-            font-weight: 300;
-            font-size: 1rem;
-            text-shadow: none;
-            padding: 1rem 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
-        .footer-section {
-            text-align: left;
-            padding: 0.5rem;
+        /* Neon Glow Text */
+        .text-glow-gold {
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.5), 0 0 20px rgba(234, 179, 8, 0.3);
+        }
+        .text-glow-blue {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
-        .footer-section h4 {
-            font-size: 1.4rem; /* Adjusted font size for titles */
-            color: var(--primary-color); /* Highlight titles with primary color */
-            margin-bottom: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-            text-shadow: 0 0 5px var(--glow-color-primary); /* Subtle glow for titles */
-        }
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
-        .footer-section ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+        /* Animation */
+        .slide-in-right { animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .pop-card { transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .pop-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.4); border-color: rgba(234, 179, 8, 0.3); }
 
-        .footer-section ul li {
-            margin-bottom: 0.6rem; /* Slightly more space between list items */
-        }
-
-        .footer-section ul li a {
-            color: var(--text-color); /* Use text-color for links */
-            text-decoration: none;
-            transition: color 0.3s ease, transform 0.2s ease;
-            font-weight: 300;
-            display: inline-block; /* Allow transform */
-        }
-
-        .footer-section ul li a:hover {
-            color: var(--accent-color); /* Hover color */
-            text-decoration: underline;
-            transform: translateX(5px); /* Subtle slide on hover */
-        }
-
-        @media (max-width: 768px) { /* Adjust breakpoint as needed */
-            .main-container {
-                grid-template-columns: 1fr; /* Single column */
-                grid-template-rows: auto auto auto 1fr auto; /* Adjusted rows for mobile */
-                grid-template-areas:
-                    "header"
-                    "video"
-                    "queue"
-                    "footer";
-                height: auto; /* Allow content to dictate height on small screens */
-                overflow-y: auto; /* Enable scrolling */
-            }
-            .header { padding: 1rem 1.5rem; }
-            .header img { height: 40px; margin-right: 1rem; }
-            .header h1 { font-size: 1.5rem; }
-            .queue-container { padding: 1rem 1.5rem; }
-            .queue-boxes { flex-direction: column; }
-            .queue-box h3 { font-size: 1.5rem; }
-            .queue-number { font-size: 5rem; }
-            .visiting-container h3 { font-size: 1.5rem; }
-            .visiting-item { font-size: 1.2rem; }
-            .footer .marquee { font-size: 1.2rem; margin-bottom: 1rem; }
-            .footer-section h4 { font-size: 1.1rem; }
-            .footer-section ul li a { font-size: 0.9rem; }
-            #unmuteButton { top: 15px; right: 15px; width: 40px; height: 40px; font-size: 1.2rem; }
+        .ping-active { animation: pingSoft 1s cubic-bezier(0, 0, 0.2, 1) infinite; }
+        @keyframes pingSoft {
+            75%, 100% { transform: scale(1.05); opacity: 0; }
         }
     </style>
 </head>
-<body>
-    <div class="main-container" x-data="mainController()" x-init="init()">
+<body class="bg-animated h-screen w-screen overflow-hidden text-white selection:bg-yellow-500 selection:text-slate-900 flex flex-col p-4 md:p-6 gap-4 md:gap-6" x-data="displayController()" x-init="init()">
+
+    {{-- HEADER --}}
+    <header class="glass-panel h-20 md:h-24 rounded-2xl flex items-center justify-between px-8 z-50 shrink-0">
+        <div class="flex items-center gap-6">
+            <div class="relative">
+                <div class="absolute inset-0 bg-yellow-500 blur-lg opacity-20 rounded-full"></div>
+                <img src="{{ asset('img/logo.png') }}" class="h-14 md:h-16 w-auto relative drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" alt="Logo">
+            </div>
+            <div class="flex flex-col">
+                <h1 class="text-2xl md:text-3xl font-bold tracking-wide uppercase bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
+                    Lapas Kelas IIB Jombang
+                </h1>
+                <p class="text-xs md:text-sm text-yellow-500 tracking-[0.2em] font-medium uppercase">Kementerian Imigrasi dan Pemasyarakatan</p>
+            </div>
+        </div>
+
+        {{-- Clock --}}
+        <div class="text-right">
+            <div x-text="currentTime" class="text-3xl md:text-4xl font-orbitron font-bold tracking-widest text-white drop-shadow-lg">--:--</div>
+            <div x-text="currentDate" class="text-xs md:text-sm text-slate-400 font-medium uppercase tracking-wide">...</div>
+        </div>
+    </header>
+
+    {{-- MAIN CONTENT GRID --}}
+    <main class="flex-1 grid grid-cols-12 gap-6 min-h-0">
         
-        <header class="header">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo">
-            <h1>Lapas Kelas IIB Jombang</h1>
-        </header>
-
-        <section class="video-container">
-            <div id="player"></div>
-            <button id="unmuteButton" @click="toggleMute()">
-                <i :class="isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up'"></i>
-            </button>
-        </section>
-
-        <section class="queue-container">
-            <div class="queue-boxes">
-                <div class="queue-box">
-                    <h3>Sesi Pagi</h3>
-                    <div x-text="nomorPagi" :class="{ 'ping': pingPagi }" class="queue-number">0</div>
+        {{-- LEFT COLUMN: VIDEO PLAYER (60%) --}}
+        <section class="col-span-12 lg:col-span-7 flex flex-col h-full min-h-0">
+            <div class="glass-panel flex-1 rounded-2xl overflow-hidden relative group border border-slate-700/50 shadow-2xl">
+                {{-- Video Placeholder/Player --}}
+                <div id="player" class="w-full h-full object-cover"></div>
+                
+                {{-- Mute Controls Overlay --}}
+                <div class="absolute top-4 right-4 z-20">
+                    <button @click="toggleMute()" 
+                        class="h-12 w-12 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-yellow-500 hover:text-black transition-all duration-300 group-hover:scale-110 shadow-lg">
+                        <i class="fas" :class="isMuted ? 'fa-volume-mute' : 'fa-volume-up'"></i>
+                    </button>
                 </div>
-                <div class="queue-box">
-                    <h3>Sesi Siang</h3>
-                    <div x-text="nomorSiang" :class="{ 'ping': pingSiang }" class="queue-number">0</div>
+                
+                {{-- Video Overlay Gradient (Subtle) --}}
+                <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                <div class="absolute bottom-6 left-6 pointer-events-none">
+                    <span class="px-3 py-1 rounded-full bg-red-600/80 text-white text-xs font-bold uppercase tracking-wider backdrop-blur-sm animate-pulse">
+                        <i class="fas fa-circle text-[8px] mr-1 align-middle"></i> Official Broadcast
+                    </span>
+                    <h2 class="text-xl font-bold mt-2 text-white drop-shadow-md">Profil Lapas Jombang</h2>
                 </div>
             </div>
-            <div class="visiting-container">
-                <h3>Sedang Berkunjung</h3>
-                <ul class="visiting-list">
+        </section>
+
+        {{-- RIGHT COLUMN: QUEUE INFO (40%) --}}
+        <section class="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full min-h-0">
+            
+            {{-- 1. QUEUE STATUS CARDS (Row) --}}
+            <div class="grid grid-cols-2 gap-4 shrink-0 h-48 md:h-56">
+                {{-- Card Pagi --}}
+                <div class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
+                    <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+                    <span class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2"><i class="fas fa-sun text-blue-400 mr-2"></i> Pagi</span>
+                    <div class="relative">
+                        <span x-text="nomorPagi" class="font-orbitron text-6xl md:text-7xl font-bold text-white text-glow-blue transition-all duration-300" :class="{'scale-110 text-blue-300': pingPagi}">-</span>
+                        <div class="absolute inset-0 bg-blue-500/20 blur-2xl rounded-full z-[-1] opacity-50"></div>
+                    </div>
+                </div>
+
+                {{-- Card Siang --}}
+                <div class="glass-panel rounded-2xl p-4 flex flex-col items-center justify-center relative pop-card overflow-hidden">
+                    <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50"></div>
+                    <span class="text-slate-400 text-sm font-bold uppercase tracking-widest mb-2"><i class="fas fa-cloud-sun text-yellow-400 mr-2"></i> Siang</span>
+                    <div class="relative">
+                        <span x-text="nomorSiang" class="font-orbitron text-6xl md:text-7xl font-bold text-white text-glow-gold transition-all duration-300" :class="{'scale-110 text-yellow-300': pingSiang}">-</span>
+                        <div class="absolute inset-0 bg-yellow-500/20 blur-2xl rounded-full z-[-1] opacity-50"></div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 2. VISITING LIST (Remaining Height) --}}
+            <div class="glass-panel flex-1 rounded-2xl flex flex-col min-h-0 overflow-hidden relative">
+                <div class="bg-black/20 p-4 border-b border-white/5 flex justify-between items-center backdrop-blur-md sticky top-0 z-10">
+                    <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fas fa-users text-green-400"></i> Sedang Berkunjung
+                    </h3>
+                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded font-bold" x-text="visitingList.length + ' Orang'">0</span>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative">
                     <template x-for="item in visitingList" :key="item.id">
-                         <li class="visiting-item" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-x-1/4" x-transition:enter-end="opacity-100 transform translate-x-0"
-                                                x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 transform translate-x-0" x-transition:leave-end="opacity-0 transform -translate-x-1/4">
-                            <span class="visitor" x-text="item.nama_pengunjung"></span>
-                            <span class="wbp" x-text="item.wbp.nama"></span>
-                        </li>
+                        <div class="bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl p-3 flex justify-between items-center slide-in-right transition-all group">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center text-slate-300 font-bold border border-white/10 group-hover:border-yellow-500/50 transition-colors">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-white uppercase tracking-wide group-hover:text-yellow-400 transition-colors" x-text="item.nama_pengunjung"></p>
+                                    <p class="text-xs text-slate-400 flex items-center gap-1">
+                                        <i class="fas fa-id-card text-[10px]"></i> <span x-text="item.wbp?.nama || 'WBP'"></span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/30">
+                                    ROOM A
+                                </span>
+                            </div>
+                        </div>
                     </template>
-                    <template x-if="visitingList.length === 0">
-                        <li class="visiting-item" style="justify-content: center; background: none; border: none; font-size: 1.5rem; color: #bdc3c7;">Tidak ada kunjungan berlangsung.</li>
-                    </template>
-                </ul>
+                    
+                    <div x-show="visitingList.length === 0" class="h-full flex flex-col items-center justify-center text-slate-500 opacity-60">
+                        <i class="fas fa-coffee text-4xl mb-2"></i>
+                        <p class="text-sm">Belum ada kunjungan.</p>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <footer class="footer">
-            <div class="marquee">
-                <span>SELAMAT DATANG DI LAYANAN KUNJUNGAN LAPAS KELAS IIB JOMBANG. DILARANG MEMBAWA BARANG TERLARANG. PATUHI PROTOKOL KESEHATAN.</span>
+        </section>
+    </main>
+
+    {{-- FOOTER / MARQUEE --}}
+    <footer class="h-12 md:h-14 shrink-0 glass-panel rounded-xl flex items-center overflow-hidden border-t-2 border-yellow-500/50">
+        <div class="bg-yellow-500 text-slate-900 px-6 h-full flex items-center justify-center font-bold text-sm tracking-widest z-10 shadow-xl">
+            INFO
+        </div>
+        <div class="flex-1 relative h-full flex items-center overflow-hidden">
+            <div class="absolute whitespace-nowrap animate-marquee px-4">
+                <span class="text-lg font-light text-slate-100 tracking-wider">
+                    <i class="fas fa-bullhorn text-yellow-500 mx-2"></i> SELAMAT DATANG DI LAYANAN KUNJUNGAN LAPAS KELAS IIB JOMBANG. 
+                    <i class="fas fa-circle text-[6px] align-middle mx-3 text-slate-500"></i> DILARANG MEMBAWA HP, NARKOBA, DAN BARANG TERLARANG LAINNYA. 
+                    <i class="fas fa-circle text-[6px] align-middle mx-3 text-slate-500"></i> JADWAL KUNJUNGAN: PAGI 08.00 - 11.30 WIB | SIANG 13.00 - 14.30 WIB.
+                </span>
             </div>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Unit Utama</h4>
-                    <ul>
-                        <li><a href="https://www.kemenkumham.go.id/" target="_blank" rel="noopener noreferrer">Sekretariat Jenderal</a></li>
-                        <li><a href="http://www.ditjenpas.go.id/" target="_blank" rel="noopener noreferrer">Ditjen PAS</a></li>
-                        <li><a href="https://imigrasi.go.id/id/" target="_blank" rel="noopener noreferrer">Ditjen Imigrasi</a></li>
-                        <li><a href="#" target="_blank" rel="noopener noreferrer">Inspektorat Jenderal</a></li>
-                        <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" rel="noopener noreferrer">BPSDM</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Internal Links</h4>
-                    <ul>
-                        <li><a href="{{ route('kunjungan.cek_status') }}">Cek Status Kunjungan</a></li>
-                        <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer">Display Antrian</a></li>
-                    </ul>
-                </div>
-            </div>
-        </footer>
-    </div>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        </div>
+    </footer>
+
+    <style>
+        .animate-marquee { animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    </style>
+
+    {{-- LOGIC --}}
     <script>
-        // Global variable to signal YouTube API readiness
-        window.YT_API_READY = false;
+        // --- YOUTUBE API HANDLING (Global Scope) ---
+        var player;
+        var isYouTubeReady = false;
+
         function onYouTubeIframeAPIReady() {
-            console.log('YouTube API Ready');
-            console.log('Alpine mainComponent available:', !!window.mainAlpineComponent); // Debug log
-            window.YT_API_READY = true;
-            // If Alpine has already initialized, call its player init directly
-            if (window.mainAlpineComponent && !window.mainAlpineComponent.youTubePlayerInitialized) {
-                window.mainAlpineComponent.initPlayer();
-            }
+            console.log("YouTube API Ready");
+            isYouTubeReady = true;
+            
+            player = new YT.Player('player', {
+                height: '100%',
+                width: '100%',
+                videoId: 'H1vh3CZCie4', // ID Video Profil
+                playerVars: {
+                    autoplay: 1,
+                    loop: 1,
+                    playlist: 'H1vh3CZCie4', // Required for loop
+                    controls: 0,
+                    modestbranding: 1,
+                    showinfo: 0,
+                    rel: 0,
+                    mute: 1 // Start muted to satisfy Autoplay Policy
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': onPlayerError
+                }
+            });
         }
 
-        function mainController() {
+        function onPlayerReady(event) {
+            console.log("Player Ready");
+            event.target.playVideo();
+            // Try to unmute after a delay or user interaction
+            setTimeout(() => {
+                // event.target.unMute(); 
+                // Browsers usually block unmuting without user interaction
+            }, 1000);
+        }
+
+        function onPlayerError(event) {
+            console.error("YouTube Player Error:", event.data);
+            // Fallback: Use local video if YouTube fails (Optional)
+            // document.getElementById('player').innerHTML = '<div class="flex items-center justify-center h-full text-white">Video tidak tersedia</div>';
+        }
+
+        // --- MAIN CONTROLLER ---
+        function displayController() {
             return {
-                nomorPagi: 0,
-                nomorSiang: 0,
+                nomorPagi: '-',
+                nomorSiang: '-',
                 pingPagi: false,
                 pingSiang: false,
                 visitingList: [],
-                player: null,
+                currentTime: '',
+                currentDate: '',
                 isMuted: true,
-                youTubePlayerInitialized: false, // New flag
+                lastCallUuid: null,
+                voices: [],
 
                 init() {
-                    window.mainAlpineComponent = this; // Make this component globally accessible
-                    console.log('Alpine mainController init. YT API ready?', window.YT_API_READY);
-
-                    this.fetchQueueNumbers();
-                    this.fetchVisitingStatus();
-                    setInterval(() => this.fetchQueueNumbers(), 3000);
-                    setInterval(() => this.fetchVisitingStatus(), 5000);
-
-                    // Realtime updates via Laravel Echo (Reverb/Pusher)
-                    if (window.Echo) {
-                        console.log('Echo detected - subscribing to antrian.public');
-                        window.Echo.channel('antrian.public')
-                            .listen('.antrian.updated', (e) => {
-                                console.log('Realtime AntrianUpdated received:', e);
-                                const antrian = e.antrian || {};
-                                const nomor = antrian.nomor ?? antrian.no_antrian ?? antrian.nomor_terpanggil ?? 0;
-                                const sesi = antrian.sesi ?? null;
-                                const loket = antrian.loket ?? null;
-
-                                if (sesi === 'pagi') {
-                                    if (this.nomorPagi != nomor) {
-                                        this.pingPagi = true;
-                                        setTimeout(() => this.pingPagi = false, 800);
-                                    }
-                                    this.nomorPagi = nomor;
-                                } else if (sesi === 'siang') {
-                                    if (this.nomorSiang != nomor) {
-                                        this.pingSiang = true;
-                                        setTimeout(() => this.pingSiang = false, 800);
-                                    }
-                                    this.nomorSiang = nomor;
-                                }
-                                this.playNotificationSound();
-                                this.announceQueue(nomor, sesi, loket);
-                            });
-                    } else {
-                        console.warn('Laravel Echo is not initialized. Falling back to polling.');
-                    }
-
-                    // Pre-load voices
-                    if ('speechSynthesis' in window) {
-                        window.speechSynthesis.onvoiceschanged = () => {
-                            console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
-                        };
-                    }
-
-                    // If YouTube API is already ready by the time Alpine init runs
-                    if (window.YT_API_READY && !this.youTubePlayerInitialized) {
-                        this.initPlayer();
-                    }
+                    this.updateTime();
+                    setInterval(() => this.updateTime(), 1000);
+                    
+                    this.fetchData();
+                    setInterval(() => this.fetchData(), 3000);
+                    
+                    this.loadVoices();
+                    
+                    // Periodically check if video is playing just in case
+                    setInterval(() => {
+                        if(isYouTubeReady && player && player.getPlayerState() !== 1) {
+                             player.playVideo();
+                        }
+                    }, 5000);
                 },
 
-                initPlayer() {
-                    console.log('Attempting to initialize YouTube player...');
-                    if (this.youTubePlayerInitialized) {
-                        console.log('Player already initialized, skipping.');
-                        return;
-                    }
-
-                    this.player = new YT.Player('player', {
-                        height: '100%',
-                        width: '100%',
-                        videoId: 'H1vh3CZCie4',
-                        playerVars: {
-                            autoplay: 1,
-                            loop: 1,
-                            playlist: 'H1vh3CZCie4',
-                            controls: 0,
-                            modestbranding: 1,
-                            showinfo: 0,
-                            rel: 0,
-                            mute: 0 // Ensure player starts unmuted from playerVars
-                        },
-                        events: {
-                            'onReady': (event) => {
-                                console.log('YouTube player ready. Attempting to unmute and play with max volume.');
-                                event.target.playVideo();
-                                event.target.unMute(); // Explicitly unmute
-                                event.target.setVolume(100); // Set volume to max
-                                this.isMuted = false; // Update Alpine state
-                                this.youTubePlayerInitialized = true;
-                            },
-                            'onError': (error) => {
-                                console.error('YouTube Player Error:', error);
-                            }
-                        }
-                    });
+                updateTime() {
+                    const now = new Date();
+                    this.currentTime = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                    this.currentDate = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
                 },
 
                 toggleMute() {
-                    console.log('ToggleMute button clicked.');
-                    if (!this.player) {
-                        console.warn('YouTube player not initialized when toggleMute was called.');
-                        return;
-                    }
-                    if (this.player.isMuted()) {
-                        this.player.unMute();
-                        this.isMuted = false;
-                        console.log('Player unmuted.');
-                    } else {
-                        this.player.mute();
-                        this.isMuted = true;
-                        console.log('Player muted.');
+                    if (isYouTubeReady && player) {
+                        if (player.isMuted()) {
+                            player.unMute();
+                            this.isMuted = false;
+                        } else {
+                            player.mute();
+                            this.isMuted = true;
+                        }
                     }
                 },
 
-                async fetchQueueNumbers() {
-                    try {
-                        const response = await fetch('{{ route("api.antrian.status") }}');
-                        const data = await response.json();
-                        console.log('Queue numbers fetched:', data); // Debug log
-                        if (this.nomorPagi != data.pagi) {
-                            this.pingPagi = true;
-                            setTimeout(() => this.pingPagi = false, 800);
-                        }
-                        this.nomorPagi = data.pagi;
-                        if (this.nomorSiang != data.siang) {
-                            this.pingSiang = true;
-                            setTimeout(() => this.pingSiang = false, 800);
-                        }
-                        this.nomorSiang = data.siang;
-                    } catch (e) {
-                        console.error('Gagal mengambil status antrian:', e);
-                    }
+                fetchData() {
+                    // 1. Queue Status
+                    fetch('{{ route("api.antrian.status") }}')
+                        .then(res => res.ok ? res.json() : null)
+                        .then(data => {
+                            if (!data) return;
+                            
+                            if (String(this.nomorPagi) !== String(data.pagi)) {
+                                this.pingPagi = true; setTimeout(() => this.pingPagi = false, 1000);
+                                this.nomorPagi = data.pagi;
+                            }
+                            if (String(this.nomorSiang) !== String(data.siang)) {
+                                this.pingSiang = true; setTimeout(() => this.pingSiang = false, 1000);
+                                this.nomorSiang = data.siang;
+                            }
+
+                            if (data.call && data.call.uuid !== this.lastCallUuid) {
+                                this.lastCallUuid = data.call.uuid;
+                                this.announce(data.call);
+                            }
+                        })
+                        .catch(err => console.error("API Error (Queue):", err));
+
+                    // 2. Visiting List
+                    fetch('{{ route("admin.api.antrian.state") }}')
+                        .then(res => res.ok ? res.json() : [])
+                        .then(data => {
+                            this.visitingList = data.in_progress || [];
+                        })
+                        .catch(err => console.error("API Error (Visits):", err));
                 },
-                
-                async fetchVisitingStatus() {
-                    try {
-                        const response = await fetch('{{ route("admin.api.antrian.state") }}');
-                        const data = await response.json();
-                        console.log('Visiting status fetched:', data); // Debug log
-                        this.visitingList = data.in_progress || [];
-                    } catch (e) {
-                        console.error('Gagal mengambil status kunjungan:', e);
+
+                loadVoices() {
+                    if ('speechSynthesis' in window) {
+                        const get = () => this.voices = window.speechSynthesis.getVoices().filter(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
+                        get();
+                        window.speechSynthesis.onvoiceschanged = get;
                     }
                 },
 
-                playNotificationSound() {
+                announce(callData) {
+                    if (!('speechSynthesis' in window)) return;
+                    
+                    // Ding dong
+                    this.playChime();
+
+                    setTimeout(() => {
+                        window.speechSynthesis.cancel();
+                        const text = `Panggilan undangan nomor antrian. ${callData.nomor}. Atas nama. ${callData.nama}. Silahkan masuk.`;
+                        const ut = new SpeechSynthesisUtterance(text);
+                        ut.lang = 'id-ID';
+                        ut.rate = 0.9;
+                        if(this.voices.length) ut.voice = this.voices[0];
+                        window.speechSynthesis.speak(ut);
+                    }, 1500); // Wait for chime
+                },
+
+                playChime() {
                     try {
-                        const AudioContext = window.AudioContext || window.webkitAudioContext;
-                        const ctx = new AudioContext();
+                        const C = window.AudioContext || window.webkitAudioContext;
+                        if(!C) return;
+                        const ctx = new C();
                         const o = ctx.createOscillator();
                         const g = ctx.createGain();
-                        o.type = 'sine';
-                        o.frequency.value = 880;
-                        o.connect(g);
-                        g.connect(ctx.destination);
-                        g.gain.value = 0.05;
-                        o.start();
-                        setTimeout(() => { o.stop(); ctx.close(); }, 300);
-                    } catch (err) {
-                        console.error('playNotificationSound failed:', err);
-                    }
-                },
-
-                announceQueue(nomor, sesi, loket = null) {
-                    if (!('speechSynthesis' in window)) {
-                        console.warn('Web Speech API not supported.');
-                        return;
-                    }
-
-                    // Slight delay to allow the "ding-dong" sound to play first
-                    setTimeout(() => {
-                        window.speechSynthesis.cancel(); // Stop previous
-
-                        const sessionCode = (sesi === 'pagi') ? 'A' : (sesi === 'siang' ? 'B' : '');
-                        const destination = loket ? `ke ${loket}` : 'silakan masuk';
-                        
-                        // Text to speak: "Nomor Antrian, A, 123. Silakan masuk."
-                        const text = `Nomor Antrian ${sessionCode} ${nomor}. ${destination}.`;
-                        
-                        const utterance = new SpeechSynthesisUtterance(text);
-                        utterance.lang = 'id-ID'; 
-                        utterance.rate = 0.85; // Slower for clarity
-                        utterance.pitch = 1.0;
-                        utterance.volume = 1.0;
-
-                        // Try to find an Indonesian voice
-                        const voices = window.speechSynthesis.getVoices();
-                        const idVoice = voices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
-                        if (idVoice) {
-                            utterance.voice = idVoice;
-                        }
-
-                        console.log('Announcing:', text);
-                        window.speechSynthesis.speak(utterance);
-                    }, 1000);
+                        o.connect(g); g.connect(ctx.destination);
+                        o.type = 'sine'; 
+                        o.frequency.setValueAtTime(500, ctx.currentTime);
+                        o.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
+                        o.frequency.exponentialRampToValueAtTime(500, ctx.currentTime + 0.6);
+                        g.gain.setValueAtTime(0.1, ctx.currentTime);
+                        g.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.2);
+                        o.start(); o.stop(ctx.currentTime + 1.2);
+                    } catch(e){}
                 }
             }
         }
+        
+        // Unmute on first interaction
+        document.body.addEventListener('click', () => {
+             if (isYouTubeReady && player) player.unMute();
+        }, {once:true});
     </script>
 </body>
 </html>

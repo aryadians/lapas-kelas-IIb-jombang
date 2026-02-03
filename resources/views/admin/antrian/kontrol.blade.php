@@ -183,7 +183,7 @@ function queueControl() {
         async fetchState() {
             this.isPolling = true;
             try {
-                const response = await fetch('{{ route('admin.api.antrian.state') }}');
+                const response = await fetch('{{ route("admin.api.antrian.state") }}');
                 if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
                 const data = await response.json();
                 this.queues.waiting = data.waiting;
