@@ -132,11 +132,6 @@
                         <label for="wbp_id" class="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2"><i class="fas fa-user-shield text-indigo-400 mr-2"></i>Warga Binaan (WBP)</label>
                         <select id="wbp_id" name="wbp_id" class="w-full" required>
                             <option value="">Cari nama WBP...</option>
-                            @foreach($wbps as $wbp)
-                                <option value="{{ $wbp->id }}" {{ old('wbp_id') == $wbp->id ? 'selected' : '' }}>
-                                    {{ $wbp->nama }} (No. Reg: {{ $wbp->no_registrasi }})
-                                </option>
-                            @endforeach
                         </select>
                     </div>
                     <div>
@@ -258,6 +253,28 @@
         $('#wbp_id').select2({
             placeholder: "Cari nama atau nomor registrasi WBP",
             width: '100%',
+            ajax: {
+                url: '{{ route("api.search.wbp") }}',
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        q: params.term // search term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.nama + ' (No. Reg: ' + item.no_registrasi + ')',
+                                id: item.id
+                            }
+                        })
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
         });
     });
 </script>

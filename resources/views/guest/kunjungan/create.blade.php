@@ -583,11 +583,16 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-user-tie text-yellow-600"></i> Cari Nama WBP
                                 </label>
-                                <input type="text" id="wbp_search_input" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" placeholder="Ketik nama atau no. registrasi..." autocomplete="off"
-                                    role="combobox"
-                                    aria-haspopup="listbox"
-                                    aria-expanded="false"
-                                    aria-controls="wbp_results_list">
+                                <div class="flex gap-2">
+                                    <input type="text" id="wbp_search_input" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-500 py-3 px-4 bg-white" placeholder="Ketik nama atau no. registrasi..." autocomplete="off"
+                                        role="combobox"
+                                        aria-haspopup="listbox"
+                                        aria-expanded="false"
+                                        aria-controls="wbp_results_list">
+                                    <button type="button" id="btn_search_wbp_manual" class="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-bold py-3 px-6 rounded-xl shadow-md transition-all duration-300 active:scale-95 flex items-center justify-center">
+                                        <i class="fa-solid fa-search text-xl"></i>
+                                    </button>
+                                </div>
                                 
                                 <input type="hidden" name="wbp_id" id="wbp_id_hidden">
                                 <div id="wbp_results" role="listbox" class="search-results" aria-label="Hasil pencarian WBP"></div>
@@ -925,13 +930,17 @@
         const hiddenId = document.getElementById('wbp_id_hidden');
         const infoDiv = document.getElementById('selected_wbp_info');
         const btnReset = document.getElementById('btn_reset_wbp');
+        const btnSearchManual = document.getElementById('btn_search_wbp_manual');
 
         if(searchInput) {
-            searchInput.addEventListener('keyup', function() {
-                let query = this.value;
+            const performSearch = () => {
+                let query = searchInput.value;
                 hiddenId.value = ''; 
                 
                 if(query.length > 2) {
+                    resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Mencari...</div>';
+                    resultsDiv.style.display = 'block';
+
                     fetch(`{{ route('api.search.wbp') }}?q=${query}`)
                         .then(res => res.json())
                         .then(data => {
@@ -957,6 +966,7 @@
                                     document.getElementById('disp_noreg').innerText = item.no_registrasi;
                                     document.getElementById('disp_blok').innerText = item.blok || '-'; 
                                     searchInput.classList.add('hidden');
+                                    if(btnSearchManual) btnSearchManual.classList.add('hidden'); // Hide button
                                     resultsDiv.style.display = 'none';
                                     searchInput.setAttribute('aria-expanded', 'false');
                                 };
@@ -971,7 +981,12 @@
                     resultsDiv.style.display = 'none';
                     searchInput.setAttribute('aria-expanded', 'false');
                 }
-            });
+            };
+
+            searchInput.addEventListener('keyup', performSearch);
+            if(btnSearchManual) {
+                btnSearchManual.addEventListener('click', performSearch);
+            }
         }
 
         if(btnReset) {
@@ -979,6 +994,7 @@
                 hiddenId.value = '';
                 searchInput.value = '';
                 searchInput.classList.remove('hidden');
+                if(btnSearchManual) btnSearchManual.classList.remove('hidden'); // Show button
                 infoDiv.classList.add('hidden');
                 searchInput.focus();
             });
@@ -986,7 +1002,7 @@
 
         document.addEventListener('click', function(e) {
             if (searchInput && resultsDiv) {
-                if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target) && (!btnSearchManual || !btnSearchManual.contains(e.target))) {
                     resultsDiv.style.display = 'none';
                     searchInput.setAttribute('aria-expanded', 'false');
                 }
