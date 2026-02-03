@@ -398,6 +398,8 @@
                                 const antrian = e.antrian || {};
                                 const nomor = antrian.nomor ?? antrian.no_antrian ?? antrian.nomor_terpanggil ?? 0;
                                 const sesi = antrian.sesi ?? null;
+                                const loket = antrian.loket ?? null;
+
                                 if (sesi === 'pagi') {
                                     if (this.nomorPagi != nomor) {
                                         this.pingPagi = true;
@@ -412,9 +414,17 @@
                                     this.nomorSiang = nomor;
                                 }
                                 this.playNotificationSound();
+                                this.announceQueue(nomor, sesi, loket);
                             });
                     } else {
                         console.warn('Laravel Echo is not initialized. Falling back to polling.');
+                    }
+
+                    // Pre-load voices
+                    if ('speechSynthesis' in window) {
+                        window.speechSynthesis.onvoiceschanged = () => {
+                            console.log('Voices loaded:', window.speechSynthesis.getVoices().length);
+                        };
                     }
 
                     // If YouTube API is already ready by the time Alpine init runs
@@ -524,6 +534,40 @@
                     } catch (err) {
                         console.error('playNotificationSound failed:', err);
                     }
+                },
+
+                announceQueue(nomor, sesi, loket = null) {
+                    if (!('speechSynthesis' in window)) {
+                        console.warn('Web Speech API not supported.');
+                        return;
+                    }
+
+                    // Slight delay to allow the "ding-dong" sound to play first
+                    setTimeout(() => {
+                        window.speechSynthesis.cancel(); // Stop previous
+
+                        const sessionCode = (sesi === 'pagi') ? 'A' : (sesi === 'siang' ? 'B' : '');
+                        const destination = loket ? `ke ${loket}` : 'silakan masuk';
+                        
+                        // Text to speak: "Nomor Antrian, A, 123. Silakan masuk."
+                        const text = `Nomor Antrian ${sessionCode} ${nomor}. ${destination}.`;
+                        
+                        const utterance = new SpeechSynthesisUtterance(text);
+                        utterance.lang = 'id-ID'; 
+                        utterance.rate = 0.85; // Slower for clarity
+                        utterance.pitch = 1.0;
+                        utterance.volume = 1.0;
+
+                        // Try to find an Indonesian voice
+                        const voices = window.speechSynthesis.getVoices();
+                        const idVoice = voices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
+                        if (idVoice) {
+                            utterance.voice = idVoice;
+                        }
+
+                        console.log('Announcing:', text);
+                        window.speechSynthesis.speak(utterance);
+                    }, 1000);
                 }
             }
         }
