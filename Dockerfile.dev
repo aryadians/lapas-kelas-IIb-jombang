@@ -1,0 +1,88 @@
+# Development Dockerfile untuk Laravel 12 - Lapas Jombang
+# Includes Xdebug, Composer, and development tools
+
+FROM php:8.3-fpm-alpine
+
+# Build arguments for user permissions
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+# Install runtime and dev dependencies, compile extensions, then cleanup
+RUN apk add --no-cache \
+    bash \
+    curl \
+    git \
+    unzip \
+    mysql-client \
+    supervisor \
+    # Runtime libraries
+    libpng \
+    libjpeg-turbo \
+    freetype \
+    libzip \
+    icu-libs \
+    oniguruma \
+    # Virtual build dependencies (will be removed after compilation)
+    && apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    autoconf \
+    g++ \
+    make \
+    linux-headers \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    libzip-dev \
+    icu-dev \
+    oniguruma-dev \
+    # Configure and install PHP extensions
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+    pdo_mysql \
+    mysqli \
+    gd \
+    zip \
+    intl \
+    mbstring \
+    bcmath \
+    # Install PECL extensions
+    && pecl install redis xdebug \
+    && docker-php-ext-enable redis xdebug \
+    # Cleanup build dependencies to reduce image size
+    && apk del .build-deps
+
+# Install Composer
+COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
+
+# Configure PHP for development
+RUN echo "error_reporting = E_ALL" >> /usr/local/etc/php/conf.d/docker-php-dev.ini \
+    && echo "display_errors = On" >> /usr/local/etc/php/conf.d/docker-php-dev.ini \
+    && echo "display_startup_errors = On" >> /usr/local/etc/php/conf.d/docker-php-dev.ini \
+    && echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-dev.ini \
+    && echo "upload_max_filesize = 50M" >> /usr/local/etc/php/conf.d/docker-php-dev.ini \
+    && echo "post_max_size = 50M" >> /usr/local/etc/php/conf.d/docker-php-dev.ini
+
+# Configure Xdebug
+RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Create user with same UID/GID as host user (untuk file permissions)
+RUN addgroup -g ${GROUP_ID} laravel \
+    && adduser -D -u ${USER_ID} -G laravel laravel
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Set permissions
+RUN chown -R laravel:laravel /var/www/html
+
+# Switch to laravel user
+USER laravel
+
+# Expose port
+EXPOSE 9000
+
+# Default command
+CMD ["php-fpm"]
