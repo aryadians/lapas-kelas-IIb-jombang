@@ -57,20 +57,52 @@ Proyek ini memanfaatkan kombinasi teknologi modern untuk menghadirkan pengalaman
 
 ## 🛠️ Instalasi & Konfigurasi
 
-### **1. Persiapan**
-Aplikasi ini berjalan optimal pada PHP 8.2 ke atas dengan ekstensi GD aktif untuk pemrosesan gambar.
+### **Metode 1: Docker (Direkomendasikan) 🐳**
+Metode paling mudah dan konsisten. Tidak perlu install PHP/MySQL/Redis manual di laptop.
 
-### **2. Setup Cepat**
-Gunakan script setup otomatis:
-```bash
-composer run setup
-```
+1.  **Start Aplikasi**:
+    ```bash
+    ./docker-start.sh
+    ```
+2.  **Stop Aplikasi**:
+    ```bash
+    ./docker-stop.sh
+    ```
+3.  **Akses**:
+    - Web: [http://localhost:8080](http://localhost:8080)
+    - Mailpit: [http://localhost:8025](http://localhost:8025)
+    - Database: localhost:3306 (User: `root`, Pass: `secret`)
 
-### **3. Jalankan Mode Development**
-```bash
-# Menjalankan server, queue, dan vite secara bersamaan
-composer run dev
-```
+> 📖 **Dokumentasi Lengkap Docker**: Lihat [DOCKER.md](./DOCKER.md) dan [DOCKER-QUICKSTART.md](./DOCKER-QUICKSTART.md)
+
+---
+
+### **Metode 2: Manual (Legacy) 🛠️**
+Gunakan metode ini jika Anda menggunakan XAMPP/Laragon.
+
+1.  **Setup Awal**:
+    ```bash
+    composer run setup
+    ```
+2.  **Jalankan Mode Development**:
+    ```bash
+    composer run dev
+    ```
+3.  **Akses**:
+    - Web: [http://localhost:8000](http://localhost:8000)
+
+---
+
+### **🌍 Deployment ke VPS**
+Panduan lengkap cara deploy ke production (Niagahoster/DigitalOcean) tersedia di:
+👉 **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+---
+
+### **📡 Share ke Internet (Cloudflare Tunnel)**
+Ingin demo aplikasi ke orang lain tanpa deploy?
+- **Docker**: Jalankan `.\docker-share.bat`
+- **Manual**: Jalankan `.\share.bat`
 
 ---
 
