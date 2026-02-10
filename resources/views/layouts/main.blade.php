@@ -640,6 +640,11 @@
                                 this.utterance = new SpeechSynthesisUtterance(text);
                                 this.utterance.lang = 'id-ID'; // Set bahasa Indonesia
                                 this.utterance.rate = 1; // Kecepatan normal
+                                
+                                // Paksa cari suara Indonesia agar tidak aksen Inggris
+                                const allVoices = this.synth.getVoices();
+                                const idVoice = allVoices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
+                                if (idVoice) this.utterance.voice = idVoice;
         
                                 // Event saat selesai bicara
                                 this.utterance.onend = () => {

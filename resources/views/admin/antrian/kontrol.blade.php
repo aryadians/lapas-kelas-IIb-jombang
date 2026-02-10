@@ -289,8 +289,15 @@ function queueControl() {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
             utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+
+            // Pastikan memilih suara Indonesia
             if (this.voices.length > 0) {
                 utterance.voice = this.voices[0];
+            } else {
+                const allVoices = window.speechSynthesis.getVoices();
+                const idVoice = allVoices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
+                if (idVoice) utterance.voice = idVoice;
             }
 
             // Handle onend event to manage queue
@@ -303,6 +310,7 @@ function queueControl() {
             if (priority) {
                 window.speechSynthesis.cancel();
                 this.speechQueue.unshift(utterance);
+                this.isSpeaking = false;
             } else {
                 this.speechQueue.push(utterance);
             }

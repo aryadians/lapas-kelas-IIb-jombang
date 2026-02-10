@@ -194,14 +194,17 @@
         loadVoices();
 
         function speak(text) {
-            if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel(); 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.9;
-            utterance.volume = 1;
-            if (voices.length > 0) utterance.voice = voices[0];
-            window.speechSynthesis.speak(utterance);
+            const url = `{{ route('tts.synthesize') }}?text=${encodeURIComponent(text)}`;
+            const audio = new Audio(url);
+            audio.play().catch(e => {
+                console.error("TTS Play Error, falling back to browser TTS:", e);
+                if (!('speechSynthesis' in window)) return;
+                window.speechSynthesis.cancel(); 
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                if (voices.length > 0) utterance.voice = voices[0];
+                window.speechSynthesis.speak(utterance);
+            });
         }
 
         // --- 3. QUEUE LOGIC ---

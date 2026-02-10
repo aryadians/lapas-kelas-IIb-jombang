@@ -92,19 +92,32 @@
                 this.stop();
                 let text = window.getSelection().toString() || (document.querySelector('main') || document.body).innerText;
                 if (text) {
-                    this.utterance = new SpeechSynthesisUtterance(text);
-                    this.utterance.lang = 'id-ID';
-                    this.utterance.volume = this.volume;
-                    this.utterance.onstart = () => {
-                        this.isSpeaking = true;
-                    };
-                    this.utterance.onend = () => {
-                        this.isSpeaking = false;
-                    };
-                    this.synth.speak(this.utterance);
+                    // Limit text length for accessibility reader to avoid huge API costs
+                    if (text.length > 1000) text = text.substring(0, 1000) + "...";
+
+                    const url = `{{ route('tts.synthesize') }}?text=${encodeURIComponent(text)}`;
+                    this.currentAudio = new Audio(url);
+                    this.currentAudio.volume = this.volume;
+                    this.currentAudio.onplay = () => { this.isSpeaking = true; };
+                    this.currentAudio.onended = () => { this.isSpeaking = false; };
+                    this.currentAudio.play().catch(e => {
+                        console.error("Accessibility TTS Error:", e);
+                        // Fallback to browser TTS
+                        this.utterance = new SpeechSynthesisUtterance(text);
+                        this.utterance.lang = 'id-ID';
+                        this.utterance.volume = this.volume;
+                        this.utterance.onstart = () => { this.isSpeaking = true; };
+                        this.utterance.onend = () => { this.isSpeaking = false; };
+                        this.synth.speak(this.utterance);
+                    });
                 }
             },
             stop() {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio = null;
+                    this.isSpeaking = false;
+                }
                 if (this.synth.speaking) {
                     this.synth.cancel();
                     this.isSpeaking = false;

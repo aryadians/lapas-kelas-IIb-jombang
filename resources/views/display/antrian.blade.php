@@ -353,11 +353,22 @@
 
                     setTimeout(() => {
                         window.speechSynthesis.cancel();
-                        const text = `Panggilan undangan nomor antrian. ${callData.nomor}. Atas nama. ${callData.nama}. Silahkan masuk.`;
+                        const text = `Panggilan nomor antrian ${callData.nomor}. Atas nama ${callData.nama}. Silahkan masuk ke ruang kunjungan.`;
                         const ut = new SpeechSynthesisUtterance(text);
                         ut.lang = 'id-ID';
                         ut.rate = 0.9;
-                        if(this.voices.length) ut.voice = this.voices[0];
+                        ut.pitch = 1.0;
+                        
+                        // Cari suara Indonesia
+                        if(this.voices.length) {
+                            ut.voice = this.voices[0];
+                        } else {
+                            // Coba lagi ambil voices jika belum terload
+                            const allVoices = window.speechSynthesis.getVoices();
+                            const idVoice = allVoices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
+                            if (idVoice) ut.voice = idVoice;
+                        }
+                        
                         window.speechSynthesis.speak(ut);
                     }, 1500); // Wait for chime
                 },
