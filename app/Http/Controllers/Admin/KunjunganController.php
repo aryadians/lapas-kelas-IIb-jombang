@@ -426,13 +426,16 @@ class KunjunganController extends Controller
         }
 
         // Ambil Nomor Antrian Harian Terakhir (berdasarkan sesi)
-        $lastQueue = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
-            ->where('sesi', $request->sesi) // Ditambahkan filter sesi
+        $maxAntrian = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
+            ->where('sesi', $request->sesi)
             ->lockForUpdate()
-            ->orderBy('nomor_antrian_harian', 'desc')
-            ->first();
+            ->max('nomor_antrian_harian');
 
-        $nomorAntrian = $lastQueue ? $lastQueue->nomor_antrian_harian + 1 : 1;
+        if ($request->sesi === 'siang') {
+            $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
+        } else {
+            $nomorAntrian = ($maxAntrian ?? 0) + 1;
+        }
         
         // Buat Kunjungan Baru
         $kunjungan = Kunjungan::create([
