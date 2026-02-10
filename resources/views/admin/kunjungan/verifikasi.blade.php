@@ -372,8 +372,10 @@
         // --- Start Scanner Button Logic ---
         if (startBtn) {
             startBtn.addEventListener('click', function() {
-                // Check for secure context
-                if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                // Check for secure context (Supports localhost and HTTPS including Cloudflare Tunnel)
+                const isSecure = window.isSecureContext || location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+                
+                if (!isSecure) {
                     showError('Koneksi Tidak Aman', 'Fitur kamera pemindai QR Code memerlukan koneksi HTTPS yang aman atau harus dijalankan di lingkungan localhost.');
                     return;
                 }

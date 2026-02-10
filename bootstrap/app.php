@@ -15,9 +15,15 @@ return Application::configure(basePath: dirname(__DIR__))
         App\Providers\BroadcastServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustProxies(at: '*');
+
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
         ]);
+
+        if (env('APP_ENV') !== 'local' || env('FORCE_HTTPS', false)) {
+            $middleware->append(\App\Http\Middleware\ForceHttps::class);
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
