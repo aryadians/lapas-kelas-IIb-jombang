@@ -22,7 +22,7 @@ class KunjunganPending extends Mailable
 
     public function build()
     {
-        $email = $this->subject('PENDAFTARAN BERHASIL - MENUNGGU VERIFIKASI')
+        $email = $this->subject('PENDAFTARAN BERHASIL')
             ->view('emails.kunjungan_pending'); // Pastikan view ini ada
 
         // Jika ada path QR Code, lampirkan file

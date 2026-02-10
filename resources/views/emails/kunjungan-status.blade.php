@@ -56,11 +56,11 @@
                 @elseif ($kunjungan->status === KunjunganStatus::PENDING)
                     {{-- STATUS: PENDING --}}
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <span class="badge badge-pending">⏳ MENUNGGU VERIFIKASI</span>
+                        <span class="badge" style="background-color: #dbeafe; color: #1e40af; border: 1px solid #3b82f6;">✅ PENDAFTARAN BERHASIL</span>
                     </div>
 
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
-                    <p>Terima kasih telah mendaftar, silahkan tunjukan email ini dan Qr code kepada petugas</p>
+                    <p>Selamat! Pendaftaran kunjungan tatap muka Anda telah kami terima. Berikut adalah detail pendaftaran Anda:</p>
 
                     <div style="margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
                         <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Data Pengunjung</h3>
@@ -138,14 +138,30 @@
                         {{-- Kita coba akses lewat CID default Laravel embedData atau attachData --}}
                         
                         @if(isset($message) && $kunjungan->qr_token)
-                             {{-- PERBAIKAN UTAMA: Menggunakan CID Attachment agar aman dari error Imagick --}}
-                             <img src="{{ $message->embed(storage_path('app/public/qrcodes/' . $kunjungan->id . ($kunjungan->status == KunjunganStatus::APPROVED ? '.png' : '.svg'))) }}" 
-                                  alt="QR Code" 
-                                  style="width: 200px; height: 200px;"
-                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                             
-                             {{-- Fallback text jika gambar gagal load --}}
-                             <p style="display:none; color: red; font-size: 12px;">QR Code tidak dapat dimuat di preview ini.</p>
+                             @php
+                                 // Cari file yang benar-benar ada di disk
+                                 $id = $kunjungan->id;
+                                 $pngPath = storage_path("app/public/qrcodes/{$id}.png");
+                                 $svgPath = storage_path("app/public/qrcodes/{$id}.svg");
+                                 
+                                 $finalPath = null;
+                                 if (file_exists($pngPath)) {
+                                     $finalPath = $pngPath;
+                                 } elseif (file_exists($svgPath)) {
+                                     $finalPath = $svgPath;
+                                 }
+                             @endphp
+
+                             @if($finalPath)
+                                 <img src="{{ $message->embed($finalPath) }}" 
+                                      alt="QR Code" 
+                                      style="width: 200px; height: 200px;">
+                             @else
+                                 <div style="padding: 20px; border: 1px solid #ddd; background: #fff; display: inline-block;">
+                                     <p style="margin: 0; font-size: 12px; color: #666;">QR Code tersedia di halaman status:</p>
+                                     <strong style="font-size: 16px;">{{ $kunjungan->kode_kunjungan }}</strong>
+                                 </div>
+                             @endif
                         @endif
                     </div>
 

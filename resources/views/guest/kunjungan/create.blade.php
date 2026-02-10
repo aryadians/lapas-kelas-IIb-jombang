@@ -379,9 +379,16 @@
             <div class="p-4 sm:p-10">
                 {{-- ALERT BAWAAN --}}
                 @if (session('success'))
-                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8" role="alert">
-                        <p class="font-bold">Berhasil!</p>
-                        <p>{{ session('success') }}</p>
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg mb-8 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4" role="alert">
+                        <div>
+                            <p class="font-bold">Berhasil!</p>
+                            <p>{{ session('success') }}</p>
+                        </div>
+                        @if(session('kunjungan_id'))
+                            <a href="{{ route('kunjungan.status', session('kunjungan_id')) }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                                <i class="fa-solid fa-ticket"></i> LIHAT TIKET SAYA
+                            </a>
+                        @endif
                     </div>
                 @endif
                 @if (session('error'))
@@ -775,6 +782,42 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    // --- LOGIKA POPUP BERHASIL (MENGGUNAKAN SETTIMEOUT AGAR STABIL) ---
+    @if(session('success'))
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                @php
+                    $kunjunganId = session('kunjungan_id');
+                    $statusUrl = $kunjunganId ? route('kunjungan.status', $kunjunganId) : null;
+                @endphp
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Pendaftaran Berhasil!',
+                    html: `<div class="text-center">
+                            <p class="mb-4 text-slate-700">{!! session('success') !!}</p>
+                            <p class="text-xs text-slate-500 bg-slate-100 p-2 rounded">Silakan klik tombol di bawah untuk melihat kode booking dan tiket antrian Anda.</p>
+                           </div>`,
+                    @if($statusUrl)
+                    confirmButtonText: '<i class="fa-solid fa-ticket mr-2"></i> LIHAT TIKET SAYA',
+                    confirmButtonColor: '#10b981',
+                    showCancelButton: true,
+                    cancelButtonText: 'Tutup',
+                    @else
+                    confirmButtonText: 'Selesai',
+                    confirmButtonColor: '#3b82f6',
+                    @endif
+                    allowOutsideClick: false,
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if (result.isConfirmed && "{{ $statusUrl }}") {
+                        window.location.href = "{{ $statusUrl }}";
+                    }
+                });
+            }, 500); 
+        });
+    @endif
+
     document.addEventListener('DOMContentLoaded', function() {
         @if(session('error_duplicate_entry'))
             Swal.fire({ icon: 'warning', title: 'Antrian Padat', text: "{!! session('error_duplicate_entry') !!}", confirmButtonText: 'Baik, Saya Coba Lagi', confirmButtonColor: '#3085d6' });
@@ -788,38 +831,6 @@
             pesanError += '</ul>';
             Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap / Salah', html: pesanError, confirmButtonText: 'Perbaiki', confirmButtonColor: '#f59e0b' });
         @endif
-        
-        // --- LOGIKA POPUP BERHASIL ---
-        @if(session('success'))
-            @if(session('kunjungan_id'))
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Pendaftaran Berhasil!',
-                    html: `<p class="mb-4">{{ session('success') }}</p><p class="text-sm text-gray-500">Silakan cek status dan unduh tiket Anda.</p>`,
-                    confirmButtonText: '<i class="fa-solid fa-ticket mr-2"></i> Lihat Status & Tiket',
-                    confirmButtonColor: '#10b981',
-                    showCancelButton: true,
-                    cancelButtonText: 'Tutup',
-                    allowOutsideClick: false,
-                    allowEscapeKey: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Gunakan URL manual jika route helper bermasalah, tapi helper lebih aman
-                        window.location.href = "{{ route('kunjungan.status', ['kunjungan' => session('kunjungan_id')]) }}";
-                    }
-                });
-            @else
-                // Fallback jika ID tidak terbawa session (jarang terjadi)
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: 'Berhasil!', 
-                    text: "{{ session('success') }}", 
-                    confirmButtonText: 'OK', 
-                    confirmButtonColor: '#10b981' 
-                });
-            @endif
-        @endif
-        // ----------------------------------
 
         // Client-side validation: ukuran file maksimal 2MB
         const MAX_BYTES = 2 * 1024 * 1024;

@@ -176,8 +176,23 @@ function queueControl() {
             setInterval(() => this.fetchState(), 5000);
             setInterval(() => this.updateTimers(), 1000);
             this.loadVoices();
+            
+            // Re-load voices if they change (important for mobile)
+            if (window.speechSynthesis.onvoiceschanged !== undefined) {
+                window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+            }
+
             // Start the queue processor check
             setInterval(() => this.processSpeechQueue(), 300);
+
+            // Audio Unlocker for Mobile
+            const unlock = () => {
+                const silence = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(silence);
+                document.removeEventListener('click', unlock);
+                console.log("Audio Unlocked for Mobile");
+            };
+            document.addEventListener('click', unlock);
         },
 
         async fetchState() {
@@ -288,7 +303,7 @@ function queueControl() {
             
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
-            utterance.rate = 0.9;
+            utterance.rate = 1.0;
             utterance.pitch = 1.0;
 
             // Pastikan memilih suara Indonesia
@@ -304,7 +319,7 @@ function queueControl() {
             utterance.onend = () => {
                 setTimeout(() => {
                     this.isSpeaking = false;
-                }, 1500); // 1.5 second pause between announcements
+                }, 1500); 
             };
             
             if (priority) {

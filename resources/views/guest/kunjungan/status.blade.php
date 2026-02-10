@@ -29,8 +29,8 @@
                     {{-- LOGIC STATUS BADGE --}}
                     <div class="inline-block">
                         @if($kunjungan->status == KunjunganStatus::PENDING)
-                            <span class="bg-yellow-400 text-yellow-900 text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
-                                <i class="fa-solid fa-clock"></i> MENUNGGU VERIFIKASI
+                            <span class="bg-blue-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-check-circle"></i> PENDAFTARAN BERHASIL
                             </span>
                         @elseif($kunjungan->status == KunjunganStatus::APPROVED)
                             <span class="bg-green-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
@@ -110,22 +110,34 @@
                                 <p class="text-slate-600 text-sm leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p>
                             </div>
 
-                            {{-- FOTO KTP (BASE64) --}}
+                            {{-- FOTO KTP (OPTIMIZED FOR CLOUDFLARE) --}}
                             <div>
                                 <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Foto KTP</label>
                                 
-                                {{-- Container Gambar dengan Lightbox --}}
                                 <div class="block w-full sm:w-48 h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 relative group shadow-sm hover:shadow-md transition-all">
                                     
-                                    @if(!empty($kunjungan->foto_ktp))
-                                        {{-- Tampilkan Gambar dari Base64 --}}
-                                        <a href="#" onclick="showImageModal('{{ $kunjungan->foto_ktp }}'); return false;">
-                                            <img src="{{ $kunjungan->foto_ktp }}" 
+                                    @php
+                                        $imageSrc = null;
+                                        if (!empty($kunjungan->foto_ktp_path) && Storage::disk('public')->exists($kunjungan->foto_ktp_path)) {
+                                            // Gunakan path relatif /storage/... agar browser otomatis menyesuaikan dengan domain tunnel yang sedang dipakai
+                                            $imageSrc = asset('storage/' . $kunjungan->foto_ktp_path);
+                                            
+                                            // Jika via tunnel/https, pastikan URL gambarnya juga https
+                                            if (env('FORCE_HTTPS', false) && str_starts_with($imageSrc, 'http://')) {
+                                                $imageSrc = str_replace('http://', 'https://', $imageSrc);
+                                            }
+                                        } elseif (!empty($kunjungan->foto_ktp)) {
+                                            $imageSrc = $kunjungan->foto_ktp;
+                                        }
+                                    @endphp
+
+                                    @if($imageSrc)
+                                        <a href="#" onclick="showImageModal('{{ $imageSrc }}'); return false;">
+                                            <img src="{{ $imageSrc }}" 
                                                  alt="Foto KTP" 
                                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Gambar+Rusak';">
+                                                 onerror="this.onerror=null; this.src='https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia';">
                                             
-                                            {{-- Efek Hover --}}
                                             <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl drop-shadow-lg mb-1"></i>
                                                 <span class="text-white text-xs font-bold bg-black/50 px-2 py-1 rounded backdrop-blur-sm">Lihat</span>
