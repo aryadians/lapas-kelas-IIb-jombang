@@ -150,15 +150,32 @@ class KunjunganService
             File::makeDirectory($path, 0755, true);
         }
 
-        $qrCodePath = null;
+        $qrCodePath = 'qrcodes/' . $kunjungan->id . '.png';
         try {
+            // Try generating PNG locally (Requires Imagick)
             $qrContent = QrCode::format('png')->size(400)->margin(2)->color(0, 0, 0)->backgroundColor(255, 255, 255)->generate($kunjungan->qr_token);
-            $qrCodePath = 'qrcodes/' . $kunjungan->id . '.png';
             Storage::disk('public')->put($qrCodePath, $qrContent);
         } catch (\Exception $e) {
-            $qrContent = QrCode::format('svg')->size(400)->margin(2)->generate($kunjungan->qr_token);
-            $qrCodePath = 'qrcodes/' . $kunjungan->id . '.svg';
-            Storage::disk('public')->put($qrCodePath, $qrContent);
+            Log::warning("Local PNG QR generation failed, attempting API fallback: " . $e->getMessage());
+            
+            try {
+                // Fallback to External API for PNG (Email-friendly)
+                $apiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" . urlencode($kunjungan->qr_token);
+                $qrContent = file_get_contents($apiUrl);
+                
+                if ($qrContent) {
+                    Storage::disk('public')->put($qrCodePath, $qrContent);
+                } else {
+                    throw new \Exception("Empty response from QR API");
+                }
+            } catch (\Exception $apiEx) {
+                Log::error("QR API Fallback failed: " . $apiEx->getMessage());
+                
+                // Final fallback to SVG
+                $qrContent = QrCode::format('svg')->size(400)->margin(2)->generate($kunjungan->qr_token);
+                $qrCodePath = 'qrcodes/' . $kunjungan->id . '.svg';
+                Storage::disk('public')->put($qrCodePath, $qrContent);
+            }
         }
 
         return $qrCodePath;

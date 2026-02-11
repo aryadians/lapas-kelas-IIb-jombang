@@ -130,38 +130,38 @@
                     {{-- Kita menggunakan CID Attachment, BUKAN generate on-the-fly --}}
                     <div style="text-align: center; margin: 25px 0; padding: 20px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px;">
                         <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px;">
-                            {{ $kunjungan->status === KunjunganStatus::APPROVED ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Menunggu Aktivasi):' }}
+                            {{ $kunjungan->status === \App\Enums\KunjunganStatus::APPROVED ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Menunggu Aktivasi):' }}
                         </p>
                         
-                        {{-- Logika untuk menampilkan gambar yang di-attach di Mailable --}}
-                        {{-- Nama attachment di Mailable: 'qrcode-kunjungan.png' atau .svg --}}
-                        {{-- Kita coba akses lewat CID default Laravel embedData atau attachData --}}
-                        
-                        @if(isset($message) && $kunjungan->qr_token)
-                             @php
-                                 // Cari file yang benar-benar ada di disk
-                                 $id = $kunjungan->id;
-                                 $pngPath = storage_path("app/public/qrcodes/{$id}.png");
-                                 $svgPath = storage_path("app/public/qrcodes/{$id}.svg");
-                                 
-                                 $finalPath = null;
-                                 if (file_exists($pngPath)) {
-                                     $finalPath = $pngPath;
-                                 } elseif (file_exists($svgPath)) {
-                                     $finalPath = $svgPath;
-                                 }
-                             @endphp
+                        @php
+                            $id = $kunjungan->id;
+                            $pngPath = storage_path("app/public/qrcodes/{$id}.png");
+                            $svgPath = storage_path("app/public/qrcodes/{$id}.svg");
+                            
+                            $finalPath = null;
+                            if (file_exists($pngPath)) {
+                                $finalPath = $pngPath;
+                            } elseif (file_exists($svgPath)) {
+                                $finalPath = $svgPath;
+                            }
+                        @endphp
 
-                             @if($finalPath)
-                                 <img src="{{ $message->embed($finalPath) }}" 
-                                      alt="QR Code" 
-                                      style="width: 200px; height: 200px;">
-                             @else
-                                 <div style="padding: 20px; border: 1px solid #ddd; background: #fff; display: inline-block;">
-                                     <p style="margin: 0; font-size: 12px; color: #666;">QR Code tersedia di halaman status:</p>
-                                     <strong style="font-size: 16px;">{{ $kunjungan->kode_kunjungan }}</strong>
-                                 </div>
-                             @endif
+                        @if($finalPath)
+                            @if(str_ends_with($finalPath, '.svg'))
+                                {{-- SVG fallback: Use API to get PNG for email client compatibility --}}
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($kunjungan->qr_token) }}" 
+                                     alt="QR Code" 
+                                     style="width: 200px; height: 200px;">
+                            @else
+                                <img src="{{ $message->embed($finalPath) }}" 
+                                     alt="QR Code" 
+                                     style="width: 200px; height: 200px;">
+                            @endif
+                        @else
+                            <div style="padding: 20px; border: 1px solid #ddd; background: #fff; display: inline-block;">
+                                <p style="margin: 0; font-size: 12px; color: #666;">QR Code tersedia di halaman status:</p>
+                                <strong style="font-size: 16px;">{{ $kunjungan->kode_kunjungan }}</strong>
+                            </div>
                         @endif
                     </div>
 
