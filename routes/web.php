@@ -240,6 +240,9 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
 
     // H. MANAJEMEN PENGUNJUNG
     Route::get('pengunjung', [AdminVisitorController::class, 'index'])->name('admin.visitors.index');
+    Route::delete('pengunjung/{visitor}', [AdminVisitorController::class, 'destroy'])->name('admin.visitors.destroy');
+    Route::post('pengunjung/bulk-delete', [AdminVisitorController::class, 'bulkDestroy'])->name('admin.visitors.bulk-delete');
+    Route::get('pengunjung/export-csv', [AdminVisitorController::class, 'exportCsv'])->name('admin.visitors.export-csv');
 });
 
 // Load auth routes bawaan Laravel Breeze
