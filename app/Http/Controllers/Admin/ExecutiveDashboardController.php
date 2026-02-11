@@ -188,14 +188,15 @@ class ExecutiveDashboardController extends Controller
 
         $kecamatanCounts = $kunjungans->pluck('alamat_pengunjung')
             ->map(function ($alamat) use ($jombangKecamatan) {
-                if (!$alamat) return 'Luar Jombang / Tidak Diketahui';
+                if (!$alamat) return 'Tidak Diketahui';
 
                 $cleanAlamat = strtolower(str_replace(['.', ',', '/'], ' ', $alamat));
+                $isJombangInAlamat = str_contains($cleanAlamat, 'jombang');
                 
                 // Prioritas 1: Cari kecocokan langsung dengan daftar kecamatan Jombang
                 foreach ($jombangKecamatan as $kec) {
                     if (str_contains($cleanAlamat, strtolower($kec))) {
-                        return $kec;
+                        return 'Kec. ' . $kec;
                     }
                 }
 
@@ -204,15 +205,48 @@ class ExecutiveDashboardController extends Controller
                 if ($pos === false) $pos = strpos($cleanAlamat, 'kec ');
 
                 if ($pos !== false) {
-                    $substring = substr($alamat, $pos);
+                    $substring = substr($cleanAlamat, $pos);
                     $parts = preg_split('/[\s,]+/', trim($substring));
+                    // parts[0] is 'kecamatan' or 'kec', parts[1] is the name
                     if (isset($parts[1]) && strlen($parts[1]) > 2) {
-                        return ucfirst(strtolower($parts[1]));
+                        $name = ucfirst($parts[1]);
+                        return ($isJombangInAlamat ? 'Kec. ' : 'Luar Jombang: Kec. ') . $name;
                     }
                 }
 
-                // Fallback: Jika tidak ditemukan, anggap luar kota atau tidak terdeteksi
-                return 'Lainnya / Luar Jombang';
+                // Fallback: Jika ada kata Jombang tapi tidak cocok kecamatan manapun
+                if ($isJombangInAlamat) return 'Jombang (Kec. Lainnya)';
+
+                return 'Luar Jombang';
+            })
+            ->countBy()
+            ->sortDesc()
+            ->take(10);
+
+        // 3. Desa/Kelurahan Distribution
+        $desaCounts = $kunjungans->pluck('alamat_pengunjung')
+            ->map(function ($alamat) {
+                if (!$alamat) return 'Tidak Diketahui';
+
+                $cleanAlamat = strtolower(str_replace(['.', ',', '/'], ' ', $alamat));
+                $isJombangInAlamat = str_contains($cleanAlamat, 'jombang');
+
+                // Cari keyword "Desa" atau "Kel" atau "Kelurahan"
+                $pos = strpos($cleanAlamat, 'desa ');
+                if ($pos === false) $pos = strpos($cleanAlamat, 'kel ');
+                if ($pos === false) $pos = strpos($cleanAlamat, 'kelurahan ');
+
+                if ($pos !== false) {
+                    $substring = substr($cleanAlamat, $pos);
+                    $parts = preg_split('/[\s,]+/', trim($substring));
+                    // parts[0] is 'desa'/'kel'/'kelurahan', parts[1] is the name
+                    if (isset($parts[1]) && strlen($parts[1]) > 2) {
+                        $name = ucfirst($parts[1]);
+                        return ($isJombangInAlamat ? 'Desa ' : 'Luar Jombang: Desa ') . $name;
+                    }
+                }
+
+                return $isJombangInAlamat ? 'Jombang (Desa Lainnya)' : 'Luar Jombang';
             })
             ->countBy()
             ->sortDesc()
@@ -226,6 +260,10 @@ class ExecutiveDashboardController extends Controller
             'city_distribution' => [
                 'labels' => $kecamatanCounts->keys(),
                 'data' => $kecamatanCounts->values(),
+            ],
+            'village_distribution' => [
+                'labels' => $desaCounts->keys(),
+                'data' => $desaCounts->values(),
             ],
         ]);
     }

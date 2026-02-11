@@ -128,7 +128,7 @@
     </div>
     
     {{-- 5. NEW FEATURES ROW --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-600">
             <h3 class="text-xl font-bold text-slate-800 mb-4">Distribusi Usia Pengunjung</h3>
             <div class="h-80 w-full flex items-center justify-center">
@@ -139,6 +139,15 @@
             <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 Kecamatan Asal Pengunjung</h3>
             <div class="h-80 w-full flex items-center justify-center">
                 <canvas id="cityDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 mb-8">
+        <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-750">
+            <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 Desa/Kelurahan Asal Pengunjung</h3>
+            <div class="h-80 w-full flex items-center justify-center">
+                <canvas id="villageDistributionChart"></canvas>
             </div>
         </div>
     </div>
@@ -259,6 +268,11 @@
             new Chart(document.getElementById('cityDistributionChart').getContext('2d'), {
                 type: 'bar',
                 data: { labels: data.city_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.city_distribution.data, backgroundColor: '#0ea5e9' }] },
+                options: commonChartOptions({ indexAxis: 'y', plugins: { legend: { display: false } } })
+            });
+            new Chart(document.getElementById('villageDistributionChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: data.village_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.village_distribution.data, backgroundColor: '#8b5cf6' }] },
                 options: commonChartOptions({ indexAxis: 'y', plugins: { legend: { display: false } } })
             });
         });
