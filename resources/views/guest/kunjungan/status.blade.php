@@ -110,7 +110,7 @@
                                 <p class="text-slate-600 text-sm leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p>
                             </div>
 
-                            {{-- FOTO KTP (OPTIMIZED FOR CLOUDFLARE) --}}
+                            {{-- FOTO KTP (OPTIMIZED FOR PROXY/TUNNEL) --}}
                             <div>
                                 <label class="text-xs font-bold text-slate-400 uppercase block mb-2">Foto KTP</label>
                                 
@@ -118,16 +118,18 @@
                                     
                                     @php
                                         $imageSrc = null;
-                                        if (!empty($kunjungan->foto_ktp_path) && Storage::disk('public')->exists($kunjungan->foto_ktp_path)) {
-                                            // Gunakan path relatif /storage/... agar browser otomatis menyesuaikan dengan domain tunnel yang sedang dipakai
-                                            $imageSrc = asset('storage/' . $kunjungan->foto_ktp_path);
-                                            
-                                            // Jika via tunnel/https, pastikan URL gambarnya juga https
-                                            if (env('FORCE_HTTPS', false) && str_starts_with($imageSrc, 'http://')) {
-                                                $imageSrc = str_replace('http://', 'https://', $imageSrc);
+                                        // Cek apakah ada path foto
+                                        $path = $kunjungan->foto_ktp_path ?? $kunjungan->foto_ktp;
+                                        
+                                        if (!empty($path)) {
+                                            // Jika path mengandung http (URL eksternal), gunakan langsung
+                                            if (str_starts_with($path, 'http')) {
+                                                $imageSrc = $path;
+                                            } else {
+                                                // Gunakan relative path agar otomatis mengikuti domain/host yang sedang aktif (penting untuk Ngrok/Cloudflare Tunnel)
+                                                // Kita asumsikan symlink storage sudah terpasang
+                                                $imageSrc = '/storage/' . ltrim($path, '/');
                                             }
-                                        } elseif (!empty($kunjungan->foto_ktp)) {
-                                            $imageSrc = $kunjungan->foto_ktp;
                                         }
                                     @endphp
 
