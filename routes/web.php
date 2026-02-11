@@ -18,6 +18,7 @@ use App\Http\Controllers\Guest\GalleryController;
 use App\Models\Kunjungan;
 
 
+use App\Http\Controllers\TTSController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 
@@ -124,6 +125,9 @@ Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('
 
 // API PUBLIK UNTUK ANTRIAN
 Route::get('/api/antrian/status', [AntrianController::class, 'getStatus'])->name('api.antrian.status');
+
+// Route for Text-to-Speech
+Route::get('/tts/synthesize', [TTSController::class, 'synthesize'])->name('tts.synthesize');
 
 
 // =========================================================================

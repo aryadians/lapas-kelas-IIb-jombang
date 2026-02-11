@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'google' => [
+        'tts' => [
+            'credentials' => env('GOOGLE_APPLICATION_CREDENTIALS'),
+            'language_code' => env('GOOGLE_TTS_LANG', 'id-ID'),
+            'voice' => env('GOOGLE_TTS_VOICE', 'id-ID-Wavenet-A'),
+            'speaking_rate' => (float) env('GOOGLE_TTS_RATE', 1.0),
+            'pitch' => (float) env('GOOGLE_TTS_PITCH', 0.0),
+        ],
+    ],
+
 ];
