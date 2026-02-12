@@ -1,8 +1,9 @@
 @extends('layouts.admin')
 
 @section('content')
-{{-- Load Animate.css & FontAwesome --}}
+{{-- Load Animate.css, FontAwesome, & Lightbox --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
 
 <style>
     /* 3D Card Effect */
@@ -31,6 +32,14 @@
         border: 1px solid rgba(226, 232, 240, 0.8);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     }
+
+    /* Print optimization */
+    @media print {
+        .no-print { display: none !important; }
+        .text-gradient { -webkit-text-fill-color: #1e293b !important; }
+        .glass-panel { border: none !important; box-shadow: none !important; }
+        body { background: white !important; }
+    }
 </style>
 
 <div class="space-y-8 pb-12">
@@ -43,14 +52,14 @@
             </h1>
             <p class="text-slate-500 mt-2 font-medium">Data rekapitulasi profil pengunjung.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('admin.visitors.export-csv') }}" class="group flex items-center gap-2 bg-emerald-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-emerald-700 transition-all active:scale-95">
-                <i class="fas fa-file-csv"></i>
-                <span>Export CSV</span>
+        <div class="flex items-center flex-wrap gap-3 no-print">
+            <a href="{{ route('admin.visitors.export-excel') }}" class="group flex items-center gap-2 bg-indigo-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-indigo-700 transition-all active:scale-95">
+                <i class="fas fa-file-excel"></i>
+                <span>Export Excel</span>
             </a>
-            <button onclick="window.print()" class="group flex items-center gap-2 bg-white text-slate-600 font-bold px-5 py-2.5 rounded-xl shadow-sm border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95">
-                <i class="fas fa-print text-slate-400 group-hover:text-slate-600"></i>
-                <span>Cetak Laporan</span>
+            <button onclick="window.print()" class="group flex items-center gap-2 bg-rose-600 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg hover:bg-rose-700 transition-all active:scale-95">
+                <i class="fas fa-file-pdf"></i>
+                <span>Cetak PDF</span>
             </button>
         </div>
     </header>
@@ -88,7 +97,7 @@
     @endif
 
     {{-- FORM PENCARIAN --}}
-    <form action="{{ route('admin.visitors.index') }}" method="GET" class="animate__animated animate__fadeInUp">
+    <form action="{{ route('admin.visitors.index') }}" method="GET" class="animate__animated animate__fadeInUp no-print">
         <div class="glass-panel rounded-2xl p-6">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="relative flex-grow group">
@@ -112,7 +121,7 @@
     {{-- TABLE PENGUNJUNG --}}
     <form id="bulkDeleteForm" action="{{ route('admin.visitors.bulk-delete') }}" method="POST">
         @csrf
-        <div class="flex justify-between items-center mb-4 px-2">
+        <div class="flex justify-between items-center mb-4 px-2 no-print">
             <div class="flex items-center gap-2">
                 <input type="checkbox" id="selectAll" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                 <label for="selectAll" class="text-sm font-medium text-slate-600">Pilih Semua</label>
@@ -126,27 +135,29 @@
             <table class="w-full text-sm text-left text-slate-500">
                 <thead class="text-xs text-slate-700 uppercase bg-slate-50">
                     <tr>
-                        <th scope="col" class="px-6 py-4 w-10"></th>
+                        <th scope="col" class="px-6 py-4 w-10 no-print"></th>
                         <th scope="col" class="px-6 py-4">No</th>
                         <th scope="col" class="px-6 py-4">Identitas Pengunjung</th>
                         <th scope="col" class="px-6 py-4">Kontak</th>
                         <th scope="col" class="px-6 py-4">Alamat</th>
                         <th scope="col" class="px-6 py-4 text-center">Dokumen</th>
                         <th scope="col" class="px-6 py-4 text-center">Statistik</th>
-                        <th scope="col" class="px-6 py-4 text-center">Aksi</th>
+                        <th scope="col" class="px-6 py-4 text-center no-print">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($visitors as $index => $visitor)
                     <tr class="bg-white border-b hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 no-print">
                             <input type="checkbox" name="ids[]" value="{{ $visitor->id }}" class="visitor-checkbox w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
                         </td>
                         <td class="px-6 py-4 font-bold text-slate-600">
                             {{ $visitors->firstItem() + $index }}
                         </td>
                         <td class="px-6 py-4">
-                            <div class="font-bold text-slate-800 text-base">{{ $visitor->nama }}</div>
+                            <button type="button" onclick="showHistory('{{ $visitor->id }}')" class="font-bold text-slate-800 text-base hover:text-blue-600 transition-colors text-left">
+                                {{ $visitor->nama }}
+                            </button>
                             <div class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block mt-1" title="{{ $visitor->nik }}">
                                 NIK: {{ substr($visitor->nik, 0, 6) . '******' . substr($visitor->nik, -4) }}
                             </div>
@@ -178,10 +189,10 @@
                                         ? $visitor->foto_ktp 
                                         : asset('storage/' . $visitor->foto_ktp);
                                 @endphp
-                                <button type="button" onclick="showKtp('{{ $fotoUrl }}', '{{ $visitor->nama }}')" 
-                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors border border-blue-100">
+                                <a data-fslightbox="gallery" href="{{ $fotoUrl }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors border border-blue-100 no-print">
                                     <i class="fas fa-id-card"></i> Lihat KTP
-                                </button>
+                                </a>
+                                <span class="hidden print:inline text-xs text-slate-500">Ada Foto KTP</span>
                             @else
                                 <span class="text-xs text-slate-400 italic">Tidak ada foto</span>
                             @endif
@@ -198,7 +209,7 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-center">
+                        <td class="px-6 py-4 text-center no-print">
                             <button type="button" onclick="confirmDelete('{{ $visitor->id }}', '{{ $visitor->nama }}')" class="text-red-500 hover:text-red-700 transition-colors">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -235,29 +246,45 @@
     @method('DELETE')
 </form>
 
-{{-- MODAL POPUP LIHAT FOTO KTP --}}
-<div id="ktpModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeKtp()"></div>
+{{-- MODAL POPUP RIWAYAT KUNJUNGAN --}}
+<div id="historyModal" class="fixed inset-0 z-50 hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeHistory()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Foto KTP: <span id="ktpNama" class="font-bold text-blue-600"></span>
-                        </h3>
-                        <div class="mt-4 flex justify-center bg-gray-100 rounded-lg p-2 border border-gray-300 relative group">
-                            <img id="ktpImage" src="" alt="Foto KTP" class="max-h-[400px] w-auto rounded shadow-sm object-contain">
-                        </div>
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl w-full border border-slate-200">
+            <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800" id="modal-title">
+                    Riwayat Kunjungan: <span id="historyNama" class="text-blue-600"></span>
+                </h3>
+                <button type="button" onclick="closeHistory()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="bg-white px-6 py-6 max-h-[60vh] overflow-y-auto">
+                <div id="historyLoading" class="flex justify-center py-10">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+                </div>
+                <div id="historyContent" class="hidden">
+                    <table class="w-full text-sm text-left text-slate-500">
+                        <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-3">Tanggal</th>
+                                <th class="px-4 py-3">Status</th>
+                                <th class="px-4 py-3">WBP yang Dikunjungi</th>
+                                <th class="px-4 py-3">Barang Bawaan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            {{-- Data will be injected here via AJAX --}}
+                        </tbody>
+                    </table>
+                    <div id="noHistory" class="hidden py-10 text-center">
+                        <p class="text-slate-500 italic">Belum ada riwayat kunjungan.</p>
                     </div>
                 </div>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <a id="downloadLink" href="#" download class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                    Download
-                </a>
-                <button type="button" onclick="closeKtp()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            <div class="bg-slate-50 px-6 py-4 flex justify-end">
+                <button type="button" onclick="closeHistory()" class="px-5 py-2.5 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:bg-slate-50 transition-all active:scale-95">
                     Tutup
                 </button>
             </div>
@@ -267,15 +294,75 @@
 
 @push('scripts')
 <script>
-    function showKtp(url, nama) {
-        document.getElementById('ktpImage').src = url;
-        document.getElementById('ktpNama').innerText = nama;
-        document.getElementById('downloadLink').href = url;
-        document.getElementById('ktpModal').classList.remove('hidden');
+    function showHistory(id) {
+        const modal = document.getElementById('historyModal');
+        const loading = document.getElementById('historyLoading');
+        const content = document.getElementById('historyContent');
+        const tableBody = document.getElementById('historyTableBody');
+        const noHistory = document.getElementById('noHistory');
+        const namaSpan = document.getElementById('historyNama');
+
+        modal.classList.remove('hidden');
+        loading.classList.remove('hidden');
+        content.classList.add('hidden');
+        noHistory.classList.add('hidden');
+        tableBody.innerHTML = '';
+
+        fetch(`/admin/pengunjung/${id}/history`)
+            .then(response => response.json())
+            .then(data => {
+                namaSpan.innerText = data.visitor.nama;
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+
+                if (data.history.length === 0) {
+                    noHistory.classList.remove('hidden');
+                } else {
+                    data.history.forEach(item => {
+                        const date = new Date(item.tanggal_kunjungan).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                        });
+
+                        const statusBadge = getStatusBadge(item.status);
+                        
+                        const row = `
+                            <tr class="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                                <td class="px-4 py-3 font-medium text-slate-700">${date}</td>
+                                <td class="px-4 py-3">${statusBadge}</td>
+                                <td class="px-4 py-3">
+                                    <div class="font-bold text-slate-800">${item.wbp ? item.wbp.nama : '-'}</div>
+                                    <div class="text-xs text-slate-500">${item.wbp ? item.wbp.no_registrasi : ''}</div>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600">${item.barang_bawaan || '-'}</td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({ ...swalTheme, icon: 'error', title: 'Gagal!', text: 'Gagal mengambil data riwayat.' });
+                closeHistory();
+            });
     }
 
-    function closeKtp() {
-        document.getElementById('ktpModal').classList.add('hidden');
+    function getStatusBadge(status) {
+        const statuses = {
+            'pending': 'bg-amber-100 text-amber-700',
+            'approved': 'bg-emerald-100 text-emerald-700',
+            'rejected': 'bg-rose-100 text-rose-700',
+            'completed': 'bg-blue-100 text-blue-700',
+            'on_queue': 'bg-indigo-100 text-indigo-700'
+        };
+        const colorClass = statuses[status.toLowerCase()] || 'bg-slate-100 text-slate-700';
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${colorClass}">${status}</span>`;
+    }
+
+    function closeHistory() {
+        document.getElementById('historyModal').classList.add('hidden');
     }
 
     function confirmDelete(id, nama) {

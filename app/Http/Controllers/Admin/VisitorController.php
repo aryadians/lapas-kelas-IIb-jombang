@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+use App\Exports\VisitorExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class VisitorController extends Controller
 {
     public function index(Request $request)
@@ -57,6 +60,25 @@ class VisitorController extends Controller
 
         ProfilPengunjung::whereIn('id', $ids)->delete();
         return back()->with('success', count($ids) . ' data pengunjung berhasil dihapus.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new VisitorExport, 'database_pengunjung_' . date('Ymd_His') . '.xlsx');
+    }
+
+    public function getHistory($id)
+    {
+        $visitor = ProfilPengunjung::findOrFail($id);
+        $history = Kunjungan::where('nik_ktp', $visitor->nik)
+            ->with('wbp')
+            ->latest('tanggal_kunjungan')
+            ->get();
+
+        return response()->json([
+            'visitor' => $visitor,
+            'history' => $history
+        ]);
     }
 
     public function exportCsv()

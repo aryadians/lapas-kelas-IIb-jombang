@@ -243,6 +243,8 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::delete('pengunjung/{visitor}', [AdminVisitorController::class, 'destroy'])->name('admin.visitors.destroy');
     Route::post('pengunjung/bulk-delete', [AdminVisitorController::class, 'bulkDestroy'])->name('admin.visitors.bulk-delete');
     Route::get('pengunjung/export-csv', [AdminVisitorController::class, 'exportCsv'])->name('admin.visitors.export-csv');
+    Route::get('pengunjung/export-excel', [AdminVisitorController::class, 'exportExcel'])->name('admin.visitors.export-excel');
+    Route::get('pengunjung/{id}/history', [AdminVisitorController::class, 'getHistory'])->name('admin.visitors.history');
 });
 
 // Load auth routes bawaan Laravel Breeze
