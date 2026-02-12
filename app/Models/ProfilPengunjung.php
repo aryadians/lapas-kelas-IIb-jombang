@@ -27,4 +27,9 @@ class ProfilPengunjung extends Model
     {
         return $this->belongsToMany(Pengikut::class, 'profil_pengunjung_pengikut');
     }
+
+    public function kunjungans()
+    {
+        return $this->hasMany(Kunjungan::class, 'nik_ktp', 'nik');
+    }
 }

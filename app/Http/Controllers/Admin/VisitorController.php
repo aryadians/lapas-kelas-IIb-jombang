@@ -13,7 +13,11 @@ class VisitorController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProfilPengunjung::query();
+        $query = ProfilPengunjung::query()
+            ->withCount('kunjungans')
+            ->with(['kunjungans' => function($q) {
+                $q->latest('tanggal_kunjungan')->limit(1);
+            }]);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -26,14 +30,12 @@ class VisitorController extends Controller
         $visitors = $query->latest()->paginate(10);
         $visitors->appends($request->all());
 
-        // Attach last photo and visit count from Kunjungan
+        // Transform collection to set foto_ktp from latest visit
         $visitors->getCollection()->transform(function ($visitor) {
-            $lastKunjungan = Kunjungan::where('nik_ktp', $visitor->nik)
-                ->latest()
-                ->first();
-            
-            $visitor->foto_ktp = $lastKunjungan ? $lastKunjungan->foto_ktp : null;
-            $visitor->total_kunjungan = Kunjungan::where('nik_ktp', $visitor->nik)->count();
+            $latestKunjungan = $visitor->kunjungans->first();
+            $visitor->foto_ktp = $latestKunjungan ? $latestKunjungan->foto_ktp : null;
+            $visitor->total_kunjungan = $visitor->kunjungans_count;
+            $visitor->last_visit = $latestKunjungan ? $latestKunjungan->tanggal_kunjungan : null;
             return $visitor;
         });
 

@@ -56,17 +56,35 @@
     </header>
 
     @if(session('success'))
-    <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 rounded shadow-sm animate__animated animate__fadeIn">
-        <p class="font-bold">Berhasil!</p>
-        <p>{{ session('success') }}</p>
-    </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                ...swalTheme,
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 3000
+            });
+        });
+    </script>
+    @endpush
     @endif
 
     @if(session('error'))
-    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-sm animate__animated animate__fadeIn">
-        <p class="font-bold">Error!</p>
-        <p>{{ session('error') }}</p>
-    </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                ...swalTheme,
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+            });
+        });
+    </script>
+    @endpush
     @endif
 
     {{-- FORM PENCARIAN --}}
@@ -114,7 +132,7 @@
                         <th scope="col" class="px-6 py-4">Kontak</th>
                         <th scope="col" class="px-6 py-4">Alamat</th>
                         <th scope="col" class="px-6 py-4 text-center">Dokumen</th>
-                        <th scope="col" class="px-6 py-4 text-center">Total Kunjungan</th>
+                        <th scope="col" class="px-6 py-4 text-center">Statistik</th>
                         <th scope="col" class="px-6 py-4 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -129,8 +147,8 @@
                         </td>
                         <td class="px-6 py-4">
                             <div class="font-bold text-slate-800 text-base">{{ $visitor->nama }}</div>
-                            <div class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block mt-1">
-                                NIK: {{ $visitor->nik }}
+                            <div class="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded inline-block mt-1" title="{{ $visitor->nik }}">
+                                NIK: {{ substr($visitor->nik, 0, 6) . '******' . substr($visitor->nik, -4) }}
                             </div>
                             <div class="text-xs text-slate-400 mt-1">
                                 {{ $visitor->jenis_kelamin }}
@@ -169,9 +187,16 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
-                                {{ $visitor->total_kunjungan ?? 0 }}x Berkunjung
-                            </span>
+                            <div class="flex flex-col gap-1 items-center">
+                                <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold uppercase tracking-wider">
+                                    {{ $visitor->total_kunjungan ?? 0 }}x Berkunjung
+                                </span>
+                                @if($visitor->last_visit)
+                                <span class="text-[10px] text-slate-400">
+                                    Terakhir: {{ $visitor->last_visit->format('d/m/Y') }}
+                                </span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" onclick="confirmDelete('{{ $visitor->id }}', '{{ $visitor->nama }}')" class="text-red-500 hover:text-red-700 transition-colors">
@@ -240,7 +265,7 @@
     </div>
 </div>
 
-{{-- SCRIPT --}}
+@push('scripts')
 <script>
     function showKtp(url, nama) {
         document.getElementById('ktpImage').src = url;
@@ -254,22 +279,57 @@
     }
 
     function confirmDelete(id, nama) {
-        if (confirm('Apakah Anda yakin ingin menghapus data pengunjung ' + nama + '? Data ini akan terhapus secara permanen.')) {
-            const form = document.getElementById('deleteForm');
-            form.action = '/pengunjung/' + id;
-            form.submit();
-        }
+        Swal.fire({
+            ...swalTheme,
+            title: 'Hapus Data Pengunjung?',
+            html: `Apakah Anda yakin ingin menghapus data pengunjung <b>${nama}</b>? <br><span class="text-sm text-red-500">Data ini akan terhapus secara permanen.</span>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                ...swalTheme.customClass,
+                confirmButton: 'px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 mx-2 shadow-lg hover:shadow-red-500/50'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('deleteForm');
+                form.action = '/pengunjung/' + id;
+                form.submit();
+            }
+        });
     }
 
     function confirmBulkDelete() {
         const checked = document.querySelectorAll('.visitor-checkbox:checked');
         if (checked.length === 0) {
-            alert('Pilih data yang ingin dihapus terlebih dahulu.');
+            Swal.fire({
+                ...swalTheme,
+                icon: 'info',
+                title: 'Tidak Ada Data',
+                text: 'Pilih data yang ingin dihapus terlebih dahulu.',
+                confirmButtonText: 'Mengerti'
+            });
             return;
         }
-        if (confirm('Apakah Anda yakin ingin menghapus ' + checked.length + ' data pengunjung yang dipilih?')) {
-            document.getElementById('bulkDeleteForm').submit();
-        }
+
+        Swal.fire({
+            ...swalTheme,
+            title: `Hapus ${checked.length} Data?`,
+            text: "Apakah Anda yakin ingin menghapus data pengunjung yang dipilih? Aksi ini tidak dapat dibatalkan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Hapus Semua!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                ...swalTheme.customClass,
+                confirmButton: 'px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-300 mx-2 shadow-lg hover:shadow-red-500/50'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('bulkDeleteForm').submit();
+            }
+        });
     }
 
     document.getElementById('selectAll').addEventListener('change', function() {
@@ -277,4 +337,5 @@
         checkboxes.forEach(cb => cb.checked = this.checked);
     });
 </script>
+@endpush
 @endsection
