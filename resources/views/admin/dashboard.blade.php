@@ -230,43 +230,48 @@
 
                     {{-- PENDAFTARAN OFFLINE --}}
                     <div>
-                        <h4 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2">Pendaftaran Offline</h4>
+                        <h4 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2 flex items-center justify-between">
+                            <span>Pendaftaran Offline</span>
+                            <span class="text-xs bg-slate-100 px-2 py-1 rounded-md text-slate-500 font-bold uppercase tracking-tighter">Total: {{ $pendaftarOfflineTotal }} / {{ $kuotaOfflineTotal }}</span>
+                        </h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             @if($isMonday)
                                 {{-- Sesi Pagi --}}
                                 @php $persenOfflinePagi = ($kuotaOfflinePagi > 0) ? ($pendaftarOfflinePagi / $kuotaOfflinePagi) * 100 : 0; @endphp
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600"><i class="fa-solid fa-sun"></i></div>
+                                        <span class="font-bold text-slate-700 flex items-center gap-2 text-sm">
+                                            <div class="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600 border border-yellow-100"><i class="fa-solid fa-sun text-xs"></i></div>
                                             Sesi Pagi
                                         </span>
                                         <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarOfflinePagi }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaOfflinePagi }} Kuota</span>
+                                            <span class="text-xl font-black text-slate-800">{{ $pendaftarOfflinePagi }}</span>
+                                            <span class="text-[10px] text-slate-400 font-bold uppercase">/ {{ $kuotaOfflinePagi }}</span>
                                         </div>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenOfflinePagi }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner border border-slate-200">
+                                        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflinePagi) }}%"></div>
                                     </div>
+                                    <p class="text-[10px] font-bold text-slate-400 text-right">{{ round($persenOfflinePagi) }}% Terisi</p>
                                 </div>
 
                                 {{-- Sesi Siang --}}
                                 @php $persenOfflineSiang = ($kuotaOfflineSiang > 0) ? ($pendaftarOfflineSiang / $kuotaOfflineSiang) * 100 : 0; @endphp
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600"><i class="fa-solid fa-cloud-sun"></i></div>
+                                        <span class="font-bold text-slate-700 flex items-center gap-2 text-sm">
+                                            <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100"><i class="fa-solid fa-cloud-sun text-xs"></i></div>
                                             Sesi Siang
                                         </span>
                                         <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarOfflineSiang }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaOfflineSiang }} Kuota</span>
+                                            <span class="text-xl font-black text-slate-800">{{ $pendaftarOfflineSiang }}</span>
+                                            <span class="text-[10px] text-slate-400 font-bold uppercase">/ {{ $kuotaOfflineSiang }}</span>
                                         </div>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-orange-400 to-red-500 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenOfflineSiang }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner border border-slate-200">
+                                        <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-3 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflineSiang) }}%"></div>
                                     </div>
+                                    <p class="text-[10px] font-bold text-slate-400 text-right">{{ round($persenOfflineSiang) }}% Terisi</p>
                                 </div>
                             @else
                                 {{-- Hari Biasa --}}
@@ -274,8 +279,8 @@
                                 <div class="md:col-span-2 space-y-3">
                                     <div class="flex justify-between items-end">
                                         <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-users"></i></div>
-                                            Total Kunjungan
+                                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100"><i class="fa-solid fa-users text-sm"></i></div>
+                                            Total Kunjungan Offline
                                         </span>
                                         <div class="text-right">
                                             <span class="text-2xl font-black text-slate-800">{{ $pendaftarOfflineBiasa }}</span>
@@ -283,8 +288,9 @@
                                         </div>
                                     </div>
                                     <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenOfflineBiasa }}%"></div>
+                                        <div class="bg-gradient-to-r from-emerald-400 to-teal-600 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflineBiasa) }}%"></div>
                                     </div>
+                                    <p class="text-xs font-bold text-slate-400 text-right">{{ round($persenOfflineBiasa) }}% Kapasitas Terpakai</p>
                                 </div>
                             @endif
                         </div>

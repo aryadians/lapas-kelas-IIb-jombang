@@ -40,6 +40,8 @@ class DashboardController extends Controller
         
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
         $pendaftarOfflinePagi = $kuotaOfflinePagi = $pendaftarOfflineSiang = $kuotaOfflineSiang = $pendaftarOfflineBiasa = $kuotaOfflineBiasa = null;
+        $pendaftarOfflineTotal = 0;
+        $kuotaOfflineTotal = 0;
 
         if ($isMonday) {
             // Online
@@ -54,6 +56,9 @@ class DashboardController extends Controller
             $pendaftarOfflineSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
             $kuotaOfflineSiang = config('kunjungan.quota_offline_senin_siang');
 
+            $pendaftarOfflineTotal = $pendaftarOfflinePagi + $pendaftarOfflineSiang;
+            $kuotaOfflineTotal = $kuotaOfflinePagi + $kuotaOfflineSiang;
+
         } elseif ($isVisitingDay) {
             // Online
             $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
@@ -62,6 +67,9 @@ class DashboardController extends Controller
             // Offline
             $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
             $kuotaOfflineBiasa = config('kunjungan.quota_offline_hari_biasa');
+
+            $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
+            $kuotaOfflineTotal = $kuotaOfflineBiasa;
         }
 
         // Data untuk Chart Kunjungan 7 Hari Terakhir
@@ -159,6 +167,8 @@ class DashboardController extends Controller
             'kuotaOfflineSiang',
             'pendaftarOfflineBiasa',
             'kuotaOfflineBiasa',
+            'pendaftarOfflineTotal',
+            'kuotaOfflineTotal',
             'chartLabels',
             'chartData',
             'chartKunjunganStatusLabels',
@@ -191,6 +201,8 @@ class DashboardController extends Controller
         
         $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
         $pendaftarOfflinePagi = $kuotaOfflinePagi = $pendaftarOfflineSiang = $kuotaOfflineSiang = $pendaftarOfflineBiasa = $kuotaOfflineBiasa = null;
+        $pendaftarOfflineTotal = 0;
+        $kuotaOfflineTotal = 0;
 
         if ($isMonday) {
             // Online
@@ -205,6 +217,9 @@ class DashboardController extends Controller
             $pendaftarOfflineSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
             $kuotaOfflineSiang = config('kunjungan.quota_offline_senin_siang');
 
+            $pendaftarOfflineTotal = $pendaftarOfflinePagi + $pendaftarOfflineSiang;
+            $kuotaOfflineTotal = $kuotaOfflinePagi + $kuotaOfflineSiang;
+
         } elseif ($isVisitingDay) {
             // Online
             $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
@@ -213,6 +228,9 @@ class DashboardController extends Controller
             // Offline
             $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
             $kuotaOfflineBiasa = config('kunjungan.quota_offline_hari_biasa');
+
+            $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
+            $kuotaOfflineTotal = $kuotaOfflineBiasa;
         }
 
         return response()->json([
@@ -238,6 +256,8 @@ class DashboardController extends Controller
             'kuotaOfflineSiang' => $kuotaOfflineSiang,
             'pendaftarOfflineBiasa' => $pendaftarOfflineBiasa,
             'kuotaOfflineBiasa' => $kuotaOfflineBiasa,
+            'pendaftarOfflineTotal' => $pendaftarOfflineTotal,
+            'kuotaOfflineTotal' => $kuotaOfflineTotal,
         ]);
     }
 

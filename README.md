@@ -1,114 +1,113 @@
 <div align="center">
-  <img src="./public/img/logo.png" alt="Lapas Jombang Logo" width="150">
-  <h1>Lapas Jombang - Sistem Layanan Kunjungan Online</h1>
+  <img src="./public/img/logo.png" alt="Lapas Jombang Logo" width="160">
+  <br>
+  <h1>🏛️ LAPAS JOMBANG</h1>
+  <h3><b>Sistem Layanan Kunjungan Terintegrasi (Si-LAKU)</b></h3>
+  <p><i>Digitalisasi Modern Pelayanan Publik Lembaga Pemasyarakatan Kelas IIB Jombang</i></p>
+
   <p>
-    <b>Digitalisasi Pelayanan Kunjungan WBP Terintegrasi</b><br>
-    Lembaga Pemasyarakatan Kelas IIB Jombang
-  </p>
-  
-  <p>
-    <img src="https://img.shields.io/badge/PHP-8.2-blue?style=for-the-badge&logo=php" alt="PHP 8.2">
-    <img src="https://img.shields.io/badge/Laravel-12-orange?style=for-the-badge&logo=laravel" alt="Laravel 12">
-    <img src="https://img.shields.io/badge/MySQL-8.0-blue?style=for-the-badge&logo=mysql" alt="MySQL 8.0">
-    <img src="https://img.shields.io/badge/Vite-5.0-purple?style=for-the-badge&logo=vite" alt="Vite">
-    <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-cyan?style=for-the-badge&logo=tailwind-css" alt="Tailwind CSS">
-    <img src="https://img.shields.io/badge/Alpine.js-3.x-blueviolet?style=for-the-badge&logo=alpine-dot-js&logoColor=white" alt="Alpine.js 3.x">
-    <img src="https://img.shields.io/badge/Redis-6.x-red?style=for-the-badge&logo=redis&logoColor=white" alt="Redis 6.x">
+    <img src="https://img.shields.io/badge/Version-1.5.0-blue?style=for-the-badge&logo=git" alt="Version">
+    <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+    <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+    <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+    <img src="https://img.shields.io/badge/Redis-Realtime-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
+    <img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
   </p>
 </div>
 
 ---
 
-## 🚀 Fitur Utama & Keunggulan
-
-Sistem ini dikembangkan untuk memberikan transparansi, keamanan, dan efisiensi dalam manajemen kunjungan Warga Binaan Pemasyarakatan (WBP).
-
-### 📅 Sistem Pendaftaran & Antrian
-- **Pendaftaran Online/Offline:** Mendukung pendaftaran mandiri oleh keluarga via web atau pendaftaran langsung (Walk-in) oleh petugas.
-- **QR Code Verification:** Tiket otomatis dengan QR Code unik untuk verifikasi kedatangan yang cepat di pintu gerbang.
-- **Smart Queue Management:** Manajemen nomor antrian harian otomatis yang terbagi berdasarkan sesi (Pagi/Siang).
-- **Audio Voice Announcer:** Panggilan antrian otomatis berbasis Text-to-Speech (TTS) untuk memandu pengunjung di ruang tunggu.
-
-### 🖥️ Admin Panel & Operasional
-- **Mini Dashboard Real-time:** Pantau statistik harian (Total Kunjungan, Perlu Verifikasi, Sedang Dilayani) langsung di halaman utama manajemen.
-- **Smart Quota Warning:** Indikator visual sisa kuota (Hijau/Kuning/Merah) saat petugas menginput pendaftaran offline untuk mencegah beban berlebih.
-- **Advanced Visitor Database:** Pencarian canggih berdasarkan loyalitas (sering berkunjung), wilayah domisili, dan kelengkapan dokumen KTP.
-- **Timeline Audit Trail:** Histori lengkap setiap perubahan data (siapa petugas yang menyetujui/menolak dan kapan waktunya).
-
-### 🔔 Notifikasi & Transparansi
-- **WhatsApp & Email Gateway:** Pengiriman otomatis tiket QR dan update status kunjungan via WA (Fonnte/Wablas) dan Email.
-- **Notification Logs:** Pantau status pengiriman pesan (Sent/Failed) secara mendetail untuk setiap kunjungan guna memastikan informasi sampai ke pengunjung.
-- **Survei IKM Otomatis:** Link survei kepuasan pelanggan dikirim otomatis saat kunjungan dinyatakan selesai.
-
-### 📊 Pelaporan & Ekspor
-- **Professional Reporting:** Ekspor data kunjungan dan database pengunjung ke format **Excel (.xlsx)** atau **CSV** dengan layout yang rapi dan siap cetak.
-- **Cetak PDF:** Fitur cetak laporan yang dioptimalkan untuk dokumen fisik resmi.
+## 📖 Deskripsi Proyek
+**Si-LAKU Lapas Jombang** adalah platform ekosistem digital yang dirancang untuk mentransformasi prosedur kunjungan konvensional menjadi layanan berbasis teknologi. Sistem ini menjembatani interaksi antara masyarakat (pengunjung) dengan Warga Binaan Pemasyarakatan (WBP) melalui manajemen pendaftaran, verifikasi keamanan, dan antrian cerdas yang terautomasi secara *real-time*.
 
 ---
 
-## 🔗 Teknologi Integrasi
+## 🚀 Fitur Unggulan (End-to-End)
 
-Kombinasi teknologi modern untuk performa tinggi:
+### 👥 Modul Pengunjung & Publik
+| Fitur | Deskripsi | Status |
+| :--- | :--- | :---: |
+| **Pendaftaran Mandiri** | Reservasi kunjungan online via web dengan validasi NIK dan kuota harian otomatis. | ✅ |
+| **E-Ticket QR Code** | Tiket digital unik yang dikirim langsung setelah verifikasi disetujui. | ✅ |
+| **Real-time Queue TV** | Tampilan display antrian publik untuk ruang tunggu (Smart TV ready). | ✅ |
+| **Voice Announcer** | Panggilan suara otomatis (TTS) Bahasa Indonesia untuk setiap nomor antrian. | ✅ |
+| **Survei IKM Digital** | Pengisian indeks kepuasan masyarakat pasca kunjungan untuk evaluasi instansi. | ✅ |
 
-- **Laravel 12 & Redis:** Backend bertenaga dengan sistem antrian (Queue) untuk tugas berat seperti pengiriman notifikasi dan pemrosesan gambar.
-- **SweetAlert2 & fslightbox:** Pengalaman UI yang modern dengan popup interaktif dan penampil foto KTP resolusi tinggi tanpa membebani memori browser.
-- **Base64 Image Processing:** Foto KTP diproses secara instan di sisi klien sebelum dikirim ke server untuk efisiensi penyimpanan.
-- **Spatie Activity Log:** Melacak setiap jejak digital petugas untuk keperluan audit keamanan Lapas.
+### 🛠️ Modul Admin & Operasional
+| Fitur | Deskripsi | Status |
+| :--- | :--- | :---: |
+| **Mini Dashboard** | Pantauan beban kerja harian (Pending, Serving, Sisa Kuota) dalam satu pandangan. | ✅ |
+| **Smart Quota Manager** | Manajemen kuota dinamis (Sesi Pagi/Siang) dengan visual progres bar yang responsif. | ✅ |
+| **Pendaftaran Offline** | Input data pendaftaran di tempat (walk-in) dengan fitur *Quota Warning* otomatis. | ✅ |
+| **Database Pengunjung** | Repositori data master pengunjung dengan filter loyalitas, wilayah, dan kelengkapan KTP. | ✅ |
+| **WBP Management** | Sinkronisasi data Warga Binaan, lokasi blok, sel, dan masa tahanan. | ✅ |
 
----
-
-## 🛠️ Panduan Instalasi
-
-### **Metode 1: Docker 🐳 (Sangat Direkomendasikan)**
-Menjamin lingkungan yang sama persis antara development dan produksi.
-
-1.  **Jalankan Sistem**:
-    ```bash
-    ./docker-start.sh
-    ```
-2.  **Hentikan Sistem**:
-    ```bash
-    ./docker-stop.sh
-    ```
-3.  **Akses**:
-    - **Aplikasi:** [http://localhost:8080](http://localhost:8080)
-    - **Mailpit (Cek Email):** [http://localhost:8025](http://localhost:8025)
-
-> 📖 **Dokumentasi Lanjutan Docker**: Lihat [DOCKER.md](./DOCKER.md)
-
-### **Metode 2: Manual (XAMPP/Laragon) 🛠️**
-1.  **Setup Awal**: `composer run setup`
-2.  **Mode Dev**: `composer run dev`
-3.  **Akses**: [http://localhost:8000](http://localhost:8000)
+### 🔐 Keamanan & Audit (Security & Trust)
+| Fitur | Deskripsi | Status |
+| :--- | :--- | :---: |
+| **Timeline Audit Trail** | Log aktivitas lengkap: mencatat siapa petugas yang melakukan aksi, apa yang diubah, dan kapan waktunya. | ✅ |
+| **Notification Logs** | Pelacakan status pengiriman WhatsApp/Email (Sent/Failed) beserta alasan teknis kegagalannya. | ✅ |
+| **NIK Masking** | Proteksi privasi dengan menyensor 6 digit tengah NIK pada antarmuka admin. | ✅ |
+| **RBAC System** | Pembatasan hak akses ketat (Super Admin, Admin Registrasi, Admin Humas, Petugas). | ✅ |
 
 ---
 
-## 🔐 Keamanan & Kepatuhan Data
-- **NIK Masking:** Sensor otomatis pada 6 digit tengah NIK di tampilan publik/admin untuk melindungi privasi pengunjung.
-- **Role-Based Access Control (RBAC):** Pembatasan akses fitur berdasarkan peran (Super Admin, Admin Registrasi, Petugas Ruang Kunjungan).
-- **Input Validation:** Validasi ketat terhadap NIK, nomor HP, dan relasi WBP untuk mencegah manipulasi data.
+## 🛠️ Arsitektur Teknologi
+
+Sistem ini dibangun dengan *stack* modern untuk menjamin skalabilitas dan pengalaman pengguna yang luar biasa:
+
+- **Core Engine:** Laravel 12 (Framework PHP Tercanggih).
+- **Frontend Real-time:** Alpine.js & Tailwind CSS untuk UI yang ringan dan interaktif.
+- **Image Intelligence:** Pemrosesan gambar KTP berbasis Base64 dengan kompresi otomatis untuk menghemat ruang penyimpanan.
+- **Reporting Engine:** Integrasi `Maatwebsite Excel` untuk laporan profesional dan `fslightbox` untuk penampil dokumen resolusi tinggi.
+- **Background Jobs:** Pemanfaatan Laravel Queue & Redis untuk pengiriman notifikasi massal tanpa menghambat performa server.
 
 ---
 
-## ☕ Dukungan & Donasi
+## 📦 Panduan Instalasi Cepat
 
-Jika sistem ini membantu operasional instansi Anda, Anda dapat memberikan dukungan melalui:
+### **Opsi A: Docker (Enterprise Way) 🐳**
+Sangat disarankan untuk lingkungan produksi dan development yang stabil.
+```bash
+# Nyalakan semua kontainer (Web, DB, Redis, Mailpit)
+./docker-start.sh
 
-| Metode | Detail Pembayaran |
-| :--- | :--- |
-| **🏦 Bank BRI** | **3128-01-008734-50-9** (Arya Dian Saputra) |
-| **📱 DANA** | **0838-4552-9777** (Arya Dian Saputra) |
+# Akses aplikasi
+URL: http://localhost:8080
+```
+
+### **Opsi B: Manual (Development) 🛠️**
+```bash
+# Instalasi dependensi & setup database
+composer run setup
+
+# Jalankan server development & Vite
+composer run dev
+
+# Akses aplikasi
+URL: http://localhost:8000
+```
 
 ---
 
-## 📄 Sitasi (Citation)
+## 📊 Pelaporan & Ekspor Data
+Sistem menyediakan modul pelaporan yang siap saji untuk keperluan manajerial:
+- **Laporan Kunjungan:** Filter harian, mingguan, bulanan ke format **Excel (.xlsx)**.
+- **Database Profil:** Rekapitulasi seluruh pengunjung unik ke format **CSV**.
+- **Cetak Tiket:** Optimasi layout PDF untuk pencetakan tiket antrian fisik.
 
-Gunakan format berikut jika Anda merujuk proyek ini dalam karya ilmiah:
+---
 
-**APA Style:**
-> Dian, A. (2026). *Sistem Informasi Manajemen Layanan Kunjungan Online Lapas Jombang* (Version 1.2.0) [Computer software]. https://github.com/aryadians/lapas-kelas-IIb-jombang
+## 🤝 Kontribusi & Dukungan
+Kami sangat menghargai dukungan Anda untuk keberlanjutan pengembangan sistem ini.
+
+- **Developer:** Arya Dian Saputra
+- **Donasi Kopi:** 
+  - BRI: `3128-01-008734-50-9`
+  - DANA: `0838-4552-9777`
 
 ---
 <div align="center">
-  <p>Dikembangkan dengan ❤️ untuk kemajuan pelayanan publik Indonesia.</p>
+  <p><b>Lapas Kelas IIB Jombang - Semakin PASTI & Berakhlak</b></p>
+  <p>Copyright © 2026. All Rights Reserved.</p>
 </div>
