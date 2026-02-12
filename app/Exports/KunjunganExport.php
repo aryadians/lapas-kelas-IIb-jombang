@@ -6,12 +6,18 @@ use App\Models\Kunjungan;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
-use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class KunjunganExport implements FromCollection, WithHeadings, WithMapping, WithColumnFormatting
+class KunjunganExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithTitle, WithColumnFormatting
 {
     protected $period;
     protected $date;
@@ -44,14 +50,15 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
                     $query->whereYear('tanggal_kunjungan', $this->date->year)
                         ->whereMonth('tanggal_kunjungan', $this->date->month);
                     break;
-                case 'all': // Fallback if 'all' is passed but date is present
-                default:
-                    // No date filter for 'all'
-                    break;
             }
         }
 
-        return $query->get();
+        return $query->latest('tanggal_kunjungan')->get();
+    }
+
+    public function title(): string
+    {
+        return 'Data Kunjungan';
     }
 
     /**
@@ -59,29 +66,34 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
      */
     public function headings(): array
     {
+        $periodeStr = 'SEMUA PERIODE';
+        if ($this->date) {
+            if ($this->period == 'day') $periodeStr = 'TANGGAL ' . $this->date->format('d/m/Y');
+            elseif ($this->period == 'week') $periodeStr = 'MINGGU KE-' . $this->date->weekOfYear . ' TAHUN ' . $this->date->year;
+            elseif ($this->period == 'month') $periodeStr = 'BULAN ' . $this->date->translatedFormat('F Y');
+        }
+
         return [
-            'ID Kunjungan',
-            'Kode Kunjungan',
-            'Status',
-            'Nomor Antrian Harian',
-            'QR Token',
-            'Nama Pengunjung',
-            'NIK KTP Pengunjung',
-            'Nomor HP Pengunjung',
-            'Email Pengunjung',
-            'Alamat Lengkap Pengunjung',
-            'Barang Bawaan',
-            'Jenis Kelamin Pengunjung',
-            'Hubungan Dengan WBP',
-            'Nama WBP',
-            'No Registrasi WBP',
-            'Blok WBP',
-            'Kamar WBP',
-            'Tanggal Kunjungan',
-            'Sesi Kunjungan',
-            'Pengikut',
-            'Tanggal Dibuat',
-            'Tanggal Diperbarui',
+            ['LAPAS KELAS IIB JOMBANG'],
+            ['LAPORAN DATA KUNJUNGAN PENGUNJUNG'],
+            ['Periode: ' . $periodeStr],
+            ['Dicetak pada: ' . date('d/m/Y H:i')],
+            [''],
+            [
+                'NO',
+                'KODE',
+                'STATUS',
+                'ANTRIAN',
+                'NAMA PENGUNJUNG',
+                'NIK KTP',
+                'HUBUNGAN',
+                'NAMA WBP',
+                'NO REG WBP',
+                'TANGGAL',
+                'SESI',
+                'PENGIKUT',
+                'BARANG BAWAAN'
+            ]
         ];
     }
 
@@ -91,44 +103,94 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
      */
     public function map($kunjungan): array
     {
+        static $no = 1;
         $pengikutNames = $kunjungan->pengikuts->pluck('nama')->implode(', ');
 
         return [
-            $kunjungan->id,
+            $no++,
             $kunjungan->kode_kunjungan,
-            ucfirst($kunjungan->status),
-            $kunjungan->nomor_antrian_harian,
-            $kunjungan->qr_token,
-            $kunjungan->nama_pengunjung,
-            (string) $kunjungan->nik_ktp, // Ensure NIK is treated as string to prevent scientific notation
-            $kunjungan->nomor_hp_pengunjung,
-            $kunjungan->email_pengunjung,
-            $kunjungan->alamat_lengkap_pengunjung,
-            $kunjungan->barang_bawaan,
-            $kunjungan->jenis_kelamin,
-            $kunjungan->hubungan,
-            $kunjungan->wbp->nama ?? 'N/A',
+            strtoupper($kunjungan->status->value ?? $kunjungan->status),
+            $kunjungan->nomor_antrian_harian ? '#' . $kunjungan->nomor_antrian_harian : '-',
+            strtoupper($kunjungan->nama_pengunjung),
+            "'" . $kunjungan->nik_ktp,
+            strtoupper($kunjungan->hubungan),
+            strtoupper($kunjungan->wbp->nama ?? 'N/A'),
             $kunjungan->wbp->no_registrasi ?? 'N/A',
-            $kunjungan->wbp->blok ?? 'N/A',
-            $kunjungan->wbp->kamar ?? 'N/A',
-            Date::dateTimeToExcel($kunjungan->tanggal_kunjungan), // Use PhpSpreadsheet's date conversion
-            ucfirst($kunjungan->sesi),
-            $pengikutNames,
-            Date::dateTimeToExcel($kunjungan->created_at),
-            Date::dateTimeToExcel($kunjungan->updated_at),
+            $kunjungan->tanggal_kunjungan->format('d/m/Y'),
+            strtoupper($kunjungan->sesi),
+            $pengikutNames ?: '-',
+            $kunjungan->barang_bawaan ?: '-'
         ];
     }
 
-    /**
-     * @return array
-     */
     public function columnFormats(): array
     {
         return [
-            'G' => NumberFormat::FORMAT_NUMBER, // NIK KTP as number, but stored as string
-            'R' => NumberFormat::FORMAT_DATE_DDMMYYYY, // Tanggal Kunjungan
-            'U' => NumberFormat::FORMAT_DATE_DATETIME, // Tanggal Dibuat
-            'V' => NumberFormat::FORMAT_DATE_DATETIME, // Tanggal Diperbarui
+            'F' => NumberFormat::FORMAT_TEXT,
         ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        // Merge cells for header
+        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A2:M2');
+        $sheet->mergeCells('A3:M3');
+        $sheet->mergeCells('A4:M4');
+
+        $styleHeader = [
+            'font' => [
+                'bold' => true,
+                'size' => 12,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+            ],
+        ];
+
+        $sheet->getStyle('A1:A4')->applyFromArray($styleHeader);
+        $sheet->getStyle('A1')->getFont()->setSize(14);
+        
+        // Table Header Style (Row 6)
+        $sheet->getStyle('A6:M6')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '10b981'], // Green emerald to match visit list theme
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+        ]);
+
+        // Content Styling
+        $lastRow = $sheet->getHighestRow();
+        $sheet->getStyle('A7:M' . $lastRow)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // Center align specific columns
+        $centerColumns = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'K'];
+        foreach ($centerColumns as $col) {
+            $sheet->getStyle($col . '7:' . $col . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        }
+
+        return [];
     }
 }

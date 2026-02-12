@@ -320,7 +320,7 @@ class KunjunganController extends Controller
     public function export(Request $request)
     {
         $request->validate([
-            'type' => 'required|in:excel,pdf',
+            'type' => 'required|in:excel,pdf,csv',
             'period' => 'required|in:day,week,month,all',
             'date' => 'nullable|date',
         ]);
@@ -332,6 +332,8 @@ class KunjunganController extends Controller
         switch ($type) {
             case 'excel':
                 return $this->exportExcel($period, $date);
+            case 'csv':
+                return $this->exportCsv($period, $date);
             case 'pdf':
                 return $this->exportPdf($period, $date);
             default:
@@ -351,6 +353,20 @@ class KunjunganController extends Controller
         $filename .= '.xlsx';
 
         return Excel::download(new KunjunganExport($period, $date), $filename);
+    }
+
+    /**
+     * Export Kunjungan data to CSV.
+     */
+    protected function exportCsv(string $period, ?string $date)
+    {
+        $filename = 'Laporan_Kunjungan_' . ucfirst($period);
+        if ($date) {
+            $filename .= '_' . \Carbon\Carbon::parse($date)->format('Ymd');
+        }
+        $filename .= '.csv';
+
+        return Excel::download(new KunjunganExport($period, $date), $filename, \Maatwebsite\Excel\Excel::CSV);
     }
 
     /**

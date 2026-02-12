@@ -73,13 +73,35 @@
 
     {{-- ALERT MESSAGES --}}
     @if(session('success'))
-    <div class="animate__animated animate__bounceIn bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-xl shadow-sm flex items-start gap-3">
-        <div class="mt-0.5"><i class="fas fa-check-circle text-emerald-500 text-xl"></i></div>
-        <div>
-            <h3 class="font-bold text-emerald-800">Berhasil!</h3>
-            <p class="text-emerald-700 text-sm">{{ session('success') }}</p>
-        </div>
-    </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                ...swalTheme,
+                icon: 'success',
+                title: 'Berhasil!',
+                text: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 3000
+            });
+        });
+    </script>
+    @endpush
+    @endif
+
+    @if(session('error'))
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                ...swalTheme,
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+            });
+        });
+    </script>
+    @endpush
     @endif
 
     {{-- 1. FORM PENCARIAN (GET METHOD) --}}
@@ -190,21 +212,13 @@
                             <div class="font-bold text-slate-800">{{ $kunjungan->nama_pengunjung }}</div>
                             <div class="text-xs text-slate-500">NIK: {{ $kunjungan->nik_ktp }}</div>
                             
-                            {{-- BUTTON LIHAT FOTO KTP (BASE 64 FIX) --}}
+                            {{-- BUTTON LIHAT FOTO KTP (LIGHTBOX) --}}
                             @if(!empty($kunjungan->foto_ktp))
-                                {{-- 
-                                    Perbaikan: 
-                                    1. Hapus asset('storage/...')
-                                    2. Gunakan onclick dengan parameter Base64 string langsung.
-                                    3. Karena string Base64 sangat panjang, kita simpan di data-attribute untuk diambil JS
-                                --}}
-                                <button type="button" 
-                                        data-foto="{{ $kunjungan->foto_ktp }}" 
-                                        data-nama="{{ $kunjungan->nama_pengunjung }}"
-                                        onclick="showKtpFromBase64(this)" 
-                                        class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1 flex items-center gap-1">
+                                <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp }}" 
+                                   class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1 flex items-center gap-1 no-print">
                                     <i class="fas fa-id-card"></i> Lihat Foto KTP
-                                </button>
+                                </a>
+                                <span class="hidden print:inline text-xs text-slate-500">Ada Foto KTP</span>
                             @else
                                 <span class="text-xs text-gray-400 italic mt-1 block">Foto tidak tersedia</span>
                             @endif
@@ -251,7 +265,7 @@
                             <span class="text-slate-400">-</span>
                             @endif
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-6 py-4 no-print">
                             <div class="flex items-center justify-center gap-2">
                                 <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Detail">
                                     <i class="fas fa-eye"></i>
@@ -299,79 +313,54 @@
 
 </div>
 
-{{-- MODAL POPUP LIHAT FOTO KTP --}}
-<div id="ktpModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeKtp()"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Foto KTP: <span id="ktpNama" class="font-bold text-blue-600"></span>
-                        </h3>
-                        <div class="mt-4 flex justify-center bg-gray-100 rounded-lg p-2 border border-gray-300">
-                            <img id="ktpImage" src="" alt="Foto KTP" class="max-h-[400px] w-auto rounded shadow-sm object-contain">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <a id="downloadLink" href="#" download="ktp.png" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                    <i class="fas fa-download mr-2 mt-1"></i> Download
-                </a>
-                <button type="button" onclick="closeKtp()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
 {{-- EXPORT MODAL --}}
-<div id="exportModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+<div id="exportModal" class="fixed inset-0 z-50 hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-emerald-100 sm:mx-0 sm:h-10 sm:w-10">
-                        <i class="fas fa-file-export text-emerald-600"></i>
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-slate-200">
+            <div class="bg-white px-6 py-5 border-b border-slate-100 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <i class="fas fa-file-export"></i>
                     </div>
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Export Data Kunjungan
-                        </h3>
-                        <div class="mt-4">
-                            <form id="exportForm" action="{{ route('admin.kunjungan.export') }}" method="GET">
-                                <input type="hidden" name="type" value="excel">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="modal_export_period" class="block text-sm font-medium text-gray-700">Periode Export</label>
-                                        <select id="modal_export_period" name="period" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md">
-                                            <option value="all">Semua Data</option>
-                                            <option value="day">Harian</option>
-                                            <option value="week">Mingguan</option>
-                                            <option value="month">Bulanan</option>
-                                        </select>
-                                    </div>
-                                    <div id="modal_export_date_container" style="display: none;">
-                                        <label for="modal_export_date" class="block text-sm font-medium text-gray-700">Pilih Tanggal</label>
-                                        <input type="date" id="modal_export_date" name="date" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm rounded-md" value="{{ \Carbon\Carbon::today()->format('Y-m-d') }}">
-                                    </div>
-                                </div>
-                            </form>
+                    <h3 class="text-xl font-bold text-slate-800">Export Data Kunjungan</h3>
+                </div>
+                <button type="button" id="closeExportModal" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="px-6 py-6">
+                <form id="exportForm" action="{{ route('admin.kunjungan.export') }}" method="GET">
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Format File</label>
+                            <select name="type" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-medium">
+                                <option value="excel">Excel (.xlsx)</option>
+                                <option value="csv">CSV (.csv)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Periode Export</label>
+                            <select id="modal_export_period" name="period" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-medium">
+                                <option value="all">Semua Data</option>
+                                <option value="day">Harian</option>
+                                <option value="week">Mingguan</option>
+                                <option value="month">Bulanan</option>
+                            </select>
+                        </div>
+                        <div id="modal_export_date_container" class="hidden animate__animated animate__fadeIn">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Pilih Tanggal</label>
+                            <input type="date" name="date" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-medium" value="{{ date('Y-m-d') }}">
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
-                <button type="submit" form="exportForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-600 text-base font-medium text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-auto sm:text-sm">
-                    <i class="fas fa-download mr-2 mt-1"></i> Export
+            <div class="bg-slate-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3">
+                <button type="submit" form="exportForm" class="w-full sm:w-auto px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fas fa-download"></i> Download
                 </button>
-                <button type="button" id="closeExportModal" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                <button type="button" id="closeExportModalBtn" class="w-full sm:w-auto px-8 py-3 bg-white text-slate-600 font-bold rounded-xl border-2 border-slate-200 hover:bg-slate-50 transition-all active:scale-95">
                     Batal
                 </button>
             </div>
@@ -386,66 +375,51 @@
     <input type="hidden" name="status" id="single_status">
 </form>
 
-{{-- SCRIPT --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
 <script>
-// --- LOGIC KTP MODAL (UPDATED FOR BASE64) ---
-function showKtpFromBase64(element) {
-    const base64Data = element.getAttribute('data-foto');
-    const nama = element.getAttribute('data-nama');
-    
-    document.getElementById('ktpImage').src = base64Data;
-    document.getElementById('ktpNama').innerText = nama;
-    document.getElementById('downloadLink').href = base64Data;
-    document.getElementById('downloadLink').download = "KTP_" + nama + ".png"; // Nama file saat didownload
-    document.getElementById('ktpModal').classList.remove('hidden');
-}
-
-function closeKtp() {
-    document.getElementById('ktpModal').classList.add('hidden');
-    // Clear src to free memory
-    setTimeout(() => {
-        document.getElementById('ktpImage').src = '';
-    }, 300);
-}
-
-// --- 3. LOGIC SINGLE ACTION ---
+// --- LOGIC SINGLE ACTION ---
 function submitSingleAction(url, actionType, method) {
     const form = document.getElementById('single-action-form');
     const methodInput = document.getElementById('single_method');
     const statusInput = document.getElementById('single_status');
 
-    let title, text, btnColor, btnText;
+    let title, text, icon, btnColor, btnText;
 
     if(actionType === 'delete') {
         title = 'Hapus Data?';
         text = "Data akan dihapus permanen.";
-        btnColor = '#ef4444';
+        icon = 'warning';
+        btnColor = 'px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-red-500/30';
         btnText = 'Ya, Hapus';
     } else if (actionType === 'completed') {
         title = 'Tandai Selesai?';
-        text = "Status akan diubah menjadi Selesai dan link survei akan dikirim (jika ada email).";
-        btnColor = '#3b82f6';
+        text = "Status akan diubah menjadi Selesai dan link survei akan dikirim.";
+        icon = 'question';
+        btnColor = 'px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-blue-500/30';
         btnText = 'Ya, Tandai Selesai';
-    }
-    else {
+    } else {
         title = actionType === 'approved' ? 'Setujui Kunjungan?' : 'Tolak Kunjungan?';
-        text = "Notifikasi email akan dikirim ke pengunjung.";
-        btnColor = actionType === 'approved' ? '#10b981' : '#f59e0b';
+        text = "Notifikasi akan dikirim ke pengunjung.";
+        icon = 'question';
+        btnColor = actionType === 'approved' 
+            ? 'px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-emerald-500/30' 
+            : 'px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-amber-500/30';
         btnText = 'Ya, Proses';
     }
 
     Swal.fire({
+        ...swalTheme,
         title: title,
         text: text,
-        icon: 'question',
+        icon: icon,
         showCancelButton: true,
-        confirmButtonColor: btnColor,
-        cancelButtonColor: '#64748b',
         confirmButtonText: btnText,
         cancelButtonText: 'Batal',
-        showClass: { popup: 'animate__animated animate__zoomInDown' },
-        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+        customClass: {
+            ...swalTheme.customClass,
+            confirmButton: btnColor
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             form.action = url;
@@ -463,38 +437,38 @@ function submitBulkAction(actionType) {
 
     if(count === 0) return;
 
-    let url, title, text, btnColor, btnText;
+    let url, title, text, icon, btnColor, btnText;
 
     if(actionType === 'delete') {
         url = "{{ route('admin.kunjungan.bulk-delete') }}";
         title = `Hapus ${count} Data?`;
         text = "Data yang dihapus tidak dapat dikembalikan!";
-        btnColor = '#ef4444';
+        icon = 'warning';
+        btnColor = 'px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-red-500/30';
         btnText = 'Ya, Hapus!';
     } else {
         url = "{{ route('admin.kunjungan.bulk-update') }}";
+        icon = 'question';
         if (actionType === 'approved') {
             title = `Setujui ${count} Data?`;
             text = `Status data akan diubah menjadi Disetujui.`;
-            btnColor = '#10b981';
+            btnColor = 'px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-emerald-500/30';
             btnText = 'Ya, Lanjutkan';
         } else if (actionType === 'rejected') {
             title = `Tolak ${count} Data?`;
             text = `Status data akan diubah menjadi Ditolak.`;
-            btnColor = '#f59e0b';
+            btnColor = 'px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-amber-500/30';
             btnText = 'Ya, Lanjutkan';
         } else { // completed
             title = `Tandai Selesai ${count} Data?`;
             text = `Status data akan diubah menjadi Selesai.`;
-            btnColor = '#3b82f6';
+            btnColor = 'px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-all duration-200 mx-1.5 shadow-lg shadow-blue-500/30';
             btnText = 'Ya, Lanjutkan';
         }
         
-        // Hapus input status lama jika ada
         const oldInput = document.getElementById('bulk_status_input');
         if(oldInput) oldInput.remove();
 
-        // Tambah input status baru
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'status';
@@ -504,16 +478,17 @@ function submitBulkAction(actionType) {
     }
 
     Swal.fire({
+        ...swalTheme,
         title: title,
         text: text,
-        icon: 'warning',
+        icon: icon,
         showCancelButton: true,
-        confirmButtonColor: btnColor,
-        cancelButtonColor: '#64748b',
         confirmButtonText: btnText,
         cancelButtonText: 'Batal',
-        showClass: { popup: 'animate__animated animate__zoomInDown' },
-        hideClass: { popup: 'animate__animated animate__zoomOutUp' }
+        customClass: {
+            ...swalTheme.customClass,
+            confirmButton: btnColor
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             form.action = url;
@@ -532,13 +507,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function toggleBulkBar() {
         const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
-        countSpan.textContent = count;
-        if(count > 0) {
-            bulkBar.classList.remove('hidden');
-            bulkBar.classList.add('flex');
-        } else {
-            bulkBar.classList.add('hidden');
-            bulkBar.classList.remove('flex');
+        if(countSpan) countSpan.textContent = count;
+        if(bulkBar) {
+            if(count > 0) {
+                bulkBar.classList.remove('hidden');
+                bulkBar.classList.add('flex');
+            } else {
+                bulkBar.classList.add('hidden');
+                bulkBar.classList.remove('flex');
+            }
         }
     }
 
@@ -551,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     checkboxes.forEach(cb => {
         cb.addEventListener('change', function() {
-            if(!this.checked) selectAll.checked = false;
+            if(!this.checked && selectAll) selectAll.checked = false;
             toggleBulkBar();
         });
     });
@@ -559,34 +536,41 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- EXPORT MODAL LOGIC ---
     const openExportModalBtn = document.getElementById('openExportModal');
     const closeExportModalBtn = document.getElementById('closeExportModal');
+    const closeExportModalBtn2 = document.getElementById('closeExportModalBtn');
     const exportModal = document.getElementById('exportModal');
     const modalExportPeriodSelect = document.getElementById('modal_export_period');
     const modalExportDateContainer = document.getElementById('modal_export_date_container');
 
     function toggleModalExportDateInput() {
-        if (modalExportPeriodSelect.value === 'day' || modalExportPeriodSelect.value === 'week' || modalExportPeriodSelect.value === 'month') {
-            modalExportDateContainer.style.display = 'block';
-        } else {
-            modalExportDateContainer.style.display = 'none';
+        if (modalExportPeriodSelect && modalExportDateContainer) {
+            if (['day', 'week', 'month'].includes(modalExportPeriodSelect.value)) {
+                modalExportDateContainer.classList.remove('hidden');
+            } else {
+                modalExportDateContainer.classList.add('hidden');
+            }
         }
     }
 
     if (openExportModalBtn && exportModal) {
         openExportModalBtn.addEventListener('click', function() {
             exportModal.classList.remove('hidden');
-            toggleModalExportDateInput(); // Set initial state when modal opens
+            toggleModalExportDateInput();
         });
     }
 
-    if (closeExportModalBtn && exportModal) {
-        closeExportModalBtn.addEventListener('click', function() {
-            exportModal.classList.add('hidden');
-        });
-    }
+    const closeActions = [closeExportModalBtn, closeExportModalBtn2];
+    closeActions.forEach(btn => {
+        if (btn && exportModal) {
+            btn.addEventListener('click', function() {
+                exportModal.classList.add('hidden');
+            });
+        }
+    });
     
     if (modalExportPeriodSelect) {
         modalExportPeriodSelect.addEventListener('change', toggleModalExportDateInput);
     }
 });
 </script>
+@endpush
 @endsection
