@@ -151,7 +151,7 @@ class KunjunganController extends Controller
      */
     public function show($id)
     {
-        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->findOrFail($id);
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts', 'activities.causer'])->findOrFail($id);
         return view('admin.kunjungan.show', compact('kunjungan'));
     }
 

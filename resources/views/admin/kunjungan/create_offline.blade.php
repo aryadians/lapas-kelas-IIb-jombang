@@ -134,16 +134,25 @@
                             <option value="">Cari nama WBP...</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="lg:col-span-1">
                         <label for="tanggal_kunjungan" class="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2"><i class="fas fa-calendar-alt text-blue-400 mr-2"></i>Tanggal Kunjungan</label>
-                        <input type="date" name="tanggal_kunjungan" id="tanggal_kunjungan" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:shadow-lg focus:shadow-blue-500/20 transition-all duration-300 transform scale-100 hover:scale-101 active:scale-99 font-medium text-slate-700" required>
+                        <input type="date" name="tanggal_kunjungan" id="tanggal_kunjungan" value="{{ old('tanggal_kunjungan', date('Y-m-d')) }}" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:shadow-lg focus:shadow-blue-500/20 transition-all duration-300 font-medium text-slate-700" required>
                     </div>
-                    <div>
+                    <div class="lg:col-span-1">
                         <label for="sesi" class="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2"><i class="fas fa-clock text-green-400 mr-2"></i>Sesi</label>
-                        <select id="sesi" name="sesi" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:shadow-lg focus:shadow-blue-500/20 transition-all duration-300 transform scale-100 hover:scale-101 active:scale-99 font-medium text-slate-700" required>
-                            <option value="pagi" {{ old('sesi') == 'pagi' ? 'selected' : '' }}>Pagi</option>
-                            <option value="siang" {{ old('sesi') == 'siang' ? 'selected' : '' }}>Siang</option>
+                        <select id="sesi" name="sesi" class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:shadow-lg focus:shadow-blue-500/20 transition-all duration-300 font-medium text-slate-700" required>
+                            <option value="pagi" {{ old('sesi') == 'pagi' ? 'selected' : '' }}>🌅 Pagi (08:00 - 12:00)</option>
+                            <option value="siang" {{ old('sesi') == 'siang' ? 'selected' : '' }}>☀️ Siang (13:00 - 16:00)</option>
                         </select>
+                    </div>
+                    <div class="lg:col-span-1 flex flex-col justify-end">
+                        <div id="quotaStatus" class="px-4 py-3 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-between bg-slate-50/50 min-h-[52px]">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Sisa Kuota</span>
+                            <div id="quotaLoading" class="hidden">
+                                <i class="fas fa-circle-notch fa-spin text-blue-500"></i>
+                            </div>
+                            <span id="quotaValue" class="text-xl font-black text-slate-700">-</span>
+                        </div>
                     </div>
                     <div>
                         <label for="hubungan" class="block text-sm font-bold text-slate-500 uppercase tracking-wider mb-2"><i class="fas fa-handshake text-yellow-400 mr-2"></i>Hubungan</label>
@@ -250,6 +259,61 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
+        // ... select2 logic ...
+        
+        // Quota check logic
+        const tanggalInput = document.getElementById('tanggal_kunjungan');
+        const sesiInput = document.getElementById('sesi');
+        const quotaValue = document.getElementById('quotaValue');
+        const quotaLoading = document.getElementById('quotaLoading');
+        const quotaStatus = document.getElementById('quotaStatus');
+
+        function updateQuota() {
+            const tanggal = tanggalInput.value;
+            const sesi = sesiInput.value;
+
+            if (!tanggal) return;
+
+            quotaLoading.classList.remove('hidden');
+            quotaValue.classList.add('hidden');
+            
+            fetch(`/api/kunjungan/quota?tanggal_kunjungan=${tanggal}&sesi=${sesi}`)
+                .then(response => response.json())
+                .then(data => {
+                    const sisa = data.sisa_kuota;
+                    quotaValue.innerText = sisa;
+                    
+                    // Reset classes
+                    quotaStatus.className = 'px-4 py-3 rounded-xl border-2 flex items-center justify-between min-h-[52px] transition-all duration-500';
+                    
+                    if (sisa <= 0) {
+                        quotaStatus.classList.add('bg-red-50', 'border-red-200', 'text-red-600');
+                        quotaValue.className = 'text-xl font-black text-red-600 animate__animated animate__pulse animate__infinite';
+                    } else if (sisa < 10) {
+                        quotaStatus.classList.add('bg-amber-50', 'border-amber-200', 'text-amber-600');
+                        quotaValue.className = 'text-xl font-black text-amber-600';
+                    } else {
+                        quotaStatus.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-600');
+                        quotaValue.className = 'text-xl font-black text-emerald-600';
+                    }
+
+                    quotaLoading.classList.add('hidden');
+                    quotaValue.classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error fetching quota:', error);
+                    quotaValue.innerText = '?';
+                    quotaLoading.classList.add('hidden');
+                    quotaValue.classList.remove('hidden');
+                });
+        }
+
+        tanggalInput.addEventListener('change', updateQuota);
+        sesiInput.addEventListener('change', updateQuota);
+        
+        // Initial check
+        updateQuota();
+
         $('#wbp_id').select2({
             placeholder: "Cari nama atau nomor registrasi WBP",
             width: '100%',

@@ -358,6 +358,62 @@
                 </div>
             </div>
 
+            {{-- CARD: TIMELINE AUDIT TRAIL --}}
+            <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
+                <div class="glass-header p-6 flex items-center gap-4 bg-slate-50/50">
+                    <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm">
+                        <i class="fas fa-user-shield text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Timeline Audit Trail</h3>
+                        <p class="text-slate-500 text-xs">Histori perubahan oleh petugas.</p>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    @if($kunjungan->activities && $kunjungan->activities->count() > 0)
+                        <div class="space-y-6">
+                            @foreach($kunjungan->activities->sortByDesc('created_at') as $activity)
+                            <div class="relative pl-8 pb-6 border-l-2 border-slate-100 last:border-0 last:pb-0">
+                                <div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-4 border-white shadow-sm"></div>
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
+                                    <h4 class="font-bold text-slate-800 text-sm">
+                                        {{ $activity->description }}
+                                    </h4>
+                                    <span class="text-[10px] font-bold text-slate-400">
+                                        {{ $activity->created_at->format('d M Y, H:i') }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                                    <i class="fas fa-user-edit text-[10px]"></i>
+                                    <span>Oleh: <span class="font-bold text-slate-700">{{ $activity->causer->name ?? 'System' }}</span></span>
+                                </div>
+
+                                @if(isset($activity->changes['attributes']['status']))
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 line-through">
+                                            {{ $activity->changes['old']['status'] ?? 'N/A' }}
+                                        </span>
+                                        <i class="fas fa-arrow-right text-[10px] text-slate-300"></i>
+                                        <span class="text-[10px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 font-bold uppercase">
+                                            {{ $activity->changes['attributes']['status'] }}
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                            <i class="fas fa-fingerprint text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 text-sm italic">Belum ada histori perubahan tercatat.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- CARD 3: DATA PENGIKUT --}}
             <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
                 <div class="glass-header p-6 flex items-center gap-4 bg-slate-50/50">

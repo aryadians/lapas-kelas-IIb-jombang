@@ -1,8 +1,9 @@
 <div align="center">
   <img src="./public/img/logo.png" alt="Lapas Jombang Logo" width="150">
-  <h1>Lapas Jombang - Sistem Kunjungan Online</h1>
+  <h1>Lapas Jombang - Sistem Layanan Kunjungan Online</h1>
   <p>
-    Aplikasi web untuk pendaftaran kunjungan online di Lembaga Pemasyarakatan Kelas IIB Jombang. Memudahkan masyarakat untuk menjadwalkan kunjungan dengan Warga Binaan Pemasyarakatan (WBP) secara efisien dan transparan.
+    <b>Digitalisasi Pelayanan Kunjungan WBP Terintegrasi</b><br>
+    Lembaga Pemasyarakatan Kelas IIB Jombang
   </p>
   
   <p>
@@ -18,130 +19,96 @@
 
 ---
 
-## 🚀 Fitur Utama
+## 🚀 Fitur Utama & Keunggulan
 
-Aplikasi ini dirancang dengan berbagai fitur untuk meningkatkan pelayanan di Lapas Jombang:
+Sistem ini dikembangkan untuk memberikan transparansi, keamanan, dan efisiensi dalam manajemen kunjungan Warga Binaan Pemasyarakatan (WBP).
 
-| Fitur                 | Deskripsi                                                                    | Ikon |
-| :-------------------- | :--------------------------------------------------------------------------- | :--: |
-| **Pendaftaran Kunjungan** | Pengunjung dapat mendaftar kunjungan secara online, memilih WBP, dan tanggal. | 📅   |
-| **Manajemen Kunjungan** | Admin dapat menyetujui, menolak, atau menjadwalkan ulang kunjungan.          | ⚙️   |
-| **Notifikasi Real-time**  | Pengunjung mendapatkan notifikasi status kunjungan secara instan.           | 🔔   |
-| **QR Code Tiket**         | Setiap pendaftaran yang disetujui akan mendapatkan QR Code untuk check-in.   | 🎟️   |
-| **Manajemen WBP**         | Admin dapat mengelola data Warga Binaan Pemasyarakatan (WBP).                | 👥   |
-| **Berita & Pengumuman**   | Publikasi berita dan pengumuman penting langsung dari website.               | 📰   |
-| **Survei Layanan**        | Mengumpulkan feedback dari pengunjung untuk evaluasi layanan.                | 📊   |
-| **Voice Announcer**       | Sistem pengumuman suara cerdas untuk antrian dan informasi penting secara real-time. | 🎤   |
-| **Control Room**          | Dashboard terpusat untuk monitoring dan manajemen real-time antrian, notifikasi, dan operasional. | 🖥️   |
-| **WA Gateway**            | Integrasi WhatsApp Gateway untuk pengiriman notifikasi otomatis kepada pengunjung. | 💬   |
-| **Desain Responsif**      | Tampilan yang optimal di berbagai perangkat, baik desktop maupun mobile.     | 📱   |
+### 📅 Sistem Pendaftaran & Antrian
+- **Pendaftaran Online/Offline:** Mendukung pendaftaran mandiri oleh keluarga via web atau pendaftaran langsung (Walk-in) oleh petugas.
+- **QR Code Verification:** Tiket otomatis dengan QR Code unik untuk verifikasi kedatangan yang cepat di pintu gerbang.
+- **Smart Queue Management:** Manajemen nomor antrian harian otomatis yang terbagi berdasarkan sesi (Pagi/Siang).
+- **Audio Voice Announcer:** Panggilan antrian otomatis berbasis Text-to-Speech (TTS) untuk memandu pengunjung di ruang tunggu.
 
----
+### 🖥️ Admin Panel & Operasional
+- **Mini Dashboard Real-time:** Pantau statistik harian (Total Kunjungan, Perlu Verifikasi, Sedang Dilayani) langsung di halaman utama manajemen.
+- **Smart Quota Warning:** Indikator visual sisa kuota (Hijau/Kuning/Merah) saat petugas menginput pendaftaran offline untuk mencegah beban berlebih.
+- **Advanced Visitor Database:** Pencarian canggih berdasarkan loyalitas (sering berkunjung), wilayah domisili, dan kelengkapan dokumen KTP.
+- **Timeline Audit Trail:** Histori lengkap setiap perubahan data (siapa petugas yang menyetujui/menolak dan kapan waktunya).
 
-## 🔗 Teknologi Integrasi Canggih
+### 🔔 Notifikasi & Transparansi
+- **WhatsApp & Email Gateway:** Pengiriman otomatis tiket QR dan update status kunjungan via WA (Fonnte/Wablas) dan Email.
+- **Notification Logs:** Pantau status pengiriman pesan (Sent/Failed) secara mendetail untuk setiap kunjungan guna memastikan informasi sampai ke pengunjung.
+- **Survei IKM Otomatis:** Link survei kepuasan pelanggan dikirim otomatis saat kunjungan dinyatakan selesai.
 
-Proyek ini memanfaatkan kombinasi teknologi modern untuk menghadirkan pengalaman real-time dan performa tinggi:
-
--   **Laravel & Redis (Backend Real-time):** Memungkinkan pemrosesan tugas latar belakang yang efisien dan broadcasting event untuk update real-time pada Control Room.
--   **Optimasi Performa Tinggi (Speed & UX):** 
-    -   **Instant Navigation:** Menggunakan `instant.page` untuk prefetching halaman, membuat perpindahan menu terasa instan.
-    -   **Visual Feedback:** Integrasi `NProgress` untuk indikator loading bar yang modern.
-    -   **Data Caching:** Implementasi caching pada level aplikasi untuk mempercepat pemuatan data statis.
-    -   **Database Indexing:** Optimasi query pada ribuan data kunjungan untuk akses cepat.
--   **Instant Image Processing:** Foto KTP pengunjung dan pengikut langsung diproses menjadi format **Base64** secara instan dengan kompresi otomatis untuk efisiensi penyimpanan database.
--   **Advanced Analytics:** Dashboard Executive yang akurat dengan deteksi otomatis usia berdasarkan NIK dan ekstraksi cerdas wilayah kecamatan asal pengunjung.
--   **WhatsApp API (WA Gateway):** Notifikasi otomatis dengan link tiket QR langsung ke perangkat pengunjung.
--   **JavaScript Kustom (Voice Announcer & 3D Animation):** Fungsionalitas Voice Announcer (text-to-speech) dan efek 3D pada halaman FAQ.
+### 📊 Pelaporan & Ekspor
+- **Professional Reporting:** Ekspor data kunjungan dan database pengunjung ke format **Excel (.xlsx)** atau **CSV** dengan layout yang rapi dan siap cetak.
+- **Cetak PDF:** Fitur cetak laporan yang dioptimalkan untuk dokumen fisik resmi.
 
 ---
 
-## 🛠️ Instalasi & Konfigurasi
+## 🔗 Teknologi Integrasi
 
-### **Metode 1: Docker (Direkomendasikan) 🐳**
-Metode paling mudah dan konsisten. Tidak perlu install PHP/MySQL/Redis manual di laptop.
+Kombinasi teknologi modern untuk performa tinggi:
 
-1.  **Start Aplikasi**:
+- **Laravel 12 & Redis:** Backend bertenaga dengan sistem antrian (Queue) untuk tugas berat seperti pengiriman notifikasi dan pemrosesan gambar.
+- **SweetAlert2 & fslightbox:** Pengalaman UI yang modern dengan popup interaktif dan penampil foto KTP resolusi tinggi tanpa membebani memori browser.
+- **Base64 Image Processing:** Foto KTP diproses secara instan di sisi klien sebelum dikirim ke server untuk efisiensi penyimpanan.
+- **Spatie Activity Log:** Melacak setiap jejak digital petugas untuk keperluan audit keamanan Lapas.
+
+---
+
+## 🛠️ Panduan Instalasi
+
+### **Metode 1: Docker 🐳 (Sangat Direkomendasikan)**
+Menjamin lingkungan yang sama persis antara development dan produksi.
+
+1.  **Jalankan Sistem**:
     ```bash
     ./docker-start.sh
     ```
-2.  **Stop Aplikasi**:
+2.  **Hentikan Sistem**:
     ```bash
     ./docker-stop.sh
     ```
 3.  **Akses**:
-    - Web: [http://localhost:8080](http://localhost:8080)
-    - Mailpit: [http://localhost:8025](http://localhost:8025)
-    - Database: localhost:3306 (User: `root`, Pass: `secret`)
+    - **Aplikasi:** [http://localhost:8080](http://localhost:8080)
+    - **Mailpit (Cek Email):** [http://localhost:8025](http://localhost:8025)
 
-> 📖 **Dokumentasi Lengkap Docker**: Lihat [DOCKER.md](./DOCKER.md) dan [DOCKER-QUICKSTART.md](./DOCKER-QUICKSTART.md)
+> 📖 **Dokumentasi Lanjutan Docker**: Lihat [DOCKER.md](./DOCKER.md)
 
----
-
-### **Metode 2: Manual (Legacy) 🛠️**
-Gunakan metode ini jika Anda menggunakan XAMPP/Laragon.
-
-1.  **Setup Awal**:
-    ```bash
-    composer run setup
-    ```
-2.  **Jalankan Mode Development**:
-    ```bash
-    composer run dev
-    ```
-3.  **Akses**:
-    - Web: [http://localhost:8000](http://localhost:8000)
+### **Metode 2: Manual (XAMPP/Laragon) 🛠️**
+1.  **Setup Awal**: `composer run setup`
+2.  **Mode Dev**: `composer run dev`
+3.  **Akses**: [http://localhost:8000](http://localhost:8000)
 
 ---
 
-### **🌍 Deployment ke VPS**
-Panduan lengkap cara deploy ke production (Niagahoster/DigitalOcean) tersedia di:
-👉 **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+## 🔐 Keamanan & Kepatuhan Data
+- **NIK Masking:** Sensor otomatis pada 6 digit tengah NIK di tampilan publik/admin untuk melindungi privasi pengunjung.
+- **Role-Based Access Control (RBAC):** Pembatasan akses fitur berdasarkan peran (Super Admin, Admin Registrasi, Petugas Ruang Kunjungan).
+- **Input Validation:** Validasi ketat terhadap NIK, nomor HP, dan relasi WBP untuk mencegah manipulasi data.
 
 ---
-
-### **📡 Share ke Internet (Cloudflare Tunnel)**
-Ingin demo aplikasi ke orang lain tanpa deploy?
-- **Docker**: Jalankan `.\docker-share.bat`
-- **Manual**: Jalankan `.\share.bat`
-
----
-
-## ⚙️ Deployment & Production Notes ✅
-
-- **Optimasi Server**: Pastikan **Gzip Compression** dan **Browser Caching** aktif pada web server (Nginx/Apache) untuk mendukung pengiriman aset yang sangat cepat. Aturan dasar sudah tersedia di file `.htaccess`.
-- **Base64 Handling**: Foto KTP disimpan langsung di database dalam format string. Pastikan `post_max_size` pada PHP disesuaikan jika menangani pendaftaran massal.
-- **Queue**: Jalankan worker untuk menangani notifikasi WA dan Email agar tidak menghambat request utama.
---- 
 
 ## ☕ Dukungan & Donasi
 
-Jika aplikasi ini bermanfaat untuk instansi atau pembelajaran Anda, Anda bisa mentraktir saya kopi melalui:
+Jika sistem ini membantu operasional instansi Anda, Anda dapat memberikan dukungan melalui:
 
 | Metode | Detail Pembayaran |
 | :--- | :--- |
-| **🏦 Bank BRI** | **3128-01-008734-50-9**<br>a.n. Arya Dian Saputra |
-| **📱 DANA** | **0838-4552-9777**<br>a.n. Arya Dian Saputra |
-
-*Dukungan Anda sangat berarti untuk pengembangan fitur selanjutnya!* 🚀
+| **🏦 Bank BRI** | **3128-01-008734-50-9** (Arya Dian Saputra) |
+| **📱 DANA** | **0838-4552-9777** (Arya Dian Saputra) |
 
 ---
 
-## 📄 Citation / Sitasi
+## 📄 Sitasi (Citation)
 
-Jika Anda menggunakan source code ini sebagai referensi untuk Skripsi, Penelitian, atau Pengembangan Proyek, mohon cantumkan sitasi berikut:
+Gunakan format berikut jika Anda merujuk proyek ini dalam karya ilmiah:
 
 **APA Style:**
-> Dian, A. (2026). *Sistem Informasi Manajemen Lapas Kelas IIB Jombang* (Version 1.0.0) [Computer software]. https://github.com/aryadians/lapas-kelas-IIb-jombang
+> Dian, A. (2026). *Sistem Informasi Manajemen Layanan Kunjungan Online Lapas Jombang* (Version 1.2.0) [Computer software]. https://github.com/aryadians/lapas-kelas-IIb-jombang
 
-**BibTeX (Untuk LaTeX/Jurnal):**
-```bibtex
-@software{lapas_jombang_2026,
-  author       = {Dian, Arya},
-  title        = {{Sistem Informasi Manajemen Lapas Kelas IIB Jombang}},
-  month        = jan,
-  year         = 2026,
-  version      = {1.0.0},
-  url          = {[https://github.com/aryadians/lapas-kelas-IIb-jombang](https://github.com/aryadians/lapas-kelas-IIb-jombang)}}
-
-
-
+---
+<div align="center">
+  <p>Dikembangkan dengan ❤️ untuk kemajuan pelayanan publik Indonesia.</p>
+</div>
