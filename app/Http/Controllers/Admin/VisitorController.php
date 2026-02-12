@@ -22,6 +22,7 @@ class VisitorController extends Controller
                 $q->latest('tanggal_kunjungan')->limit(1);
             }]);
 
+        // 1. Filter Pencarian Nama/NIK
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -30,7 +31,41 @@ class VisitorController extends Controller
             });
         }
 
-        $visitors = $query->latest()->paginate(10);
+        // 2. Filter Wilayah (Alamat)
+        if ($request->filled('wilayah')) {
+            $query->where('alamat', 'LIKE', '%' . $request->wilayah . '%');
+        }
+
+        // 3. Filter Foto KTP
+        if ($request->filled('has_foto')) {
+            if ($request->has_foto === 'yes') {
+                // Mencari yang setidaknya kunjungan terakhirnya punya foto (karena foto ada di tabel kunjungans)
+                $query->whereHas('kunjungans', function($q) {
+                    $q->whereNotNull('foto_ktp');
+                });
+            } else {
+                $query->whereDoesntHave('kunjungans', function($q) {
+                    $q->whereNotNull('foto_ktp');
+                });
+            }
+        }
+
+        // 4. Pengurutan (Loyalty / Terbaru)
+        $sort = $request->get('sort', 'latest');
+        switch ($sort) {
+            case 'most_visited':
+                $query->orderBy('kunjungans_count', 'desc');
+                break;
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'latest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $visitors = $query->paginate(10);
         $visitors->appends($request->all());
 
         // Transform collection to set foto_ktp from latest visit

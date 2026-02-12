@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel; // ADDED
 use App\Exports\KunjunganExport;   // ADDED
 
+use App\Services\QuotaService;
+
 class KunjunganController extends Controller
 {
     /**
@@ -22,32 +24,46 @@ class KunjunganController extends Controller
      */
     public function index(Request $request)
     {
+        // Statistik hari ini untuk Dashboard Mini
+        $today = Carbon::today();
+        $statsToday = [
+            'total' => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
+            'pending' => Kunjungan::where('status', KunjunganStatus::PENDING)->count(),
+            'serving' => Kunjungan::whereIn('status', [KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])->count(),
+        ];
+
+        // Sisa kuota siang (menggunakan QuotaService)
+        $quotaService = new QuotaService();
+        $isMonday = $today->isMonday();
+        $maxSiang = $isMonday ? config('kunjungan.quota_senin_siang', 40) : config('kunjungan.quota_hari_biasa', 150);
+        
+        $usedSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)
+            ->where('sesi', 'siang')
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+            ->count();
+        
+        $statsToday['sisa_siang'] = max(0, $maxSiang - $usedSiang);
+
         // Jangan ambil kolom foto_ktp di index karena ukurannya besar (Base64)
-        // Ini akan mempercepat loading tabel secara signifikan
-        // UPDATE: User meminta foto tampil di list, jadi kita include 'foto_ktp' sementara.
-        // Idealnya gunakan AJAX fetch.
         $query = Kunjungan::select(
             'id', 'profil_pengunjung_id', 'kode_kunjungan', 'nama_pengunjung', 
             'nik_ktp', 'tanggal_kunjungan', 'sesi', 'status', 'nomor_antrian_harian',
             'wbp_id', 'registration_type', 'created_at', 'foto_ktp'
         )->with('wbp');
 
-        // 1. Filter Status
+        // ... rest of filters ...
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // 2. Filter Tanggal
         if ($request->filled('tanggal_kunjungan')) {
             $query->whereDate('tanggal_kunjungan', $request->input('tanggal_kunjungan'));
         }
 
-        // 3. Filter Sesi
         if ($request->filled('sesi')) {
             $query->where('sesi', $request->sesi);
         }
 
-        // 4. Search (Nama Pengunjung, WBP, NIK)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -59,10 +75,9 @@ class KunjunganController extends Controller
             });
         }
 
-        // Urutkan terbaru & Pagination
         $kunjungans = $query->latest()->paginate(15)->withQueryString();
 
-        return view('admin.kunjungan.index', compact('kunjungans'));
+        return view('admin.kunjungan.index', compact('kunjungans', 'statsToday'));
     }
 
     /**

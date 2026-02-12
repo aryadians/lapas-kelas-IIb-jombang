@@ -73,6 +73,7 @@ class SendWhatsAppApprovedNotification implements ShouldQueue
         if ($ok) {
             // success -> clear any failure counter
             \Illuminate\Support\Facades\Cache::forget("wa_failures:{$normalized}");
+            $this->kunjungan->updateNotificationLog('whatsapp', 'sent');
             Log::info("ApprovedJob: WA sent for Kunjungan ID: {$this->kunjungan->id}. Response: " . ($response ? $response->body() : 'no response'));
             return;
         }
@@ -90,6 +91,7 @@ class SendWhatsAppApprovedNotification implements ShouldQueue
         }
 
         // Reached threshold -> alert admin once and fail job definitively
+        $this->kunjungan->updateNotificationLog('whatsapp', 'failed', $reason ?? 'Repeated failure');
         $alertKey = "wa_alerted:{$normalized}";
         if (!\Illuminate\Support\Facades\Cache::get($alertKey)) {
             try {

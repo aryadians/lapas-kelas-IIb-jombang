@@ -63,6 +63,7 @@ class SendWhatsAppCompletedNotification implements ShouldQueue
 
         if ($ok) {
             \Illuminate\Support\Facades\Cache::forget("wa_failures:{$normalized}");
+            $this->kunjungan->updateNotificationLog('whatsapp', 'sent');
             Log::info("CompletedJob: WA sent for Kunjungan ID: {$this->kunjungan->id}. Response: " . ($response ? $response->body() : 'no response'));
             return;
         }
@@ -77,6 +78,7 @@ class SendWhatsAppCompletedNotification implements ShouldQueue
             throw new \Exception('WA provider rejected: ' . ($reason ?? 'unknown'));
         }
 
+        $this->kunjungan->updateNotificationLog('whatsapp', 'failed', $reason ?? 'Repeated failure');
         $alertKey = "wa_alerted:{$normalized}";
         if (!\Illuminate\Support\Facades\Cache::get($alertKey)) {
             try {

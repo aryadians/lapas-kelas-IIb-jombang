@@ -98,7 +98,8 @@
 
     {{-- FORM PENCARIAN --}}
     <form action="{{ route('admin.visitors.index') }}" method="GET" class="animate__animated animate__fadeInUp no-print">
-        <div class="glass-panel rounded-2xl p-6">
+        <div class="glass-panel rounded-2xl p-6 space-y-6">
+            {{-- Main Search --}}
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="relative flex-grow group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -108,11 +109,35 @@
                 </div>
                 <div class="flex gap-3">
                     <button type="submit" class="px-8 py-3.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-all shadow-lg active:scale-95 flex items-center gap-2">
-                        <i class="fas fa-filter text-sm"></i> Filter
+                        <i class="fas fa-filter text-sm"></i> Terapkan
                     </button>
                     <a href="{{ route('admin.visitors.index') }}" class="px-6 py-3.5 bg-white text-slate-600 font-bold rounded-xl border-2 border-slate-200 hover:bg-slate-50 transition-all active:scale-95 text-center">
                         Reset
                     </a>
+                </div>
+            </div>
+
+            {{-- Advanced Filters --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 border-t border-slate-100">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Urutan</label>
+                    <select name="sort" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-0 font-semibold text-slate-600">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>🆕 Paling Baru</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>⏳ Paling Lama</option>
+                        <option value="most_visited" {{ request('sort') == 'most_visited' ? 'selected' : '' }}>🔥 Kunjungan Terbanyak</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Wilayah (Alamat)</label>
+                    <input type="text" name="wilayah" value="{{ request('wilayah') }}" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-0 font-semibold text-slate-600" placeholder="Cari Kota/Kecamatan...">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">Foto KTP</label>
+                    <select name="has_foto" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:border-blue-500 focus:ring-0 font-semibold text-slate-600">
+                        <option value="">Semua</option>
+                        <option value="yes" {{ request('has_foto') == 'yes' ? 'selected' : '' }}>✅ Sudah Ada</option>
+                        <option value="no" {{ request('has_foto') == 'no' ? 'selected' : '' }}>❌ Belum Ada</option>
+                    </select>
                 </div>
             </div>
         </div>

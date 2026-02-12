@@ -71,6 +71,53 @@
         </div>
     </header>
 
+    {{-- DASHBOARD MINI --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeIn no-print">
+        {{-- Card 1: Total Hari Ini --}}
+        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                <i class="fas fa-calendar-day text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Kunjungan Hari Ini</p>
+                <p class="text-2xl font-black text-slate-800">{{ $statsToday['total'] }}</p>
+            </div>
+        </div>
+
+        {{-- Card 2: Menunggu Verifikasi --}}
+        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-amber-500 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                <i class="fas fa-clock text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Perlu Verifikasi</p>
+                <p class="text-2xl font-black text-slate-800">{{ $statsToday['pending'] }}</p>
+            </div>
+        </div>
+
+        {{-- Card 3: Sedang Melayani --}}
+        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-indigo-500 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
+                <i class="fas fa-user-friends text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Sedang Dilayani</p>
+                <p class="text-2xl font-black text-slate-800">{{ $statsToday['serving'] }}</p>
+            </div>
+        </div>
+
+        {{-- Card 4: Sisa Kuota Siang --}}
+        <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-emerald-500 hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                <i class="fas fa-users text-xl"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-400 uppercase">Sisa Kuota Siang</p>
+                <p class="text-2xl font-black text-slate-800">{{ $statsToday['sisa_siang'] }}</p>
+            </div>
+        </div>
+    </div>
+
     {{-- ALERT MESSAGES --}}
     @if(session('success'))
     @push('scripts')

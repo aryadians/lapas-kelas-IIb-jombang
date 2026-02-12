@@ -28,6 +28,22 @@ class KunjunganObserver
         $status = $kunjungan->status;
         $channel = $kunjungan->preferred_notification_channel ?? 'both'; // 'email', 'whatsapp', or 'both'
 
+        // Inisialisasi log notifikasi
+        $logs = $kunjungan->notification_logs ?? [];
+        $newLog = [
+            'timestamp' => now()->toDateTimeString(),
+            'status_at_time' => $status->value,
+            'email' => !empty($kunjungan->email_pengunjung) ? 'pending' : 'skipped',
+            'whatsapp' => !empty($kunjungan->no_wa_pengunjung) ? 'pending' : 'skipped',
+        ];
+        
+        // Simpan log (kita simpan log terbaru di awal array atau tumpuk)
+        $logs[] = $newLog;
+        
+        // Update tanpa memicu observer lagi
+        $kunjungan->notification_logs = $logs;
+        $kunjungan->saveQuietly();
+
         Log::info("Kunjungan ID: {$kunjungan->id} status updated to {$status->value}. Channel: {$channel}");
 
         // =========================================================================
@@ -90,8 +106,10 @@ class KunjunganObserver
                         Mail::to($kunjungan->email_pengunjung)
                             ->queue(new KunjunganStatusMail($kunjungan, $qrPath));
 
+                        $kunjungan->updateNotificationLog('email', 'sent');
                         Log::info("Email status ({$status->value}) queued for Kunjungan ID: {$kunjungan->id}");
                     } catch (\Exception $e) {
+                        $kunjungan->updateNotificationLog('email', 'failed', $e->getMessage());
                         Log::error("Failed to queue email status for Kunjungan ID: {$kunjungan->id}. Error: " . $e->getMessage());
                     }
                 }
@@ -108,6 +126,7 @@ class KunjunganObserver
 
                     Log::info("WhatsApp status ({$status->value}) job dispatched for Kunjungan ID: {$kunjungan->id}");
                 } catch (\Exception $e) {
+                    $kunjungan->updateNotificationLog('whatsapp', 'failed', $e->getMessage());
                     Log::error("Failed to dispatch WA status for Kunjungan ID: {$kunjungan->id}. Error: " . $e->getMessage());
                 }
             }

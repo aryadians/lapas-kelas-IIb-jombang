@@ -58,6 +58,7 @@ class Kunjungan extends Model
         'foto_ktp_processed_at',
         'status',
         'qr_token',
+        'notification_logs',
         'pengikut_laki',
         'pengikut_perempuan',
         'pengikut_anak',
@@ -75,6 +76,7 @@ class Kunjungan extends Model
         'visit_started_at' => 'datetime',
         'visit_ended_at' => 'datetime',
         'status' => KunjunganStatus::class,
+        'notification_logs' => 'array',
     ];
 
     /**
@@ -101,5 +103,27 @@ class Kunjungan extends Model
     {
         // Return email address and name...
         return [$this->email_pengunjung => $this->nama_pengunjung];
+    }
+
+    /**
+     * Update status notifikasi di log terakhir.
+     */
+    public function updateNotificationLog(string $type, string $status, ?string $reason = null)
+    {
+        $logs = $this->notification_logs ?? [];
+        if (empty($logs)) return;
+
+        // Ambil log terakhir (yang baru saja dibuat oleh Observer)
+        $lastIndex = count($logs) - 1;
+        
+        if (isset($logs[$lastIndex][$type])) {
+            $logs[$lastIndex][$type] = $status;
+            if ($reason) {
+                $logs[$lastIndex][$type . '_reason'] = $reason;
+            }
+            
+            $this->notification_logs = $logs;
+            $this->saveQuietly();
+        }
     }
 }

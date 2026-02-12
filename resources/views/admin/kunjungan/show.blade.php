@@ -282,6 +282,82 @@
                 </div>
             </div>
 
+            {{-- CARD: LOG NOTIFIKASI --}}
+            <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
+                <div class="glass-header p-6 flex items-center gap-4 bg-slate-50/50">
+                    <div class="w-12 h-12 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-sm">
+                        <i class="fas fa-bell text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Log Notifikasi</h3>
+                        <p class="text-slate-500 text-xs">Status pengiriman Email & WhatsApp.</p>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    @if($kunjungan->notification_logs && count($kunjungan->notification_logs) > 0)
+                        <div class="space-y-6">
+                            @foreach(array_reverse($kunjungan->notification_logs) as $log)
+                            <div class="relative pl-8 pb-6 border-l-2 border-slate-100 last:border-0 last:pb-0">
+                                <div class="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm"></div>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                                    <h4 class="font-bold text-slate-800 uppercase text-xs tracking-wider">
+                                        Perubahan Status ke: <span class="text-blue-600">{{ $log['status_at_time'] }}</span>
+                                    </h4>
+                                    <span class="text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-lg">
+                                        <i class="far fa-clock mr-1"></i> {{ \Carbon\Carbon::parse($log['timestamp'])->format('d M Y, H:i') }}
+                                    </span>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {{-- Email Status --}}
+                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center 
+                                            @if($log['email'] == 'sent') bg-emerald-100 text-emerald-600
+                                            @elseif($log['email'] == 'failed') bg-rose-100 text-rose-600
+                                            @elseif($log['email'] == 'pending') bg-amber-100 text-amber-600
+                                            @else bg-slate-100 text-slate-400 @endif">
+                                            <i class="fas fa-envelope text-lg"></i>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">Email</p>
+                                            <p class="text-sm font-bold text-slate-700 capitalize">{{ $log['email'] }}</p>
+                                            @if(isset($log['email_reason']))
+                                                <p class="text-[10px] text-rose-500 mt-1 italic">{{ $log['email_reason'] }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- WhatsApp Status --}}
+                                    <div class="flex items-center gap-3 p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                        <div class="w-10 h-10 rounded-lg flex items-center justify-center 
+                                            @if($log['whatsapp'] == 'sent') bg-emerald-100 text-emerald-600
+                                            @elseif($log['whatsapp'] == 'failed') bg-rose-100 text-rose-600
+                                            @elseif($log['whatsapp'] == 'pending') bg-amber-100 text-amber-600
+                                            @else bg-slate-100 text-slate-400 @endif">
+                                            <i class="fab fa-whatsapp text-xl"></i>
+                                        </div>
+                                        <div class="flex-grow">
+                                            <p class="text-[10px] font-bold text-slate-400 uppercase leading-none mb-1">WhatsApp</p>
+                                            <p class="text-sm font-bold text-slate-700 capitalize">{{ $log['whatsapp'] }}</p>
+                                            @if(isset($log['whatsapp_reason']))
+                                                <p class="text-[10px] text-rose-500 mt-1 italic">{{ $log['whatsapp_reason'] }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                            <i class="fas fa-history text-3xl text-slate-300 mb-3"></i>
+                            <p class="text-slate-500 text-sm italic">Belum ada aktivitas notifikasi tercatat.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             {{-- CARD 3: DATA PENGIKUT --}}
             <div class="card-3d bg-white rounded-[2rem] shadow-lg border border-slate-100 overflow-hidden">
                 <div class="glass-header p-6 flex items-center gap-4 bg-slate-50/50">
