@@ -210,6 +210,7 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::resource('wbp', WbpController::class)->names('admin.wbp');
 
     // C. MANAJEMEN KUNJUNGAN (VERIFIKASI & LAPORAN)
+    Route::get('kunjungan/stats', [AdminKunjunganController::class, 'getStats'])->name('admin.kunjungan.stats');
     Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
     Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
     Route::get('kunjungan/export', [AdminKunjunganController::class, 'export'])->name('admin.kunjungan.export');

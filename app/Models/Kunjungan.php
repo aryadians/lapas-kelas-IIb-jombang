@@ -80,6 +80,45 @@ class Kunjungan extends Model
     ];
 
     /**
+     * Accessor untuk URL Foto KTP.
+     * Mendukung data Base64 maupun Path file.
+     */
+    public function getFotoKtpUrlAttribute(): ?string
+    {
+        if (empty($this->foto_ktp)) {
+            return null;
+        }
+
+        // Jika diawali data:image, berarti Base64
+        if (str_starts_with($this->foto_ktp, 'data:image')) {
+            return $this->foto_ktp;
+        }
+
+        // Jika berupa path di storage
+        return asset('storage/' . $this->foto_ktp);
+    }
+
+    /**
+     * Accessor untuk URL QR Code.
+     */
+    public function getQrCodeUrlAttribute(): string
+    {
+        // Cek apakah file lokal ada
+        $path = 'qrcodes/' . $this->id . '.png';
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return asset('storage/' . $path);
+        }
+
+        $pathSvg = 'qrcodes/' . $this->id . '.svg';
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($pathSvg)) {
+            return asset('storage/' . $pathSvg);
+        }
+
+        // Fallback ke API eksternal jika file lokal tidak ada
+        return "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . urlencode($this->qr_token ?? $this->kode_kunjungan);
+    }
+
+    /**
      * RELASI KE MODEL WBP
      * Satu Kunjungan tertuju pada Satu WBP.
      */
@@ -110,7 +149,11 @@ class Kunjungan extends Model
      */
     public function updateNotificationLog(string $type, string $status, ?string $reason = null)
     {
-        $logs = $this->notification_logs ?? [];
+        // Ambil data terbaru dari database untuk menghindari overwriting oleh proses lain (race condition)
+        $kunjungan = \DB::table('kunjungans')->where('id', $this->id)->first();
+        if (!$kunjungan) return;
+
+        $logs = json_decode($kunjungan->notification_logs, true) ?? [];
         if (empty($logs)) return;
 
         // Ambil log terakhir (yang baru saja dibuat oleh Observer)
@@ -122,8 +165,13 @@ class Kunjungan extends Model
                 $logs[$lastIndex][$type . '_reason'] = $reason;
             }
             
+            // Simpan kembali ke database
+            \DB::table('kunjungans')->where('id', $this->id)->update([
+                'notification_logs' => json_encode($logs)
+            ]);
+
+            // Sync ke instance model saat ini
             $this->notification_logs = $logs;
-            $this->saveQuietly();
         }
     }
 }

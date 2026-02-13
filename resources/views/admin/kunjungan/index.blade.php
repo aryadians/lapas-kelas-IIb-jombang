@@ -72,7 +72,7 @@
     </header>
 
     {{-- DASHBOARD MINI --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeIn no-print">
+    <div x-data="dashboardStats()" x-init="init()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeIn no-print">
         {{-- Card 1: Total Hari Ini --}}
         <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
             <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
@@ -80,7 +80,7 @@
             </div>
             <div>
                 <p class="text-xs font-bold text-slate-400 uppercase">Kunjungan Hari Ini</p>
-                <p class="text-2xl font-black text-slate-800">{{ $statsToday['total'] }}</p>
+                <p class="text-2xl font-black text-slate-800" x-text="stats.total">{{ $statsToday['total'] }}</p>
             </div>
         </div>
 
@@ -91,7 +91,7 @@
             </div>
             <div>
                 <p class="text-xs font-bold text-slate-400 uppercase">Perlu Verifikasi</p>
-                <p class="text-2xl font-black text-slate-800">{{ $statsToday['pending'] }}</p>
+                <p class="text-2xl font-black text-slate-800" x-text="stats.pending">{{ $statsToday['pending'] }}</p>
             </div>
         </div>
 
@@ -102,21 +102,60 @@
             </div>
             <div>
                 <p class="text-xs font-bold text-slate-400 uppercase">Sedang Dilayani</p>
-                <p class="text-2xl font-black text-slate-800">{{ $statsToday['serving'] }}</p>
+                <p class="text-2xl font-black text-slate-800" x-text="stats.serving">{{ $statsToday['serving'] }}</p>
             </div>
         </div>
 
-        {{-- Card 4: Sisa Kuota Siang --}}
+        {{-- Card 4: Sisa Kuota Keseluruhan --}}
         <div class="glass-panel p-5 rounded-2xl flex items-center gap-4 border-l-4 border-l-emerald-500 hover:shadow-lg transition-shadow">
             <div class="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
                 <i class="fas fa-users text-xl"></i>
             </div>
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase">Sisa Kuota Siang</p>
-                <p class="text-2xl font-black text-slate-800">{{ $statsToday['sisa_siang'] }}</p>
+                <p class="text-xs font-bold text-slate-400 uppercase">Sisa Kuota Hari Ini</p>
+                <p class="text-2xl font-black text-slate-800" x-text="stats.sisa_kuota_total">
+                    @php
+                        $today = \Carbon\Carbon::today();
+                        $isMonday = $today->isMonday();
+                        if ($isMonday) {
+                            $maxTotal = config('kunjungan.quota_senin_pagi', 120) + config('kunjungan.quota_senin_siang', 40);
+                        } else {
+                            $maxTotal = config('kunjungan.quota_hari_biasa', 150);
+                        }
+                        $usedTotal = \App\Models\Kunjungan::whereDate('tanggal_kunjungan', $today)
+                            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED])
+                            ->count();
+                        echo max(0, $maxTotal - $usedTotal);
+                    @endphp
+                </p>
             </div>
         </div>
     </div>
+
+    <script>
+        function dashboardStats() {
+            return {
+                stats: {
+                    total: {{ $statsToday['total'] }},
+                    pending: {{ $statsToday['pending'] }},
+                    serving: {{ $statsToday['serving'] }},
+                    sisa_kuota_total: 0
+                },
+                init() {
+                    this.updateStats();
+                    setInterval(() => this.updateStats(), 15000);
+                },
+                updateStats() {
+                    fetch('{{ route('admin.kunjungan.stats') }}')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.stats = data;
+                        })
+                        .catch(error => console.error('Error fetching dashboard stats:', error));
+                }
+            }
+        }
+    </script>
 
     {{-- ALERT MESSAGES --}}
     @if(session('success'))
@@ -260,8 +299,8 @@
                             <div class="text-xs text-slate-500">NIK: {{ $kunjungan->nik_ktp }}</div>
                             
                             {{-- BUTTON LIHAT FOTO KTP (LIGHTBOX) --}}
-                            @if(!empty($kunjungan->foto_ktp))
-                                <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp }}" 
+                            @if(!empty($kunjungan->foto_ktp_url))
+                                <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp_url }}" 
                                    class="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline mt-1 flex items-center gap-1 no-print">
                                     <i class="fas fa-id-card"></i> Lihat Foto KTP
                                 </a>

@@ -106,31 +106,8 @@ class KunjunganController extends Controller
             $updateData['qr_token'] = null;
         }
 
-        // 4. Update Database
+        // 4. Update Database (Observer akan menangani pengiriman email/WA)
         $kunjungan->update($updateData);
-
-        // Refresh data agar variabel $kunjungan memuat data terbaru (termasuk token QR baru)
-        $kunjungan->refresh();
-
-        // 5. Logika Kirim Email
-        // Email dikirim HANYA jika status Approved atau Rejected
-        if (in_array($statusBaru, [KunjunganStatus::APPROVED->value, KunjunganStatus::REJECTED->value])) {
-
-            if (!empty($kunjungan->email_pengunjung)) {
-                try {
-                    // Gunakan Mail::send (Sync) agar langsung terkirim
-                    // Pastikan config .env QUEUE_CONNECTION=sync
-                    Mail::to($kunjungan->email_pengunjung)
-                        ->send(new KunjunganStatusMail($kunjungan));
-                } catch (\Exception $e) {
-                    // Catat error di storage/logs/laravel.log
-                    Log::error("Gagal mengirim email ke {$kunjungan->email_pengunjung}: " . $e->getMessage());
-
-                    // Beri pesan warning ke admin, tapi jangan error screen
-                    return redirect()->back()->with('warning', 'Status berhasil diubah, namun email notifikasi gagal terkirim. Cek Log atau Logo/QR Code.');
-                }
-            }
-        }
 
         return redirect()->route('admin.kunjungan.index')->with('success', 'Status kunjungan berhasil diperbarui.');
     }
@@ -169,7 +146,7 @@ class KunjunganController extends Controller
         $ids = $request->input('ids');
         $status = $request->input('status');
 
-        $kunjungans = Kunjungan::with('wbp')->whereIn('id', $ids)->get();
+        $kunjungans = Kunjungan::whereIn('id', $ids)->get();
         $count = 0;
 
         foreach ($kunjungans as $kunjungan) {
@@ -180,21 +157,45 @@ class KunjunganController extends Controller
                 $updateData['qr_token'] = Str::random(40);
             }
 
+            // Update triggers observer for notifications
             $kunjungan->update($updateData);
-
-            // Kirim Email
-            try {
-                if (!empty($kunjungan->email_pengunjung)) {
-                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan));
-                }
-            } catch (\Exception $e) {
-                Log::error("Bulk Update Email Error ID {$kunjungan->id}: " . $e->getMessage());
-            }
-
             $count++;
         }
 
         return redirect()->route('admin.kunjungan.index')->with('success', "$count data kunjungan berhasil diperbarui.");
+    }
+
+    /**
+     * API untuk mengambil statistik dashboard secara real-time.
+     */
+    public function getStats()
+    {
+        $today = Carbon::today();
+        
+        $stats = [
+            'total' => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
+            'pending' => Kunjungan::where('status', KunjunganStatus::PENDING)->count(),
+            'serving' => Kunjungan::whereIn('status', [KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])->count(),
+        ];
+
+        // Hitung Sisa Kuota Keseluruhan Hari Ini
+        $isMonday = $today->isMonday();
+        
+        if ($isMonday) {
+            $maxPagi = config('kunjungan.quota_senin_pagi', 120);
+            $maxSiang = config('kunjungan.quota_senin_siang', 40);
+            $maxTotal = $maxPagi + $maxSiang;
+        } else {
+            $maxTotal = config('kunjungan.quota_hari_biasa', 150);
+        }
+        
+        $usedTotal = Kunjungan::whereDate('tanggal_kunjungan', $today)
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED])
+            ->count();
+        
+        $stats['sisa_kuota_total'] = max(0, $maxTotal - $usedTotal);
+
+        return response()->json($stats);
     }
 
     /**

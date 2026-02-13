@@ -153,7 +153,7 @@
                 <div class="p-8 flex flex-col items-center">
                     {{-- QR Code Image --}}
                     <div class="bg-white p-4 rounded-2xl border-2 border-dashed border-slate-300 shadow-sm mb-6 relative group">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ $kunjungan->qr_token }}&bgcolor=ffffff" 
+                        <img src="{{ $kunjungan->qr_code_url }}" 
                              alt="QR Code" 
                              class="w-48 h-48 object-contain transition-transform group-hover:scale-105 duration-300">
                     </div>
@@ -254,15 +254,15 @@
                         <div><p class="data-label">Alamat</p><p class="data-value text-sm text-slate-600 leading-relaxed">{{ $kunjungan->alamat_pengunjung }}</p></div>
                         
                         {{-- FOTO KTP (Base64 Logic) --}}
-                        @if(!empty($kunjungan->foto_ktp))
+                        @if(!empty($kunjungan->foto_ktp_url))
                         <div>
                             <p class="data-label">Foto KTP</p>
                             <div class="relative group">
-                                <a href="{{ $kunjungan->foto_ktp }}" target="_blank" class="block w-full">
-                                    <img src="{{ $kunjungan->foto_ktp }}" loading="lazy" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
+                                <a href="{{ $kunjungan->foto_ktp_url }}" target="_blank" class="block w-full">
+                                    <img src="{{ $kunjungan->foto_ktp_url }}" loading="lazy" class="w-full h-32 object-cover rounded-lg border border-slate-200 hover:opacity-90 transition shadow-sm">
                                 </a>
                                 <div class="mt-2 text-center">
-                                    <a href="{{ $kunjungan->foto_ktp }}" download="KTP_{{ $kunjungan->nama_pengunjung }}.png" class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
+                                    <a href="{{ $kunjungan->foto_ktp_url }}" download="KTP_{{ $kunjungan->nama_pengunjung }}.png" class="text-xs text-blue-600 font-bold hover:underline flex items-center justify-center gap-1">
                                         <i class="fas fa-download"></i> Download KTP
                                     </a>
                                 </div>
@@ -433,9 +433,9 @@
                             <div class="flex items-start gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                                 {{-- Foto Pengikut --}}
                                 <div class="flex-shrink-0">
-                                    @if(!empty($pengikut->foto_ktp))
-                                        <a href="{{ $pengikut->foto_ktp }}" target="_blank">
-                                            <img src="{{ $pengikut->foto_ktp }}" loading="lazy" class="w-12 h-12 rounded-full object-cover border border-slate-300 shadow-sm hover:scale-110 transition-transform">
+                                    @if(!empty($pengikut->foto_ktp_url))
+                                        <a href="{{ $pengikut->foto_ktp_url }}" target="_blank">
+                                            <img src="{{ $pengikut->foto_ktp_url }}" loading="lazy" class="w-12 h-12 rounded-full object-cover border border-slate-300 shadow-sm hover:scale-110 transition-transform">
                                         </a>
                                     @else
                                         <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
@@ -454,8 +454,8 @@
                                         </span>
                                         @endif
                                     </div>
-                                    @if(!empty($pengikut->foto_ktp))
-                                    <a href="{{ $pengikut->foto_ktp }}" download="Pengikut_{{ $pengikut->nama }}.png" class="text-[10px] text-blue-600 hover:underline mt-1 block">
+                                    @if(!empty($pengikut->foto_ktp_url))
+                                    <a href="{{ $pengikut->foto_ktp_url }}" download="Pengikut_{{ $pengikut->nama }}.png" class="text-[10px] text-blue-600 hover:underline mt-1 block">
                                         Download KTP
                                     </a>
                                     @endif
@@ -491,7 +491,7 @@
         <h1 style="font-size: 48px; margin: 10px 0;">#{{ $kunjungan->nomor_antrian_harian }}</h1>
         <p style="font-size: 18px; font-weight: bold; margin-bottom: 20px;">SESI: {{ strtoupper($kunjungan->sesi) }}</p>
         <div style="margin: 20px 0;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={{ $kunjungan->qr_token }}" style="width: 200px; height: 200px;">
+            <img id="qrCodePrint" src="{{ $kunjungan->qr_code_url }}" style="width: 200px; height: 200px;">
         </div>
         <p style="font-family: monospace; font-size: 16px; letter-spacing: 2px;">{{ $kunjungan->qr_token }}</p>
         <div style="text-align: left; margin-top: 30px;">
@@ -525,12 +525,26 @@
     };
 
     function printTicket() {
-        const original = document.body.innerHTML;
-        const printContent = document.getElementById('printableArea').innerHTML;
-        document.body.innerHTML = printContent;
-        window.print();
-        document.body.innerHTML = original;
-        window.location.reload(); 
+        const qrImg = document.getElementById('qrCodePrint');
+        
+        const doPrint = () => {
+            const original = document.body.innerHTML;
+            const printContent = document.getElementById('printableArea').innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = original;
+            window.location.reload(); 
+        };
+
+        if (qrImg.complete) {
+            doPrint();
+        } else {
+            qrImg.onload = doPrint;
+            qrImg.onerror = () => {
+                console.error('Failed to load QR code for printing');
+                doPrint(); // Try anyway
+            };
+        }
     }
 
     function confirmSingleAction(url, method, status, name) {
