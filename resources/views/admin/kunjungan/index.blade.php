@@ -363,7 +363,7 @@
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')" class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 hover:bg-amber-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tolak">
                                         <i class="fas fa-times"></i>
                                     </button>
-                                @elseif($kunjungan->status == KunjunganStatus::APPROVED)
+                                @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Tandai Selesai">
                                         <i class="fas fa-flag-checkered"></i>
                                     </button>

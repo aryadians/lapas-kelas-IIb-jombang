@@ -92,6 +92,8 @@
                 <div class="absolute inset-0 
                     @if($kunjungan->status == KunjunganStatus::APPROVED) bg-gradient-to-br from-emerald-500 to-teal-600
                     @elseif($kunjungan->status == KunjunganStatus::REJECTED) bg-gradient-to-br from-red-500 to-rose-600
+                    @elseif($kunjungan->status == KunjunganStatus::COMPLETED) bg-gradient-to-br from-slate-600 to-gray-700
+                    @elseif(in_array($kunjungan->status, [KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) bg-gradient-to-br from-blue-500 to-indigo-600
                     @else bg-gradient-to-br from-amber-400 to-orange-500
                     @endif opacity-100"></div>
                 
@@ -105,6 +107,12 @@
                             <i class="fas fa-check text-5xl drop-shadow-md"></i>
                         @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                             <i class="fas fa-times text-5xl drop-shadow-md"></i>
+                        @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
+                            <i class="fas fa-flag-checkered text-5xl drop-shadow-md"></i>
+                        @elseif($kunjungan->status == KunjunganStatus::IN_PROGRESS)
+                            <i class="fas fa-comments text-5xl drop-shadow-md"></i>
+                        @elseif($kunjungan->status == KunjunganStatus::CALLED)
+                            <i class="fas fa-bullhorn text-5xl drop-shadow-md"></i>
                         @else
                             <i class="fas fa-hourglass-half text-5xl drop-shadow-md"></i>
                         @endif
@@ -114,6 +122,9 @@
                     <h3 class="text-3xl font-black tracking-tight mb-2 drop-shadow-sm">
                         @if($kunjungan->status == KunjunganStatus::APPROVED) DISETUJUI
                         @elseif($kunjungan->status == KunjunganStatus::REJECTED) DITOLAK
+                        @elseif($kunjungan->status == KunjunganStatus::COMPLETED) SELESAI
+                        @elseif($kunjungan->status == KunjunganStatus::IN_PROGRESS) SEDANG BERKUNJUNG
+                        @elseif($kunjungan->status == KunjunganStatus::CALLED) DIPANGGIL
                         @else MENUNGGU
                         @endif
                     </h3>
