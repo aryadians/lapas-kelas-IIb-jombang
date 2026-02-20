@@ -302,30 +302,45 @@ class KunjunganController extends Controller
         $validator = Validator::make($request->all(), [
             'tanggal_kunjungan' => 'required|date_format:Y-m-d',
             'sesi' => 'nullable|string',
+            'type' => 'nullable|in:online,offline',
         ]);
 
         if ($validator->fails()) return response()->json(['error' => 'Invalid'], 400);
 
         $validated = $validator->validated();
-        $tanggal = Carbon::parse($validated['tanggal_kunjungan']);
+        $dateStr = $validated['tanggal_kunjungan'];
         $sesi = $validated['sesi'] ?? 'pagi';
+        $type = $validated['type'] ?? 'online';
 
-        // Gunakan QuotaService untuk data yang sinkron dengan Admin
         $quotaService = new \App\Services\QuotaService();
-        $sisaKuota = $quotaService->getMaxQuota($validated['tanggal_kunjungan'], $sesi, 'online');
         
-        $query = Kunjungan::where('tanggal_kunjungan', $validated['tanggal_kunjungan'])
-            ->where('registration_type', 'online')
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
-
-        if ($tanggal->isMonday()) {
-            $query->where('sesi', $sesi);
+        // Cek apakah hari buka
+        if (!$quotaService->isDayOpen($dateStr)) {
+            return response()->json(['sisa_kuota' => 0, 'status' => 'closed']);
         }
 
-        $registeredCount = $query->count();
-        $finalSisa = max(0, $sisaKuota - $registeredCount);
+        $maxQuota = $quotaService->getMaxQuota($dateStr, $sesi, $type);
         
-        return response()->json(['sisa_kuota' => $finalSisa]);
+        // Hitung penggunaan dari DB
+        $usedCount = Kunjungan::whereDate('tanggal_kunjungan', $dateStr)
+            ->where('registration_type', $type)
+            ->where('sesi', $sesi)
+            ->whereIn('status', [
+                KunjunganStatus::PENDING, 
+                KunjunganStatus::APPROVED, 
+                KunjunganStatus::CALLED, 
+                KunjunganStatus::IN_PROGRESS, 
+                KunjunganStatus::COMPLETED
+            ])
+            ->count();
+
+        $finalSisa = max(0, $maxQuota - $usedCount);
+        
+        return response()->json([
+            'sisa_kuota' => $finalSisa,
+            'max_kuota' => $maxQuota,
+            'used_count' => $usedCount
+        ]);
     }
 
     public function printProof(Kunjungan $kunjungan)

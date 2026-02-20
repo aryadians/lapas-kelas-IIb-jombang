@@ -10,16 +10,16 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithDrawings;
-use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Conditional;
 
-class KunjunganExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithTitle, WithColumnFormatting, WithDrawings
+class KunjunganExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize, WithTitle, WithColumnFormatting
 {
     protected $period;
     protected $date;
@@ -58,20 +58,6 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
         return $query->latest('tanggal_kunjungan')->get();
     }
 
-    public function drawings()
-    {
-        $drawing = new Drawing();
-        $drawing->setName('Logo Lapas');
-        $drawing->setDescription('Logo Lapas Kelas IIB Jombang');
-        $drawing->setPath(public_path('img/logo.png'));
-        $drawing->setHeight(80);
-        $drawing->setCoordinates('B1');
-        $drawing->setOffsetX(20);
-        $drawing->setOffsetY(5);
-
-        return $drawing;
-    }
-
     public function title(): string
     {
         return 'Laporan Kunjungan';
@@ -84,19 +70,18 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
     {
         $periodeStr = 'SELURUH DATA RIWAYAT';
         if ($this->date) {
-            if ($this->period == 'day') $periodeStr = 'TANGGAL ' . $this->date->format('d/m/Y');
+            if ($this->period == 'day') $periodeStr = 'TANGGAL ' . $this->date->format('Y-m-d');
             elseif ($this->period == 'week') $periodeStr = 'MINGGU KE-' . $this->date->weekOfYear . ' TAHUN ' . $this->date->year;
             elseif ($this->period == 'month') $periodeStr = 'BULAN ' . $this->date->translatedFormat('F Y');
         }
 
         return [
-            [''], // Row 1 (Reserved for logo height)
-            ['', 'KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN REPUBLIK INDONESIA'],
-            ['', 'KANTOR WILAYAH JAWA TIMUR'],
-            ['', 'LEMBAGA PEMASYARAKATAN KELAS IIB JOMBANG'],
-            ['', 'LAPORAN DATA KUNJUNGAN PENGUNJUNG'],
-            ['', 'Periode Laporan: ' . $periodeStr],
-            ['', 'Dicetak pada: ' . date('d/m/Y H:i')],
+            ['KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN REPUBLIK INDONESIA'],
+            ['KANTOR WILAYAH JAWA TIMUR'],
+            ['LEMBAGA PEMASYARAKATAN KELAS IIB JOMBANG'],
+            ['LAPORAN DATA KUNJUNGAN PENGUNJUNG'],
+            ['Periode Laporan: ' . $periodeStr],
+            ['Dicetak pada: ' . date('Y-m-d H:i')],
             [''],
             [
                 'NO',
@@ -135,7 +120,7 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
             strtoupper($kunjungan->hubungan),
             strtoupper($kunjungan->wbp->nama ?? 'N/A'),
             $kunjungan->wbp->no_registrasi ?? 'N/A',
-            $kunjungan->tanggal_kunjungan->format('d/m/Y'),
+            $kunjungan->tanggal_kunjungan->format('Y-m-d'),
             strtoupper($kunjungan->sesi),
             $pengikutNames ?: '-',
             $kunjungan->barang_bawaan ?: '-'
@@ -146,30 +131,31 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
     {
         return [
             'F' => NumberFormat::FORMAT_TEXT,
+            'J' => NumberFormat::FORMAT_DATE_YYYYMMDD,
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        // Header Styling (Rows 2-7)
-        $sheet->mergeCells('B2:M2');
-        $sheet->mergeCells('B3:M3');
-        $sheet->mergeCells('B4:M4');
-        $sheet->mergeCells('B5:M5');
-        $sheet->mergeCells('B6:M6');
-        $sheet->mergeCells('B7:M7');
+        // Header Styling (Rows 1-6)
+        $sheet->mergeCells('A1:M1');
+        $sheet->mergeCells('A2:M2');
+        $sheet->mergeCells('A3:M3');
+        $sheet->mergeCells('A4:M4');
+        $sheet->mergeCells('A5:M5');
+        $sheet->mergeCells('A6:M6');
 
         $styleHeaderBase = [
             'font' => ['bold' => true, 'size' => 11],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ];
 
-        $sheet->getStyle('B2:B7')->applyFromArray($styleHeaderBase);
-        $sheet->getStyle('B4')->getFont()->setSize(14);
-        $sheet->getStyle('B5')->getFont()->setSize(12);
+        $sheet->getStyle('A1:A6')->applyFromArray($styleHeaderBase);
+        $sheet->getStyle('A3')->getFont()->setSize(14);
+        $sheet->getStyle('A4')->getFont()->setSize(12);
         
-        // Table Header Style (Row 9)
-        $sheet->getStyle('A9:M9')->applyFromArray([
+        // Table Header Style (Row 8)
+        $sheet->getStyle('A8:M8')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -191,12 +177,12 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
             ],
         ]);
 
-        $sheet->getRowDimension(9)->setRowHeight(30);
+        $sheet->getRowDimension(8)->setRowHeight(30);
 
         // Content Styling
         $lastRow = $sheet->getHighestRow();
-        if ($lastRow >= 10) {
-            $sheet->getStyle('A10:M' . $lastRow)->applyFromArray([
+        if ($lastRow >= 9) {
+            $sheet->getStyle('A9:M' . $lastRow)->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -208,22 +194,59 @@ class KunjunganExport implements FromCollection, WithHeadings, WithMapping, With
                 ],
             ]);
 
-            // Alternate row coloring for better readability
-            for ($i = 10; $i <= $lastRow; $i++) {
-                if ($i % 2 == 0) {
-                    $sheet->getStyle('A' . $i . ':M' . $i)->getFill()
-                        ->setFillType(Fill::FILL_SOLID)
-                        ->getStartColor()->setRGB('f8fafc');
-                }
-            }
-
             // Center align specific columns
             $centerColumns = ['A', 'B', 'C', 'D', 'F', 'G', 'I', 'J', 'K'];
             foreach ($centerColumns as $col) {
-                $sheet->getStyle($col . '10:' . $col . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($col . '9:' . $col . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             }
+
+            // Conditional Formatting for Status (Column C)
+            $this->applyStatusConditionalFormatting($sheet, $lastRow);
         }
 
         return [];
+    }
+
+    protected function applyStatusConditionalFormatting(Worksheet $sheet, $lastRow)
+    {
+        $statusCellRange = 'C9:C' . $lastRow;
+
+        // Disetujui (APPROVED) -> Emerald/Green
+        $conditional1 = new Conditional();
+        $conditional1->setConditionType(Conditional::CONDITION_EXPRESSION)
+            ->setOperatorType(Conditional::OPERATOR_EQUAL)
+            ->addCondition('C9="APPROVED"')
+            ->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('ecfdf5');
+        $conditional1->getStyle()->getFont()->getColor()->setRGB('059669');
+        $conditional1->getStyle()->getFont()->setBold(true);
+
+        // Menunggu (PENDING) -> Amber/Yellow
+        $conditional2 = new Conditional();
+        $conditional2->setConditionType(Conditional::CONDITION_EXPRESSION)
+            ->setOperatorType(Conditional::OPERATOR_EQUAL)
+            ->addCondition('C9="PENDING"')
+            ->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('fffbeb');
+        $conditional2->getStyle()->getFont()->getColor()->setRGB('d97706');
+        $conditional2->getStyle()->getFont()->setBold(true);
+
+        // Ditolak (REJECTED) -> Red
+        $conditional3 = new Conditional();
+        $conditional3->setConditionType(Conditional::CONDITION_EXPRESSION)
+            ->setOperatorType(Conditional::OPERATOR_EQUAL)
+            ->addCondition('C9="REJECTED"')
+            ->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('fef2f2');
+        $conditional3->getStyle()->getFont()->getColor()->setRGB('dc2626');
+        $conditional3->getStyle()->getFont()->setBold(true);
+
+        // Selesai (COMPLETED) -> Slate/Gray
+        $conditional4 = new Conditional();
+        $conditional4->setConditionType(Conditional::CONDITION_EXPRESSION)
+            ->setOperatorType(Conditional::OPERATOR_EQUAL)
+            ->addCondition('C9="COMPLETED"')
+            ->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('f8fafc');
+        $conditional4->getStyle()->getFont()->getColor()->setRGB('475569');
+        $conditional4->getStyle()->getFont()->setBold(true);
+
+        $sheet->getStyle($statusCellRange)->setConditionalStyles([$conditional1, $conditional2, $conditional3, $conditional4]);
     }
 }

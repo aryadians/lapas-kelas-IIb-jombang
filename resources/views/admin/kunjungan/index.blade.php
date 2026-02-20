@@ -36,9 +36,17 @@
         @apply bg-slate-900 text-white font-black px-3 py-1 rounded-lg text-sm shadow-lg shadow-slate-900/20 border border-slate-800;
     }
 
-    .action-btn {
-        @apply w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 border shadow-sm;
+    /* PREMIUM ACTION BUTTONS */
+    .btn-action-premium {
+        @apply w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 border shadow-sm relative overflow-hidden group/btn active:scale-90;
     }
+    
+    .btn-view { @apply bg-white text-blue-500 border-blue-100 hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:shadow-blue-200; }
+    .btn-edit { @apply bg-white text-emerald-500 border-emerald-100 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-emerald-200; }
+    .btn-done { @apply bg-white text-indigo-500 border-indigo-100 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 hover:shadow-indigo-200; }
+    .btn-delete { @apply bg-white text-red-500 border-red-100 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-red-200; }
+
+    .btn-action-premium i { @apply transition-transform duration-300 group-hover/btn:scale-110; }
 </style>
 
 <div class="space-y-10 pb-16">
@@ -46,6 +54,10 @@
     {{-- HEADER & QUICK ACTIONS --}}
     <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 animate__animated animate__fadeInDown">
         <div class="space-y-1">
+            <div class="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
+                <i class="fas fa-list-ul"></i>
+                <span>Manajemen Data</span>
+            </div>
             <h1 class="text-4xl font-black text-slate-900 tracking-tighter">
                 Daftar Kunjungan
             </h1>
@@ -118,7 +130,7 @@
                 <i class="fas fa-users"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sisa Kuota Hari Ini</p>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sisa Kuota Offline</p>
                 <p class="text-3xl font-black text-slate-900 tracking-tighter" x-text="stats.sisa_kuota_total">0</p>
             </div>
         </div>
@@ -136,7 +148,7 @@
                         </div>
                         <input type="text" name="search" value="{{ request('search') }}" 
                             class="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-bold text-slate-700 placeholder-slate-300" 
-                            placeholder="Nama Pengunjung, NIK, atau Nama WBP...">
+                            placeholder="Cari Nama Pengunjung, NIK, atau Nama WBP...">
                     </div>
                 </div>
                 
@@ -149,7 +161,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6 border-t border-slate-50">
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Status</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Status Kunjungan</label>
                     <select name="status" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 transition-all">
                         <option value="">Semua Status</option>
                         @foreach([
@@ -166,11 +178,11 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Sesi</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Sesi Waktu</label>
                     <select name="sesi" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 transition-all">
                         <option value="">Semua Sesi</option>
-                        <option value="pagi" {{ request('sesi') == 'pagi' ? 'selected' : '' }}>🌅 Pagi</option>
-                        <option value="siang" {{ request('sesi') == 'siang' ? 'selected' : '' }}>☀️ Siang</option>
+                        <option value="pagi" {{ request('sesi') == 'pagi' ? 'selected' : '' }}>🌅 Sesi Pagi</option>
+                        <option value="siang" {{ request('sesi') == 'siang' ? 'selected' : '' }}>☀️ Sesi Siang</option>
                     </select>
                 </div>
 
@@ -221,29 +233,29 @@
                     <thead>
                         <tr class="bg-slate-50/50 border-b border-slate-100 uppercase tracking-widest text-[10px] font-black text-slate-400">
                             <th class="p-6 w-10"></th>
-                            <th class="px-6 py-5">Pengunjung</th>
-                            <th class="px-6 py-5">WBP</th>
-                            <th class="px-6 py-5">Jadwal</th>
+                            <th class="px-6 py-5">Informasi Pengunjung</th>
+                            <th class="px-6 py-5">Tujuan (WBP)</th>
+                            <th class="px-6 py-5">Jadwal & Sesi</th>
                             <th class="px-6 py-5">Status</th>
-                            <th class="px-6 py-5 text-center">Antrian</th>
+                            <th class="px-6 py-5 text-center">No. Antrian</th>
                             <th class="px-6 py-5 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse ($kunjungans as $kunjungan)
-                        <tr class="group hover:bg-slate-50 transition-colors">
+                        <tr class="group hover:bg-slate-50/50 transition-colors">
                             <td class="p-6">
                                 <input type="checkbox" name="ids[]" class="kunjungan-checkbox w-5 h-5 rounded-lg border-2 border-slate-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all" value="{{ $kunjungan->id }}">
                             </td>
                             <td class="px-6 py-6">
-                                <div class="space-y-1">
-                                    <div class="font-black text-slate-800 text-base tracking-tight">{{ $kunjungan->nama_pengunjung }}</div>
+                                <div class="space-y-1.5">
+                                    <div class="font-black text-slate-800 text-base tracking-tight leading-none">{{ $kunjungan->nama_pengunjung }}</div>
                                     <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                        <i class="fas fa-id-card text-blue-500/50"></i> {{ $kunjungan->nik_ktp }}
+                                        <i class="fas fa-id-card text-slate-300"></i> {{ $kunjungan->nik_ktp }}
                                     </div>
                                     @if(!empty($kunjungan->foto_ktp_url))
                                         <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp_url }}" 
-                                           class="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-blue-600 hover:text-white transition-all mt-2 no-print">
+                                           class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-slate-900 hover:text-white transition-all no-print">
                                             <i class="fas fa-camera"></i> KTP
                                         </a>
                                     @endif
@@ -251,8 +263,8 @@
                             </td>
                             <td class="px-6 py-6">
                                 <div class="space-y-1">
-                                    <div class="font-black text-slate-700">{{ $kunjungan->wbp->nama ?? 'N/A' }}</div>
-                                    <div class="text-[10px] font-black text-slate-400 uppercase bg-slate-100 px-2 py-0.5 rounded w-fit">{{ $kunjungan->hubungan }}</div>
+                                    <div class="font-black text-slate-700 tracking-tight">{{ $kunjungan->wbp->nama ?? 'N/A' }}</div>
+                                    <div class="text-[10px] font-black text-slate-400 uppercase bg-slate-50 px-2 py-0.5 rounded border border-slate-100 w-fit">{{ $kunjungan->hubungan }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-6">
@@ -260,11 +272,11 @@
                                     <div class="font-black text-slate-700 tracking-tight">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d M Y') }}</div>
                                     <div class="flex items-center gap-1.5">
                                         @if($kunjungan->sesi == 'pagi')
-                                            <span class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span>
-                                            <span class="text-[10px] font-black text-orange-600 uppercase">Pagi</span>
+                                            <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                                            <span class="text-[10px] font-black text-orange-600 uppercase">Sesi Pagi</span>
                                         @else
-                                            <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
-                                            <span class="text-[10px] font-black text-blue-600 uppercase">Siang</span>
+                                            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                                            <span class="text-[10px] font-black text-blue-600 uppercase">Sesi Siang</span>
                                         @endif
                                     </div>
                                 </div>
@@ -274,7 +286,7 @@
                                     $statusConfig = [
                                         KunjunganStatus::APPROVED->value => ['bg' => 'emerald-50', 'text' => 'emerald-600', 'border' => 'emerald-100', 'icon' => 'check-circle', 'label' => 'Disetujui'],
                                         KunjunganStatus::CALLED->value => ['bg' => 'yellow-50', 'text' => 'yellow-700', 'border' => 'yellow-100', 'icon' => 'bullhorn', 'label' => 'Dipanggil'],
-                                        KunjunganStatus::IN_PROGRESS->value => ['bg' => 'sky-50', 'text' => 'sky-700', 'border' => 'sky-100', 'icon' => 'hourglass-start', 'label' => 'Sedang Melayani'],
+                                        KunjunganStatus::IN_PROGRESS->value => ['bg' => 'sky-50', 'text' => 'sky-700', 'border' => 'sky-100', 'icon' => 'hourglass-start', 'label' => 'Melayani'],
                                         KunjunganStatus::REJECTED->value => ['bg' => 'red-50', 'text' => 'red-600', 'border' => 'red-100', 'icon' => 'times-circle', 'label' => 'Ditolak'],
                                         KunjunganStatus::COMPLETED->value => ['bg' => 'slate-50', 'text' => 'slate-600', 'border' => 'slate-100', 'icon' => 'flag-checkered', 'label' => 'Selesai'],
                                         KunjunganStatus::PENDING->value => ['bg' => 'amber-50', 'text' => 'amber-700', 'border' => 'amber-100', 'icon' => 'clock', 'label' => 'Menunggu']
@@ -291,29 +303,33 @@
                                         {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
                                     </div>
                                 @else
-                                    <span class="text-[10px] font-black text-slate-300 italic">Antrian Belum Diatur</span>
+                                    <span class="text-[10px] font-black text-slate-300 italic">N/A</span>
                                 @endif
                             </td>
                             <td class="px-6 py-6 no-print">
-                                <div class="flex items-center justify-center gap-1.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="action-btn bg-slate-50 text-slate-400 hover:bg-slate-900 hover:text-white border-slate-100" title="Detail">
+                                <div class="flex items-center justify-center gap-2">
+                                    {{-- VIEW --}}
+                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="btn-action-premium btn-view" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
                                     @if($kunjungan->status == KunjunganStatus::PENDING)
-                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}" class="action-btn bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border-emerald-100" title="Verifikasi">
+                                        {{-- VERIFY --}}
+                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}" class="btn-action-premium btn-edit" title="Verifikasi">
                                             <i class="fas fa-user-check"></i>
                                         </a>
                                     @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
+                                        {{-- DONE --}}
                                         <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" 
-                                            class="action-btn bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border-blue-100" title="Selesaikan">
+                                            class="btn-action-premium btn-done" title="Selesai">
                                             <i class="fas fa-check-double"></i>
                                         </button>
                                     @endif
 
+                                    {{-- DELETE --}}
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" 
-                                        class="action-btn bg-red-50 text-red-400 hover:bg-red-600 hover:text-white border-red-100" title="Hapus">
-                                        <i class="fas fa-trash-alt text-sm"></i>
+                                        class="btn-action-premium btn-delete" title="Hapus">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </td>
@@ -321,11 +337,11 @@
                         @empty
                         <tr>
                             <td colspan="7" class="py-32 text-center">
-                                <div class="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mx-auto border-2 border-dashed border-slate-200 mb-6">
-                                    <i class="fas fa-search text-4xl text-slate-200"></i>
+                                <div class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto border-2 border-dashed border-slate-200 mb-6 text-slate-200">
+                                    <i class="fas fa-search text-3xl"></i>
                                 </div>
-                                <h3 class="text-xl font-black text-slate-800 tracking-tight uppercase">Data Tidak Ditemukan</h3>
-                                <p class="text-slate-400 mt-2 font-bold text-sm">Sesuaikan kata kunci atau filter pencarian Anda.</p>
+                                <h3 class="text-lg font-black text-slate-800 tracking-tight uppercase">Data Tidak Ditemukan</h3>
+                                <p class="text-slate-400 mt-1 font-bold text-xs">Sesuaikan kata kunci atau filter pencarian Anda.</p>
                             </td>
                         </tr>
                         @endforelse
@@ -398,7 +414,7 @@
                         </div>
 
                         <div id="modal_export_date_container" class="hidden animate__animated animate__fadeIn">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Pilih Tanggal</label>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Pilih Tanggal Acuan</label>
                             <input type="date" name="date" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-bold text-slate-600" value="{{ date('Y-m-d') }}">
                         </div>
                     </div>

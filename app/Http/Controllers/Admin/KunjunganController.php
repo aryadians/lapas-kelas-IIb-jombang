@@ -480,21 +480,30 @@ class KunjunganController extends Controller
             'barang_bawaan' => 'nullable|string',
         ]);
 
+        $quotaService = new \App\Services\QuotaService();
+        $dateStr = Carbon::parse($request->tanggal_kunjungan)->format('Y-m-d');
+        
+        // 1. Cek apakah hari tersebut buka
+        if (!$quotaService->isDayOpen($dateStr)) {
+            return redirect()->back()->withInput()->with('error', 'Layanan kunjungan TUTUP pada hari yang dipilih.');
+        }
+
+        // 2. Hitung Sisa Kuota Offline Secara Dinamis
+        $maxQuota = $quotaService->getMaxQuota($dateStr, $request->sesi, 'offline');
+        $usedCount = Kunjungan::whereDate('tanggal_kunjungan', $dateStr)
+            ->where('registration_type', 'offline')
+            ->where('sesi', $request->sesi)
+            ->whereIn('status', [\App\Enums\KunjunganStatus::PENDING, \App\Enums\KunjunganStatus::APPROVED, \App\Enums\KunjunganStatus::CALLED, \App\Enums\KunjunganStatus::IN_PROGRESS, \App\Enums\KunjunganStatus::COMPLETED])
+            ->count();
+
+        if ($usedCount >= $maxQuota) {
+            return redirect()->back()->withInput()->with('error', "Kuota offline untuk sesi {$request->sesi} pada tanggal tersebut sudah penuh ($maxQuota).");
+        }
+
         // Custom validation for total pengikut
         $totalPengikut = ($request->pengikut_laki ?? 0) + ($request->pengikut_perempuan ?? 0) + ($request->pengikut_anak ?? 0);
         if ($totalPengikut > 4) {
             return redirect()->back()->withInput()->withErrors(['total_pengikut' => 'Jumlah total pengikut tidak boleh melebihi 4 orang.']);
-        }
-
-        $tanggalKunjungan = Carbon::parse($request->tanggal_kunjungan);
-
-        // Cek Kuota Offline (maksimal 20 per hari)
-        $offlineCount = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
-            ->where('registration_type', 'offline')
-            ->count();
-
-        if ($offlineCount >= 20) {
-            return redirect()->back()->withInput()->with('error', 'Kuota pendaftaran offline untuk tanggal tersebut sudah penuh.');
         }
 
         // Generate Kode Kunjungan Unik
@@ -503,15 +512,14 @@ class KunjunganController extends Controller
             $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
         }
 
-        // Ambil Nomor Antrian Harian Terakhir khusus Offline (berdasarkan sesi)
-        $maxAntrian = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
+        // Ambil Nomor Antrian Harian
+        $maxAntrian = Kunjungan::where('tanggal_kunjungan', $dateStr)
             ->where('sesi', $request->sesi)
-            ->where('registration_type', 'offline')
             ->lockForUpdate()
             ->max('nomor_antrian_harian');
 
         if ($request->sesi === 'siang') {
-            $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 101;
+            $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
         } else {
             $nomorAntrian = ($maxAntrian ?? 0) + 1;
         }
@@ -519,7 +527,7 @@ class KunjunganController extends Controller
         // Buat Kunjungan Baru
         $kunjungan = Kunjungan::create([
             'wbp_id' => $request->wbp_id,
-            'tanggal_kunjungan' => $tanggalKunjungan,
+            'tanggal_kunjungan' => $request->tanggal_kunjungan,
             'sesi' => $request->sesi,
             'nama_pengunjung' => $request->nama_pengunjung,
             'nik_ktp' => $request->nik_ktp,
@@ -532,14 +540,14 @@ class KunjunganController extends Controller
             'pengikut_perempuan' => $request->pengikut_perempuan ?? 0,
             'pengikut_anak' => $request->pengikut_anak ?? 0,
             'barang_bawaan' => $request->barang_bawaan,
-            'status' => KunjunganStatus::APPROVED, // Langsung disetujui
-            'registration_type' => 'offline', // Tandai sebagai offline
+            'status' => \App\Enums\KunjunganStatus::APPROVED,
+            'registration_type' => 'offline',
             'nomor_antrian_harian' => $nomorAntrian,
-            'qr_token' => Str::random(40), // Langsung generate QR
+            'qr_token' => Str::random(40),
             'kode_kunjungan' => $kodeKunjungan,
         ]);
 
         return redirect()->route('admin.kunjungan.offline.success', $kunjungan->id)
-            ->with('success', 'Pendaftaran kunjungan offline berhasil dibuat dan langsung disetujui.');
+            ->with('success', 'Pendaftaran offline berhasil.');
     }
 }
