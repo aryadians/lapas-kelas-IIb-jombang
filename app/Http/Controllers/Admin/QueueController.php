@@ -111,11 +111,14 @@ class QueueController extends Controller
      */
     public function call(Kunjungan $kunjungan)
     {
+        $prefix = $kunjungan->registration_type === 'offline' ? 'B' : 'A';
+        $formattedNomor = $prefix . ' ' . str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT);
+
         // Cache the call signal for 20 seconds
         // "latest_call" will be polled by the display page
         \Illuminate\Support\Facades\Cache::put('latest_call', [
             'type' => 'visitor',
-            'nomor' => $kunjungan->nomor_antrian_harian,
+            'nomor' => $formattedNomor,
             'nama' => $kunjungan->nama_pengunjung,
             'loket' => 'Pintu Utama', // Or dynamic based on context
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),

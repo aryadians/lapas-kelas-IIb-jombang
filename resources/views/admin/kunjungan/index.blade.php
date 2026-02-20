@@ -346,7 +346,9 @@
                         </td>
                         <td class="px-6 py-4 text-center">
                             @if($kunjungan->nomor_antrian_harian)
-                            <span class="text-base font-extrabold bg-slate-200 text-slate-700 px-3 py-1 rounded-lg">#{{ $kunjungan->nomor_antrian_harian }}</span>
+                            <span class="text-base font-extrabold bg-slate-200 text-slate-700 px-3 py-1 rounded-lg">
+                                {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+                            </span>
                             @else
                             <span class="text-slate-400">-</span>
                             @endif

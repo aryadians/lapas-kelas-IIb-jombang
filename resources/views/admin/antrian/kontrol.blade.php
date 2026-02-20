@@ -66,7 +66,7 @@
                     <div class="card-3d bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
                         <div class="flex-grow">
                              <div class="flex justify-between items-start">
-                                <span class="font-extrabold text-slate-700 bg-slate-200 px-3 py-1 rounded-lg text-sm" x-text="'#' + kunjungan.nomor_antrian_harian"></span>
+                                <span class="font-extrabold text-slate-700 bg-slate-200 px-3 py-1 rounded-lg text-sm" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
                                 <span class="text-xs font-bold text-purple-600 uppercase" x-text="kunjungan.sesi"></span>
                             </div>
                             <div class="mt-3 text-center">
@@ -114,7 +114,7 @@
                                     <p class="font-bold text-slate-800" x-text="kunjungan.nama_pengunjung"></p>
                                     <p class="text-xs text-slate-500">WBP: <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span></p>
                                 </div>
-                                <span class="font-extrabold text-green-700 bg-green-100 px-3 py-1 rounded-lg text-sm" x-text="'#' + kunjungan.nomor_antrian_harian"></span>
+                                <span class="font-extrabold text-green-700 bg-green-100 px-3 py-1 rounded-lg text-sm" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
                             </div>
                             <div class="mt-3 text-center bg-gray-900 text-white rounded-lg p-3" :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'bg-red-600' : 'bg-gray-900'">
                                 <p class="text-xs uppercase text-gray-400" x-text="timers[kunjungan.id] && timers[kunjungan.id].isFinished ? 'Waktu Habis' : 'Sisa Waktu'"></p>
@@ -143,7 +143,7 @@
                      <template x-for="kunjungan in queues.completed" :key="kunjungan.id">
                          <div class="bg-gray-700 p-2 rounded-lg flex justify-between items-center opacity-70">
                             <p class="font-medium text-gray-300 text-sm" x-text="kunjungan.nama_pengunjung"></p>
-                            <span class="font-bold text-gray-400 bg-gray-600 px-2 py-0.5 rounded-md text-xs" x-text="'#' + kunjungan.nomor_antrian_harian"></span>
+                            <span class="font-bold text-gray-400 bg-gray-600 px-2 py-0.5 rounded-md text-xs" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
                         </div>
                     </template>
                      <template x-if="queues.completed.length === 0">
@@ -289,7 +289,8 @@ function queueControl() {
                     this.finishVisitApi(kunjungan.id);
                     // Add the notification to the speech queue
                     const visitorName = kunjungan.nama_pengunjung;
-                    const queueNumber = kunjungan.nomor_antrian_harian;
+                    const prefix = kunjungan.registration_type === 'offline' ? 'B' : 'A';
+                    const queueNumber = prefix + ' ' + kunjungan.nomor_antrian_harian;
                     const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
                     const message = `Waktu kunjungan untuk ${visitorName}, nomor antrian ${queueNumber}, dengan WBP ${wbpName} telah selesai. Silahkan meninggalkan tempat kunjungan.`;
                     this.speak(message);
@@ -353,7 +354,8 @@ function queueControl() {
         },
 
         speakVisitor(kunjungan) {
-            const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
+            const prefix = kunjungan.registration_type === 'offline' ? 'B' : 'A';
+            const text = `Panggilan untuk pengunjung dengan nomor antrian ${prefix} ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
             this.speak(text, true); // Priority call
             
             // Trigger Remote Call (TV Display)

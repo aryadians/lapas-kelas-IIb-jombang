@@ -164,7 +164,10 @@
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-bold text-white uppercase tracking-wide group-hover:text-yellow-400 transition-colors" x-text="item.nama_pengunjung"></p>
+                                    <p class="text-sm font-bold text-white uppercase tracking-wide group-hover:text-yellow-400 transition-colors">
+                                        <span x-text="(item.registration_type === 'offline' ? 'B-' : 'A-') + item.nomor_antrian_harian.toString().padStart(3, '0')"></span> - 
+                                        <span x-text="item.nama_pengunjung"></span>
+                                    </p>
                                     <p class="text-xs text-slate-400 flex items-center gap-1">
                                         <i class="fas fa-id-card text-[10px]"></i> <span x-text="item.wbp?.nama || 'WBP'"></span>
                                     </p>

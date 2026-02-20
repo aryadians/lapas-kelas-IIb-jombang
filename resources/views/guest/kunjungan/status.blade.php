@@ -30,15 +30,27 @@
                     <div class="inline-block">
                         @if($kunjungan->status == KunjunganStatus::PENDING)
                             <span class="bg-blue-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
-                                <i class="fa-solid fa-check-circle"></i> PENDAFTARAN BERHASIL
+                                <i class="fa-solid fa-clock"></i> MENUNGGU VERIFIKASI
                             </span>
                         @elseif($kunjungan->status == KunjunganStatus::APPROVED)
-                            <span class="bg-green-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                            <span class="bg-emerald-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
                                 <i class="fa-solid fa-check-circle"></i> DISETUJUI / SIAP DATANG
+                            </span>
+                        @elseif($kunjungan->status == KunjunganStatus::CALLED)
+                            <span class="bg-yellow-500 text-slate-900 text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-bullhorn"></i> NOMOR ANDA DIPANGGIL
+                            </span>
+                        @elseif($kunjungan->status == KunjunganStatus::IN_PROGRESS)
+                            <span class="bg-indigo-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-comments"></i> SEDANG BERKUNJUNG
+                            </span>
+                        @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
+                            <span class="bg-slate-600 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-flag-checkered"></i> KUNJUNGAN SELESAI
                             </span>
                         @elseif($kunjungan->status == KunjunganStatus::REJECTED)
                             <span class="bg-red-500 text-white text-sm md:text-base font-bold px-6 py-2 rounded-full shadow-lg flex items-center gap-2">
-                                <i class="fa-solid fa-circle-xmark"></i> DITOLAK
+                                <i class="fa-solid fa-circle-xmark"></i> PENDAFTARAN DITOLAK
                             </span>
                         @endif
                     </div>
@@ -202,16 +214,17 @@
 
                         {{-- NOMOR ANTRIAN --}}
                         <div class="mt-8 pt-6 border-t border-dashed border-slate-300 text-center">
-                            @if($kunjungan->status == KunjunganStatus::APPROVED || $kunjungan->status == KunjunganStatus::PENDING)
-                                <div class="mb-4 flex flex-col items-center">
-                                    <div class="p-3 bg-white border-2 border-slate-900 rounded-lg inline-block">
-                                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate($kunjungan->qr_token ?? $kunjungan->kode_kunjungan) !!}
-                                    </div>
-                                    <p class="text-[10px] text-slate-500 mt-2 font-mono">Scan QR Code di Loket</p>
+                            <div class="mb-4 flex flex-col items-center">
+                                <div class="p-3 bg-white border-2 border-slate-900 rounded-lg inline-block">
+                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate($kunjungan->qr_token ?? $kunjungan->kode_kunjungan) !!}
                                 </div>
-                            @endif
+                                <p class="text-[10px] text-slate-500 mt-2 font-mono">Scan QR Code di Loket</p>
+                            </div>
+
                             <label class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Nomor Antrian Anda</label>
-                            <div class="text-6xl font-black text-slate-800 tracking-tighter">{{ $kunjungan->nomor_antrian_harian }}</div>
+                            <div class="text-6xl font-black text-slate-800 tracking-tighter">
+                                {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -224,14 +237,20 @@
                     <span>Simpan halaman ini untuk cek status atau cetak tiket.</span>
                 </div>
 
-                <div class="w-full sm:w-auto flex items-center gap-3">
+                <div class="w-full sm:w-auto flex flex-wrap items-center justify-center gap-3">
                     <a href="{{ route('kunjungan.status', $kunjungan->id) }}" class="w-full sm:w-auto bg-white text-slate-700 px-6 py-3 rounded-xl font-bold hover:bg-slate-100 transition flex items-center justify-center gap-2 border border-slate-300">
                         <i class="fa-solid fa-arrows-rotate"></i> Cek Status
                     </a>
-                    @if($kunjungan->status == KunjunganStatus::APPROVED)
-                        {{-- TOMBOL AKTIF (HIJAU/BIRU) --}}
+
+                    @if(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
+                        {{-- TOMBOL CETAK (AKTIF) --}}
                         <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-print"></i> CETAK TIKET
+                        </a>
+                    @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
+                        {{-- TOMBOL SURVEI (SELESAI) --}}
+                        <a href="{{ route('survey.create', ['kunjungan_id' => $kunjungan->id]) }}" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-star"></i> ISI SURVEI IKM
                         </a>
                     @else
                         {{-- TOMBOL MATI (ABU-ABU) --}}

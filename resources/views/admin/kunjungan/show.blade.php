@@ -225,7 +225,9 @@
                                 @if($kunjungan->nomor_antrian_harian)
                                 <div class="px-5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md flex items-center gap-2">
                                     <i class="fas fa-list-ol text-xs opacity-80"></i>
-                                    <span class="text-lg font-black tracking-tight">No. {{ $kunjungan->nomor_antrian_harian }}</span>
+                                    <span class="text-lg font-black tracking-tight">
+                                        {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+                                    </span>
                                 </div>
                                 @endif
                             </div>
@@ -499,7 +501,9 @@
         <h2 style="margin-bottom: 5px; text-transform: uppercase;">Lapas Kelas IIB Jombang</h2>
         <p style="margin-top: 0; font-size: 14px;">Tiket Antrian Kunjungan Tatap Muka</p>
         <hr style="margin: 20px 0;">
-        <h1 style="font-size: 48px; margin: 10px 0;">#{{ $kunjungan->nomor_antrian_harian }}</h1>
+        <h1 style="font-size: 48px; margin: 10px 0;">
+            {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+        </h1>
         <p style="font-size: 18px; font-weight: bold; margin-bottom: 20px;">SESI: {{ strtoupper($kunjungan->sesi) }}</p>
         <div style="margin: 20px 0;">
             <img id="qrCodePrint" src="{{ $kunjungan->qr_code_url }}" style="width: 200px; height: 200px;">
