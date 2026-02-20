@@ -19,7 +19,7 @@ class VisitorController extends Controller
         $query = ProfilPengunjung::query()
             ->withCount('kunjungans')
             ->with(['kunjungans' => function($q) {
-                $q->latest('tanggal_kunjungan')->limit(1);
+                $q->with('wbp')->latest('tanggal_kunjungan')->limit(1);
             }]);
 
         // 1. Filter Pencarian Nama/NIK
@@ -74,6 +74,7 @@ class VisitorController extends Controller
             $visitor->foto_ktp = $latestKunjungan ? $latestKunjungan->foto_ktp : null;
             $visitor->total_kunjungan = $visitor->kunjungans_count;
             $visitor->last_visit = $latestKunjungan ? $latestKunjungan->tanggal_kunjungan : null;
+            $visitor->last_wbp = $latestKunjungan && $latestKunjungan->wbp ? $latestKunjungan->wbp->nama : '-';
             return $visitor;
         });
 
@@ -97,9 +98,32 @@ class VisitorController extends Controller
         return back()->with('success', count($ids) . ' data pengunjung berhasil dihapus.');
     }
 
+    public function deleteAll()
+    {
+        ProfilPengunjung::truncate();
+        return back()->with('success', 'Seluruh data pengunjung telah berhasil dikosongkan.');
+    }
+
+    public function exportPdf()
+    {
+        $visitors = ProfilPengunjung::all();
+        return view('admin.visitors.pdf', compact('visitors'));
+    }
+
     public function exportExcel()
     {
         return Excel::download(new VisitorExport, 'database_pengunjung_' . date('Ymd_His') . '.xlsx');
+    }
+
+    /**
+     * Metode untuk membersihkan data pengunjung yang lebih dari 1 bulan.
+     * Dapat dipanggil via Cron/Scheduler.
+     */
+    public function deleteOldVisitors()
+    {
+        $count = ProfilPengunjung::where('created_at', '<', now()->subMonth())->delete();
+        Log::info("Auto-cleanup: Deleted $count visitor profiles older than 1 month.");
+        return $count;
     }
 
     public function getHistory($id)

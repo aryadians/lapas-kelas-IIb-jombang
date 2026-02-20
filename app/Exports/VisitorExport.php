@@ -21,7 +21,10 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
     */
     public function collection()
     {
-        return ProfilPengunjung::withCount('kunjungans')->get();
+        return ProfilPengunjung::withCount('kunjungans')
+            ->with(['kunjungans' => function($q) {
+                $q->with('wbp')->latest('tanggal_kunjungan')->limit(1);
+            }])->get();
     }
 
     public function title(): string
@@ -44,6 +47,7 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
                 'NOMOR HP',
                 'EMAIL',
                 'ALAMAT',
+                'WBP YANG DIKUNJUNGI',
                 'TOTAL KUNJUNGAN',
                 'TANGGAL DAFTAR'
             ]
@@ -53,6 +57,9 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
     public function map($visitor): array
     {
         static $no = 1;
+        $latestKunjungan = $visitor->kunjungans->first();
+        $wbpName = $latestKunjungan && $latestKunjungan->wbp ? $latestKunjungan->wbp->nama : '-';
+
         return [
             $no++,
             "'" . $visitor->nik, // Prefix with ' to prevent scientific notation in Excel
@@ -61,6 +68,7 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
             $visitor->nomor_hp ?? '-',
             $visitor->email ?? '-',
             $visitor->alamat,
+            strtoupper($wbpName),
             $visitor->kunjungans_count . ' Kali',
             $visitor->created_at->format('d/m/Y')
         ];
@@ -69,9 +77,9 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
     public function styles(Worksheet $sheet)
     {
         // Merge cells for header
-        $sheet->mergeCells('A1:I1');
-        $sheet->mergeCells('A2:I2');
-        $sheet->mergeCells('A3:I3');
+        $sheet->mergeCells('A1:J1');
+        $sheet->mergeCells('A2:J2');
+        $sheet->mergeCells('A3:J3');
 
         $styleArray = [
             'font' => [
@@ -87,7 +95,7 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
         $sheet->getStyle('A1')->getFont()->setSize(14);
         
         // Table Header Style (Row 5)
-        $sheet->getStyle('A5:I5')->applyFromArray([
+        $sheet->getStyle('A5:J5')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -109,7 +117,7 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
 
         // Content Styling
         $lastRow = $sheet->getHighestRow();
-        $sheet->getStyle('A6:I' . $lastRow)->applyFromArray([
+        $sheet->getStyle('A6:J' . $lastRow)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => Border::BORDER_THIN,
@@ -123,7 +131,7 @@ class VisitorExport implements FromCollection, WithHeadings, WithMapping, WithSt
         // Center align NO, NIK, JK, TOTAL, TANGGAL columns
         $sheet->getStyle('A6:B' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('D6:D' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('H6:I' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('I6:J' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         return [];
     }

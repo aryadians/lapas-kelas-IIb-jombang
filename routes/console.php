@@ -12,6 +12,11 @@ Schedule::command(AutoUpdateAntrian::class)->everyMinute();
 Schedule::command('backup:clean')->daily()->at('01:00');
 Schedule::command('backup:run')->daily()->at('01:30');
 
+// Database Cleanup (Hapus data pengunjung > 1 bulan)
+Schedule::call(function () {
+    (new \App\Http\Controllers\Admin\VisitorController())->deleteOldVisitors();
+})->dailyAt('02:00');
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');

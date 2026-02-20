@@ -241,10 +241,12 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
 
     // H. MANAJEMEN PENGUNJUNG
     Route::get('pengunjung', [AdminVisitorController::class, 'index'])->name('admin.visitors.index');
+    Route::delete('pengunjung/delete-all', [AdminVisitorController::class, 'deleteAll'])->name('admin.visitors.delete-all');
     Route::delete('pengunjung/{visitor}', [AdminVisitorController::class, 'destroy'])->name('admin.visitors.destroy');
     Route::post('pengunjung/bulk-delete', [AdminVisitorController::class, 'bulkDestroy'])->name('admin.visitors.bulk-delete');
     Route::get('pengunjung/export-csv', [AdminVisitorController::class, 'exportCsv'])->name('admin.visitors.export-csv');
     Route::get('pengunjung/export-excel', [AdminVisitorController::class, 'exportExcel'])->name('admin.visitors.export-excel');
+    Route::get('pengunjung/export-pdf', [AdminVisitorController::class, 'exportPdf'])->name('admin.visitors.export-pdf');
     Route::get('pengunjung/{id}/history', [AdminVisitorController::class, 'getHistory'])->name('admin.visitors.history');
 });
 
