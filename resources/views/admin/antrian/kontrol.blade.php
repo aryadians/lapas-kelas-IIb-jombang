@@ -118,7 +118,7 @@
                             </div>
                             <div class="mt-3 text-center bg-gray-900 text-white rounded-lg p-3" :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'bg-red-600' : 'bg-gray-900'">
                                 <p class="text-xs uppercase text-gray-400" x-text="timers[kunjungan.id] && timers[kunjungan.id].isFinished ? 'Waktu Habis' : 'Sisa Waktu'"></p>
-                                <p class="text-4xl font-bold timer-font tracking-wider" x-text="timers[kunjungan.id] ? timers[kunjungan.id].display : '15:00'"></p>
+                                <p class="text-4xl font-bold timer-font tracking-wider" x-text="timers[kunjungan.id] ? timers[kunjungan.id].display : '30:00'"></p>
                             </div>
                              <button @click="finishVisit(kunjungan.id)" class="w-full mt-3 bg-red-100 text-red-600 font-bold py-2 rounded-lg hover:bg-red-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
                                 <i class="fas fa-stop-circle"></i> Selesaikan Sekarang
@@ -262,7 +262,7 @@ function queueControl() {
                 const startTime = new Date(kunjungan.visit_started_at).getTime();
                 const now = new Date().getTime();
                 const elapsed = Math.floor((now - startTime) / 1000);
-                const visitDuration = 15 * 60;
+                const visitDuration = 30 * 60;
                 const remaining = visitDuration - elapsed;
 
                 if (remaining <= 0) {
