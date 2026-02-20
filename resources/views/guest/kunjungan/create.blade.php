@@ -35,7 +35,68 @@
 </style>
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
-<div x-data="{ showForm: {{ session('errors') || session('error') ? 'true' : 'false' }} }" class="bg-slate-50 min-h-screen pb-20">
+<div x-data="{ 
+    showForm: {{ session('errors') || session('error') ? 'true' : 'false' }},
+    showStatusModal: false 
+}" class="bg-slate-50 min-h-screen pb-20">
+
+    {{-- FLOATING BUTTON CEK STATUS --}}
+    <div class="fixed bottom-6 right-6 z-[60] animate__animated animate__bounceInUp">
+        <button @click="showStatusModal = true" class="group bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 rounded-full shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 flex items-center gap-2 overflow-hidden max-w-[60px] hover:max-w-[300px] group">
+            <i class="fa-solid fa-magnifying-glass text-xl"></i>
+            <span class="font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">Cek Status Pendaftaran</span>
+        </button>
+    </div>
+
+    {{-- MODAL CEK STATUS (ALPINE JS) --}}
+    <div x-show="showStatusModal" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        style="display: none;">
+        
+        <div @click.away="showStatusModal = false" 
+            class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate__animated animate__zoomIn"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="scale-90 opacity-0"
+            x-transition:enter-end="scale-100 opacity-100">
+            
+            <div class="bg-gradient-to-r from-blue-900 to-indigo-950 px-6 py-4 flex justify-between items-center">
+                <h3 class="text-white font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-yellow-400"></i> Cek Status
+                </h3>
+                <button @click="showStatusModal = false" class="text-white/70 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="p-8">
+                <div class="text-center mb-6">
+                    <p class="text-slate-600 text-sm">Masukkan <strong>NIK</strong> atau <strong>Kode Booking</strong> untuk melihat status pendaftaran Anda.</p>
+                </div>
+
+                <form action="{{ route('kunjungan.cek_status') }}" method="GET" class="space-y-4">
+                    <div class="relative">
+                        <input type="text" name="keyword" required
+                            class="w-full pl-4 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:ring-0 transition-all font-bold text-center text-lg text-slate-800 placeholder-slate-300" 
+                            placeholder="NIK / Kode Booking">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-tight">
+                        CARI DATA <i class="fa-solid fa-search"></i>
+                    </button>
+                </form>
+
+                <div class="mt-6 pt-6 border-t border-slate-100 flex items-center gap-3 bg-blue-50/50 p-4 rounded-2xl">
+                    <i class="fa-solid fa-info-circle text-blue-500 text-lg"></i>
+                    <p class="text-[11px] text-blue-800 leading-relaxed">Status pendaftaran juga dikirimkan melalui WhatsApp/Email yang Anda daftarkan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {{-- ============================================================== --}}
     {{-- BAGIAN 1: INFORMASI & TATA TERTIB (FULL UI) --}}
