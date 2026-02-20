@@ -39,6 +39,24 @@ class HomeController extends Controller
     }
 
     /**
+     * Tampilkan halaman laporan informasi publik untuk pengunjung.
+     */
+    public function publicReports(Request $request): View
+    {
+        $category = $request->query('category');
+        
+        $query = \App\Models\FinancialReport::where('is_published', true);
+        
+        if ($category) {
+            $query->where('category', $category);
+        }
+
+        $reports = $query->latest()->get()->groupBy('category');
+
+        return view('guest.public_reports.index', compact('reports', 'category'));
+    }
+
+    /**
      * Display the digital announcement board.
      *
      * @return \Illuminate\View\View

@@ -131,6 +131,12 @@
                 </a>
                 @endif
 
+                <a href="{{ route('admin.financial-reports.index') }}" 
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.financial-reports.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <i class="fa-solid fa-file-invoice-dollar w-5 h-5 mr-3 {{ request()->routeIs('admin.financial-reports.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                    <span class="font-medium">Laporan Publik</span>
+                </a>
+
                 <a href="{{ route('admin.surveys.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.surveys.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.surveys.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

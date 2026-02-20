@@ -91,6 +91,36 @@
                     <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Profil</a>
                     <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Berita</a>
                     <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Pengumuman</a>
+                    
+                    {{-- Dropdown Informasi Publik --}}
+                    <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
+                        <button class="text-gray-300 group-hover:text-white px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-1">
+                            Informasi Publik
+                            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
+                        </button>
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             class="absolute left-0 mt-0 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50">
+                            <div class="p-2 space-y-1">
+                                <a href="{{ route('guest.public-reports', ['category' => 'LHKPN']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
+                                    <i class="fa-solid fa-vault w-5 text-center"></i> LHKPN
+                                </a>
+                                <a href="{{ route('guest.public-reports', ['category' => 'LAKIP']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
+                                    <i class="fa-solid fa-chart-line w-5 text-center"></i> LAKIP
+                                </a>
+                                <a href="{{ route('guest.public-reports', ['category' => 'Keuangan']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
+                                    <i class="fa-solid fa-money-bill-transfer w-5 text-center"></i> Laporan Keuangan
+                                </a>
+                                <div class="h-px bg-slate-800 mx-2 my-1"></div>
+                                <a href="{{ route('guest.public-reports') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-yellow-500 hover:bg-slate-800 rounded-xl transition-all font-bold">
+                                    <i class="fa-solid fa-list-ul w-5 text-center"></i> Semua Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-2">
                         <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -168,6 +198,20 @@
                 <a href="{{ route('profile.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Profil</a>
                 <a href="{{ route('news.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Berita</a>
                 <a href="{{ route('announcements.public.index') }}" class="block px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">Pengumuman</a>
+                
+                {{-- Dropdown Informasi Publik Mobile --}}
+                <div x-data="{ open: false }" class="space-y-1">
+                    <button @click="open = !open" class="w-full flex justify-between items-center px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
+                        Informasi Publik
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                    </button>
+                    <div x-show="open" class="pl-4 space-y-1 bg-slate-900/50 rounded-xl py-2 mx-2">
+                        <a href="{{ route('guest.public-reports', ['category' => 'LHKPN']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-vault mr-2"></i> LHKPN</a>
+                        <a href="{{ route('guest.public-reports', ['category' => 'LAKIP']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-chart-line mr-2"></i> LAKIP</a>
+                        <a href="{{ route('guest.public-reports', ['category' => 'Keuangan']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-money-bill-transfer mr-2"></i> Laporan Keuangan</a>
+                    </div>
+                </div>
+
                 <a href="{{ route('live.antrian') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
                     <span class="relative flex h-3 w-3">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

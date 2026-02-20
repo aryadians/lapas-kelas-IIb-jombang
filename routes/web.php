@@ -82,6 +82,7 @@ Route::post('/survei/simpan', [SurveyController::class, 'store'])->name('survey.
 // Galeri & Profil
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/profil', [HomeController::class, 'profile'])->name('profile.index');
+Route::get('/informasi-publik', [HomeController::class, 'publicReports'])->name('guest.public-reports');
 
 // Fitur Informasi Realtime Publik
 Route::get('/live-antrian', [HomeController::class, 'liveAntrian'])->name('live.antrian');
@@ -233,6 +234,12 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
 
     // MANAJEMEN PRODUK
     Route::resource('products', AdminProductController::class)->names('admin.products');
+
+    // MANAJEMEN LAPORAN KEUANGAN / PUBLIK
+    Route::post('financial-reports/bulk-delete', [\App\Http\Controllers\Admin\FinancialReportController::class, 'bulkDelete'])->name('admin.financial-reports.bulk-delete');
+    Route::get('financial-reports/export-excel', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportExcel'])->name('admin.financial-reports.export-excel');
+    Route::get('financial-reports/export-pdf', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportPdf'])->name('admin.financial-reports.export-pdf');
+    Route::resource('financial-reports', \App\Http\Controllers\Admin\FinancialReportController::class)->names('admin.financial-reports');
 
     // E. MANAJEMEN USER (ADMIN & PETUGAS)
     Route::resource('users', AdminUserController::class)->names('admin.users');
