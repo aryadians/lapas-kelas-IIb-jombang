@@ -117,21 +117,8 @@
                                 <div class="block w-full sm:w-48 h-32 bg-slate-100 rounded-xl overflow-hidden border border-slate-200 relative group shadow-sm hover:shadow-md transition-all">
                                     
                                     @php
-                                        $imageSrc = null;
-                                        // Cek apakah ada path foto
-                                        $path = $kunjungan->foto_ktp_path ?? $kunjungan->foto_ktp;
-                                        
-                                        if (!empty($path)) {
-                                            // Jika path mengandung http (URL eksternal), gunakan langsung
-                                            if (str_starts_with($path, 'http')) {
-                                                $imageSrc = $path;
-                                            } else {
-                                                // Gunakan relative path agar otomatis mengikuti domain/host yang sedang aktif (penting untuk Ngrok/Cloudflare Tunnel)
-                                                // Kita asumsikan symlink storage sudah terpasang
-                                                $imageSrc = '/storage/' . ltrim($path, '/');
-                                            }
-                                        }
-                                    @endphp
+                                    $imageSrc = $kunjungan->foto_ktp_url;
+                                @endphp
 
                                     @if($imageSrc)
                                         <a href="#" onclick="showImageModal('{{ $imageSrc }}'); return false;">
