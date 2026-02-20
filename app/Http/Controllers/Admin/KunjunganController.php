@@ -81,6 +81,16 @@ class KunjunganController extends Controller
     }
 
     /**
+     * Menampilkan formulir edit kunjungan (untuk verifikasi manual).
+     */
+    public function edit($id)
+    {
+        $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->findOrFail($id);
+        $wbps = Wbp::orderBy('nama')->get();
+        return view('admin.kunjungan.edit', compact('kunjungan', 'wbps'));
+    }
+
+    /**
      * Update status kunjungan (Approved/Rejected).
      */
     public function update(Request $request, $id)
@@ -88,13 +98,34 @@ class KunjunganController extends Controller
         // 1. Cari Data
         $kunjungan = Kunjungan::findOrFail($id);
 
-        // 2. Validasi Input
+        // 2. Validasi Input Lengkap
         $request->validate([
             'status' => 'required|in:approved,rejected,pending,completed,called,in_progress',
+            'nama_pengunjung' => 'required|string|max:255',
+            'nik_ktp' => 'required|string|digits:16',
+            'no_wa_pengunjung' => 'nullable|string|max:20',
+            'alamat_pengunjung' => 'nullable|string',
+            'hubungan' => 'required|string|max:100',
+            'wbp_id' => 'required|exists:wbps,id',
+            'pengikut.*.nama' => 'nullable|string|max:255',
+            'pengikut.*.nik' => 'nullable|string|digits:16',
+            'new_pengikut.*.nama' => 'nullable|string|max:255',
+            'new_pengikut.*.nik' => 'nullable|string|digits:16',
         ]);
 
         $statusBaru = $request->status;
-        $updateData = ['status' => $statusBaru];
+        
+        // Data dasar yang diupdate
+        $updateData = [
+            'status' => $statusBaru,
+            'nama_pengunjung' => $request->nama_pengunjung,
+            'nik_ktp' => $request->nik_ktp,
+            'no_wa_pengunjung' => $request->no_wa_pengunjung,
+            'hubungan' => $request->hubungan,
+            'wbp_id' => $request->wbp_id,
+            'alamat_pengunjung' => $request->alamat_pengunjung,
+            'barang_bawaan' => $request->barang_bawaan,
+        ];
 
         // 3. Generate QR Token jika Approved & belum punya token
         if ($statusBaru === KunjunganStatus::APPROVED->value && is_null($kunjungan->qr_token)) {
@@ -106,10 +137,34 @@ class KunjunganController extends Controller
             $updateData['qr_token'] = null;
         }
 
-        // 4. Update Database (Observer akan menangani pengiriman email/WA)
+        // 4. Update Database
         $kunjungan->update($updateData);
 
-        return redirect()->route('admin.kunjungan.index')->with('success', 'Status kunjungan berhasil diperbarui.');
+        // 5. Update Data Pengikut jika ada koreksi
+        if ($request->has('pengikut')) {
+            foreach ($request->pengikut as $pId => $pData) {
+                if (!empty($pData['nama'])) {
+                    \App\Models\Pengikut::where('id', $pId)->update([
+                        'nama' => $pData['nama'],
+                        'nik' => $pData['nik'],
+                    ]);
+                }
+            }
+        }
+
+        // 6. Tambah Pengikut Baru jika ada
+        if ($request->has('new_pengikut')) {
+            foreach ($request->new_pengikut as $pData) {
+                if (!empty($pData['nama'])) {
+                    $kunjungan->pengikuts()->create([
+                        'nama' => $pData['nama'],
+                        'nik' => $pData['nik'],
+                    ]);
+                }
+            }
+        }
+
+        return redirect()->route('admin.kunjungan.index')->with('success', 'Data kunjungan berhasil diverifikasi dan diperbarui.');
     }
 
     /**
@@ -241,30 +296,21 @@ class KunjunganController extends Controller
             ->first();
 
         if ($kunjungan) {
-            $message = 'Kunjungan valid dan sudah disetujui sebelumnya.';
-            // Automatically approve if status is pending
-            if ($kunjungan->status === KunjunganStatus::PENDING) {
-                $kunjungan->status = KunjunganStatus::APPROVED;
-                $kunjungan->save();
-                $message = 'Kunjungan berhasil disetujui secara otomatis!';
-            }
+            $message = 'Data pendaftaran ditemukan. Silakan periksa kelengkapan data sebelum melakukan verifikasi.';
 
-            // Handle AJAX requests separately
+            // Handle AJAX requests separately (biasanya dari scanner kamera)
             if ($request->wantsJson()) {
-                // Return the full kunjungan object, which includes the ID and relations
                 return response()->json([
                     'status' => 'success',
                     'message' => $message,
-                    'kunjungan' => $kunjungan->load('wbp'), // Ensure wbp relation is loaded
+                    'kunjungan' => $kunjungan->load(['wbp', 'pengikuts']),
+                    'redirect_url' => route('admin.kunjungan.edit', $kunjungan->id) // Arahkan ke page edit
                 ]);
             }
 
-            // For standard web requests, reuse the verification view and show success
-            return view('admin.kunjungan.verifikasi', [
-                'kunjungan' => $kunjungan,
-                'status_verifikasi' => 'success',
-                'approval_message' => $message,
-            ]);
+            // Untuk request standar, arahkan langsung ke halaman edit agar admin bisa koreksi data
+            return redirect()->route('admin.kunjungan.edit', $kunjungan->id)
+                ->with('info', $message);
         } else {
             if ($request->wantsJson()) {
                 return response()->json([

@@ -315,39 +315,18 @@
 
                 if (response.ok) {
                     const kunjungan = data.kunjungan;
-                    const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'N/A';
-                    const printUrl = `{{ route('kunjungan.print', ':id') }}`.replace(':id', kunjungan.id);
-                    const listUrl = `{{ route('admin.kunjungan.index') }}`;
+                    const redirectUrl = data.redirect_url; // Mengambil URL edit dari server
 
                     Swal.fire({
                         icon: 'success',
-                        title: 'Verifikasi Berhasil!',
-                        html: `Pengunjung: <b>${kunjungan.nama_pengunjung}</b><br>Tujuan: <b>${wbpName}</b>`,
-                        
-                        showConfirmButton: true,
-                        confirmButtonText: '<i class="fas fa-print mr-2"></i>Cetak Tiket',
-                        confirmButtonColor: '#3085d6',
-
-                        showDenyButton: true,
-                        denyButtonText: '<i class="fas fa-list-ul mr-2"></i>Daftar Kunjungan',
-                        
-                        showCancelButton: true,
-                        cancelButtonText: '<i class="fas fa-qrcode mr-2"></i>Scan Lagi',
-                        cancelButtonColor: '#65778b',
-                        
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Cetak Tiket
-                            window.open(printUrl, '_blank');
-                            // Also restart scanner for efficiency
-                            if (startBtn) startBtn.click();
-                        } else if (result.isDenied) {
-                            // Daftar Kunjungan
-                            window.location.href = listUrl;
-                        } else {
-                            // Scan Lagi (or dismissed by clicking outside)
-                            if (startBtn) startBtn.click();
-                        }
+                        title: 'Data Ditemukan!',
+                        text: 'Membuka halaman verifikasi data...',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    }).then(() => {
+                        // Redirect ke halaman edit/verifikasi manual
+                        window.location.href = redirectUrl;
                     });
                 } else {
                     throw data; // Trigger catch block for failed responses

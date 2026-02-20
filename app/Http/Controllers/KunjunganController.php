@@ -364,34 +364,19 @@ class KunjunganController extends Controller
             ->first();
 
         if ($kunjungan) {
-            $message = null;
-            if ($kunjungan->status === KunjunganStatus::PENDING) {
-                $kunjungan->status = KunjunganStatus::APPROVED;
-                $kunjungan->save();
-                $message = 'Kunjungan otomatis DISETUJUI saat scan.';
-
-                try {
-                    // Kirim notifikasi WA (Approved)
-                    $whatsAppService->sendApproved($kunjungan, null);
-                    // Kirim notifikasi Email (Approved)
-                    Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, null));
-                } catch (\Exception $e) {
-                }
-            }
-
+            $message = 'Data ditemukan. Silakan lakukan verifikasi manual pada halaman detail/edit.';
+            
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'status' => 'success',
                     'kunjungan' => $kunjungan,
-                    'message' => $message
+                    'message' => $message,
+                    'redirect_url' => route('admin.kunjungan.edit', $kunjungan->id)
                 ]);
             }
 
-            return view('admin.kunjungan.verifikasi', [
-                'status_verifikasi' => 'success',
-                'kunjungan' => $kunjungan,
-                'approval_message' => $message
-            ]);
+            return redirect()->route('admin.kunjungan.edit', $kunjungan->id)
+                ->with('info', $message);
         } else {
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
