@@ -57,7 +57,7 @@ class SendWhatsAppRejectedNotification implements ShouldQueue
         if ($response && method_exists($response, 'body')) {
             $body = $response->body();
             $decoded = json_decode($body, true) ?: [];
-            $ok = (!array_key_exists('status', $decoded) || $decoded['status'] === true) && (method_exists($response, 'successful') ? $response->successful() : true);
+            $ok = (!array_key_exists('status', $decoded) || $decoded['status'] == true) && (method_exists($response, 'successful') ? $response->successful() : true);
             $reason = $decoded['reason'] ?? null;
             $requestId = $decoded['requestid'] ?? null;
         }

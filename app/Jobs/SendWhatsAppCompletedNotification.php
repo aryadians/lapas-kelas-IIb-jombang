@@ -50,16 +50,9 @@ class SendWhatsAppCompletedNotification implements ShouldQueue
 
         $response = $whatsAppService->sendCompleted($this->kunjungan);
 
-        $ok = false;
-        $reason = null;
-        $requestId = null;
-        if ($response && method_exists($response, 'body')) {
-            $body = $response->body();
-            $decoded = json_decode($body, true) ?: [];
-            $ok = (!array_key_exists('status', $decoded) || $decoded['status'] === true) && (method_exists($response, 'successful') ? $response->successful() : true);
+            $ok = (!array_key_exists('status', $decoded) || $decoded['status'] == true) && (method_exists($response, 'successful') ? $response->successful() : true);
             $reason = $decoded['reason'] ?? null;
             $requestId = $decoded['requestid'] ?? null;
-        }
 
         if ($ok) {
             \Illuminate\Support\Facades\Cache::forget("wa_failures:{$normalized}");
