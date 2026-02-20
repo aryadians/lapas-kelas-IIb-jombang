@@ -34,13 +34,13 @@
             <form id="import-form" action="{{ route('admin.wbp.import') }}" method="POST" enctype="multipart/form-data" class="flex w-full md:w-auto items-center gap-3">
                 @csrf
                 <div class="relative flex-1 md:w-80">
-                    <input type="file" name="file" id="file-input" class="hidden" required accept=".csv,.txt">
+                    <input type="file" name="file" id="file-input" class="hidden" required accept=".xlsx,.xls,.csv,.txt">
                     <label for="file-input" id="file-input-label" class="w-full cursor-pointer bg-white border border-slate-300 rounded-lg flex items-center shadow-sm transition-all duration-300 hover:shadow-md hover:border-indigo-300">
                         <div class="bg-slate-100 h-full p-3 rounded-l-lg border-r border-slate-300">
-                            <i class="fa-solid fa-file-csv text-slate-500 text-lg"></i>
+                            <i class="fa-solid fa-file-excel text-slate-500 text-lg"></i>
                         </div>
                         <span id="file-name" class="flex-1 px-3 text-sm text-slate-500 truncate">
-                            Pilih file CSV...
+                            Pilih file Excel atau CSV...
                         </span>
                         <span class="text-xs bg-indigo-600 text-white font-semibold py-1 px-3 rounded-full mr-2 shadow-sm">
                             Browse
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (this.files.length > 0) {
                 fileNameSpan.textContent = this.files[0].name;
             } else {
-                fileNameSpan.textContent = 'Pilih file CSV untuk diimpor...';
+                fileNameSpan.textContent = 'Pilih file Excel atau CSV untuk diimpor...';
             }
         });
     }
@@ -196,20 +196,11 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    let statsHtml = `
-                        <div class="text-center my-4">
-                            <p class="text-4xl font-bold text-green-500">${data.stats.imported}</p>
-                            <p class="text-sm text-slate-500">Data WBP berhasil diimpor.</p>
-                        </div>
-                        <ul class="text-left space-y-2 mt-4 text-sm bg-slate-50 p-3 rounded-lg">
-                            <li class="flex justify-between items-center"><span class="font-medium text-slate-500">Baris Dilewati (No. Reg kosong):</span><span class="font-bold text-amber-500 py-1 px-2 rounded">${data.stats.skipped}</span></li>
-                        </ul>
-                    `;
                     Swal.fire({
                         ...swalTheme,
                         icon: 'success',
-                        title: data.message,
-                        html: statsHtml,
+                        title: 'Import Berhasil',
+                        text: data.message,
                         confirmButtonText: 'Selesai & Muat Ulang'
                     }).then(() => {
                         window.location.reload();

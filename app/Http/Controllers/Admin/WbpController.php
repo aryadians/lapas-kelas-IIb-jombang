@@ -34,109 +34,37 @@ class WbpController extends Controller
     }
 
     /**
-     * Proses Import CSV (Fix Logic)
+     * Proses Import Excel/CSV menggunakan Maatwebsite Excel
      */
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:csv,txt'
+            'file' => 'required|file|mimes:xlsx,xls,csv,txt'
         ]);
 
-        $file = $request->file('file');
-        $path = $file->getRealPath();
-
-        $handle = fopen($path, "r");
-        if (!$handle) {
-            return response()->json(['success' => false, 'message' => 'Gagal membuka file yang diupload.']);
-        }
-        $firstLine = fgets($handle);
-        fclose($handle);
-        $delimiter = (substr_count($firstLine, ';') > substr_count($firstLine, ',')) ? ';' : ',';
-
-        $imported = 0;
-        $skipped = 0;
-        $rowNumber = 0;
-        $processedRegistrations = []; // Array to track duplicates within the CSV
-
-        DB::beginTransaction();
         try {
-            // Hapus semua data lama sebelum import
+            DB::beginTransaction();
+            
+            // Hapus semua data lama sebelum import (Opsional, sesuai alur bisnis Anda)
             Wbp::query()->delete();
 
-            if (($handle = fopen($path, "r")) !== FALSE) {
-                while (($row = fgetcsv($handle, 3000, $delimiter)) !== FALSE) {
-                    $rowNumber++;
-                    if ($rowNumber == 1 || (isset($row[0]) && stripos($row[0], 'Nama') !== false)) {
-                        continue;
-                    }
-
-                    $cleanRow = array_map(function ($val) {
-                        return trim(preg_replace('/[\x00-\x1F\x7F]/u', '', $val ?? ''));
-                    }, $row);
-
-                    $noReg = $cleanRow[1] ?? '';
-
-                    // Validasi: Lewati jika No. Reg kosong ATAU jika sudah diproses (duplikat di CSV)
-                    if (empty($noReg) || in_array($noReg, $processedRegistrations)) {
-                        $skipped++;
-                        continue;
-                    }
-
-                    $nama = $cleanRow[0] ?? '';
-                    $alias = null;
-                    for ($i = 4; $i <= 9; $i++) {
-                        if (!empty($cleanRow[$i]) && $cleanRow[$i] != '-') {
-                            $alias = strtoupper($cleanRow[$i]);
-                            break;
-                        }
-                    }
-                    $blok = !empty($cleanRow[10]) ? strtoupper($cleanRow[10]) : '-';
-                    $kamar = !empty($cleanRow[11]) ? strtoupper($cleanRow[11]) : '-';
-
-                    Wbp::create([
-                        'no_registrasi'     => $noReg,
-                        'nama'              => strtoupper($nama),
-                        'nama_panggilan'    => $alias,
-                        'tanggal_masuk'     => $this->parseDate($cleanRow[2] ?? null),
-                        'tanggal_ekspirasi' => $this->parseDate($cleanRow[3] ?? null),
-                        'blok'              => $blok,
-                        'kamar'             => $kamar,
-                    ]);
-                    $processedRegistrations[] = $noReg; // Tandai No. Reg ini sudah diproses
-                    $imported++;
-                }
-                fclose($handle);
-            }
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\WbpImport, $request->file('file'));
 
             DB::commit();
             Artisan::call('cache:clear');
 
-        } catch (\Exception $e) {
-            DB::rollBack();
-            if (isset($handle) && is_resource($handle)) {
-                fclose($handle);
-            }
-            return response()->json([
-                'success' => false, 
-                'message' => 'Terjadi error pada baris ' . $rowNumber . ': ' . $e->getMessage()
-            ]);
-        }
-
-        if ($imported > 0) {
             return response()->json([
                 'success' => true,
-                'message' => "Basis data telah diganti!",
-                'stats'   => [
-                    'imported' => $imported,
-                    'updated'  => 0, // No longer updating
-                    'skipped'  => $skipped,
-                ]
+                'message' => "Database WBP telah berhasil diperbarui!"
             ]);
-        } else {
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('WBP Import Error: ' . $e->getMessage());
             return response()->json([
-                'success' => false,
-                'message' => 'File terbaca, namun tidak ada data valid yang dapat diimpor. Basis data tidak diubah.'
-            ]);
+                'success' => false, 
+                'message' => 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage()
+            ], 500);
         }
     }
 

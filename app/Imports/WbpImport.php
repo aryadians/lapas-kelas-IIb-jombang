@@ -5,8 +5,9 @@ namespace App\Imports;
 use App\Models\Wbp;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class WbpImport implements ToCollection, SkipsEmptyRows
 {
@@ -15,55 +16,104 @@ class WbpImport implements ToCollection, SkipsEmptyRows
      */
     public function collection(Collection $rows)
     {
-        foreach ($rows as $row) {
-            // Konversi row ke array index angka agar mudah dicek (0, 1, 2...)
+        $processedRegistrations = [];
+
+        foreach ($rows as $index => $row) {
+            // Lewati header jika baris pertama mengandung kata kunci tertentu
+            if ($index === 0 && $this->isHeader($row)) {
+                continue;
+            }
+
             $data = $row->values()->toArray();
-
-            // Variabel penampung
-            $noReg = null;
+            
             $nama = null;
+            $noReg = null;
+            $alias = null;
+            $tglMasuk = null;
+            $tglEkspirasi = null;
             $blok = '-';
+            $kamar = '-';
 
-            // LOGIKA PINTAR (SMART DETECTION)
-            // Sistem akan mencari mana yang "No Registrasi" dan mana yang "Nama"
-            // berdasarkan pola isinya, jadi urutan kolom Excel tidak masalah.
+            // LOGIKA DETEKSI KOLOM (FLEXIBLE)
+            foreach ($data as $cellIndex => $cell) {
+                if (is_null($cell) || $cell === '') continue;
+                $cell = trim((string)$cell);
 
-            foreach ($data as $cell) {
-                if (empty($cell)) continue;
-                $cell = trim($cell);
-
-                // 1. Cek Pola No Registrasi (Biasanya ada 'B.I', 'A.I', '/' atau angka tahun)
-                // Contoh: BI.N 303/2025, A. 123/2024
-                if (preg_match('/(A\.|B\.|BI\.|AI\.|AII|BII|\/20)/i', $cell) && strlen($cell) < 50) {
-                    $noReg = $cell;
+                // 1. Deteksi No Registrasi (Pola khas: Huruf + Angka + Garis Miring)
+                if (!$noReg && preg_match('/^[AB]\.?\s?[I|V]?/i', $cell) && str_contains($cell, '/')) {
+                    $noReg = strtoupper($cell);
+                    continue;
                 }
-                // 2. Jika bukan No Reg dan isinya Huruf, kemungkinan Nama
-                // (Mengabaikan header seperti 'NO', 'NAMA')
-                else if (strlen($cell) > 3 && !preg_match('/(NO\.?|NOMOR|REG|NAMA|BLOK)/i', $cell)) {
-                    // Ambil string terpanjang sebagai Nama (asumsi nama WBP lebih panjang dari Blok)
-                    if (strlen($cell) > strlen($nama)) {
-                        $nama = strtoupper($cell); // Nama WBP biasanya huruf besar
-                    } else {
-                        // Sisanya kemungkinan Blok
-                        $blok = $cell;
+
+                // 2. Deteksi Nama (String panjang, tanpa angka, bukan No Reg)
+                if (!$nama && strlen($cell) > 3 && !preg_match('/[0-9]/', $cell) && !str_contains($cell, '/')) {
+                    $nama = strtoupper($cell);
+                    continue;
+                }
+
+                // 3. Deteksi Tanggal (Jika cell formatnya date atau string tanggal)
+                if (preg_match('/^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}$/', $cell) || is_numeric($cell) && $cell > 30000) {
+                    if (!$tglMasuk) {
+                        $tglMasuk = $this->transformDate($cell);
+                    } else if (!$tglEkspirasi) {
+                        $tglEkspirasi = $this->transformDate($cell);
                     }
                 }
             }
 
-            // SIMPAN JIKA DATA VALID
-            // Minimal No Reg dan Nama ditemukan
-            if ($noReg && $nama) {
-                // Bersihkan karakter aneh
-                $noReg = trim(preg_replace('/[\x00-\x1F\x7F]/u', '', $noReg));
+            // Fallback: Jika logic deteksi pintar gagal, gunakan posisi kolom (Asumsi format Lapas standar)
+            if (!$noReg && isset($data[1])) $noReg = trim($data[1]);
+            if (!$nama && isset($data[0])) $nama = trim($data[0]);
 
-                Wbp::updateOrCreate(
-                    ['no_registrasi' => $noReg],
-                    [
-                        'nama' => $nama,
-                        'blok_kamar' => $blok
-                    ]
-                );
+            // Simpan jika minimal ada Nama dan No Reg
+            if ($nama && $noReg && !in_array($noReg, $processedRegistrations)) {
+                
+                // Jika posisi kolom fix (format khusus file Excel yang Anda berikan):
+                // 0: Nama, 1: No Reg, 2: Tgl Masuk, 3: Tgl Ekspirasi, 10: Blok, 11: Kamar
+                if ($this->isNumeric($data[10] ?? null)) {
+                     // Jika kolom 10 angka, berarti logic geser
+                }
+
+                Wbp::create([
+                    'no_registrasi'     => $noReg,
+                    'nama'              => strtoupper($nama),
+                    'nama_panggilan'    => $alias,
+                    'tanggal_masuk'     => $tglMasuk,
+                    'tanggal_ekspirasi' => $tglEkspirasi,
+                    'blok'              => $blok,
+                    'kamar'             => $kamar,
+                ]);
+
+                $processedRegistrations[] = $noReg;
             }
         }
+    }
+
+    private function isHeader($row)
+    {
+        $firstCell = strtolower((string)$row->first());
+        return str_contains($firstCell, 'nama') || str_contains($firstCell, 'no') || str_contains($firstCell, 'registrasi');
+    }
+
+    private function transformDate($value)
+    {
+        if (empty($value) || $value === '-') return null;
+
+        try {
+            // Jika format angka Excel (Serial Date)
+            if (is_numeric($value)) {
+                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
+            }
+
+            // Jika format string Indonesia (d/m/Y)
+            $cleanDate = str_replace('/', '-', $value);
+            return Carbon::parse($cleanDate)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    private function isNumeric($val) {
+        return is_numeric($val);
     }
 }
