@@ -489,6 +489,7 @@
                                                             <ul class="space-y-2">
                                                                 <li><a href="{{ route('kunjungan.cek_status') }}" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Cek Status Kunjungan</a></li>
                                                                 <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Display Antrian</a></li>
+                                                                <li><a href="{{ route('survey.create') }}" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Survei IKM</a></li>
                                                             </ul>
                                                         </div>
                                                     </div>
