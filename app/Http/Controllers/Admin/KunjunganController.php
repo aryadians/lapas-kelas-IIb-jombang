@@ -457,14 +457,15 @@ class KunjunganController extends Controller
             $kodeKunjungan = 'LJK-' . strtoupper(Str::random(8));
         }
 
-        // Ambil Nomor Antrian Harian Terakhir (berdasarkan sesi)
+        // Ambil Nomor Antrian Harian Terakhir khusus Offline (berdasarkan sesi)
         $maxAntrian = Kunjungan::where('tanggal_kunjungan', $tanggalKunjungan->toDateString())
             ->where('sesi', $request->sesi)
+            ->where('registration_type', 'offline')
             ->lockForUpdate()
             ->max('nomor_antrian_harian');
 
         if ($request->sesi === 'siang') {
-            $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 121;
+            $nomorAntrian = $maxAntrian ? ($maxAntrian + 1) : 101;
         } else {
             $nomorAntrian = ($maxAntrian ?? 0) + 1;
         }

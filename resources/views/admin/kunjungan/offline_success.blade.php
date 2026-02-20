@@ -190,7 +190,7 @@
                 </tr>
                 <tr>
                     <th>Nomor Antrian</th>
-                    <td><span class="antrian-badge">{{ $kunjungan->nomor_antrian_harian }}</span></td>
+                    <td><span class="antrian-badge">B-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}</span></td>
                 </tr>
             </table>
         </div>

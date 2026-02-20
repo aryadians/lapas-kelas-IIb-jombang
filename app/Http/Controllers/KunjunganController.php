@@ -175,6 +175,9 @@ class KunjunganController extends Controller
                 $nomorAntrian
             );
 
+            // Mark as online
+            $kunjungan->update(['registration_type' => 'online']);
+
             // Decrement Quota in Redis
             $quotaService->decrementQuota($tanggal->format('Y-m-d'), $sesi);
 

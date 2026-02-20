@@ -75,10 +75,17 @@
         {{-- NOMOR ANTRIAN --}}
         <div class="text-center mb-6">
             <p class="text-sm font-bold text-gray-500 uppercase">Nomor Antrian</p>
-            <h1 class="text-6xl font-black text-gray-900 my-2">A-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}</h1>
-            <span class="inline-block bg-black text-white px-3 py-1 text-sm font-bold rounded uppercase">
-                Sesi: {{ $kunjungan->sesi ?? 'Umum' }}
-            </span>
+            <h1 class="text-6xl font-black text-gray-900 my-2">
+                {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
+            </h1>
+            <div class="flex justify-center gap-2">
+                <span class="inline-block bg-black text-white px-3 py-1 text-sm font-bold rounded uppercase">
+                    Sesi: {{ $kunjungan->sesi ?? 'Umum' }}
+                </span>
+                <span class="inline-block bg-gray-200 text-gray-800 px-3 py-1 text-sm font-bold rounded uppercase border border-gray-300">
+                    {{ $kunjungan->registration_type === 'offline' ? 'Offline' : 'Online' }}
+                </span>
+            </div>
         </div>
 
         {{-- QR CODE --}}
