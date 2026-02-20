@@ -354,8 +354,8 @@ function queueControl() {
         },
 
         speakVisitor(kunjungan) {
-            const prefix = kunjungan.registration_type === 'offline' ? 'B' : 'A';
-            const text = `Panggilan untuk pengunjung dengan nomor antrian ${prefix} ${kunjungan.nomor_antrian_harian}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
+            const type = kunjungan.registration_type === 'offline' ? 'offline' : 'online';
+            const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian} ${type}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
             this.speak(text, true); // Priority call
             
             // Trigger Remote Call (TV Display)

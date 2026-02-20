@@ -66,6 +66,11 @@ class AntrianController extends Controller
         ]);
     }
 
+    public function panggilManual()
+    {
+        return view('admin.antrian.panggil_manual');
+    }
+
     public function getStatus()
     {
         $statusPagi = $this->getStatusForSesi('pagi');

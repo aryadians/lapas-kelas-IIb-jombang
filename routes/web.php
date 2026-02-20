@@ -193,6 +193,7 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::post('/activity-logs/reset', [DashboardController::class, 'resetActivityLogs'])->name('admin.activity_logs.reset');
 
     // I. MANAJEMEN ANTRIAN
+    Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
     Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
     Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
     Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');

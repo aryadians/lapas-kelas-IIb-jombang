@@ -111,8 +111,8 @@ class QueueController extends Controller
      */
     public function call(Kunjungan $kunjungan)
     {
-        $prefix = $kunjungan->registration_type === 'offline' ? 'B' : 'A';
-        $formattedNomor = $prefix . ' ' . str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT);
+        $type = $kunjungan->registration_type === 'offline' ? 'offline' : 'online';
+        $formattedNomor = $kunjungan->nomor_antrian_harian . ' ' . $type;
 
         // Cache the call signal for 20 seconds
         // "latest_call" will be polled by the display page

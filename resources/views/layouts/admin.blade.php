@@ -112,6 +112,12 @@
                     <span class="font-medium">Kontrol Antrian</span>
                 </a>
 
+                <a href="{{ route('admin.antrian.panggil-manual') }}" 
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.antrian.panggil-manual') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <i class="fas fa-microphone-alt w-5 h-5 mr-3 {{ request()->routeIs('admin.antrian.panggil-manual') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                    <span class="font-medium">Panggil Manual</span>
+                </a>
+
                 @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin_registrasi', 'admin']))
                 <a href="{{ route('admin.users.index') }}" 
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
