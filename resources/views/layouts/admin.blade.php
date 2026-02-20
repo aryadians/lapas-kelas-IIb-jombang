@@ -161,6 +161,15 @@
                     <span class="font-medium">Database Pengunjung</span>
                 </a>
 
+                <div class="pt-4 mt-4 border-t border-slate-800">
+                    <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Pengaturan Sistem</p>
+                    <a href="{{ route('admin.settings.visit-config') }}" 
+                       class="flex items-center px-4 py-3 {{ request()->routeIs('admin.settings.visit-config') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                        <i class="fas fa-cogs w-5 h-5 mr-3 {{ request()->routeIs('admin.settings.visit-config') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                        <span class="font-medium">Konfigurasi Kunjungan</span>
+                    </a>
+                </div>
+
             </nav>
 
             <div class="p-6 border-t border-slate-800 bg-slate-900">

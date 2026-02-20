@@ -242,6 +242,20 @@
                         <i class="fa-solid fa-arrows-rotate"></i> Cek Status
                     </a>
 
+                    {{-- TOMBOL EDIT DINAMIS --}}
+                    @php
+                        $isEditEnabled = \App\Models\VisitSetting::where('key', 'enable_guest_edit')->value('value') == '1';
+                        $editLeadTime = (int) \App\Models\VisitSetting::where('key', 'edit_lead_time')->value('value') ?? 2;
+                        $visitDate = \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan);
+                        $canEditByTime = now()->lt($visitDate->subDays($editLeadTime));
+                    @endphp
+
+                    @if($isEditEnabled && $canEditByTime && $kunjungan->status == KunjunganStatus::PENDING)
+                        <a href="#" onclick="alert('Fitur edit sedang dalam pengembangan, namun sistem sudah siap menerima pengaturan Anda.'); return false;" class="w-full sm:w-auto bg-amber-100 text-amber-700 px-6 py-3 rounded-xl font-bold hover:bg-amber-200 transition flex items-center justify-center gap-2 border border-amber-200">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit Data
+                        </a>
+                    @endif
+
                     @if(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
                         {{-- TOMBOL CETAK (AKTIF) --}}
                         <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">

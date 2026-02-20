@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\KunjunganStatus;
 use App\Models\Kunjungan;
+use App\Models\VisitSchedule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -12,105 +13,70 @@ class QuotaService
 {
     /**
      * Check if quota is available for a given date and session.
-     * 
-     * @param string $date (Y-m-d)
-     * @param string|null $session
-     * @return bool
      */
-    public function checkAvailability(string $date, ?string $session = null): bool
+    public function checkAvailability(string $date, ?string $session = null, string $type = 'online'): bool
     {
-        $key = $this->getCacheKey($date, $session);
+        // 1. Cek apakah hari tersebut BUKA
+        if (!$this->isDayOpen($date)) {
+            return false;
+        }
+
+        $key = $this->getCacheKey($date, $session, $type);
         
-        // Atomic check in Redis
-        // If key doesn't exist, we calculate from DB and set it
-        $remaining = Cache::remember($key, 300, function () use ($date, $session) {
-            return $this->calculateRemainingQuotaFromDb($date, $session);
+        $remaining = Cache::remember($key, 300, function () use ($date, $session, $type) {
+            return $this->calculateRemainingQuotaFromDb($date, $session, $type);
         });
 
         return $remaining > 0;
     }
 
-    /**
-     * Decrement the quota by 1.
-     * Should be called AFTER successful DB insertion.
-     * 
-     * @param string $date
-     * @param string|null $session
-     * @return int New remaining quota
-     */
-    public function decrementQuota(string $date, ?string $session = null): int
+    public function isDayOpen(string $date): bool
     {
-        $key = $this->getCacheKey($date, $session);
-        
-        // Ensure key exists before decrementing
-        if (!Cache::has($key)) {
-            $this->checkAvailability($date, $session);
-        }
-
-        $newVal = Cache::decrement($key);
-        Log::info("Quota decremented for $key. New value: $newVal");
-        
-        return $newVal;
+        $dayOfWeek = Carbon::parse($date)->dayOfWeek;
+        $schedule = VisitSchedule::where('day_of_week', $dayOfWeek)->first();
+        return $schedule ? $schedule->is_open : false;
     }
 
-    /**
-     * Increment the quota (e.g., if visit is Rejected/Cancelled).
-     */
-    public function incrementQuota(string $date, ?string $session = null): int
+    public function decrementQuota(string $date, ?string $session = null, string $type = 'online'): int
     {
-        $key = $this->getCacheKey($date, $session);
-        
-        // Ensure key exists
+        $key = $this->getCacheKey($date, $session, $type);
         if (!Cache::has($key)) {
-            $this->checkAvailability($date, $session);
+            $this->checkAvailability($date, $session, $type);
         }
-
-        $newVal = Cache::increment($key);
-        // Ensure we don't exceed max quota (sanity check)
-        $max = $this->getMaxQuota($date, $session);
-        if ($newVal > $max) {
-            Cache::put($key, $max, 300);
-            return $max;
-        }
-
-        return $newVal;
+        return Cache::decrement($key);
     }
 
-    private function calculateRemainingQuotaFromDb(string $date, ?string $session): int
+    private function calculateRemainingQuotaFromDb(string $date, ?string $session, string $type): int
     {
-        $max = $this->getMaxQuota($date, $session);
+        $max = $this->getMaxQuota($date, $session, $type);
 
         $query = Kunjungan::whereDate('tanggal_kunjungan', $date)
-            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value]);
+            ->where('registration_type', $type)
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
 
         if ($session) {
             $query->where('sesi', $session);
         }
 
         $used = $query->count();
-        $remaining = max(0, $max - $used);
-
-        Log::info("Quota initialized from DB for $date ($session). Max: $max, Used: $used, Remaining: $remaining");
-
-        return $remaining;
+        return max(0, $max - $used);
     }
 
-    private function getMaxQuota(string $dateStr, ?string $session): int
+    public function getMaxQuota(string $dateStr, ?string $session, string $type = 'online'): int
     {
-        $date = Carbon::parse($dateStr);
-        
-        if ($date->isMonday()) {
-            return ($session === 'siang') 
-                ? config('kunjungan.quota_senin_siang', 40) 
-                : config('kunjungan.quota_senin_pagi', 120);
-        }
+        $dayOfWeek = Carbon::parse($dateStr)->dayOfWeek;
+        $schedule = VisitSchedule::where('day_of_week', $dayOfWeek)->first();
 
-        return config('kunjungan.quota_hari_biasa', 150);
+        if (!$schedule) return 0;
+
+        $sessionKey = ($session === 'siang') ? 'afternoon' : 'morning';
+        $column = "quota_{$type}_{$sessionKey}";
+
+        return $schedule->$column ?? 0;
     }
 
-    private function getCacheKey(string $date, ?string $session): string
+    private function getCacheKey(string $date, ?string $session, string $type): string
     {
-        // Example: quota:2024-01-01:pagi
-        return "quota:{$date}:" . ($session ?? 'all');
+        return "quota:{$type}:{$date}:" . ($session ?? 'morning');
     }
 }

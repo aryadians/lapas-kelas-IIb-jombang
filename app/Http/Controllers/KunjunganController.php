@@ -34,18 +34,41 @@ class KunjunganController extends Controller
 
     public function create()
     {
-        $datesByDay = ['Senin' => [], 'Selasa' => [], 'Rabu' => [], 'Kamis' => []];
-        $date = Carbon::today();
-        $dayMapping = [1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis'];
+        // Ambil hari-hari yang buka dari database
+        $openDays = \App\Models\VisitSchedule::where('is_open', true)->pluck('day_name')->toArray();
+        
+        // Ambil Batas H-N Pendaftaran
+        $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
+
+        // Mapping nama hari ke bahasa Indonesia untuk pencocokan
+        $dayMapping = [
+            0 => 'Minggu',
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+        ];
+
+        $datesByDay = [];
+        foreach ($dayMapping as $ind) {
+            if (in_array($ind, $openDays)) {
+                $datesByDay[$ind] = [];
+            }
+        }
+
+        // Mulai menghitung dari hari ini + leadTime
+        $date = Carbon::today()->addDays($leadTime);
 
         for ($i = 0; $i < 60; $i++) {
             $currentDate = $date->copy()->addDays($i);
             $dayOfWeek = $currentDate->dayOfWeek;
+            $dayNameIndo = $dayMapping[$dayOfWeek];
 
-            if (array_key_exists($dayOfWeek, $dayMapping)) {
-                $dayName = $dayMapping[$dayOfWeek];
-                if (count($datesByDay[$dayName]) < 4) {
-                    $datesByDay[$dayName][] = [
+            if (in_array($dayNameIndo, $openDays)) {
+                if (count($datesByDay[$dayNameIndo]) < 4) {
+                    $datesByDay[$dayNameIndo][] = [
                         'value' => $currentDate->format('Y-m-d'),
                         'label' => $currentDate->translatedFormat('d F Y'),
                     ];
@@ -77,77 +100,58 @@ class KunjunganController extends Controller
 
     public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService, \App\Services\QuotaService $quotaService)
     {
-        // Log summary
-        Log::debug('KunjunganStore request', array_merge($request->except(['foto_ktp','pengikut_foto']), ['files_count' => count($request->allFiles())]));
-
         $validatedData = $request->validated();
         $tanggal = Carbon::parse($validatedData['tanggal_kunjungan']);
+        $dateStr = $tanggal->format('Y-m-d');
 
         // Prevent past dates
         if ($tanggal->isPast()) {
             return back()->with('error', 'Tanggal kunjungan tidak boleh di masa lalu.')->withInput();
         }
 
-        $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : null; 
-        $isMonday = $tanggal->isMonday();
-
-        // 2. CEK KUOTA (Optimized via Redis)
-        if (!$quotaService->checkAvailability($tanggal->format('Y-m-d'), $sesi)) {
-            if ($isMonday) {
-                return back()->withErrors(['sesi' => 'Mohon maaf, kuota untuk sesi yang Anda pilih sudah penuh.'])->withInput();
-            }
-            return back()->withErrors(['tanggal_kunjungan' => 'Mohon maaf, kuota untuk hari yang Anda pilih sudah penuh.'])->withInput();
+        // 0. CEK BATAS H-N PENDAFTARAN
+        $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
+        $minDate = Carbon::today()->addDays($leadTime);
+        if ($tanggal->lt($minDate)) {
+            return back()->withErrors(['tanggal_kunjungan' => "Pendaftaran untuk tanggal ini sudah ditutup. Minimal pendaftaran adalah $leadTime hari sebelum kunjungan."])->withInput();
         }
 
-        // 3. LOGIKA BISNIS
-        $requestDate = $tanggal->copy()->startOfDay();
-        $today = Carbon::now()->startOfDay();
-        $wbp = Wbp::find($validatedData['wbp_id']);
+        $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : 'pagi'; 
 
-        if ($requestDate->isFriday() || $requestDate->isSaturday() || $requestDate->isSunday()) {
-            return back()->withErrors(['tanggal_kunjungan' => 'Layanan kunjungan TUTUP pada hari Jumat-Minggu.'])->withInput();
+        // 1. CEK APAKAH HARI TERSEBUT BUKA
+        if (!$quotaService->isDayOpen($dateStr)) {
+            return back()->withErrors(['tanggal_kunjungan' => 'Layanan kunjungan tidak tersedia (TUTUP) pada hari yang Anda pilih.'])->withInput();
         }
 
-        if ($requestDate->isMonday()) {
-            if (!($today->isFriday() || $today->isSaturday() || $today->isSunday())) {
-                return back()->withErrors(['tanggal_kunjungan' => 'Pendaftaran untuk hari Senin hanya dibuka pada hari Jumat-Minggu sebelumnya.'])->withInput();
-            }
-            $diff = $today->diffInDays($requestDate, false);
-            if ($diff < 1 || $diff > 3) {
-                 return back()->withErrors(['tanggal_kunjungan' => 'Tanggal Senin tidak valid. Pilih Senin terdekat.'])->withInput();
-            }
+        // 2. CEK KUOTA (Online)
+        if (!$quotaService->checkAvailability($dateStr, $sesi, 'online')) {
+            return back()->withErrors(['sesi' => 'Mohon maaf, kuota pendaftaran online untuk jadwal ini sudah penuh.'])->withInput();
         }
 
-        $kodeReg = strtoupper(substr($wbp->no_registrasi, 0, 1));
-        $hariKunjungan = $requestDate->dayOfWeek;
+        // 3. LOGIKA PEMBATASAN DINAMIS (NIK & WBP)
+        $limitNik = (int) \App\Models\VisitSetting::where('key', 'limit_nik_per_week')->value('value') ?? 1;
+        $limitWbp = (int) \App\Models\VisitSetting::where('key', 'limit_wbp_per_week')->value('value') ?? 1;
 
-        if ($kodeReg === 'A' && !in_array($hariKunjungan, [2, 4])) {
-            return back()->with('error', "WBP TAHANAN (Kode A) hanya bisa dikunjungi SELASA dan KAMIS.")->withInput();
-        } elseif ($kodeReg === 'B' && !in_array($hariKunjungan, [1, 3])) {
-            return back()->with('error', "WBP NARAPIDANA (Kode B) hanya bisa dikunjungi SENIN dan RABU.")->withInput();
+        $startWeek = $tanggal->copy()->subDays(6);
+
+        // Cek Batasan WBP
+        $wbpVisitCount = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
+            ->whereBetween('tanggal_kunjungan', [$startWeek->format('Y-m-d'), $dateStr])
+            ->count();
+
+        if ($wbpVisitCount >= $limitWbp) {
+            return back()->with('error', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbp kali) dalam seminggu terakhir.")->withInput();
         }
 
-        // Lock 1 Minggu
-        $startWindow = $requestDate->copy()->subDays(6);
-        $recentVisit = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
-            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value])
-            ->whereBetween('tanggal_kunjungan', [$startWindow->format('Y-m-d'), $requestDate->format('Y-m-d')])
-            ->orderBy('tanggal_kunjungan', 'desc')
-            ->first();
+        // Cek Batasan NIK
+        $nikVisitCount = Kunjungan::where('nik_ktp', $validatedData['nik_ktp'])
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
+            ->whereBetween('tanggal_kunjungan', [$startWeek->format('Y-m-d'), $dateStr])
+            ->count();
 
-        if ($recentVisit) {
-            $lastDate = Carbon::parse($recentVisit->tanggal_kunjungan)->translatedFormat('d M Y');
-            return back()->with('error', "WBP ini sudah terdaftar kunjungan pada tanggal $lastDate. Sesuai aturan, WBP hanya boleh dikunjungi 1x dalam seminggu.")->withInput();
-        }
-
-        // Cek NIK Ganda
-        $existingVisitor = Kunjungan::where('nik_ktp', $validatedData['nik_ktp'])
-            ->whereDate('tanggal_kunjungan', $requestDate)
-            ->whereIn('status', [KunjunganStatus::PENDING->value, KunjunganStatus::APPROVED->value])
-            ->first();
-
-        if ($existingVisitor) {
-            return back()->with('error', "NIK Anda ({$validatedData['nik_ktp']}) sudah terdaftar untuk kunjungan pada tanggal ini.")->withInput();
+        if ($nikVisitCount >= $limitNik) {
+            return back()->with('error', "NIK Anda sudah mencapai batas maksimal melakukan kunjungan ($limitNik kali) dalam seminggu terakhir.")->withInput();
         }
 
         // 4. SIMPAN DATA VIA SERVICE
@@ -166,7 +170,7 @@ class KunjunganController extends Controller
 
             // Handle Files
             $fileKtp = $request->file('foto_ktp');
-            $filesPengikut = $request->file('pengikut_foto'); // This will be passed to service
+            $filesPengikut = $request->file('pengikut_foto');
 
             $kunjungan = $kunjunganService->storeRegistration(
                 $validatedData,
@@ -179,10 +183,10 @@ class KunjunganController extends Controller
             $kunjungan->update(['registration_type' => 'online']);
 
             // Decrement Quota in Redis
-            $quotaService->decrementQuota($tanggal->format('Y-m-d'), $sesi);
+            $quotaService->decrementQuota($dateStr, $sesi, 'online');
 
             return redirect()->route('kunjungan.create')
-                ->with('success', "PENDAFTARAN BERHASIL! Antrian: {$nomorAntrian}.")
+                ->with('success', "PENDAFTARAN BERHASIL! Antrian Anda: " . ($kunjungan->registration_type === 'offline' ? 'B-' : 'A-') . str_pad($nomorAntrian, 3, '0', STR_PAD_LEFT))
                 ->with('kunjungan_id', $kunjungan->id);
 
         } catch (\Exception $e) {
@@ -306,12 +310,12 @@ class KunjunganController extends Controller
         $tanggal = Carbon::parse($validated['tanggal_kunjungan']);
         $sesi = $validated['sesi'] ?? 'pagi';
 
-        $totalQuota = 150;
-        if ($tanggal->isMonday()) {
-            $totalQuota = ($sesi === 'pagi') ? 120 : 40;
-        }
-
-        $query = Kunjungan::where('tanggal_kunjungan', $tanggal->format('Y-m-d'))
+        // Gunakan QuotaService untuk data yang sinkron dengan Admin
+        $quotaService = new \App\Services\QuotaService();
+        $sisaKuota = $quotaService->getMaxQuota($validated['tanggal_kunjungan'], $sesi, 'online');
+        
+        $query = Kunjungan::where('tanggal_kunjungan', $validated['tanggal_kunjungan'])
+            ->where('registration_type', 'online')
             ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED]);
 
         if ($tanggal->isMonday()) {
@@ -319,13 +323,14 @@ class KunjunganController extends Controller
         }
 
         $registeredCount = $query->count();
-        $sisaKuota = max(0, $totalQuota - $registeredCount);
-        return response()->json(['sisa_kuota' => $sisaKuota]);
+        $finalSisa = max(0, $sisaKuota - $registeredCount);
+        
+        return response()->json(['sisa_kuota' => $finalSisa]);
     }
 
     public function printProof(Kunjungan $kunjungan)
     {
-        if ($kunjungan->status != KunjunganStatus::APPROVED) {
+        if (!in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
             return redirect()->route('kunjungan.status', $kunjungan->id)
                 ->with('error', 'Tiket belum tersedia.');
         }
@@ -382,11 +387,6 @@ class KunjunganController extends Controller
                 ]);
             }
 
-            if ($message) {
-                 // If status changed, maybe redirect to print, but for consistency let's show success page
-                 // return redirect()->route('kunjungan.print', $kunjungan->id);
-            }
-
             return view('admin.kunjungan.verifikasi', [
                 'status_verifikasi' => 'success',
                 'kunjungan' => $kunjungan,
@@ -423,9 +423,6 @@ class KunjunganController extends Controller
                 'email' => $profil->email,
                 'alamat' => $profil->alamat,
                 'jenis_kelamin' => $profil->jenis_kelamin,
-                // Foto tidak dikembalikan di sini karena berat, 
-                // tapi jika mau ditampilkan di form bisa ditambahkan:
-                // 'foto_ktp' => $profil->foto_ktp 
             ]);
         }
 

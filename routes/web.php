@@ -256,6 +256,10 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::get('pengunjung/export-excel', [AdminVisitorController::class, 'exportExcel'])->name('admin.visitors.export-excel');
     Route::get('pengunjung/export-pdf', [AdminVisitorController::class, 'exportPdf'])->name('admin.visitors.export-pdf');
     Route::get('pengunjung/{id}/history', [AdminVisitorController::class, 'getHistory'])->name('admin.visitors.history');
+
+    // I. KONFIGURASI SISTEM KUNJUNGAN
+    Route::get('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'index'])->name('admin.settings.visit-config');
+    Route::post('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'update'])->name('admin.settings.visit-config.update');
 });
 
 // Load auth routes bawaan Laravel Breeze
