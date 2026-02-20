@@ -174,12 +174,13 @@ class WhatsAppService
     public function sendCompleted(Kunjungan $kunjungan)
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
-        $statusUrl = route('kunjungan.status', $kunjungan->id);
+        // Ganti route ke link survei IKM
+        $surveyUrl = route('survey.create', ['kunjungan_id' => $kunjungan->id]);
 
-        $message = "*KUNJUNGAN SELESAI* \n\n"
+        $message = "*KUNJUNGAN SELESAI* 🏁\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Kunjungan Anda pada tanggal {$tanggal} telah tercatat sebagai *SELESAI*.\n\n"
-                 . "Anda dapat memberikan penilaian layanan kami melalui link berikut:\n{$statusUrl}\n\n"
+                 . "Untuk meningkatkan kualitas layanan kami, mohon kesediaan Anda untuk mengisi Survei Kepuasan Masyarakat (IKM) melalui link berikut:\n{$surveyUrl}\n\n"
                  . "Terima kasih telah mematuhi tata tertib Lapas Kelas IIB Jombang. Hati-hati di jalan.\n\n"
                  . "_Pesan ini dikirim otomatis oleh sistem._";
 
