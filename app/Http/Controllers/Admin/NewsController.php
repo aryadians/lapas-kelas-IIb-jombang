@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class NewsController extends Controller
 {
-   
+
     public function index(Request $request)
     {
-        // Ambil berita terbaru, paginasi 10 per halaman, dengan pencarian
         $query = News::query();
 
         if ($request->has('search') && !empty($request->search)) {
@@ -25,62 +25,53 @@ class NewsController extends Controller
 
         $news = $query->latest()->paginate(10)->withQueryString();
 
-        // Kirim ke view
         return view('admin.news.index', compact('news'));
     }
 
-    /**
-     * Menampilkan form tambah berita (CREATE)
-     */
     public function create()
     {
         return view('admin.news.create');
     }
 
-    /**
-     * Menyimpan berita baru ke database (STORE)
-     */
     public function store(Request $request)
     {
-        // 1. Validasi Input
         $request->validate([
-            'title'   => 'required|max:255',
-            'content' => 'required',
-            'images.*'   => 'nullable|image|file|max:2048', // Validate each image in the array
-            'status'  => 'required|in:published,draft',
+            'title'    => 'required|max:255',
+            'content'  => 'required',
+            'images.*' => 'nullable|image|file|max:5120',        // max 5MB per gambar
+            'videos.*' => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400', // max 100MB per video
+            'status'   => 'required|in:published,draft',
         ]);
 
-        // 2. Siapkan data dasar
         $data = [
             'title'   => $request->title,
-    'slug'    => Str::slug($request->title),
-    'content' => $request->content,
-    'status'  => $request->status,
+            'slug'    => Str::slug($request->title),
+            'content' => $request->content,
+            'status'  => $request->status,
         ];
 
-        // 3. Logika Upload Gambar ke Base64 (untuk banyak gambar)
+        // Upload Gambar → Base64
         $imagesData = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $file) {
-                // Ambil path sementara file
-                $path = $file->getRealPath();
-                
-                // Ubah file jadi string binary
-                $image = file_get_contents($path);
-                
-                // Ubah jadi base64
-                $base64 = base64_encode($image);
-                
-                // Gabungkan header tipe data + kode base64
+                $base64 = base64_encode(file_get_contents($file->getRealPath()));
                 $imagesData[] = 'data:' . $file->getMimeType() . ';base64,' . $base64;
             }
             $data['image'] = $imagesData;
         }
 
-        // 4. Simpan ke Database
+        // Upload Video → Storage (public/news_videos)
+        $videoPaths = [];
+        if ($request->hasFile('videos')) {
+            foreach ($request->file('videos') as $file) {
+                $path = $file->store('news_videos', 'public');
+                $videoPaths[] = $path;
+            }
+            $data['videos'] = $videoPaths;
+        }
+
         News::create($data);
 
-        // 5. Redirect kembali
         return redirect()->route('news.index')->with('success', 'Berita berhasil ditambahkan!');
     }
 
@@ -89,67 +80,80 @@ class NewsController extends Controller
         return view('admin.news.show', compact('news'));
     }
 
-    /**
-     * Menampilkan form edit berita (EDIT)
-     */
     public function edit(News $news)
     {
         return view('admin.news.edit', compact('news'));
     }
 
-    /**
-     * Memperbarui data berita (UPDATE)
-     */
     public function update(Request $request, News $news)
     {
-        // 1. Validasi Input
         $request->validate([
-            'title'   => 'required|max:255',
-            'content' => 'required',
-            'images.*'   => 'nullable|image|file|max:2048',
-            'status'  => 'required|in:published,draft',
+            'title'    => 'required|max:255',
+            'content'  => 'required',
+            'images.*' => 'nullable|image|file|max:5120',
+            'videos.*' => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400',
+            'status'   => 'required|in:published,draft',
         ]);
 
-        // 2. Siapkan data update
-       $data = [
-    'title'   => $request->title,
-    'slug'    => Str::slug($request->title),
-    'content' => $request->content,
-    'status'  => $request->status,
+        $data = [
+            'title'   => $request->title,
+            'slug'    => Str::slug($request->title),
+            'content' => $request->content,
+            'status'  => $request->status,
         ];
 
-        // 3. Cek apakah user mengupload gambar baru?
-        $imagesData = [];
+        // Gambar baru → Base64 (jika ada)
         if ($request->hasFile('images')) {
-            // Jika ada gambar baru, proses Base64 lagi
+            $imagesData = [];
             foreach ($request->file('images') as $file) {
-                $path = $file->getRealPath();
-                $image = file_get_contents($path);
-                $base64 = base64_encode($image);
+                $base64 = base64_encode(file_get_contents($file->getRealPath()));
                 $imagesData[] = 'data:' . $file->getMimeType() . ';base64,' . $base64;
             }
             $data['image'] = $imagesData;
-        } 
-        // Jika tidak ada gambar baru, $data['image'] tidak diset
-        // sehingga gambar lama di database tidak akan tertimpa/hilang.
+        }
 
-        // 4. Lakukan Update
+        // Video baru → Storage (jika ada, hapus yang lama dulu)
+        if ($request->hasFile('videos')) {
+            // Hapus video lama dari storage
+            if (!empty($news->videos)) {
+                foreach ($news->videos as $oldVideo) {
+                    Storage::disk('public')->delete($oldVideo);
+                }
+            }
+            $videoPaths = [];
+            foreach ($request->file('videos') as $file) {
+                $path = $file->store('news_videos', 'public');
+                $videoPaths[] = $path;
+            }
+            $data['videos'] = $videoPaths;
+        }
+
+        // Handle hapus semua video (jika flag dikirim)
+        if ($request->has('remove_all_videos') && $request->remove_all_videos == '1') {
+            if (!empty($news->videos)) {
+                foreach ($news->videos as $oldVideo) {
+                    Storage::disk('public')->delete($oldVideo);
+                }
+            }
+            $data['videos'] = null;
+        }
+
         $news->update($data);
 
-        // 5. Redirect
         return redirect()->route('news.index')->with('success', 'Berita berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus berita (DESTROY)
-     */
     public function destroy(News $news)
     {
-        // Hapus data dari database
+        // Hapus video dari storage sebelum delete record
+        if (!empty($news->videos)) {
+            foreach ($news->videos as $video) {
+                Storage::disk('public')->delete($video);
+            }
+        }
+
         $news->delete();
 
-        // Karena pakai Base64, kita tidak perlu menghapus file di folder storage.
-        
         return redirect()->route('news.index')->with('success', 'Berita berhasil dihapus!');
     }
 }

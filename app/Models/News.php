@@ -24,7 +24,8 @@ class News extends Model
         'title',
         'slug',
         'content',
-        'image', 
+        'image',
+        'videos',
         'status',
     ];
 
@@ -35,6 +36,7 @@ class News extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'image' => 'array',
+        'image'      => 'array',
+        'videos'     => 'array',
     ];
 }
