@@ -294,9 +294,44 @@
     </div>
 </section>
 
+{{-- Section Layanan Pengaduan --}}
+<section class="py-20 bg-gradient-to-t from-slate-50 to-white border-t border-gray-200">
+    <div class="container mx-auto px-6 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="inline-flex items-center px-4 py-2 rounded-full bg-orange-100 text-orange-800 text-sm font-semibold mb-8">
+                <i class="fas fa-bullhorn mr-2"></i>
+                Saluran Pengaduan
+            </div>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 mb-8">
+                Sampaikan <span class="text-orange-600">Aspirasi & Keluhan Anda</span>
+            </h2>
+            <p class="text-lg text-gray-600 mb-12 leading-relaxed">
+                Kami berkomitmen untuk terus meningkatkan pelayanan. Laporkan setiap aduan atau masukan melalui saluran resmi kami.
+            </p>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Button 1: LAPOR --}}
+                <a href="https://www.lapor.go.id/" target="_blank" rel="noopener noreferrer"
+                    class="group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <i class="fas fa-bullhorn text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
+                    <span class="text-xl relative z-10 text-center">Layanan Aspirasi dan Pengaduan Online Rakyat (LAPOR!)</span>
+                    <i class="fas fa-external-link-alt text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
+                </a>
 
-{{-- Contact CTA Section --}}
+                {{-- Button 2: WhatsApp Internal --}}
+                <a href="https://wa.me/6285733333400" target="_blank" rel="noopener noreferrer"
+                    class="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <i class="fab fa-whatsapp text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
+                    <span class="text-xl relative z-10 text-center">Laporan Pengaduan Internal Lapas Jombang</span>
+                    <i class="fas fa-phone-alt text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section id="kontak" class="py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
     {{-- Background Pattern --}}
     <div class="absolute inset-0 z-0">
