@@ -6,129 +6,104 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
 
 <style>
-    /* Premium UI Enhancements */
-    .card-3d {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        transform-style: preserve-3d;
-    }
-    .card-3d:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .text-gradient {
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-image: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
-    }
-
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
     .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-
     @media print {
         .no-print { display: none !important; }
-        body { background: white !important; padding: 0 !important; }
-        .glass-panel { border: none !important; background: transparent !important; }
+        body { background: white !important; }
     }
 </style>
 
-<div class="space-y-10 pb-16">
+<div class="space-y-6 pb-16">
 
-    {{-- HEADER --}}
-    <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 animate__animated animate__fadeInDown">
-        <div>
-            <h1 class="text-4xl md:text-5xl font-black text-gradient tracking-tighter">
-                Database Pengunjung
-            </h1>
-            <div class="flex items-center gap-3 mt-2">
-                <span class="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold border border-blue-100">
-                    <i class="fas fa-database"></i>
-                    Pusat Data Terpadu
-                </span>
-                <span class="text-slate-400 text-sm font-medium">Rekapitulasi profil seluruh pengunjung terdaftar</span>
+    {{-- HERO HEADER --}}
+    <div class="relative bg-gradient-to-br from-slate-900 via-teal-950 to-cyan-950 rounded-3xl overflow-hidden shadow-2xl no-print">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-teal-400 rounded-full blur-[90px] opacity-10"></div>
+            <div class="absolute -bottom-16 -left-16 w-60 h-60 bg-cyan-400 rounded-full blur-[80px] opacity-10"></div>
+        </div>
+        <div class="relative z-10 px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-teal-200 text-xs font-bold uppercase tracking-widest mb-3">
+                    <i class="fas fa-users"></i> Pusat Data Terpadu
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">Database Pengunjung</h1>
+                <p class="text-teal-100/60 mt-1 text-sm">Rekapitulasi profil seluruh pengunjung terdaftar.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+                {{-- Stats --}}
+                <div class="bg-white/10 border border-white/20 rounded-2xl px-5 py-3 text-center">
+                    <p class="text-2xl font-black text-white">{{ $visitors->total() }}</p>
+                    <p class="text-[10px] text-teal-200 font-bold uppercase tracking-widest mt-0.5">Total Profil</p>
+                </div>
+                {{-- Export buttons --}}
+                <div class="flex items-center bg-white/10 border border-white/20 rounded-2xl p-1">
+                    <a href="{{ route('admin.visitors.export-excel') }}"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-teal-200 hover:bg-white/10 font-bold text-sm transition-all no-print">
+                        <i class="fas fa-file-excel text-emerald-400"></i> Excel
+                    </a>
+                    <div class="w-px h-4 bg-white/20 mx-1"></div>
+                    <a href="{{ route('admin.visitors.export-pdf') }}" target="_blank"
+                        class="flex items-center gap-1.5 px-4 py-2 rounded-xl text-teal-200 hover:bg-white/10 font-bold text-sm transition-all no-print">
+                        <i class="fas fa-file-pdf text-rose-400"></i> PDF
+                    </a>
+                </div>
+                {{-- Delete All --}}
+                <button type="button" onclick="confirmDeleteAll()"
+                    class="flex items-center gap-2 bg-red-500/20 border border-red-400/30 text-red-200 hover:bg-red-500 hover:text-white font-bold px-4 py-2.5 rounded-2xl transition-all active:scale-95 text-sm no-print">
+                    <i class="fas fa-trash-alt"></i> Kosongkan
+                </button>
             </div>
         </div>
-        
-        <div class="flex flex-wrap items-center gap-3 no-print">
-            {{-- Group Laporan --}}
-            <div class="flex items-center bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
-                <a href="{{ route('admin.visitors.export-excel') }}" class="flex items-center gap-2 px-5 py-2.5 text-slate-700 font-bold text-sm hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all">
-                    <i class="fas fa-file-excel text-indigo-500"></i>
-                    <span>Excel</span>
-                </a>
-                <div class="w-px h-5 bg-slate-200 mx-1"></div>
-                <a href="{{ route('admin.visitors.export-pdf') }}" target="_blank" class="flex items-center gap-2 px-5 py-2.5 text-slate-700 font-bold text-sm hover:bg-rose-50 hover:text-rose-600 rounded-xl transition-all">
-                    <i class="fas fa-file-pdf text-rose-500"></i>
-                    <span>PDF</span>
-                </a>
-            </div>
-
-            {{-- Destructive Action --}}
-            <button type="button" onclick="confirmDeleteAll()" class="flex items-center gap-2 bg-white border-2 border-red-100 text-red-600 font-black px-6 py-3 rounded-2xl shadow-sm hover:bg-red-600 hover:text-white hover:border-red-600 transition-all active:scale-95 group">
-                <i class="fas fa-trash-sweep group-hover:animate-bounce"></i>
-                <span>Kosongkan Database</span>
-            </button>
-        </div>
-    </header>
+    </div>
 
     {{-- FILTERS --}}
-    <form action="{{ route('admin.visitors.index') }}" method="GET" class="animate__animated animate__fadeInUp no-print">
-        <div class="bg-slate-200/30 rounded-[2.5rem] p-2 shadow-inner border border-white/50">
-            <div class="bg-white rounded-[2rem] p-8 shadow-sm space-y-8">
-                {{-- Row 1: Search & Sort --}}
-                <div class="flex flex-col lg:flex-row gap-6">
-                    <div class="flex-grow relative group">
-                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-slate-300 group-focus-within:text-blue-500 transition-colors"></i>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}" 
-                            class="w-full pl-12 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-bold text-slate-700 placeholder-slate-300" 
-                            placeholder="Cari Nama Pengunjung atau NIK (Min. 3 karakter)...">
-                    </div>
-                    <div class="w-full lg:w-72">
-                        <select name="sort" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:ring-0 font-bold text-slate-600 cursor-pointer transition-all">
-                            <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>🆕 Pendaftaran Terbaru</option>
-                            <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>⏳ Data Terlama</option>
-                            <option value="most_visited" {{ request('sort') == 'most_visited' ? 'selected' : '' }}>🔥 Pengunjung Teraktif</option>
-                        </select>
-                    </div>
+    <form action="{{ route('admin.visitors.index') }}" method="GET" class="no-print">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+            <div class="flex flex-col lg:flex-row gap-3">
+                {{-- Search --}}
+                <div class="flex-1 relative">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        class="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-teal-400 focus:outline-none font-medium text-slate-700 placeholder-slate-400 transition-all text-sm"
+                        placeholder="Cari Nama Pengunjung atau NIK...">
                 </div>
-
-                {{-- Row 2: Advanced Filters --}}
-                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pt-8 border-t border-slate-50">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Wilayah Domisili</label>
-                        <div class="relative group">
-                            <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors"></i>
-                            <input type="text" name="wilayah" value="{{ request('wilayah') }}" 
-                                class="w-full pl-11 p-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 placeholder-slate-200" 
-                                placeholder="Contoh: Jombang, Surabaya...">
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Kelengkapan Berkas</label>
-                        <select name="has_foto" class="w-full p-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 cursor-pointer">
-                            <option value="">Semua Status Dokumen</option>
-                            <option value="yes" {{ request('has_foto') == 'yes' ? 'selected' : '' }}>✅ Foto KTP Tersedia</option>
-                            <option value="no" {{ request('has_foto') == 'no' ? 'selected' : '' }}>❌ Foto Belum Diunggah</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end gap-3">
-                        <button type="submit" class="flex-grow py-3.5 bg-slate-900 text-white font-black rounded-xl hover:bg-blue-600 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
-                            <i class="fas fa-filter text-sm"></i> Filter Data
-                        </button>
-                        <a href="{{ route('admin.visitors.index') }}" class="px-6 py-3.5 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all active:scale-95 text-center">
-                            Reset
-                        </a>
-                    </div>
+                {{-- Sort --}}
+                <div class="relative lg:w-60">
+                    <select name="sort" class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-teal-400 focus:outline-none font-bold text-slate-600 cursor-pointer text-sm appearance-none transition-all">
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>🆕 Terbaru</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>⏳ Terlama</option>
+                        <option value="most_visited" {{ request('sort') == 'most_visited' ? 'selected' : '' }}>🔥 Teraktif</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+                {{-- Wilayah --}}
+                <div class="relative lg:w-56">
+                    <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" name="wilayah" value="{{ request('wilayah') }}"
+                        class="w-full pl-10 pr-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-teal-400 focus:outline-none font-medium text-slate-600 placeholder-slate-400 text-sm transition-all"
+                        placeholder="Wilayah domisili...">
+                </div>
+                {{-- Foto --}}
+                <div class="relative lg:w-52">
+                    <select name="has_foto" class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-teal-400 focus:outline-none font-bold text-slate-600 cursor-pointer text-sm appearance-none transition-all">
+                        <option value="">Semua Dokumen</option>
+                        <option value="yes" {{ request('has_foto') == 'yes' ? 'selected' : '' }}>✅ Ada KTP</option>
+                        <option value="no" {{ request('has_foto') == 'no' ? 'selected' : '' }}>❌ Tanpa KTP</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
+                {{-- Buttons --}}
+                <div class="flex gap-2">
+                    <button type="submit" class="px-5 py-3 bg-slate-900 hover:bg-teal-600 text-white font-black rounded-xl transition-all shadow-md active:scale-95 text-sm flex items-center gap-2">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    @if(request()->anyFilled(['search','sort','wilayah','has_foto']))
+                    <a href="{{ route('admin.visitors.index') }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95 text-sm flex items-center">
+                        <i class="fas fa-times"></i>
+                    </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -137,131 +112,129 @@
     {{-- BULK ACTION BAR --}}
     <form id="bulkDeleteForm" action="{{ route('admin.visitors.bulk-delete') }}" method="POST" class="space-y-6">
         @csrf
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 no-print">
-            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl border border-slate-200 shadow-sm">
-                <div class="flex items-center gap-3">
-                    <input type="checkbox" id="selectAll" class="w-5 h-5 rounded-lg border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all">
-                    <label for="selectAll" class="text-sm font-black text-slate-700 cursor-pointer uppercase tracking-widest">Pilih Semua</label>
-                </div>
-                <div class="w-px h-5 bg-slate-200"></div>
-                <span class="text-xs font-black text-blue-500 uppercase"><span id="checkedCount">0</span> Item Terpilih</span>
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 no-print">
+            <div class="flex items-center gap-3 bg-white px-5 py-2.5 rounded-2xl border border-slate-200 shadow-sm">
+                <input type="checkbox" id="selectAll" class="w-4 h-4 rounded-lg border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer">
+                <label for="selectAll" class="text-xs font-black text-slate-700 cursor-pointer uppercase tracking-widest">Pilih Semua</label>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <span class="text-xs font-black text-teal-600"><span id="checkedCount">0</span> Terpilih</span>
             </div>
-            
-            <button type="button" onclick="confirmBulkDelete()" class="w-full sm:w-auto px-8 py-3.5 bg-white text-red-600 font-black rounded-2xl border-2 border-red-50 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex items-center justify-center gap-2 text-sm active:scale-95 shadow-sm">
+            <button type="button" onclick="confirmBulkDelete()"
+                class="w-full sm:w-auto px-5 py-2.5 bg-white text-red-600 font-bold rounded-2xl border-2 border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all flex items-center justify-center gap-2 text-sm active:scale-95 shadow-sm">
                 <i class="fas fa-trash-alt"></i> Hapus Massal
             </button>
         </div>
 
         {{-- TABLE CARD --}}
-        <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate__animated animate__fadeIn">
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-sm text-left border-collapse">
-                    <thead>
-                        <tr class="bg-slate-50/80 text-slate-400 border-b border-slate-100">
-                            <th class="p-6 w-10 no-print"></th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px]">Identitas Pengunjung</th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px]">Kontak & Domisili</th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px]">Riwayat Terakhir</th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px] text-center">Dokumen</th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px] text-center">Frekuensi</th>
-                            <th class="p-6 font-black uppercase tracking-widest text-[10px] text-center no-print w-20">Aksi</th>
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-5 py-3.5 w-10 no-print"></th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Identitas Pengunjung</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Kontak & Domisili</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400">Riwayat Terakhir</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center">Dokumen</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center">Kunjungan</th>
+                            <th class="px-5 py-3.5 font-black uppercase tracking-widest text-[10px] text-slate-400 text-center no-print w-16">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-50">
                         @forelse ($visitors as $index => $visitor)
-                        <tr class="group hover:bg-blue-50/40 transition-all duration-300">
-                            <td class="p-6 no-print">
-                                <input type="checkbox" name="ids[]" value="{{ $visitor->id }}" class="visitor-checkbox w-5 h-5 rounded-lg border-slate-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all">
+                        @php
+                            $colors = ['teal','blue','indigo','purple','rose','amber','cyan','emerald'];
+                            $avatarColor = $colors[abs(crc32($visitor->nama)) % count($colors)];
+                        @endphp
+                        <tr class="group hover:bg-teal-50/40 transition-colors">
+                            {{-- Checkbox --}}
+                            <td class="px-5 py-4 no-print">
+                                <input type="checkbox" name="ids[]" value="{{ $visitor->id }}" class="visitor-checkbox w-4 h-4 rounded-lg border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer">
                             </td>
-                            <td class="p-6">
-                                <div class="flex items-center gap-5">
-                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 text-white flex items-center justify-center font-black text-xl shadow-xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                                        {{ substr($visitor->nama, 0, 1) }}
+                            {{-- Identitas --}}
+                            <td class="px-5 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-11 h-11 rounded-2xl bg-{{ $avatarColor }}-100 text-{{ $avatarColor }}-600 flex items-center justify-center font-black text-base shadow-sm flex-shrink-0 group-hover:scale-105 transition-transform">
+                                        {{ strtoupper(substr($visitor->nama, 0, 1)) }}
                                     </div>
                                     <div>
-                                        <button type="button" onclick="showHistory('{{ $visitor->id }}')" class="font-black text-slate-800 text-lg hover:text-blue-600 transition-colors text-left block leading-tight">
+                                        <button type="button" onclick="showHistory('{{ $visitor->id }}')"
+                                            class="font-black text-slate-800 text-sm hover:text-teal-600 transition-colors text-left leading-tight block">
                                             {{ $visitor->nama }}
                                         </button>
-                                        <div class="flex items-center gap-2 mt-2">
-                                            <span class="text-[10px] font-black bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg uppercase tracking-tight" title="{{ $visitor->nik }}">
+                                        <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                            <span class="text-[10px] font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded-lg" title="{{ $visitor->nik }}">
                                                 {{ substr($visitor->nik, 0, 6) . '******' . substr($visitor->nik, -4) }}
                                             </span>
-                                            <span class="text-[10px] font-bold text-slate-400 px-2 py-1 border border-slate-100 rounded-lg capitalize">{{ $visitor->jenis_kelamin }}</span>
+                                            <span class="text-[10px] font-bold text-slate-400 border border-slate-100 px-2 py-0.5 rounded-lg capitalize">{{ $visitor->jenis_kelamin }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-6">
-                                <div class="space-y-2">
+                            {{-- Kontak --}}
+                            <td class="px-5 py-4">
+                                <div class="space-y-1.5">
                                     @if($visitor->nomor_hp)
-                                        <a href="https://wa.me/{{ preg_replace('/^0/', '62', $visitor->nomor_hp) }}" target="_blank" class="flex items-center gap-2 text-emerald-600 font-black text-sm hover:underline">
-                                            <div class="w-6 h-6 rounded-full bg-emerald-50 flex items-center justify-center">
-                                                <i class="fab fa-whatsapp text-xs"></i>
-                                            </div>
-                                            {{ $visitor->nomor_hp }}
-                                        </a>
+                                    <a href="https://wa.me/{{ preg_replace('/^0/', '62', $visitor->nomor_hp) }}" target="_blank"
+                                        class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs hover:underline">
+                                        <i class="fab fa-whatsapp text-sm"></i> {{ $visitor->nomor_hp }}
+                                    </a>
                                     @endif
-                                    <div class="flex items-start gap-2 text-xs text-slate-400 font-medium leading-relaxed">
-                                        <i class="fas fa-map-marker-alt text-slate-300 mt-0.5"></i>
-                                        <span class="max-w-[200px]">{{ $visitor->alamat }}</span>
+                                    <div class="flex items-start gap-1.5 text-xs text-slate-400 font-medium">
+                                        <i class="fas fa-map-marker-alt text-slate-300 mt-0.5 text-[10px]"></i>
+                                        <span class="max-w-[180px] leading-tight">{{ $visitor->alamat }}</span>
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-6">
-                                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50 group-hover:bg-white group-hover:border-blue-200 transition-all">
-                                    <p class="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em] mb-1.5">Tujuan WBP:</p>
-                                    <p class="text-sm font-black text-slate-800 leading-tight">{{ $visitor->last_wbp }}</p>
+                            {{-- Riwayat Terakhir --}}
+                            <td class="px-5 py-4">
+                                <div class="bg-slate-50 px-3 py-2.5 rounded-xl border border-slate-100 group-hover:bg-white group-hover:border-teal-200 transition-all">
+                                    <p class="text-[9px] font-black text-teal-500 uppercase tracking-widest mb-1">WBP Dituju:</p>
+                                    <p class="text-xs font-black text-slate-800 leading-tight">{{ $visitor->last_wbp }}</p>
                                     @if($visitor->last_visit)
-                                        <p class="text-[10px] text-slate-400 mt-2 flex items-center gap-1.5">
-                                            <i class="far fa-clock"></i>
-                                            {{ $visitor->last_visit->format('d M Y') }}
-                                        </p>
+                                    <p class="text-[10px] text-slate-400 mt-1.5 flex items-center gap-1">
+                                        <i class="far fa-clock"></i> {{ $visitor->last_visit->format('d M Y') }}
+                                    </p>
                                     @endif
                                 </div>
                             </td>
-                            <td class="p-6 text-center">
+                            {{-- Dokumen KTP --}}
+                            <td class="px-5 py-4 text-center">
                                 @if($visitor->foto_ktp)
-                                    @php
-                                        $fotoUrl = \Illuminate\Support\Str::startsWith($visitor->foto_ktp, 'data:') 
-                                            ? $visitor->foto_ktp 
-                                            : asset('storage/' . $visitor->foto_ktp);
-                                    @endphp
-                                    <button type="button" 
-                                        onclick="showKtpModal('{{ $fotoUrl }}', '{{ $visitor->nama }}')" 
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-slate-100 text-blue-600 rounded-xl text-xs font-black hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-sm no-print">
-                                        <i class="fas fa-id-card"></i> Lihat Berkas
-                                    </button>
+                                @php
+                                    $fotoUrl = \Illuminate\Support\Str::startsWith($visitor->foto_ktp, 'data:')
+                                        ? $visitor->foto_ktp
+                                        : asset('storage/' . $visitor->foto_ktp);
+                                @endphp
+                                <button type="button" onclick="showKtpModal('{{ $fotoUrl }}', '{{ $visitor->nama }}')"
+                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-white border-2 border-slate-100 hover:bg-teal-500 hover:border-teal-500 hover:text-white text-teal-600 rounded-xl text-xs font-black transition-all shadow-sm hover:shadow-teal-500/30 no-print active:scale-95">
+                                    <i class="fas fa-id-card"></i> KTP
+                                </button>
                                 @else
-                                    <div class="inline-flex flex-col items-center opacity-25">
-                                        <i class="fas fa-file-excel text-xl mb-1"></i>
-                                        <span class="text-[9px] font-black uppercase">Nihil</span>
-                                    </div>
+                                <span class="text-[10px] text-slate-300 font-black uppercase">Nihil</span>
                                 @endif
                             </td>
-                            <td class="p-6 text-center">
-                                <div class="inline-flex flex-col items-center gap-1">
-                                    <div class="text-2xl font-black text-slate-800">{{ $visitor->total_kunjungan ?? 0 }}</div>
-                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Kunjungan</span>
-                                </div>
+                            {{-- Frekuensi --}}
+                            <td class="px-5 py-4 text-center">
+                                <span class="text-xl font-black text-slate-800">{{ $visitor->total_kunjungan ?? 0 }}</span>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-0.5">kunjungan</p>
                             </td>
-                            <td class="p-6 text-center no-print">
-                                <button type="button" onclick="confirmDelete('{{ $visitor->id }}', '{{ $visitor->nama }}')" 
-                                    class="w-11 h-11 rounded-2xl bg-white border border-slate-100 text-slate-300 hover:text-red-600 hover:border-red-100 hover:bg-red-50 hover:shadow-lg hover:shadow-red-100 transition-all flex items-center justify-center active:scale-90">
-                                    <i class="fas fa-trash-alt text-sm"></i>
+                            {{-- Aksi --}}
+                            <td class="px-5 py-4 text-center no-print">
+                                <button type="button" onclick="confirmDelete('{{ $visitor->id }}', '{{ $visitor->nama }}')"
+                                    class="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-500 border-2 border-red-100 hover:border-red-500 text-red-500 hover:text-white flex items-center justify-center mx-auto transition-all hover:shadow-md hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-95">
+                                    <i class="fas fa-trash-alt text-xs"></i>
                                 </button>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="py-40 text-center">
-                                <div class="relative w-40 h-40 mx-auto mb-8">
-                                    <div class="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-10"></div>
-                                    <div class="relative w-40 h-40 bg-white rounded-full flex items-center justify-center shadow-2xl border border-slate-50">
-                                        <i class="fas fa-users-slash text-6xl text-slate-100"></i>
-                                    </div>
+                            <td colspan="7" class="py-20 text-center">
+                                <div class="w-16 h-16 bg-slate-100 rounded-3xl flex items-center justify-center text-slate-300 text-3xl mx-auto mb-3">
+                                    <i class="fas fa-users-slash"></i>
                                 </div>
-                                <h3 class="text-3xl font-black text-slate-800 tracking-tighter">Database Masih Kosong</h3>
-                                <p class="text-slate-400 mt-3 font-medium max-w-sm mx-auto leading-relaxed text-base">Belum ada data profil pengunjung yang terekam dalam sistem saat ini.</p>
+                                <h3 class="font-black text-slate-700 mb-1">Database Masih Kosong</h3>
+                                <p class="text-slate-400 text-sm">Belum ada data profil pengunjung yang terekam.</p>
                             </td>
                         </tr>
                         @endforelse
