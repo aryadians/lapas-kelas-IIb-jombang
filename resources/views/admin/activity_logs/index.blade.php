@@ -3,7 +3,99 @@
 @section('title', 'Log Aktivitas Sistem')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 p-6 md:p-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 p-6 md:p-8"
+    x-data="{
+        showDeleteOldModal: false,
+        showDeleteAllModal: false,
+        submitDeleteOld() { this.$refs.formDeleteOld.submit(); },
+        submitDeleteAll() { this.$refs.formDeleteAll.submit(); }
+    }">
+
+    {{-- MODAL: Hapus Log > 1 Bulan --}}
+    <div x-show="showDeleteOldModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+        @click.self="showDeleteOldModal = false">
+        <div x-show="showDeleteOldModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-90"
+            class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center">
+            <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center text-amber-500 text-3xl mx-auto mb-5">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Hapus Log Lama?</h3>
+            <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                Seluruh log aktivitas yang berusia <strong class="text-amber-600">lebih dari 1 bulan</strong> akan dihapus permanen.<br>
+                Log yang lebih baru akan <span class="font-semibold text-emerald-600">tetap tersimpan</span>.
+            </p>
+            <div class="flex gap-3">
+                <button @click="showDeleteOldModal = false"
+                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all">
+                    Batal
+                </button>
+                <button @click="submitDeleteOld()"
+                    class="flex-1 px-5 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-bold shadow-lg shadow-amber-400/30 transition-all active:scale-95">
+                    <i class="fas fa-clock mr-1.5"></i> Ya, Hapus Log Lama
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL: Hapus Semua Log --}}
+    <div x-show="showDeleteAllModal"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        @click.self="showDeleteAllModal = false">
+        <div x-show="showDeleteAllModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-90 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-90"
+            class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center text-red-500 text-3xl mx-auto mb-5">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 mb-2">Hapus Semua Log?</h3>
+            <div class="bg-red-50 border border-red-200 rounded-2xl px-5 py-3 mb-5">
+                <p class="text-red-700 text-sm font-bold">⚠️ Tindakan ini tidak dapat dibatalkan!</p>
+            </div>
+            <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                Seluruh riwayat aktivitas sistem akan <strong class="text-red-600">dihapus permanen</strong>, termasuk log terbaru. Pastikan Anda sudah yakin sebelum melanjutkan.
+            </p>
+            <div class="flex gap-3">
+                <button @click="showDeleteAllModal = false"
+                    class="flex-1 px-5 py-3 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all">
+                    Batal
+                </button>
+                <button @click="submitDeleteAll()"
+                    class="flex-1 px-5 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-bold shadow-lg shadow-red-500/30 transition-all active:scale-95">
+                    <i class="fas fa-trash-alt mr-1.5"></i> Ya, Hapus Semua
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Form tersembunyi (tidak pakai onsubmit) --}}
+    @if(in_array(Auth::user()->role ?? '', ['super_admin', 'admin_registrasi']))
+    <form x-ref="formDeleteOld" action="{{ route('admin.activity_logs.delete_old') }}" method="POST" class="hidden">@csrf</form>
+    <form x-ref="formDeleteAll" action="{{ route('admin.activity_logs.reset') }}" method="POST" class="hidden">@csrf</form>
+    @endif
 
     {{-- HEADER --}}
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
@@ -17,34 +109,23 @@
             </div>
         </div>
 
-        {{-- Tombol Aksi (hanya super_admin / admin_registrasi) --}}
+        {{-- Tombol Aksi --}}
         @if(in_array(Auth::user()->role ?? '', ['super_admin', 'admin_registrasi']))
         <div class="flex flex-wrap gap-3">
-            {{-- Hapus log lama > 1 bulan --}}
-            <form action="{{ route('admin.activity_logs.delete_old') }}" method="POST"
-                onsubmit="return confirm('Hapus semua log aktivitas yang berusia lebih dari 1 bulan?\n\nLog yang lebih baru tetap tersimpan.')">
-                @csrf
-                <button type="submit"
-                    class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-amber-400/25 hover:-translate-y-0.5 active:scale-95 transition-all">
-                    <i class="fas fa-clock"></i>
-                    <span>Hapus Log &gt; 1 Bulan</span>
-                </button>
-            </form>
-
-            {{-- Hapus semua log --}}
-            <form action="{{ route('admin.activity_logs.reset') }}" method="POST"
-                onsubmit="return confirm('⚠️ PERHATIAN!\n\nAnda akan menghapus SELURUH log aktivitas sistem.\nTindakan ini tidak dapat dibatalkan.\n\nYakin ingin melanjutkan?')">
-                @csrf
-                <button type="submit"
-                    class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-red-500/25 hover:-translate-y-0.5 active:scale-95 transition-all">
-                    <i class="fas fa-trash-alt"></i>
-                    <span>Hapus Semua Log</span>
-                </button>
-            </form>
+            <button @click="showDeleteOldModal = true"
+                class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-amber-400/25 hover:-translate-y-0.5 active:scale-95 transition-all">
+                <i class="fas fa-clock"></i>
+                <span>Hapus Log &gt; 1 Bulan</span>
+            </button>
+            <button @click="showDeleteAllModal = true"
+                class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-3 rounded-2xl shadow-lg shadow-red-500/25 hover:-translate-y-0.5 active:scale-95 transition-all">
+                <i class="fas fa-trash-alt"></i>
+                <span>Hapus Semua Log</span>
+            </button>
         </div>
         @endif
-
     </div>
+
 
     {{-- FLASH MESSAGE --}}
     @if(session('success'))
