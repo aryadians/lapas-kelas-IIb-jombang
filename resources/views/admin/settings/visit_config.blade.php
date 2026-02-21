@@ -170,6 +170,76 @@
             </div>
         </div>
 
+        {{-- SECTION 3: ATURAN PENGUNJUNG & DURASI --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {{-- Pembatasan & Durasi --}}
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate__animated animate__fadeInUp">
+                <div class="bg-slate-50 px-8 py-6 border-b border-slate-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-teal-200">
+                        <i class="fas fa-users-cog text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-tight">Aturan Pengunjung & Durasi</h2>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Kapasitas rombongan dan sesi temu</p>
+                    </div>
+                </div>
+                <div class="p-8 space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Maksimal Total Rombongan Pengikut</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" name="max_followers_allowed" value="{{ $settings['max_followers_allowed'] ?? 4 }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-slate-700 focus:border-teal-500 focus:ring-0">
+                            <span class="text-slate-400 font-bold uppercase text-xs w-16">Orang</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Durasi Waktu Kunjungan</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" name="visit_duration_minutes" value="{{ $settings['visit_duration_minutes'] ?? 30 }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-slate-700 focus:border-teal-500 focus:ring-0">
+                            <span class="text-slate-400 font-bold uppercase text-xs w-16">Menit</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Toleransi Keterlambatan Panggilan</label>
+                        <div class="flex items-center gap-4">
+                            <input type="number" name="arrival_tolerance_minutes" value="{{ $settings['arrival_tolerance_minutes'] ?? 15 }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-slate-700 focus:border-orange-500 focus:ring-0">
+                            <span class="text-slate-400 font-bold uppercase text-xs w-16">Menit</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 italic">Batas waktu sebelum auto-batal/dilewati.</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Mode Darurat --}}
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-red-200/30 border border-slate-100 ring-4 ring-slate-50 overflow-hidden animate__animated animate__fadeInUp delay-100">
+                <div class="bg-red-50 px-8 py-6 border-b border-red-100 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-red-200">
+                        <i class="fas fa-exclamation-triangle text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black text-red-800 uppercase tracking-tight">Mode Darurat & Tutup</h2>
+                        <p class="text-red-400/80 text-xs font-bold uppercase tracking-widest">Pengumuman & Lock Pendaftaran</p>
+                    </div>
+                </div>
+                <div class="p-8 space-y-6">
+                    <div class="flex items-center justify-between bg-red-50 p-4 rounded-2xl border border-red-100">
+                        <div>
+                            <h3 class="font-black text-red-900 leading-tight">Aktifkan Kunci Darurat</h3>
+                            <p class="text-[10px] text-red-600 font-medium">Tutup paksa form kunjungan publik saat ini</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="is_emergency_closed" value="1" class="sr-only peer" {{ ($settings['is_emergency_closed'] ?? '0') == '1' ? 'checked' : '' }}>
+                            <div class="w-14 h-7 bg-red-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-600 shadow-inner"></div>
+                        </label>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-red-800">Teks Pengumuman/Banner Darurat</label>
+                        <textarea name="announcement_guest_page" rows="3" class="w-full p-4 bg-white border-2 border-red-100 focus:border-red-500 rounded-2xl font-medium text-slate-700 focus:ring-0 placeholder-slate-300 text-sm" placeholder="Contoh: Mohon maaf, layanan kunjungan ditutup sementara karena ada sidak mendadak...">{{ $settings['announcement_guest_page'] ?? '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- SAVE BUTTON --}}
         <div class="flex justify-center pt-4">
             <button type="submit" class="bg-slate-900 text-white font-black px-12 py-5 rounded-[2rem] shadow-2xl hover:bg-blue-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3">

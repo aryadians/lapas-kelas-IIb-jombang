@@ -70,6 +70,10 @@ class AutoUpdateAntrian extends Command
 
         $this->info("Running for session: {$sesi}");
 
+        // Ambill Setting Durasi & Toleransi Batal
+        $visitDurationMinutes = (int) \App\Models\VisitSetting::where('key', 'visit_duration_minutes')->value('value') ?? 15;
+        $arrivalToleranceMinutes = (int) \App\Models\VisitSetting::where('key', 'arrival_tolerance_minutes')->value('value') ?? 15;
+
         // 3. Dapatkan status antrian saat ini
         $antrianStatus = AntrianStatus::firstOrCreate(
             ['tanggal' => $today, 'sesi' => $sesi],
@@ -81,6 +85,27 @@ class AutoUpdateAntrian extends Command
             ->where('sesi', $sesi)
             ->where('status', EnumKunjunganStatus::APPROVED)
             ->count();
+
+        // LOGIKA AUTO-BATAL: Batalin antrian nomor sebelumnya yang belum datang (masih APPROVED)
+        $timeSinceLastUpdate = $antrianStatus->updated_at->diffInMinutes($now);
+        
+        $expiredKunjungans = Kunjungan::where('tanggal_kunjungan', $today)
+            ->where('sesi', $sesi)
+            ->where('status', EnumKunjunganStatus::APPROVED)
+            ->where('nomor_antrian_harian', '<=', $antrianStatus->nomor_terpanggil)
+            ->get();
+
+        foreach ($expiredKunjungans as $kunjungan) {
+            $numbersPassed = max(0, $antrianStatus->nomor_terpanggil - $kunjungan->nomor_antrian_harian);
+            $minutesSinceCalled = $timeSinceLastUpdate + ($numbersPassed * $visitDurationMinutes);
+
+            if ($minutesSinceCalled >= $arrivalToleranceMinutes) {
+                $kunjungan->status = EnumKunjunganStatus::REJECTED;
+                $kunjungan->catatan_admin = "Dibatalkan otomatis oleh sistem karena melewati batas toleransi keterlambatan ({$arrivalToleranceMinutes} Menit).";
+                $kunjungan->save();
+                $this->info("Kunjungan ID {$kunjungan->id} (No. Antrian {$kunjungan->nomor_antrian_harian}) cancelled automatically.");
+            }
+        }
 
         if ($totalAntrian == 0) {
             $this->info('No approved visits for this session. Exiting.');
@@ -94,18 +119,15 @@ class AutoUpdateAntrian extends Command
         }
 
         // 6. Logika untuk pemanggilan pertama atau berikutnya
-        $timeSinceLastUpdate = $antrianStatus->updated_at->diffInMinutes($now);
-
-        // Jika ini pemanggilan pertama (nomor 0) dan sesi baru saja dimulai
         $isFirstCall = $antrianStatus->nomor_terpanggil == 0;
-        $sessionJustStarted = ($sesi === 'pagi' && $now->hour === 8 && $now->minute < self::VISIT_DURATION_MINUTES) ||
-                              ($sesi === 'siang' && $now->hour === 13 && $now->minute < self::VISIT_DURATION_MINUTES);
+        $sessionJustStarted = ($sesi === 'pagi' && $now->hour === 8 && $now->minute < $visitDurationMinutes) ||
+                              ($sesi === 'siang' && $now->hour === 13 && $now->minute < $visitDurationMinutes);
 
         if ($isFirstCall && $sessionJustStarted) {
              $this->callNextNumber($antrianStatus);
         }
         // Jika bukan pemanggilan pertama dan sudah waktunya untuk nomor berikutnya
-        elseif (!$isFirstCall && $timeSinceLastUpdate >= self::VISIT_DURATION_MINUTES) {
+        elseif (!$isFirstCall && $timeSinceLastUpdate >= $visitDurationMinutes) {
             $this->callNextNumber($antrianStatus);
         } else {
             $this->info('Not time for the next number yet. Time since last call: ' . $timeSinceLastUpdate . ' mins.');

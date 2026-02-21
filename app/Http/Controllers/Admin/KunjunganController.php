@@ -501,9 +501,10 @@ class KunjunganController extends Controller
         }
 
         // Custom validation for total pengikut
-        $totalPengikut = ($request->pengikut_laki ?? 0) + ($request->pengikut_perempuan ?? 0) + ($request->pengikut_anak ?? 0);
-        if ($totalPengikut > 4) {
-            return redirect()->back()->withInput()->withErrors(['total_pengikut' => 'Jumlah total pengikut tidak boleh melebihi 4 orang.']);
+        $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
+        $totalPengikut = ((int)($request->pengikut_laki ?? 0)) + ((int)($request->pengikut_perempuan ?? 0)) + ((int)($request->pengikut_anak ?? 0));
+        if ($totalPengikut > $maxFollowers) {
+            return redirect()->back()->withInput()->withErrors(['pengikut_laki' => "Jumlah total pengikut tidak boleh melebihi $maxFollowers orang."]);
         }
 
         // Generate Kode Kunjungan Unik

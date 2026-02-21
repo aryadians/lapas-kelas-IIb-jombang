@@ -28,6 +28,36 @@ class VisitNewSettingsSeeder extends Seeder
                 'display_name' => 'Batas Maksimal Edit (H-N Hari sebelum kunjungan)', 
                 'type' => 'number'
             ],
+            [
+                'key' => 'max_followers_allowed',
+                'value' => '4',
+                'display_name' => 'Batas Maksimal Pengikut Rombongan',
+                'type' => 'number'
+            ],
+            [
+                'key' => 'visit_duration_minutes',
+                'value' => '30',
+                'display_name' => 'Durasi Waktu Kunjungan (Menit)',
+                'type' => 'number'
+            ],
+            [
+                'key' => 'arrival_tolerance_minutes',
+                'value' => '15',
+                'display_name' => 'Batas Toleransi Keterlambatan (Menit)',
+                'type' => 'number'
+            ],
+            [
+                'key' => 'is_emergency_closed',
+                'value' => '0',
+                'display_name' => 'Tutup Darurat Semua Pendaftaran',
+                'type' => 'boolean'
+            ],
+            [
+                'key' => 'announcement_guest_page',
+                'value' => '',
+                'display_name' => 'Teks Pengumuman/Spanduk Darurat',
+                'type' => 'text'
+            ]
         ];
 
         foreach ($settings as $setting) {

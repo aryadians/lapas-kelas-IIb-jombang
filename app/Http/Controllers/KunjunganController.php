@@ -39,6 +39,9 @@ class KunjunganController extends Controller
         
         // Ambil Batas H-N Pendaftaran
         $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
+        $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
+        $isEmergencyClosed = \App\Models\VisitSetting::where('key', 'is_emergency_closed')->value('value') == '1';
+        $announcement = \App\Models\VisitSetting::where('key', 'announcement_guest_page')->value('value');
 
         // Mapping nama hari ke bahasa Indonesia untuk pencocokan
         $dayMapping = [
@@ -77,7 +80,10 @@ class KunjunganController extends Controller
         }
         return view('guest.kunjungan.create', [
             'datesByDay' => $datesByDay,
-            'leadTime' => $leadTime
+            'leadTime' => $leadTime,
+            'maxFollowers' => $maxFollowers,
+            'isEmergencyClosed' => $isEmergencyClosed,
+            'announcement' => $announcement
         ]);
     }
 
@@ -110,6 +116,20 @@ class KunjunganController extends Controller
         // Prevent past dates
         if ($tanggal->isPast()) {
             return back()->with('error', 'Tanggal kunjungan tidak boleh di masa lalu.')->withInput();
+        }
+
+        // 0.A CEK STATUS DARURAT
+        $isEmergencyClosed = \App\Models\VisitSetting::where('key', 'is_emergency_closed')->value('value') == '1';
+        if ($isEmergencyClosed) {
+            return back()->with('error', 'Mohon maaf, layanan pendaftaran kunjungan sedang ditutup sementara waktu.')->withInput();
+        }
+
+        // 0.B CEK BATAS PENGIKUT
+        $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
+        $totalFollowers = isset($validatedData['pengikut_nama']) ? count(array_filter($validatedData['pengikut_nama'])) : 0;
+        
+        if ($totalFollowers > $maxFollowers) {
+            return back()->withErrors(['pengikut_nama' => "Total maksimal rombongan pengikut tidak boleh lebih dari $maxFollowers orang."])->withInput();
         }
 
         // 0. CEK BATAS H-N PENDAFTARAN

@@ -32,6 +32,10 @@ class VisitConfigController extends Controller
             'limit_wbp_per_week' => 'required|integer|min:1',
             'registration_lead_time' => 'required|integer|min:0',
             'edit_lead_time' => 'required|integer|min:0',
+            'max_followers_allowed' => 'required|integer|min:0',
+            'visit_duration_minutes' => 'required|integer|min:1',
+            'arrival_tolerance_minutes' => 'required|integer|min:0',
+            'announcement_guest_page' => 'nullable|string',
         ]);
 
         // 2. Update Schedules
@@ -53,6 +57,11 @@ class VisitConfigController extends Controller
             'registration_lead_time' => $request->registration_lead_time,
             'enable_guest_edit' => $request->has('enable_guest_edit') ? '1' : '0',
             'edit_lead_time' => $request->edit_lead_time,
+            'max_followers_allowed' => $request->max_followers_allowed,
+            'visit_duration_minutes' => $request->visit_duration_minutes,
+            'arrival_tolerance_minutes' => $request->arrival_tolerance_minutes,
+            'is_emergency_closed' => $request->has('is_emergency_closed') ? '1' : '0',
+            'announcement_guest_page' => $request->announcement_guest_page ?? '',
         ];
 
         foreach ($settingsToUpdate as $key => $value) {

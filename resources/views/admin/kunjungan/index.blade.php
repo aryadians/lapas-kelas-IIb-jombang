@@ -2,6 +2,10 @@
 
 @php
     use App\Enums\KunjunganStatus;
+    use App\Models\VisitSetting;
+
+    $visitDuration = (int) VisitSetting::where('key', 'visit_duration_minutes')->value('value') ?? 30;
+    $arrivalTolerance = (int) VisitSetting::where('key', 'arrival_tolerance_minutes')->value('value') ?? 15;
 @endphp
 
 @section('content')
@@ -116,6 +120,28 @@
             </div>
         </div>
         @endforeach
+    </div>
+
+    {{-- INFO DURASI & TOLERANSI --}}
+    <div class="flex flex-col sm:flex-row gap-4 mb-2 animate__animated animate__fadeInUp" style="animation-delay: 0.35s;">
+        <div class="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100/50 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+            <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-lg">
+                <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-0.5">Durasi Kunjungan</p>
+                <p class="text-lg font-black text-blue-900">{{ $visitDuration }} Menit / Sesi</p>
+            </div>
+        </div>
+        <div class="flex-1 bg-gradient-to-r from-rose-50 to-orange-50 border border-rose-100/50 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+            <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center text-lg">
+                <i class="fas fa-user-clock"></i>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-0.5">Toleransi Kedatangan</p>
+                <p class="text-lg font-black text-rose-900">{{ $arrivalTolerance }} Menit (Auto-Batal)</p>
+            </div>
+        </div>
     </div>
 
     {{-- FILTER GLASS --}}

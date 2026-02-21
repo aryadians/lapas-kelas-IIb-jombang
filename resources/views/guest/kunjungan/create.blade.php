@@ -328,27 +328,38 @@
                 </div>
             </div>
 
-            {{-- TOMBOL ACTION --}}
+            {{-- TOMBOL ACTION ATAU BANNER DARURAT --}}
             <div class="flex flex-col items-center justify-center space-y-6 pb-12">
-                <div class="bg-gradient-to-r from-blue-50 to-gray-50 p-6 rounded-2xl border border-blue-200 shadow-lg max-w-2xl">
-                    <div class="flex items-center justify-center gap-3 mb-3">
-                        <i class="fa-solid fa-info-circle text-blue-600 text-xl"></i>
-                        <span class="font-bold text-slate-800">PENTING</span>
+                @if($isEmergencyClosed)
+                    <div class="bg-gradient-to-r from-red-600 to-red-800 p-8 sm:p-12 rounded-3xl shadow-2xl w-full max-w-4xl border-4 border-red-400/50 text-center animate__animated animate__headShake">
+                        <i class="fa-solid fa-triangle-exclamation text-5xl sm:text-7xl text-yellow-300 mb-6 drop-shadow-lg"></i>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white uppercase tracking-wider mb-4 drop-shadow-md">Pendaftaran Ditutup Sementara</h2>
+                        <div class="w-24 h-1 bg-yellow-400 mx-auto mt-2 mb-6 rounded-full opacity-50"></div>
+                        <p class="text-white text-base sm:text-xl font-medium leading-relaxed px-4">
+                            {{ $announcement ?: 'Mohon maaf, layanan pendaftaran kunjungan tatap muka sedang ditutup untuk sementara waktu. Silakan hubungi petugas atau kembali lagi nanti.' }}
+                        </p>
                     </div>
-                    <p class="text-slate-600 text-center italic text-sm leading-relaxed">
-                        "Dengan menekan tombol di bawah, saya menyatakan telah membaca dan memahami seluruh tata tertib serta ketentuan yang berlaku untuk kunjungan ke Lapas Kelas IIB Jombang."
-                    </p>
-                </div>
+                @else
+                    <div class="bg-gradient-to-r from-blue-50 to-gray-50 p-6 rounded-2xl border border-blue-200 shadow-lg max-w-2xl">
+                        <div class="flex items-center justify-center gap-3 mb-3">
+                            <i class="fa-solid fa-info-circle text-blue-600 text-xl"></i>
+                            <span class="font-bold text-slate-800">PENTING</span>
+                        </div>
+                        <p class="text-slate-600 text-center italic text-sm leading-relaxed">
+                            "Dengan menekan tombol di bawah, saya menyatakan telah membaca dan memahami seluruh tata tertib serta ketentuan yang berlaku untuk kunjungan ke Lapas Kelas IIB Jombang."
+                        </p>
+                    </div>
 
-                <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'smooth'})"
-                    class="group relative inline-flex items-center justify-start overflow-hidden rounded-full bg-gradient-to-r from-blue-950 to-black px-8 py-4 sm:px-12 sm:py-6 font-bold text-white transition-all duration-300 hover:from-black hover:to-blue-950 hover:scale-105 shadow-2xl hover:shadow-blue-900/50 border-2 border-yellow-500 border-opacity-50">
-                    <span class="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 bg-gradient-to-b from-yellow-500 to-yellow-600 opacity-30 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
-                    <span class="relative flex items-center gap-3 text-base sm:text-lg tracking-wide">
-                        <i class="fa-solid fa-file-signature text-yellow-400"></i>
-                        ISI FORMULIR PENDAFTARAN
-                        <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
-                    </span>
-                </button>
+                    <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'smooth'})"
+                        class="group relative inline-flex items-center justify-start overflow-hidden rounded-full bg-gradient-to-r from-blue-950 to-black px-8 py-4 sm:px-12 sm:py-6 font-bold text-white transition-all duration-300 hover:from-black hover:to-blue-950 hover:scale-105 shadow-2xl hover:shadow-blue-900/50 border-2 border-yellow-500 border-opacity-50">
+                        <span class="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 bg-gradient-to-b from-yellow-500 to-yellow-600 opacity-30 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
+                        <span class="relative flex items-center gap-3 text-base sm:text-lg tracking-wide">
+                            <i class="fa-solid fa-file-signature text-yellow-400"></i>
+                            ISI FORMULIR PENDAFTARAN
+                            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+                        </span>
+                    </button>
+                @endif
             </div>
         </div>
     </div>
@@ -682,14 +693,14 @@
                                 <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1 animate-pulse">
                                     <i class="fa-solid fa-users"></i> 3
                                 </span> 
-                                <span class="text-emerald-800">Data Pengikut (Maksimal 4 Orang)</span>
+                                <span class="text-emerald-800">Data Pengikut (Maksimal {{ $maxFollowers }} Orang)</span>
                             </h3>
                             
                             <div>
                                 <button type="button" 
-                                    @click="if(followers.length < 4) followers.push({id: Date.now()})"
-                                    :disabled="followers.length >= 4"
-                                    :class="followers.length >= 4 ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'"
+                                    @click="if(followers.length < {{ $maxFollowers }}) followers.push({id: Date.now()})"
+                                    :disabled="followers.length >= {{ $maxFollowers }}"
+                                    :class="followers.length >= {{ $maxFollowers }} ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'"
                                     class="text-xs text-white font-bold py-2 px-3 rounded-lg shadow transition flex items-center gap-1"
                                     aria-label="Tambah pengikut">
                                     <i class="fa-solid fa-plus"></i> Tambah Orang
@@ -697,8 +708,8 @@
                             </div>
                         </div>
 
-                        <p x-show="followers.length >= 4" x-transition class="text-center text-sm font-semibold text-red-600 bg-red-100 border border-red-300 rounded-lg p-2 mb-4">
-                            <i class="fa-solid fa-exclamation-circle mr-1"></i> Anda telah mencapai batas maksimal 4 pengikut.
+                        <p x-show="followers.length >= {{ $maxFollowers }}" x-transition class="text-center text-sm font-semibold text-red-600 bg-red-100 border border-red-300 rounded-lg p-2 mb-4">
+                            <i class="fa-solid fa-exclamation-circle mr-1"></i> Anda telah mencapai batas maksimal {{ $maxFollowers }} pengikut.
                         </p>
 
                         <div class="space-y-6">
