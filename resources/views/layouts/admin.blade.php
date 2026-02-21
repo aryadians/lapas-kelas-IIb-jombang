@@ -63,80 +63,102 @@
                 @php $userRole = Auth::user()->role ?? 'user'; @endphp
 
                 <p class="px-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Menu Utama</p>
-                
-                <a href="{{ route('dashboard') }}" 
+
+                {{-- Dashboard: semua admin --}}
+                <a href="{{ route('dashboard') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('dashboard') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('dashboard') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                     <span class="font-medium">Dashboard</span>
                 </a>
 
+                {{-- Executive Dashboard: super_admin saja --}}
+                @if($userRole === 'super_admin')
                 <a href="{{ route('admin.dashboard.executive') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard.executive') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <span class="font-medium">Executive Dashboard</span>
                 </a>
+                @endif
 
-                <a href="{{ route('news.index') }}" 
+                {{-- Berita & Pengumuman: super_admin + admin_humas --}}
+                @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                <a href="{{ route('news.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('news.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('news.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
                     <span class="font-medium">Kelola Berita</span>
                 </a>
 
-                <a href="{{ route('announcements.index') }}" 
+                <a href="{{ route('announcements.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('announcements.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('announcements.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
                     <span class="font-medium">Kelola Pengumuman</span>
                 </a>
+                @endif
 
-                <a href="{{ route('admin.kunjungan.index') }}" 
+                {{-- Kunjungan: semua admin (full CRUD untuk registrasi, read-only untuk humas) --}}
+                @if(in_array($userRole, ['super_admin', 'admin_registrasi', 'admin_humas']))
+                <a href="{{ route('admin.kunjungan.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.kunjungan.index') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.kunjungan.index') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                     <span class="font-medium">Daftar Kunjungan</span>
                 </a>
-                
+
                 <a href="{{ route('admin.kunjungan.kalender') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.kunjungan.kalender') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.kunjungan.kalender') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     <span class="font-medium">Kalender Kunjungan</span>
                 </a>
+                @endif
 
-                <a href="{{ route('admin.rekapitulasi') }}" 
+                {{-- Rekapitulasi: semua admin --}}
+                <a href="{{ route('admin.rekapitulasi') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.rekapitulasi') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.rekapitulasi') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     <span class="font-medium">Rekapitulasi</span>
                 </a>
 
-                <a href="{{ route('admin.antrian.kontrol') }}" 
+                {{-- Antrian & Kontrol: super_admin + admin_registrasi --}}
+                @if(in_array($userRole, ['super_admin', 'admin_registrasi']))
+                <a href="{{ route('admin.antrian.kontrol') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.antrian.kontrol') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                     <span class="font-medium">Kontrol Antrian</span>
                 </a>
 
-                <a href="{{ route('admin.antrian.panggil-manual') }}" 
+                <a href="{{ route('admin.antrian.panggil-manual') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.antrian.panggil-manual') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <i class="fas fa-microphone-alt w-5 h-5 mr-3 {{ request()->routeIs('admin.antrian.panggil-manual') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
                     <span class="font-medium">Panggil Manual</span>
                 </a>
+                @endif
 
-                @if(in_array($userRole, ['super_admin', 'admin_umum', 'admin_registrasi', 'admin']))
-                <a href="{{ route('admin.users.index') }}" 
+                {{-- Manajemen User & Log: super_admin saja --}}
+                @if($userRole === 'super_admin')
+                <a href="{{ route('admin.users.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.users.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                     <span class="font-medium">Manajemen Pengguna</span>
                 </a>
-                <a href="{{ route('admin.activity_logs.index') }}" 
+                @endif
+
+                {{-- Log Aktivitas: semua admin --}}
+                <a href="{{ route('admin.activity_logs.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.activity_logs.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <i class="fa-solid fa-list w-5 h-5 mr-3 {{ request()->routeIs('admin.activity_logs.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
                     <span class="font-medium">Log Aktivitas Sistem</span>
                 </a>
-                @endif
 
-                <a href="{{ route('admin.financial-reports.index') }}" 
+                {{-- Laporan Publik: super_admin + admin_humas --}}
+                @if(in_array($userRole, ['super_admin', 'admin_humas']))
+                <a href="{{ route('admin.financial-reports.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.financial-reports.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <i class="fa-solid fa-file-invoice-dollar w-5 h-5 mr-3 {{ request()->routeIs('admin.financial-reports.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
                     <span class="font-medium">Laporan Publik</span>
                 </a>
+                @endif
 
+                {{-- Survey IKM: semua admin kecuali admin_umum --}}
+                @if(in_array($userRole, ['super_admin', 'admin_registrasi', 'admin_humas']))
                 <a href="{{ route('admin.surveys.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.surveys.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.surveys.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -144,8 +166,11 @@
                     </svg>
                     <span class="font-medium">Survey IKM</span>
                 </a>
+                @endif
 
-                <a href="{{ route('admin.wbp.index') }}" 
+                {{-- WBP & Database Pengunjung: super_admin + admin_registrasi --}}
+                @if(in_array($userRole, ['super_admin', 'admin_registrasi']))
+                <a href="{{ route('admin.wbp.index') }}"
                    class="flex items-center px-4 py-3 {{ request()->routeIs('admin.wbp.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                     <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.wbp.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -160,14 +185,18 @@
                     </svg>
                     <span class="font-medium">Database Pengunjung</span>
                 </a>
+                @endif
 
                 <div class="pt-4 mt-4 border-t border-slate-800">
                     <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-3">Pengaturan Sistem</p>
-                    <a href="{{ route('admin.settings.visit-config') }}" 
+                    {{-- Konfigurasi: super_admin + admin_registrasi --}}
+                    @if(in_array($userRole, ['super_admin', 'admin_registrasi']))
+                    <a href="{{ route('admin.settings.visit-config') }}"
                        class="flex items-center px-4 py-3 {{ request()->routeIs('admin.settings.visit-config') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                         <i class="fas fa-cogs w-5 h-5 mr-3 {{ request()->routeIs('admin.settings.visit-config') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
                         <span class="font-medium">Konfigurasi Kunjungan</span>
                     </a>
+                    @endif
                 </div>
 
             </nav>

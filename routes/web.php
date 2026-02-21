@@ -52,6 +52,12 @@ use App\Models\Announcement;
 | File routing utama untuk aplikasi Lapas Kelas IIB Jombang.
 | Mencakup: Halaman Publik, Pendaftaran Kunjungan, Auth, dan Admin Panel.
 |
+| RBAC (Role-Based Access Control):
+|   super_admin     → akses semua fitur
+|   admin_registrasi → kunjungan, WBP, antrian, settings, rekap
+|   admin_humas      → berita, pengumuman, produk, kunjungan (read-only)
+|   admin_umum       → dashboard & rekap saja
+|
 */
 
 // =========================================================================
@@ -167,13 +173,129 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 // =========================================================================
-// 5. ADMIN PANEL (DASHBOARD & MANAJEMEN)
+// 5. ADMIN PANEL — GRUP A: SEMUA ROLE ADMIN (Dashboard, Rekap, Log, Survey)
+// Akses: super_admin, admin_registrasi, admin_humas, admin_umum
 // =========================================================================
-// Semua route di dalam grup ini wajib LOGIN dan punya role ADMIN/SUPERADMIN
-Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
-    // A. DASHBOARD
+    // Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Rekapitulasi & Statistik
+    Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
+    Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
+    Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
+    Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
+
+    // Log Aktivitas (Read-only)
+    Route::get('/activity-logs', [DashboardController::class, 'activityLogs'])->name('admin.activity_logs.index');
+
+    // Survey IKM
+    Route::resource('surveys', AdminSurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
+});
+
+
+// =========================================================================
+// 6. ADMIN PANEL — GRUP B: KUNJUNGAN & OPERASIONAL
+// Akses: super_admin, admin_registrasi
+// =========================================================================
+Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->group(function () {
+
+    // Reset Log (hanya registrasi & super admin)
+    Route::post('/activity-logs/reset', [DashboardController::class, 'resetActivityLogs'])->name('admin.activity_logs.reset');
+
+    // Kalender Kunjungan
+    Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
+    Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
+
+    // Manajemen Kunjungan (FULL CRUD + Verifikasi)
+    Route::get('kunjungan/stats', [AdminKunjunganController::class, 'getStats'])->name('admin.kunjungan.stats');
+    Route::get('kunjungan/export', [AdminKunjunganController::class, 'export'])->name('admin.kunjungan.export');
+    Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');
+    Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
+    Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
+    Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
+
+    // Pendaftaran Offline
+    Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');
+    Route::post('kunjungan/create-offline', [AdminKunjunganController::class, 'storeOffline'])->name('admin.kunjungan.storeOffline');
+    Route::get('kunjungan/offline/success/{kunjungan}', [AdminKunjunganController::class, 'offlineSuccess'])->name('admin.kunjungan.offline.success');
+
+    Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
+
+    // Manajemen WBP
+    Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
+    Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
+    Route::resource('wbp', WbpController::class)->names('admin.wbp');
+
+    // Kontrol Antrian
+    Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
+    Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
+    Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
+    Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');
+    Route::get('/antrian/kontrol', [QueueController::class, 'index'])->name('admin.antrian.kontrol');
+    Route::get('/api/admin/antrian/state', [QueueController::class, 'getState'])->name('admin.api.antrian.state');
+    Route::post('/api/admin/antrian/{kunjungan}/start', [QueueController::class, 'start'])->name('admin.api.antrian.start');
+    Route::post('/api/admin/antrian/{kunjungan}/finish', [QueueController::class, 'finish'])->name('admin.api.antrian.finish');
+    Route::post('/api/admin/antrian/{kunjungan}/call', [QueueController::class, 'call'])->name('admin.api.antrian.call');
+
+    // Database Pengunjung
+    Route::get('pengunjung', [AdminVisitorController::class, 'index'])->name('admin.visitors.index');
+    Route::delete('pengunjung/delete-all', [AdminVisitorController::class, 'deleteAll'])->name('admin.visitors.delete-all');
+    Route::delete('pengunjung/{visitor}', [AdminVisitorController::class, 'destroy'])->name('admin.visitors.destroy');
+    Route::post('pengunjung/bulk-delete', [AdminVisitorController::class, 'bulkDestroy'])->name('admin.visitors.bulk-delete');
+    Route::get('pengunjung/export-csv', [AdminVisitorController::class, 'exportCsv'])->name('admin.visitors.export-csv');
+    Route::get('pengunjung/export-excel', [AdminVisitorController::class, 'exportExcel'])->name('admin.visitors.export-excel');
+    Route::get('pengunjung/export-pdf', [AdminVisitorController::class, 'exportPdf'])->name('admin.visitors.export-pdf');
+    Route::get('pengunjung/{id}/history', [AdminVisitorController::class, 'getHistory'])->name('admin.visitors.history');
+
+    // Konfigurasi Sistem Kunjungan
+    Route::get('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'index'])->name('admin.settings.visit-config');
+    Route::post('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'update'])->name('admin.settings.visit-config.update');
+});
+
+
+// =========================================================================
+// 7. ADMIN PANEL — GRUP C: KONTEN & HUMAS
+// Akses: super_admin, admin_humas
+// =========================================================================
+Route::middleware(['auth', 'verified', 'role:super_admin,admin_humas'])->group(function () {
+
+    // Berita
+    Route::resource('news', AdminNewsController::class);
+
+    // Pengumuman
+    Route::resource('announcements', AdminAnnouncementController::class);
+
+    // Produk
+    Route::resource('products', AdminProductController::class)->names('admin.products');
+
+    // Laporan Publik
+    Route::post('financial-reports/bulk-delete', [\App\Http\Controllers\Admin\FinancialReportController::class, 'bulkDelete'])->name('admin.financial-reports.bulk-delete');
+    Route::get('financial-reports/export-excel', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportExcel'])->name('admin.financial-reports.export-excel');
+    Route::get('financial-reports/export-pdf', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportPdf'])->name('admin.financial-reports.export-pdf');
+    Route::resource('financial-reports', \App\Http\Controllers\Admin\FinancialReportController::class)->names('admin.financial-reports');
+});
+
+
+// =========================================================================
+// 8. ADMIN PANEL — GRUP D: KUNJUNGAN READ-ONLY untuk Humas
+// Akses: admin_humas (index & show saja — tanpa bisa ubah/hapus)
+// Note: export, kalender, stats TIDAK diberikan agar tidak ada duplikasi nama route
+// =========================================================================
+Route::middleware(['auth', 'verified', 'role:admin_humas'])->group(function () {
+    // Kunjungan index (list) — read only untuk humas
+    Route::get('kunjungan', [AdminKunjunganController::class, 'index'])->name('admin.kunjungan.index');
+    // Detail kunjungan — read only untuk humas
+    Route::get('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])->name('admin.kunjungan.show');
+});
+
+
+// =========================================================================
+// 9. ADMIN PANEL — GRUP E: SUPER ADMIN ONLY
+// Akses: super_admin
+// =========================================================================
+Route::middleware(['auth', 'verified', 'role:super_admin'])->group(function () {
 
     // Executive Dashboard
     Route::get('/dashboard/executive', [ExecutiveDashboardController::class, 'index'])->name('admin.dashboard.executive');
@@ -184,83 +306,10 @@ Route::middleware(['auth', 'verified', 'role:admin,superadmin'])->group(function
     Route::get('/api/executive/visitor-demographics', [ExecutiveDashboardController::class, 'getVisitorDemographics'])->name('api.executive.visitor-demographics');
     Route::get('/api/executive/most-visited-wbp', [ExecutiveDashboardController::class, 'getMostVisitedWbp'])->name('api.executive.most-visited-wbp');
 
-    Route::get('/rekapitulasi', [DashboardController::class, 'rekapitulasi'])->name('admin.rekapitulasi');
-    Route::get('/rekapitulasi/demografi', [DashboardController::class, 'demografi'])->name('admin.rekapitulasi.demografi');
-    Route::get('/rekapitulasi/barang-bawaan', [DashboardController::class, 'barangBawaan'])->name('admin.rekapitulasi.barang_bawaan');
-    Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('dashboard.stats');
-
-    // Log Aktivitas
-    Route::get('/activity-logs', [DashboardController::class, 'activityLogs'])->name('admin.activity_logs.index');
-    Route::post('/activity-logs/reset', [DashboardController::class, 'resetActivityLogs'])->name('admin.activity_logs.reset');
-
-    // I. MANAJEMEN ANTRIAN
-    Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
-    Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
-    Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
-    Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');
-
-    // J. MANAJEMEN ANTRIAN KUNJUNGAN (REALTIME)
-    Route::get('/antrian/kontrol', [QueueController::class, 'index'])->name('admin.antrian.kontrol');
-    Route::get('/api/admin/antrian/state', [QueueController::class, 'getState'])->name('admin.api.antrian.state');
-    Route::post('/api/admin/antrian/{kunjungan}/start', [QueueController::class, 'start'])->name('admin.api.antrian.start');
-    Route::post('/api/admin/antrian/{kunjungan}/finish', [QueueController::class, 'finish'])->name('admin.api.antrian.finish');
-    Route::post('/api/admin/antrian/{kunjungan}/call', [QueueController::class, 'call'])->name('admin.api.antrian.call');
-
-    // B. MANAJEMEN DATA WBP (WARGA BINAAN)
-    Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
-    Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
-    Route::resource('wbp', WbpController::class)->names('admin.wbp');
-
-    // C. MANAJEMEN KUNJUNGAN (VERIFIKASI & LAPORAN)
-    Route::get('kunjungan/stats', [AdminKunjunganController::class, 'getStats'])->name('admin.kunjungan.stats');
-    Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
-    Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
-    Route::get('kunjungan/export', [AdminKunjunganController::class, 'export'])->name('admin.kunjungan.export');
-    Route::get('kunjungan/verifikasi', [AdminKunjunganController::class, 'showVerificationForm'])->name('admin.kunjungan.verifikasi');
-    Route::post('kunjungan/verifikasi', [AdminKunjunganController::class, 'verifyQrCode'])->name('admin.kunjungan.verifikasi.submit');
-    Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
-    Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
-
-    // --> PENDAFTARAN OFFLINE OLEH ADMIN <--
-    Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');
-    Route::post('kunjungan/create-offline', [AdminKunjunganController::class, 'storeOffline'])->name('admin.kunjungan.storeOffline');
-    Route::get('kunjungan/offline/success/{kunjungan}', [AdminKunjunganController::class, 'offlineSuccess'])->name('admin.kunjungan.offline.success');
-
-    Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
-
-    // D. KELOLA KONTEN (BERITA & PENGUMUMAN)
-    Route::resource('news', AdminNewsController::class);
-    Route::resource('announcements', AdminAnnouncementController::class);
-
-    // MANAJEMEN PRODUK
-    Route::resource('products', AdminProductController::class)->names('admin.products');
-
-    // MANAJEMEN LAPORAN KEUANGAN / PUBLIK
-    Route::post('financial-reports/bulk-delete', [\App\Http\Controllers\Admin\FinancialReportController::class, 'bulkDelete'])->name('admin.financial-reports.bulk-delete');
-    Route::get('financial-reports/export-excel', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportExcel'])->name('admin.financial-reports.export-excel');
-    Route::get('financial-reports/export-pdf', [\App\Http\Controllers\Admin\FinancialReportController::class, 'exportPdf'])->name('admin.financial-reports.export-pdf');
-    Route::resource('financial-reports', \App\Http\Controllers\Admin\FinancialReportController::class)->names('admin.financial-reports');
-
-    // E. MANAJEMEN USER (ADMIN & PETUGAS)
+    // Manajemen User (hanya super admin)
     Route::resource('users', AdminUserController::class)->names('admin.users');
-
-    // G. MANAJEMEN SURVEY IKM
-    Route::resource('surveys', AdminSurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
-
-    // H. MANAJEMEN PENGUNJUNG
-    Route::get('pengunjung', [AdminVisitorController::class, 'index'])->name('admin.visitors.index');
-    Route::delete('pengunjung/delete-all', [AdminVisitorController::class, 'deleteAll'])->name('admin.visitors.delete-all');
-    Route::delete('pengunjung/{visitor}', [AdminVisitorController::class, 'destroy'])->name('admin.visitors.destroy');
-    Route::post('pengunjung/bulk-delete', [AdminVisitorController::class, 'bulkDestroy'])->name('admin.visitors.bulk-delete');
-    Route::get('pengunjung/export-csv', [AdminVisitorController::class, 'exportCsv'])->name('admin.visitors.export-csv');
-    Route::get('pengunjung/export-excel', [AdminVisitorController::class, 'exportExcel'])->name('admin.visitors.export-excel');
-    Route::get('pengunjung/export-pdf', [AdminVisitorController::class, 'exportPdf'])->name('admin.visitors.export-pdf');
-    Route::get('pengunjung/{id}/history', [AdminVisitorController::class, 'getHistory'])->name('admin.visitors.history');
-
-    // I. KONFIGURASI SISTEM KUNJUNGAN
-    Route::get('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'index'])->name('admin.settings.visit-config');
-    Route::post('settings/visit-config', [\App\Http\Controllers\Admin\VisitConfigController::class, 'update'])->name('admin.settings.visit-config.update');
 });
+
 
 // Load auth routes bawaan Laravel Breeze
 require __DIR__ . '/auth.php';

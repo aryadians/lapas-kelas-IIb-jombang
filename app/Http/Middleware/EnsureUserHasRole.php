@@ -10,37 +10,39 @@ class EnsureUserHasRole
 {
     /**
      * Handle an incoming request.
+     * Mendukung multiple roles dengan OR logic.
+     * Contoh: middleware('role:super_admin,admin_registrasi')
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         // 1. Cek apakah user sudah login
         if (!$request->user()) {
             abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
         }
-        
-        // Debugging: Log the user's role and the required role
-        \Log::info('EnsureUserHasRole Middleware:', [
-            'user_role' => $request->user() ? $request->user()->role : null,
-            'required_role' => $role,
-        ]);
 
-        // 2. Cek role - jika middleware $role adalah 'admin', terima semua role admin
-        // Jika role spesifik diminta, cek role exact match
-        if ($role === 'admin') {
-            // Izinkan semua role yang memiliki 'admin' di dalamnya, termasuk 'super_admin'
-            $allowedRoles = ['super_admin', 'admin_humas', 'admin_registrasi', 'admin_umum', 'admin'];
-            if (!in_array($request->user()->role, $allowedRoles)) {
-                abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
-            }
-        } else {
-            // Untuk role spesifik lainnya, lakukan exact match
-            if ($request->user()->role !== $role) {
-                abort(403, 'ANDA TIDAK MEMILIKI AKSES.');
+        $userRole = $request->user()->role;
+
+        // Semua role yang dianggap "admin" (untuk alias 'admin')
+        $allAdminRoles = ['super_admin', 'admin_humas', 'admin_registrasi', 'admin_umum', 'admin'];
+
+        // 2. Cek apakah userRole cocok dengan salah satu role yang diminta (OR logic)
+        foreach ($roles as $role) {
+            if ($role === 'admin') {
+                // Alias 'admin' = izinkan semua role admin
+                if (in_array($userRole, $allAdminRoles)) {
+                    return $next($request);
+                }
+            } else {
+                // Role spesifik: exact match
+                if ($userRole === $role) {
+                    return $next($request);
+                }
             }
         }
 
-        return $next($request);
+        // Tidak ada role yang cocok
+        abort(403, 'ANDA TIDAK MEMILIKI AKSES. Role Anda: ' . $userRole . '. Diperlukan: ' . implode(' atau ', $roles));
     }
 }
