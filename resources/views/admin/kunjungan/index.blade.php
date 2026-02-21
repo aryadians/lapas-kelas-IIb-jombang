@@ -5,330 +5,297 @@
 @endphp
 
 @section('content')
-{{-- Load Animate.css & FontAwesome --}}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
 <style>
-    /* Modern UI Refinements */
+    /* PREMIUM 3D & GLASSMORPHISM UI */
     .glass-card {
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.9) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,1);
     }
     
-    .badge-status {
-        @apply px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 w-fit shadow-sm border;
+    .table-container th {
+        @apply bg-slate-800 text-white font-bold uppercase tracking-widest text-[10px] whitespace-nowrap border-b-4 border-blue-500 shadow-md;
     }
 
-    /* Animation Delay */
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-
-    /* Custom Scrollbar for Table */
-    .custom-scrollbar::-webkit-scrollbar { height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    
-    .antrian-pill {
-        @apply bg-slate-900 text-white font-black px-3 py-1 rounded-lg text-sm shadow-lg shadow-slate-900/20 border border-slate-800;
+    .table-container td {
+        @apply border-b border-slate-100/80 bg-white/50 backdrop-blur-sm transition-all duration-300;
     }
 
-    /* PREMIUM ACTION BUTTONS */
-    .btn-action-premium {
-        @apply w-10 h-10 rounded-2xl flex items-center justify-center transition-all duration-300 border shadow-sm relative overflow-hidden group/btn active:scale-90;
+    .table-container tr:hover td {
+        @apply bg-white shadow-sm z-10 relative scale-[1.002];
+    }
+
+    .badge-status-3d {
+        @apply px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 w-max transition-all shadow-lg border border-white/20;
+    }
+
+    /* Premium Action Buttons - Outlined/Bungkusan Style */
+    .btn-action-3d {
+        @apply w-9 h-9 rounded-xl flex items-center justify-center transition-all bg-white border-2 hover:-translate-y-1 shadow-sm;
     }
     
-    .btn-view { @apply bg-white text-blue-500 border-blue-100 hover:bg-blue-500 hover:text-white hover:border-blue-500 hover:shadow-blue-200; }
-    .btn-edit { @apply bg-white text-emerald-500 border-emerald-100 hover:bg-emerald-500 hover:text-white hover:border-emerald-500 hover:shadow-emerald-200; }
-    .btn-done { @apply bg-white text-indigo-500 border-indigo-100 hover:bg-indigo-500 hover:text-white hover:border-indigo-500 hover:shadow-indigo-200; }
-    .btn-delete { @apply bg-white text-red-500 border-red-100 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-red-200; }
+    .btn-view { @apply border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-blue-500/30; }
+    .btn-edit { @apply border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 hover:shadow-emerald-500/30; }
+    .btn-done { @apply border-indigo-200 text-indigo-600 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 hover:shadow-indigo-500/30; }
+    .btn-delete { @apply border-rose-200 text-rose-600 hover:bg-rose-600 hover:text-white hover:border-rose-600 hover:shadow-rose-500/30; }
 
-    .btn-action-premium i { @apply transition-transform duration-300 group-hover/btn:scale-110; }
+    .btn-action-3d i { 
+        @apply transition-transform duration-300 drop-shadow-md text-lg; 
+    }
+    .btn-action-3d:hover i {
+        @apply scale-125 rotate-6 text-white;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar { height: 8px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: linear-gradient(to right, #94a3b8, #64748b); border-radius: 10px; }
+    
+    .antrian-pill-3d {
+        @apply bg-gradient-to-br from-slate-800 to-black text-white font-black px-4 py-2 rounded-xl text-sm shadow-[0_8px_15px_-5px_rgba(0,0,0,0.4)] border border-slate-700/50 transform transition-transform hover:scale-110;
+    }
 </style>
 
-<div class="space-y-10 pb-16">
+<div class="space-y-8 pb-16">
 
-    {{-- HEADER & QUICK ACTIONS --}}
-    <header class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 animate__animated animate__fadeInDown">
-        <div class="space-y-1">
-            <div class="flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
-                <i class="fas fa-list-ul"></i>
-                <span>Manajemen Data</span>
-            </div>
-            <h1 class="text-4xl font-black text-slate-900 tracking-tighter">
-                Daftar Kunjungan
-            </h1>
-            <div class="flex items-center gap-2 text-slate-500 font-medium">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                Monitoring data kunjungan secara real-time
+    {{-- HEADER 3D --}}
+    <div class="bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 rounded-[2.5rem] shadow-[0_20px_40px_-10px_rgba(30,58,138,0.5)] overflow-hidden border border-white/10 relative animate__animated animate__zoomIn px-10 py-10 flex flex-col xl:flex-row justify-between items-center gap-8 group">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500 blur-[80px] opacity-30 rounded-full group-hover:opacity-50 transition-opacity duration-700"></div>
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500 blur-[80px] opacity-20 rounded-full group-hover:opacity-40 transition-opacity duration-700"></div>
+        
+        <div class="relative z-10 text-center xl:text-left">
+            <h2 class="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-white flex items-center justify-center xl:justify-start gap-4 drop-shadow-2xl">
+                <i class="fas fa-layer-group text-blue-400 rotate-12 transform group-hover:rotate-0 transition-transform duration-500"></i>
+                Data Kunjungan
+            </h2>
+            <div class="mt-3 flex justify-center xl:justify-start items-center gap-3">
+                <span class="w-3 h-3 rounded-full bg-emerald-400 animate-ping shadow-[0_0_15px_rgba(52,211,153,1)]"></span>
+                <p class="text-blue-100/80 font-medium text-sm tracking-wide">Monitoring Antrian & Pelayanan WBP Real-time</p>
             </div>
         </div>
         
-        <div class="flex flex-wrap items-center gap-3 w-full xl:w-auto">
-            <div class="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
-                <button onclick="window.print()" class="p-2.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Cetak Laporan">
-                    <i class="fas fa-print text-lg"></i>
-                </button>
-                <div class="w-px h-6 bg-slate-200"></div>
-                <button type="button" id="openExportModal" class="flex items-center gap-2 px-4 py-2.5 text-emerald-600 font-bold text-sm hover:bg-emerald-50 rounded-xl transition-all">
-                    <i class="fas fa-file-excel"></i>
-                    <span>Export</span>
-                </button>
-            </div>
-
-            <div class="flex items-center gap-2">
-                <a href="{{ route('admin.kunjungan.verifikasi') }}" class="flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-6 py-3.5 rounded-2xl shadow-xl shadow-slate-900/20 transition-all active:scale-95 text-sm font-bold uppercase tracking-tight">
-                    <i class="fas fa-qrcode text-lg text-blue-400"></i>
-                    <span>Scan QR</span>
-                </a>
-
-                <a href="{{ route('admin.kunjungan.createOffline') }}" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 transition-all active:scale-95 text-sm font-bold uppercase tracking-tight">
-                    <i class="fas fa-plus-circle text-lg"></i>
-                    <span>Daftar Offline</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    {{-- STATS GRID --}}
-    <div x-data="dashboardStats()" x-init="init()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
-        <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-5 group hover:-translate-y-1 transition-all duration-300 animate__animated animate__fadeInUp delay-1">
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform shadow-inner text-xl">
-                <i class="fas fa-calendar-day"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kunjungan Hari Ini</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tighter" x-text="stats.total">{{ $statsToday['total'] }}</p>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-5 group hover:-translate-y-1 transition-all duration-300 animate__animated animate__fadeInUp delay-2">
-            <div class="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-inner text-xl">
-                <i class="fas fa-clock"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Perlu Verifikasi</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tighter" x-text="stats.pending">{{ $statsToday['pending'] }}</p>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-5 group hover:-translate-y-1 transition-all duration-300 animate__animated animate__fadeInUp delay-3">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform shadow-inner text-xl">
-                <i class="fas fa-user-friends"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sedang Dilayani</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tighter" x-text="stats.serving">{{ $statsToday['serving'] }}</p>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 flex items-center gap-5 group hover:-translate-y-1 transition-all duration-300 animate__animated animate__fadeInUp delay-4">
-            <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform shadow-inner text-xl">
-                <i class="fas fa-users"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sisa Kuota Offline</p>
-                <p class="text-3xl font-black text-slate-900 tracking-tighter" x-text="stats.sisa_kuota_total">0</p>
-            </div>
+        <div class="relative z-10 flex flex-wrap justify-center gap-4">
+            <button type="button" id="openExportModal" class="flex items-center gap-3 px-6 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white rounded-2xl border border-white/20 transition-all font-bold text-sm hover:-translate-y-1 shadow-lg">
+                <i class="fas fa-file-excel text-emerald-400 text-lg group-hover:animate-bounce"></i> Export
+            </button>
+            <a href="{{ route('admin.kunjungan.verifikasi') }}" class="flex items-center gap-3 px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl shadow-[0_10px_20px_-10px_rgba(37,99,235,0.8)] border border-blue-400 font-bold text-sm transition-all hover:-translate-y-1">
+                <i class="fas fa-qrcode text-xl text-blue-200"></i> Scan QR
+            </a>
+            <a href="{{ route('admin.kunjungan.createOffline') }}" class="flex items-center gap-3 px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white rounded-2xl shadow-[0_10px_20px_-10px_rgba(16,185,129,0.8)] font-bold text-sm transition-all hover:-translate-y-1 border border-emerald-300">
+                <i class="fas fa-plus text-xl"></i> Pendaftaran Offline
+            </a>
         </div>
     </div>
 
-    {{-- FILTER SECTION --}}
-    <div class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/60 border border-slate-100 p-8 animate__animated animate__fadeInUp">
-        <form action="{{ route('admin.kunjungan.index') }}" method="GET" class="space-y-8">
+    {{-- 3D STATS CARDS --}}
+    <div x-data="dashboardStats()" x-init="init()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
+        @php
+            $statCards = [
+                ['title' => 'Hari Ini', 'key' => 'total', 'color' => 'blue', 'icon' => 'calendar-day', 'val' => $statsToday['total'] ?? 0, 'delay' => '0s'],
+                ['title' => 'Antrean', 'key' => 'pending', 'color' => 'amber', 'icon' => 'clock', 'val' => $statsToday['pending'] ?? 0, 'delay' => '0.1s'],
+                ['title' => 'Dilayani', 'key' => 'serving', 'color' => 'indigo', 'icon' => 'user-friends', 'val' => $statsToday['serving'] ?? 0, 'delay' => '0.2s'],
+                ['title' => 'Sisa Kuota', 'key' => 'sisa_kuota_total', 'color' => 'emerald', 'icon' => 'ticket-alt', 'val' => 0, 'delay' => '0.3s']
+            ];
+        @endphp
+
+        @foreach($statCards as $stat)
+        <div class="bg-white rounded-[2rem] p-6 flex flex-col gap-4 border border-slate-100 shadow-[0_15px_30px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] transition-all duration-300 animate__animated animate__fadeInUp group relative overflow-hidden text-center sm:text-left" style="animation-delay: {{ $stat['delay'] }};">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-{{ $stat['color'] }}-50 rounded-full group-hover:scale-150 transition-transform duration-500 z-0"></div>
+            
+            <div class="relative z-10 flex items-center justify-center sm:justify-start gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-{{ $stat['color'] }}-400 to-{{ $stat['color'] }}-600 text-white flex items-center justify-center text-2xl shadow-[0_10px_20px_-10px_shadowColor] group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-{{ $stat['icon'] }} drop-shadow-md"></i>
+                </div>
+                <div>
+                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-widest">{{ $stat['title'] }}</p>
+                    <p class="text-4xl font-black text-slate-800 drop-shadow-sm" x-text="stats.{{ $stat['key'] }}">{{ $stat['val'] }}</p>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    {{-- FILTER GLASS --}}
+    <div class="glass-card rounded-[2rem] p-8 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <form action="{{ route('admin.kunjungan.index') }}" method="GET" class="space-y-6">
             <div class="flex flex-col lg:flex-row gap-6">
-                <div class="flex-grow relative group">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4 mb-2 block">Pencarian Data</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-slate-300 group-focus-within:text-blue-500 transition-colors"></i>
+                <div class="flex-grow">
+                    <label class="text-xs font-bold text-slate-600 mb-2 flex items-center gap-2"><i class="fas fa-search text-blue-500"></i> Cari Data</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-slate-400 group-hover:text-blue-500 transition-colors"></i>
                         </div>
                         <input type="text" name="search" value="{{ request('search') }}" 
-                            class="w-full pl-14 pr-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-bold text-slate-700 placeholder-slate-300" 
-                            placeholder="Cari Nama Pengunjung, NIK, atau Nama WBP...">
+                            class="w-full pl-12 pr-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all font-bold text-slate-700 shadow-sm" 
+                            placeholder="Ketik Nama, NIK, WBP...">
                     </div>
                 </div>
                 
-                <div class="lg:w-72">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4 mb-2 block">Filter Tanggal</label>
+                <div class="lg:w-48">
+                    <label class="text-xs font-bold text-slate-600 mb-2 flex items-center gap-2"><i class="fas fa-calendar-alt text-emerald-500"></i> Tanggal</label>
                     <input type="date" name="tanggal_kunjungan" value="{{ request('tanggal_kunjungan') }}" 
-                        class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600">
+                        class="w-full px-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 font-bold text-slate-700 shadow-sm transition-all">
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6 border-t border-slate-50">
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Status Kunjungan</label>
-                    <select name="status" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 transition-all">
+                <div class="lg:w-48">
+                    <label class="text-xs font-bold text-slate-600 mb-2 flex items-center gap-2"><i class="fas fa-tasks text-purple-500"></i> Status</label>
+                    <select name="status" class="w-full px-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 font-bold text-slate-700 shadow-sm transition-all">
                         <option value="">Semua Status</option>
-                        @foreach([
-                            'pending' => '⏳ Menunggu',
-                            'approved' => '✅ Disetujui',
-                            'called' => '📣 Dipanggil',
-                            'in_progress' => '▶️ Sedang Berlangsung',
-                            'rejected' => '❌ Ditolak',
-                            'completed' => '🏁 Selesai'
-                        ] as $val => $label)
-                            <option value="{{ $val }}" {{ request('status') == $val ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⏳ Menunggu</option>
+                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>✅ Disetujui</option>
+                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>▶️ Dilayani</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>🏁 Selesai</option>
                     </select>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 block">Sesi Waktu</label>
-                    <select name="sesi" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-blue-500 focus:ring-0 font-bold text-slate-600 transition-all">
-                        <option value="">Semua Sesi</option>
-                        <option value="pagi" {{ request('sesi') == 'pagi' ? 'selected' : '' }}>🌅 Sesi Pagi</option>
-                        <option value="siang" {{ request('sesi') == 'siang' ? 'selected' : '' }}>☀️ Sesi Siang</option>
-                    </select>
-                </div>
-
-                <div class="flex items-end gap-3">
-                    <button type="submit" class="flex-grow bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl shadow-xl shadow-slate-900/20 transition-all active:scale-95 uppercase tracking-widest text-xs">
-                        Terapkan Filter
+                <div class="flex items-end gap-3 lg:w-48">
+                    <button type="submit" class="flex-grow bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] transition-all hover:-translate-y-1 active:translate-y-0 text-sm flex justify-center items-center gap-2">
+                        <i class="fas fa-filter text-blue-400"></i> Filter
                     </button>
-                    <a href="{{ route('admin.kunjungan.index') }}" class="px-6 py-4 bg-slate-100 text-slate-500 hover:bg-slate-200 font-bold rounded-2xl transition-all active:scale-95" title="Reset Filter">
-                        <i class="fas fa-undo"></i>
-                    </a>
+                    @if(request()->hasAny(['search', 'tanggal_kunjungan', 'status']))
+                        <a href="{{ route('admin.kunjungan.index') }}" class="px-5 py-3.5 bg-rose-50 border-2 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white font-bold rounded-2xl transition-all shadow-sm hover:shadow-rose-500/30 flex items-center justify-center" title="Reset">
+                            <i class="fas fa-undo"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
         </form>
     </div>
 
-    {{-- BULK & TABLE SECTION --}}
-    <form id="bulk-action-form" method="POST" class="space-y-6">
+    {{-- TABLE SECTION 3D --}}
+    <form id="bulk-action-form" method="POST" class="space-y-4 animate__animated animate__fadeInUp bg-white p-6 rounded-[2.5rem] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] border border-slate-100" style="animation-delay: 0.5s;">
         @csrf
         
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4 px-4">
-            <div class="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100">
-                <input type="checkbox" id="selectAll" class="w-5 h-5 rounded-lg border-2 border-slate-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all">
-                <label for="selectAll" class="font-black text-slate-700 text-xs uppercase tracking-widest cursor-pointer select-none">Pilih Semua</label>
+        <div class="flex flex-wrap lg:flex-nowrap justify-between gap-4 py-2 px-2">
+            <div class="flex items-center gap-3 bg-slate-50 px-5 py-3 rounded-2xl border-2 border-slate-100">
+                <input type="checkbox" id="selectAll" class="w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all shadow-inner">
+                <label for="selectAll" class="font-extrabold text-slate-700 text-xs uppercase tracking-widest cursor-pointer mt-0.5 select-none">Tandai Semua</label>
             </div>
 
-            <div id="bulkActionBar" class="hidden animate__animated animate__fadeInRight flex flex-wrap items-center gap-2 bg-slate-900 p-1.5 rounded-2xl shadow-2xl">
-                <div class="px-4 py-2 border-r border-slate-700">
-                    <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest"><span id="selectedCount">0</span> Item</span>
+            <div id="bulkActionBar" class="hidden flex-wrap items-center gap-3 bg-slate-900 px-3 py-2 rounded-2xl shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] border border-slate-700 animate__animated animate__pulse">
+                <div class="px-4 py-1.5 border-r border-slate-700">
+                    <span class="text-xs font-black text-white bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg"><span id="selectedCount">0</span> DIPILIH</span>
                 </div>
                 
                 @foreach([
-                    ['type' => 'approved', 'color' => 'emerald', 'icon' => 'check', 'label' => 'Setuju'],
-                    ['type' => 'rejected', 'color' => 'amber', 'icon' => 'times', 'label' => 'Tolak'],
+                    ['type' => 'approved', 'color' => 'emerald', 'icon' => 'check-double', 'label' => 'Setujui'],
                     ['type' => 'completed', 'color' => 'blue', 'icon' => 'flag-checkered', 'label' => 'Selesai'],
-                    ['type' => 'delete', 'color' => 'red', 'icon' => 'trash-alt', 'label' => 'Hapus']
+                    ['type' => 'delete', 'color' => 'rose', 'icon' => 'trash-alt', 'label' => 'Hapus']
                 ] as $btn)
                     <button type="button" onclick="submitBulkAction('{{ $btn['type'] }}')" 
-                        class="flex items-center gap-2 px-4 py-2 hover:bg-slate-800 text-{{ $btn['color'] }}-400 hover:text-{{ $btn['color'] }}-300 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all">
-                        <i class="fas fa-{{ $btn['icon'] }}"></i> {{ $btn['label'] }}
+                        class="flex items-center gap-2 px-4 py-2 hover:bg-slate-800 text-{{ $btn['color'] }}-400 hover:text-white text-xs font-bold rounded-xl transition-all border border-transparent hover:border-{{ $btn['color'] }}-500 hover:shadow-[0_0_15px_rgba(color,0.3)]">
+                        <i class="fas fa-{{ $btn['icon'] }}"></i> <span class="hidden sm:inline uppercase tracking-wider">{{ $btn['label'] }}</span>
                     </button>
                 @endforeach
             </div>
         </div>
 
-        <div class="bg-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate__animated animate__fadeInUp">
+        <div class="table-container rounded-3xl overflow-hidden border border-slate-100 mt-4 relative">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-sm text-left">
+                <table class="w-full text-sm text-left whitespace-nowrap">
                     <thead>
-                        <tr class="bg-slate-50/50 border-b border-slate-100 uppercase tracking-widest text-[10px] font-black text-slate-400">
-                            <th class="p-6 w-10"></th>
-                            <th class="px-6 py-5">Informasi Pengunjung</th>
-                            <th class="px-6 py-5">Tujuan (WBP)</th>
-                            <th class="px-6 py-5">Jadwal & Sesi</th>
-                            <th class="px-6 py-5">Status</th>
-                            <th class="px-6 py-5 text-center">No. Antrian</th>
-                            <th class="px-6 py-5 text-center">Aksi</th>
+                        <tr>
+                            <th class="px-6 py-5 w-12 text-center rounded-tl-xl"><i class="fas fa-check text-blue-300"></i></th>
+                            <th class="px-5 py-5"><i class="fas fa-hashtag text-blue-300 mr-2"></i>Antrian</th>
+                            <th class="px-5 py-5"><i class="fas fa-id-card text-blue-300 mr-2"></i>Pengunjung</th>
+                            <th class="px-5 py-5"><i class="fas fa-user-lock text-blue-300 mr-2"></i>WBP (Tujuan)</th>
+                            <th class="px-5 py-5"><i class="fas fa-calendar-alt text-blue-300 mr-2"></i>Jadwal</th>
+                            <th class="px-5 py-5"><i class="fas fa-signal text-blue-300 mr-2"></i>Status</th>
+                            <th class="px-5 py-5 text-center rounded-tr-xl"><i class="fas fa-cogs text-blue-300 mr-2"></i>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-50">
+                    <tbody class="divide-y divide-slate-100/50">
                         @forelse ($kunjungans as $kunjungan)
-                        <tr class="group hover:bg-slate-50/50 transition-colors">
-                            <td class="p-6">
-                                <input type="checkbox" name="ids[]" class="kunjungan-checkbox w-5 h-5 rounded-lg border-2 border-slate-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-all" value="{{ $kunjungan->id }}">
+                        <tr class="group hover:bg-slate-50/50">
+                            <td class="px-6 py-5 text-center align-middle">
+                                <input type="checkbox" name="ids[]" class="kunjungan-checkbox w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer shadow-sm" value="{{ $kunjungan->id }}">
                             </td>
-                            <td class="px-6 py-6">
-                                <div class="space-y-1.5">
-                                    <div class="font-black text-slate-800 text-base tracking-tight leading-none">{{ $kunjungan->nama_pengunjung }}</div>
-                                    <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                                        <i class="fas fa-id-card text-slate-300"></i> {{ $kunjungan->nik_ktp }}
+                            <td class="px-5 py-5 align-middle">
+                                @if($kunjungan->nomor_antrian_harian)
+                                    <div class="antrian-pill-3d group-hover:scale-110 group-hover:-rotate-3 inline-block">
+                                        {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
                                     </div>
-                                    @if(!empty($kunjungan->foto_ktp_url))
-                                        <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp_url }}" 
-                                           class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-black uppercase tracking-tighter hover:bg-slate-900 hover:text-white transition-all no-print">
-                                            <i class="fas fa-camera"></i> KTP
-                                        </a>
-                                    @endif
-                                </div>
+                                    <div class="text-[10px] text-slate-400 font-bold mt-2 uppercase tracking-widest px-1 flex items-center gap-1">
+                                        <i class="fas fa-laptop-house"></i> {{ $kunjungan->registration_type }}
+                                    </div>
+                                @else
+                                    <span class="text-xs text-slate-300 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100 font-bold">N/A</span>
+                                @endif
                             </td>
-                            <td class="px-6 py-6">
-                                <div class="space-y-1">
-                                    <div class="font-black text-slate-700 tracking-tight">{{ $kunjungan->wbp->nama ?? 'N/A' }}</div>
-                                    <div class="text-[10px] font-black text-slate-400 uppercase bg-slate-50 px-2 py-0.5 rounded border border-slate-100 w-fit">{{ $kunjungan->hubungan }}</div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-6">
-                                <div class="space-y-1">
-                                    <div class="font-black text-slate-700 tracking-tight">{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d M Y') }}</div>
-                                    <div class="flex items-center gap-1.5">
-                                        @if($kunjungan->sesi == 'pagi')
-                                            <span class="w-2 h-2 rounded-full bg-orange-400"></span>
-                                            <span class="text-[10px] font-black text-orange-600 uppercase">Sesi Pagi</span>
-                                        @else
-                                            <span class="w-2 h-2 rounded-full bg-blue-400"></span>
-                                            <span class="text-[10px] font-black text-blue-600 uppercase">Sesi Siang</span>
+                            <td class="px-5 py-5 align-middle">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="font-black text-slate-800 text-base drop-shadow-sm">{{ $kunjungan->nama_pengunjung }}</span>
+                                    <div class="flex flex-wrap gap-2 text-xs">
+                                        <span class="bg-blue-50/80 text-blue-600 px-2 py-1 rounded-md font-mono font-bold border border-blue-100/50 shadow-sm flex items-center gap-1.5">
+                                            <i class="far fa-id-badge"></i> {{ $kunjungan->nik_ktp }}
+                                        </span>
+                                        @if(!empty($kunjungan->foto_ktp_url))
+                                            <a data-fslightbox="gallery" href="{{ $kunjungan->foto_ktp_url }}" class="bg-indigo-50/80 text-indigo-600 px-2 py-1 rounded-md font-bold border border-indigo-100/50 shadow-sm flex items-center gap-1.5 hover:bg-indigo-600 hover:text-white transition-colors" title="Lihat KTP">
+                                                <i class="fas fa-camera-retro"></i> KTP
+                                            </a>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-6">
+                            <td class="px-5 py-5 align-middle">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="font-bold text-slate-700 text-sm"><i class="fas fa-user-circle text-slate-400 mr-1.5"></i> {{ $kunjungan->wbp->nama ?? 'N/A' }}</span>
+                                    <span class="text-[10px] font-black text-rose-500 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-full w-max uppercase tracking-widest shadow-sm">
+                                        {{ $kunjungan->hubungan }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 align-middle">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="font-bold text-slate-700 text-sm">
+                                        <i class="far fa-calendar-check text-blue-400 mr-2"></i>{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('d M Y') }}
+                                    </span>
+                                    @if($kunjungan->sesi == 'pagi')
+                                        <span class="text-[10px] bg-gradient-to-r from-orange-400 to-amber-500 text-white font-black px-2.5 py-1 rounded-lg shadow-md w-fit flex items-center gap-1.5 transform group-hover:-translate-y-0.5 transition-transform"><i class="fas fa-sun text-yellow-200"></i> Sesi Pagi</span>
+                                    @else
+                                        <span class="text-[10px] bg-gradient-to-r from-blue-400 to-sky-500 text-white font-black px-2.5 py-1 rounded-lg shadow-md w-fit flex items-center gap-1.5 transform group-hover:-translate-y-0.5 transition-transform"><i class="fas fa-cloud-sun text-blue-100"></i> Sesi Siang</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-5 py-5 align-middle">
                                 @php
-                                    $statusConfig = [
-                                        KunjunganStatus::APPROVED->value => ['bg' => 'emerald-50', 'text' => 'emerald-600', 'border' => 'emerald-100', 'icon' => 'check-circle', 'label' => 'Disetujui'],
-                                        KunjunganStatus::CALLED->value => ['bg' => 'yellow-50', 'text' => 'yellow-700', 'border' => 'yellow-100', 'icon' => 'bullhorn', 'label' => 'Dipanggil'],
-                                        KunjunganStatus::IN_PROGRESS->value => ['bg' => 'sky-50', 'text' => 'sky-700', 'border' => 'sky-100', 'icon' => 'hourglass-start', 'label' => 'Melayani'],
-                                        KunjunganStatus::REJECTED->value => ['bg' => 'red-50', 'text' => 'red-600', 'border' => 'red-100', 'icon' => 'times-circle', 'label' => 'Ditolak'],
-                                        KunjunganStatus::COMPLETED->value => ['bg' => 'slate-50', 'text' => 'slate-600', 'border' => 'slate-100', 'icon' => 'flag-checkered', 'label' => 'Selesai'],
-                                        KunjunganStatus::PENDING->value => ['bg' => 'amber-50', 'text' => 'amber-700', 'border' => 'amber-100', 'icon' => 'clock', 'label' => 'Menunggu']
+                                    $mapStatus = [
+                                        KunjunganStatus::APPROVED->value => ['border'=>'emerald-500', 'bg'=>'emerald-50', 'text'=>'emerald-600', 'icon'=>'check-circle', 'label'=>'Disetujui'],
+                                        KunjunganStatus::CALLED->value => ['border'=>'amber-500', 'bg'=>'amber-50', 'text'=>'amber-600', 'icon'=>'bullhorn', 'label'=>'Dipanggil'],
+                                        KunjunganStatus::IN_PROGRESS->value => ['border'=>'blue-500', 'bg'=>'blue-50', 'text'=>'blue-600', 'icon'=>'users-cog', 'label'=>'Melayani'],
+                                        KunjunganStatus::REJECTED->value => ['border'=>'rose-500', 'bg'=>'rose-50', 'text'=>'rose-600', 'icon'=>'times-circle', 'label'=>'Ditolak'],
+                                        KunjunganStatus::COMPLETED->value => ['border'=>'slate-700', 'bg'=>'slate-50', 'text'=>'slate-700', 'icon'=>'flag-checkered', 'label'=>'Selesai'],
+                                        KunjunganStatus::PENDING->value => ['border'=>'orange-400', 'bg'=>'orange-50', 'text'=>'orange-600', 'icon'=>'hourglass-half', 'label'=>'Menunggu']
                                     ];
-                                    $conf = $statusConfig[$kunjungan->status->value] ?? $statusConfig['pending'];
+                                    $st = $mapStatus[$kunjungan->status->value] ?? $mapStatus['pending'];
                                 @endphp
-                                <span class="badge-status bg-{{ $conf['bg'] }} text-{{ $conf['text'] }} border-{{ $conf['border'] }}">
-                                    <i class="fas fa-{{ $conf['icon'] }}"></i> {{ $conf['label'] }}
-                                </span>
+                                <div class="px-3 py-1.5 rounded-xl border-2 border-{{ $st['border'] }} bg-{{ $st['bg'] }} text-{{ $st['text'] }} text-[11px] font-black uppercase tracking-widest w-fit flex items-center gap-2 shadow-sm transform group-hover:-translate-y-0.5 transition-transform">
+                                    <i class="fas fa-{{ $st['icon'] }} {{ $kunjungan->status->value === 'pending' ? 'animate-spin-slow' : 'animate-bounce-hover' }}"></i>
+                                    {{ $st['label'] }}
+                                </div>
                             </td>
-                            <td class="px-6 py-6 text-center">
-                                @if($kunjungan->nomor_antrian_harian)
-                                    <div class="antrian-pill inline-block">
-                                        {{ $kunjungan->registration_type === 'offline' ? 'B' : 'A' }}-{{ str_pad($kunjungan->nomor_antrian_harian, 3, '0', STR_PAD_LEFT) }}
-                                    </div>
-                                @else
-                                    <span class="text-[10px] font-black text-slate-300 italic">N/A</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-6 no-print">
-                                <div class="flex items-center justify-center gap-2">
-                                    {{-- VIEW --}}
-                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="btn-action-premium btn-view" title="Detail">
+                            <td class="px-5 py-5 text-center align-middle">
+                                <div class="flex items-center justify-center gap-3">
+                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="btn-action-3d btn-view" title="Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
                                     @if($kunjungan->status == KunjunganStatus::PENDING)
-                                        {{-- VERIFY --}}
-                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}" class="btn-action-premium btn-edit" title="Verifikasi">
+                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}" class="btn-action-3d btn-edit" title="Verifikasi">
                                             <i class="fas fa-user-check"></i>
                                         </a>
                                     @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
-                                        {{-- DONE --}}
                                         <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" 
-                                            class="btn-action-premium btn-done" title="Selesai">
+                                            class="btn-action-3d btn-done" title="Selesai">
                                             <i class="fas fa-check-double"></i>
                                         </button>
                                     @endif
 
-                                    {{-- DELETE --}}
                                     <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" 
-                                        class="btn-action-premium btn-delete" title="Hapus">
+                                        class="btn-action-3d btn-delete" title="Hapus">
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
@@ -336,12 +303,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="py-32 text-center">
-                                <div class="w-20 h-20 bg-slate-50 rounded-[2rem] flex items-center justify-center mx-auto border-2 border-dashed border-slate-200 mb-6 text-slate-200">
-                                    <i class="fas fa-search text-3xl"></i>
+                            <td colspan="7" class="py-20 text-center bg-slate-50/50">
+                                <div class="w-28 h-28 bg-white rounded-full flex items-center justify-center mx-auto border-[6px] border-slate-100 mb-6 shadow-inner text-slate-300">
+                                    <i class="fas fa-folder-open text-5xl"></i>
                                 </div>
-                                <h3 class="text-lg font-black text-slate-800 tracking-tight uppercase">Data Tidak Ditemukan</h3>
-                                <p class="text-slate-400 mt-1 font-bold text-xs">Sesuaikan kata kunci atau filter pencarian Anda.</p>
+                                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Data Kosong</h3>
+                                <p class="text-slate-500 mt-2 font-medium">Ups! Tidak ada kunjungan yang cocok dengan pencarian.</p>
                             </td>
                         </tr>
                         @endforelse
@@ -353,8 +320,8 @@
 
     {{-- PAGINATION --}}
     @if ($kunjungans->hasPages())
-    <div class="flex justify-center pt-10">
-        <div class="bg-white p-3 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
+    <div class="mt-8 flex justify-center animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+        <div class="glass-card p-3 rounded-2xl shadow-xl border border-white/40 inline-block pointer-events-auto">
             {{ $kunjungans->links() }}
         </div>
     </div>
@@ -362,74 +329,9 @@
 
 </div>
 
-{{-- EXPORT MODAL --}}
-<div id="exportModal" class="fixed inset-0 z-50 hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm transition-opacity" aria-hidden="true"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-[3rem] text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full border border-slate-100">
-            <div class="bg-white px-10 py-8 border-b border-slate-50 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600 shadow-inner">
-                        <i class="fas fa-file-export text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-black text-slate-800 tracking-tighter">Export Data</h3>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Pilih parameter laporan</p>
-                    </div>
-                </div>
-                <button type="button" id="closeExportModal" class="w-10 h-10 rounded-full hover:bg-slate-100 flex items-center justify-center transition-colors">
-                    <i class="fas fa-times text-slate-400"></i>
-                </button>
-            </div>
-            <div class="px-10 py-10">
-                <form id="exportForm" action="{{ route('admin.kunjungan.export') }}" method="GET">
-                    <div class="space-y-8">
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Format Dokumen</label>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="type" value="excel" class="peer sr-only" checked>
-                                    <div class="p-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-center font-bold text-slate-500 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-600 transition-all">
-                                        <i class="fas fa-file-excel mb-2 text-xl block"></i> Excel
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="type" value="csv" class="peer sr-only">
-                                    <div class="p-4 bg-slate-50 border-2 border-slate-50 rounded-2xl text-center font-bold text-slate-500 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-600 transition-all">
-                                        <i class="fas fa-file-csv mb-2 text-xl block"></i> CSV
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Rentang Waktu</label>
-                            <select id="modal_export_period" name="period" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-bold text-slate-600">
-                                <option value="all">Seluruh Riwayat</option>
-                                <option value="day">Harian</option>
-                                <option value="week">Mingguan</option>
-                                <option value="month">Bulanan</option>
-                            </select>
-                        </div>
+{{-- MODALS & SCRIPTS (kept efficient) --}}
+@include('admin.kunjungan.partials.export_modal') 
 
-                        <div id="modal_export_date_container" class="hidden animate__animated animate__fadeIn">
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-4">Pilih Tanggal Acuan</label>
-                            <input type="date" name="date" class="w-full px-6 py-4 bg-slate-50 border-2 border-slate-50 rounded-2xl focus:bg-white focus:border-emerald-500 focus:ring-0 transition-all font-bold text-slate-600" value="{{ date('Y-m-d') }}">
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="bg-slate-50 px-10 py-8 flex flex-col gap-3">
-                <button type="submit" form="exportForm" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-emerald-900/30 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs">
-                    Download Laporan
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{{-- HIDDEN FORM FOR SINGLE ACTION --}}
 <form id="single-action-form" method="POST" class="hidden">
     @csrf
     <input type="hidden" name="_method" id="single_method">
@@ -438,202 +340,83 @@
 
 @push('scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
+<style>
+    .animate-spin-slow { animation: spin 3s linear infinite; }
+    @keyframes spin { 100% {transform:rotate(360deg);} }
+    .animate-bounce-hover { transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    tr:hover .animate-bounce-hover { transform: translateY(-3px) scale(1.1); }
+</style>
 <script>
-// --- LOGIC SINGLE ACTION ---
+const swalTheme3D = {
+    customClass: {
+        popup: 'rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100',
+        title: 'text-2xl font-black text-slate-800 tracking-tight',
+        htmlContainer: 'text-slate-500 font-medium',
+        confirmButton: 'px-8 py-3 bg-gradient-to-r text-white font-black rounded-2xl shadow-lg hover:-translate-y-1 transition-all mx-2',
+        cancelButton: 'px-8 py-3 bg-slate-100 text-slate-600 font-black rounded-2xl border-2 border-slate-200 hover:bg-slate-200 hover:-translate-y-1 transition-all mx-2'
+    },
+    buttonsStyling: false
+};
+
 function submitSingleAction(url, actionType, method) {
     const form = document.getElementById('single-action-form');
-    const methodInput = document.getElementById('single_method');
-    const statusInput = document.getElementById('single_status');
+    document.getElementById('single_method').value = method;
+    document.getElementById('single_status').value = actionType === 'delete' ? '' : actionType;
 
-    let title, text, icon, btnColor, btnText;
-
-    if(actionType === 'delete') {
-        title = 'Hapus Data?';
-        text = "Data akan dihapus permanen dari sistem.";
-        icon = 'warning';
-        btnColor = 'px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-500/30 uppercase text-xs tracking-widest';
-        btnText = 'Ya, Hapus';
-    } else if (actionType === 'completed') {
-        title = 'Tandai Selesai?';
-        text = "Status kunjungan akan diubah menjadi Selesai.";
-        icon = 'question';
-        btnColor = 'px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-blue-500/30 uppercase text-xs tracking-widest';
-        btnText = 'Ya, Selesaikan';
-    } else {
-        title = actionType === 'approved' ? 'Setujui?' : 'Tolak?';
-        text = "Notifikasi status akan dikirimkan ke pengunjung.";
-        icon = 'question';
-        btnColor = actionType === 'approved' 
-            ? 'px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-emerald-500/30 uppercase text-xs tracking-widest' 
-            : 'px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-2xl transition-all shadow-xl shadow-amber-500/30 uppercase text-xs tracking-widest';
-        btnText = 'Ya, Lanjutkan';
-    }
+    let props = {
+        delete: { t: 'Hapus Data?', icon: 'warning', c: 'from-rose-500 to-red-600 shadow-red-500/50', btn: '<i class="fas fa-trash-alt mr-2"></i>Ya, Hapus' },
+        completed: { t: 'Tandai Selesai?', icon: 'info', c: 'from-indigo-500 to-blue-600 shadow-indigo-500/50', btn: '<i class="fas fa-check-double mr-2"></i>Selesai!' },
+        approved: { t: 'Setujui?', icon: 'question', c: 'from-emerald-500 to-teal-600 shadow-emerald-500/50', btn: '<i class="fas fa-check mr-2"></i>Ya, Setuju' },
+        rejected: { t: 'Tolak?', icon: 'question', c: 'from-amber-400 to-orange-500 shadow-amber-500/50', btn: '<i class="fas fa-times mr-2"></i>Tolak' }
+    }[actionType || 'approved'];
 
     Swal.fire({
-        ...swalTheme,
-        title: title,
-        text: text,
-        icon: icon,
-        showCancelButton: true,
-        confirmButtonText: btnText,
-        cancelButtonText: 'Batal',
-        customClass: {
-            ...swalTheme.customClass,
-            confirmButton: btnColor,
-            cancelButton: 'px-8 py-3 bg-slate-100 text-slate-500 font-bold rounded-2xl hover:bg-slate-200'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.action = url;
-            methodInput.value = method;
-            statusInput.value = actionType === 'delete' ? '' : actionType;
-            form.submit();
-        }
-    });
+        ...swalTheme3D, title: props.t, text: "Yakin melakukan aksi ini?", icon: props.icon,
+        showCancelButton: true, confirmButtonText: props.btn,
+        customClass: { ...swalTheme3D.customClass, confirmButton: swalTheme3D.customClass.confirmButton + ' ' + props.c }
+    }).then(r => { if(r.isConfirmed) { form.action = url; form.submit(); } });
 }
 
-// --- BULK ACTION ---
 function submitBulkAction(actionType) {
     const form = document.getElementById('bulk-action-form');
-    const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
-
-    if(count === 0) return;
-
-    let url, title, text, icon, btnColor, btnText;
-
-    if(actionType === 'delete') {
-        url = "{{ route('admin.kunjungan.bulk-delete') }}";
-        title = `Hapus ${count} Data?`;
-        text = "Seluruh data terpilih akan dihapus permanen.";
-        icon = 'warning';
-        btnColor = 'px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl transition-all shadow-xl shadow-red-500/30 uppercase text-xs tracking-widest';
-        btnText = 'Ya, Hapus Masal';
-    } else {
-        url = "{{ route('admin.kunjungan.bulk-update') }}";
-        icon = 'question';
-        title = `Proses ${count} Data?`;
-        text = `Ubah status data terpilih menjadi ${actionType}.`;
-        btnColor = 'px-8 py-3 bg-slate-900 hover:bg-black text-white font-black rounded-2xl transition-all shadow-xl shadow-slate-900/30 uppercase text-xs tracking-widest';
-        btnText = 'Ya, Update Masal';
-        
-        const oldInput = document.getElementById('bulk_status_input');
-        if(oldInput) oldInput.remove();
-
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'status';
-        input.value = actionType;
-        input.id = 'bulk_status_input';
-        form.appendChild(input);
-    }
+    if(!document.querySelectorAll('.kunjungan-checkbox:checked').length) return;
 
     Swal.fire({
-        ...swalTheme,
-        title: title,
-        text: text,
-        icon: icon,
-        showCancelButton: true,
-        confirmButtonText: btnText,
-        cancelButtonText: 'Batal',
-        customClass: {
-            ...swalTheme.customClass,
-            confirmButton: btnColor,
-            cancelButton: 'px-8 py-3 bg-slate-100 text-slate-500 font-bold rounded-2xl hover:bg-slate-200'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.action = url;
-            form.submit();
-        }
+        ...swalTheme3D, title: 'Proses Data Masal?', text: `Semua data terpilih akan diproses.`, icon: 'warning',
+        showCancelButton: true, confirmButtonText: "Ya, Proses!",
+        customClass: { ...swalTheme3D.customClass, confirmButton: swalTheme3D.customClass.confirmButton + ' from-slate-800 to-black shadow-slate-900/50' }
+    }).then(r => { 
+        if(r.isConfirmed) { 
+            form.action = actionType === 'delete' ? "{{ route('admin.kunjungan.bulk-delete') }}" : "{{ route('admin.kunjungan.bulk-update') }}";
+            let inp = document.createElement('input'); inp.type = 'hidden'; inp.name = 'status'; inp.value = actionType; form.appendChild(inp);
+            form.submit(); 
+        } 
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // CHECKBOX LOGIC
-    const selectAll = document.getElementById('selectAll');
-    const checkboxes = document.querySelectorAll('.kunjungan-checkbox');
-    const bulkBar = document.getElementById('bulkActionBar');
-    const countSpan = document.getElementById('selectedCount');
-
-    function toggleBulkBar() {
-        const count = document.querySelectorAll('.kunjungan-checkbox:checked').length;
-        if(countSpan) countSpan.textContent = count;
-        if(bulkBar) {
-            if(count > 0) {
-                bulkBar.classList.remove('hidden');
-                bulkBar.classList.add('flex');
-            } else {
-                bulkBar.classList.add('hidden');
-                bulkBar.classList.remove('flex');
-            }
-        }
-    }
-
-    if(selectAll) {
-        selectAll.addEventListener('change', function() {
-            checkboxes.forEach(cb => cb.checked = this.checked);
-            toggleBulkBar();
-        });
-    }
-
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', function() {
-            if(!this.checked && selectAll) selectAll.checked = false;
-            toggleBulkBar();
-        });
-    });
-
-    // EXPORT MODAL
-    const openExportModalBtn = document.getElementById('openExportModal');
-    const closeExportModalBtn = document.getElementById('closeExportModal');
-    const exportModal = document.getElementById('exportModal');
-    const modalExportPeriodSelect = document.getElementById('modal_export_period');
-    const modalExportDateContainer = document.getElementById('modal_export_date_container');
-
-    function toggleModalExportDateInput() {
-        if (modalExportPeriodSelect && modalExportDateContainer) {
-            if (['day', 'week', 'month'].includes(modalExportPeriodSelect.value)) {
-                modalExportDateContainer.classList.remove('hidden');
-            } else {
-                modalExportDateContainer.classList.add('hidden');
-            }
-        }
-    }
-
-    if (openExportModalBtn && exportModal) {
-        openExportModalBtn.addEventListener('click', () => {
-            exportModal.classList.remove('hidden');
-            toggleModalExportDateInput();
-        });
-    }
-
-    if (closeExportModalBtn && exportModal) {
-        closeExportModalBtn.addEventListener('click', () => exportModal.classList.add('hidden'));
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const cbs = document.querySelectorAll('.kunjungan-checkbox'), selAll = document.getElementById('selectAll'), bar = document.getElementById('bulkActionBar');
+    const tog = () => {
+        let cnt = document.querySelectorAll('.kunjungan-checkbox:checked').length;
+        if(document.getElementById('selectedCount')) document.getElementById('selectedCount').innerText = cnt;
+        if(bar) bar.className = cnt > 0 ? "flex flex-wrap items-center gap-3 bg-slate-900 px-3 py-2 rounded-2xl shadow-[0_15px_30px_-10px_rgba(0,0,0,0.5)] border border-slate-700 animate__animated animate__zoomIn" : "hidden";
+    };
+    if(selAll) selAll.addEventListener('change', e => { cbs.forEach(cb => cb.checked = e.target.checked); tog(); });
+    cbs.forEach(cb => cb.addEventListener('change', () => { if(!cb.checked && selAll) selAll.checked = false; tog(); }));
     
-    if (modalExportPeriodSelect) {
-        modalExportPeriodSelect.addEventListener('change', toggleModalExportDateInput);
-    }
+    // Export Modal Logic
+    const btnOp = document.getElementById('openExportModal'), btnCl = document.getElementById('closeExportModal'), mod = document.getElementById('exportModal');
+    if(btnOp && mod) btnOp.onclick = () => mod.classList.remove('hidden');
+    if(btnCl && mod) btnCl.onclick = () => mod.classList.add('hidden');
+    const perSel = document.getElementById('modal_export_period'), datCon = document.getElementById('modal_export_date_container');
+    if(perSel) perSel.onchange = () => datCon.classList.toggle('hidden', perSel.value === 'all');
 });
 
 function dashboardStats() {
     return {
-        stats: {
-            total: {{ $statsToday['total'] }},
-            pending: {{ $statsToday['pending'] }},
-            serving: {{ $statsToday['serving'] }},
-            sisa_kuota_total: 0
-        },
-        init() {
-            this.updateStats();
-            setInterval(() => this.updateStats(), 15000);
-        },
-        updateStats() {
-            fetch('{{ route('admin.kunjungan.stats') }}')
-                .then(response => response.json())
-                .then(data => { this.stats = data; })
-                .catch(error => console.error('Error fetching dashboard stats:', error));
-        }
+        stats: { total: {{ $statsToday['total'] ?? 0 }}, pending: {{ $statsToday['pending'] ?? 0 }}, serving: {{ $statsToday['serving'] ?? 0 }} },
+        init() { setInterval(() => this.updateStats(), 15000); fetch('{{ route('admin.kunjungan.stats') }}').then(r=>r.json()).then(d=>this.stats=d); },
+        updateStats() { fetch('{{ route('admin.kunjungan.stats') }}').then(r=>r.json()).then(d=>this.stats=d); }
     }
 }
 </script>
