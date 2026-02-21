@@ -190,6 +190,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     // Log Aktivitas (Read-only)
     Route::get('/activity-logs', [DashboardController::class, 'activityLogs'])->name('admin.activity_logs.index');
 
+
     // Survey IKM
     Route::resource('surveys', AdminSurveyController::class)->names('admin.surveys')->only(['index', 'destroy']);
 });
@@ -203,6 +204,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
 
     // Reset Log (hanya registrasi & super admin)
     Route::post('/activity-logs/reset', [DashboardController::class, 'resetActivityLogs'])->name('admin.activity_logs.reset');
+    Route::post('/activity-logs/delete-old', [DashboardController::class, 'deleteOldActivityLogs'])->name('admin.activity_logs.delete_old');
 
     // Kalender Kunjungan
     Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');

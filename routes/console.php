@@ -17,6 +17,13 @@ Schedule::call(function () {
     (new \App\Http\Controllers\Admin\VisitorController())->deleteOldVisitors();
 })->dailyAt('02:00');
 
+// Auto-Delete Log Aktivitas > 1 Bulan (setiap tanggal 1 jam 03:00)
+Schedule::call(function () {
+    \Spatie\Activitylog\Models\Activity::where('created_at', '<', now()->subMonth())->delete();
+    \Illuminate\Support\Facades\Log::info('[Scheduler] Log aktivitas lebih dari 1 bulan berhasil dihapus otomatis.');
+})->monthlyOn(1, '03:00');
+
+
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');

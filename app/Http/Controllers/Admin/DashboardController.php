@@ -416,13 +416,24 @@ class DashboardController extends Controller
     }
 
     /**
-     * Menghapus semua log aktivitas sistem.
+     * Menghapus SEMUA log aktivitas sistem.
      */
     public function resetActivityLogs()
     {
         Activity::query()->truncate();
 
         return redirect()->route('admin.activity_logs.index')->with('success', 'Semua log aktivitas berhasil dihapus!');
+    }
+
+    /**
+     * Menghapus log aktivitas yang lebih dari 1 bulan (30 hari).
+     */
+    public function deleteOldActivityLogs()
+    {
+        $deleted = Activity::where('created_at', '<', now()->subMonth())->delete();
+
+        return redirect()->route('admin.activity_logs.index')
+            ->with('success', "Log aktivitas lebih dari 1 bulan berhasil dihapus ({$deleted} entri).");
     }
 }
 
