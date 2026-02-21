@@ -6,154 +6,273 @@
 
 @push('styles')
 <style>
-    /* 3D Card Effect */
-    .card-3d {
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
+    .timer-font { font-family: 'Roboto Mono', 'Courier New', monospace; }
+
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        50%       { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
     }
-    .card-3d:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        z-index: 10;
+    .animate-glow { animation: pulse-glow 1.5s ease-in-out infinite; }
+
+    @keyframes card-in {
+        from { opacity: 0; transform: translateY(12px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
     }
-    .timer-font {
-        font-family: 'Roboto Mono', 'Courier New', monospace;
+    .card-in { animation: card-in 0.35s ease forwards; }
+
+    .queue-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
-    .animate-glow {
-        animation: glow 1.5s ease-in-out infinite alternate;
+    .queue-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 32px -8px rgba(0,0,0,0.12);
     }
-    @keyframes glow {
-        from { box-shadow: 0 0 10px -5px #ef4444; }
-        to { box-shadow: 0 0 20px 5px #ef4444; }
-    }
-    /* 3D Button Effect */
-    .btn-3d {
-        transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .btn-3d:hover {
-        transform: translateY(-2px) scale(1.03);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-    }
+
+    /* Custom scrollbar for completed list */
+    .thin-scroll::-webkit-scrollbar { width: 4px; }
+    .thin-scroll::-webkit-scrollbar-track { background: transparent; }
+    .thin-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 </style>
 @endpush
 
 @section('content')
-<div class="space-y-8 pb-12" x-data="queueControl()">
+<div class="space-y-6 pb-12" x-data="queueControl()">
 
-    {{-- HEADER --}}
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
-        <div>
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-gradient">
-                <i class="fas fa-desktop mr-2"></i> Ruang Kontrol Antrian
-            </h1>
-            <p class="text-slate-500 mt-2 font-medium">Manajemen alur kunjungan secara real-time untuk hari ini.</p>
+    {{-- HERO HEADER --}}
+    <div class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500 rounded-full blur-[100px] opacity-10"></div>
+            <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-indigo-400 rounded-full blur-[80px] opacity-10"></div>
         </div>
-        <div class="flex items-center gap-2 text-sm font-bold text-slate-500 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
-            <div class="w-3 h-3 rounded-full" :class="isPolling ? 'bg-green-500 animate-pulse' : 'bg-red-500'"></div>
-            <span x-text="isPolling ? 'Status: Real-time Aktif' : 'Status: Terputus'"></span>
-        </div>
-    </header>
+        <div class="relative z-10 px-8 py-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-blue-200 text-xs font-bold uppercase tracking-widest mb-3">
+                    <i class="fas fa-tower-broadcast"></i> Real-time Queue Control
+                </div>
+                <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">
+                    Ruang Kontrol Antrian
+                </h1>
+                <p class="text-blue-100/60 mt-1 text-sm">Manajemen alur kunjungan secara real-time untuk hari ini.</p>
+            </div>
 
-    {{-- QUEUE GRID --}}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 animate__animated animate__fadeInUp">
-        
-        <!-- MAIN QUEUE (WAITING) - 2/3 width -->
-        <div class="lg:col-span-2 bg-slate-100 rounded-2xl p-4 sm:p-6">
-            <h2 class="font-bold text-slate-800 text-xl mb-4 p-2 rounded-lg bg-slate-200 flex items-center justify-between">
-                <span><i class="fas fa-hourglass-half mr-2 text-slate-500"></i> Daftar Tunggu</span>
-                <span class="bg-slate-600 text-white text-sm font-bold w-8 h-8 flex items-center justify-center rounded-full" x-text="queues.waiting.length"></span>
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="waiting-list">
-                <template x-for="kunjungan in queues.waiting" :key="kunjungan.id">
-                    <div class="card-3d bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col">
-                        <div class="flex-grow">
-                             <div class="flex justify-between items-start">
-                                <span class="font-extrabold text-slate-700 bg-slate-200 px-3 py-1 rounded-lg text-sm" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
-                                <span class="text-xs font-bold text-purple-600 uppercase" x-text="kunjungan.sesi"></span>
-                            </div>
-                            <div class="mt-3 text-center">
-                                <p class="font-bold text-slate-800 text-lg" x-text="kunjungan.nama_pengunjung"></p>
-                                <p class="text-xs text-slate-500">WBP: <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span></p>
-                            </div>
-                        </div>
-                        <div class="mt-4 pt-3 border-t border-slate-100">
-                            <div class="grid grid-cols-3 gap-2">
-                                <button @click="speakVisitor(kunjungan)" title="Panggil Pengunjung & Antrian" class="btn-3d w-full h-12 bg-blue-100 text-blue-600 font-bold rounded-lg hover:bg-blue-200 active:scale-95 flex items-center justify-center">
-                                    <i class="fas fa-bullhorn text-xl"></i>
-                                </button>
-                                <button @click="speakInmate(kunjungan)" title="Panggil WBP" class="btn-3d w-full h-12 bg-indigo-100 text-indigo-600 font-bold rounded-lg hover:bg-indigo-200 active:scale-95 flex items-center justify-center">
-                                    <i class="fas fa-user-lock text-xl"></i>
-                                </button>
-                                <button @click="startVisit(kunjungan.id)" title="Mulai Kunjungan" class="btn-3d w-full h-12 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 active:scale-95 flex items-center justify-center">
-                                    <i class="fas fa-play text-xl"></i>
-                                </button>
-                            </div>
-                        </div>
+            <div class="flex flex-wrap items-center gap-3">
+                {{-- Live Status --}}
+                <div class="flex items-center gap-2 bg-white/10 border border-white/20 rounded-2xl px-4 py-2.5">
+                    <div class="w-2.5 h-2.5 rounded-full" :class="isPolling ? 'bg-emerald-400 animate-pulse' : 'bg-red-400'"></div>
+                    <span class="text-sm font-bold text-white" x-text="isPolling ? 'Real-time Aktif' : 'Terputus'"></span>
+                </div>
+                {{-- Queue summary badges --}}
+                <div class="flex items-center gap-2">
+                    <div class="bg-white/10 border border-white/20 rounded-2xl px-4 py-2.5 text-center min-w-16">
+                        <p class="text-xl font-black text-white" x-text="queues.waiting.length">0</p>
+                        <p class="text-[10px] text-blue-200 font-bold uppercase tracking-widest">Tunggu</p>
                     </div>
-                </template>
-                <template x-if="queues.waiting.length === 0">
-                    <div class="col-span-full text-center py-20 text-slate-400">
-                        <i class="fas fa-inbox text-5xl mb-3"></i>
-                        <p class="text-lg font-medium">Tidak ada antrian menunggu.</p>
+                    <div class="bg-emerald-500/20 border border-emerald-400/30 rounded-2xl px-4 py-2.5 text-center min-w-16">
+                        <p class="text-xl font-black text-emerald-300" x-text="queues.in_progress.length">0</p>
+                        <p class="text-[10px] text-emerald-300 font-bold uppercase tracking-widest">Berlangsung</p>
                     </div>
-                </template>
+                    <div class="bg-slate-700/50 border border-slate-600/30 rounded-2xl px-4 py-2.5 text-center min-w-16">
+                        <p class="text-xl font-black text-slate-300" x-text="queues.completed.length">0</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Selesai</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
 
-        <!-- SIDEBAR (IN PROGRESS & COMPLETED) - 1/3 width -->
-        <div class="lg:col-span-1 space-y-8">
-            <!-- IN PROGRESS -->
-            <div class="bg-green-50 rounded-2xl p-4 sm:p-6">
-                <h2 class="font-bold text-green-800 text-xl mb-4 p-2 rounded-lg bg-green-200 flex items-center justify-between">
-                    <span><i class="fas fa-comments mr-2 text-green-600"></i> Sedang Berkunjung</span>
-                    <span class="bg-green-600 text-white text-sm font-bold w-8 h-8 flex items-center justify-center rounded-full" x-text="queues.in_progress.length"></span>
-                </h2>
-                <div class="space-y-4" id="in-progress-list">
-                    <template x-for="kunjungan in queues.in_progress" :key="kunjungan.id">
-                        <div class="card-3d bg-white p-4 rounded-xl border-2 shadow-lg" :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'border-red-500 animate-glow' : 'border-green-300'">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <p class="font-bold text-slate-800" x-text="kunjungan.nama_pengunjung"></p>
-                                    <p class="text-xs text-slate-500">WBP: <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span></p>
-                                </div>
-                                <span class="font-extrabold text-green-700 bg-green-100 px-3 py-1 rounded-lg text-sm" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
+    {{-- QUEUE GRID --}}
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        {{-- ═══ DAFTAR TUNGGU (2/3) ═══ --}}
+        <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+            {{-- Header --}}
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                        <i class="fas fa-hourglass-half text-sm"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-slate-800 text-sm">Daftar Tunggu</h2>
+                        <p class="text-xs text-slate-400">Kunjungan antre masuk ruangan</p>
+                    </div>
+                </div>
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700 font-black text-sm" x-text="queues.waiting.length">0</span>
+            </div>
+
+            {{-- Cards Grid --}}
+            <div class="p-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="waiting-list">
+                    <template x-for="kunjungan in queues.waiting" :key="kunjungan.id">
+                        <div class="queue-card card-in bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col gap-3">
+
+                            {{-- Number & Session --}}
+                            <div class="flex items-center justify-between">
+                                <span class="font-black text-slate-800 bg-white border border-slate-200 px-3 py-1.5 rounded-xl text-sm shadow-sm tracking-widest"
+                                    x-text="(kunjungan.registration_type === 'offline' ? 'B' : 'A') + '-' + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')">
+                                </span>
+                                <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full"
+                                    :class="kunjungan.sesi === 'pagi'
+                                        ? 'bg-orange-100 text-orange-600'
+                                        : 'bg-sky-100 text-sky-600'"
+                                    x-text="kunjungan.sesi === 'pagi' ? '☀ Pagi' : '🌤 Siang'">
+                                </span>
                             </div>
-                            <div class="mt-3 text-center bg-gray-900 text-white rounded-lg p-3" :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'bg-red-600' : 'bg-gray-900'">
-                                <p class="text-xs uppercase text-gray-400" x-text="timers[kunjungan.id] && timers[kunjungan.id].isFinished ? 'Waktu Habis' : 'Sisa Waktu'"></p>
-                                <p class="text-4xl font-bold timer-font tracking-wider" x-text="timers[kunjungan.id] ? timers[kunjungan.id].display : '{{ str_pad($visitDuration, 2, '0', STR_PAD_LEFT) }}:00'"></p>
+
+                            {{-- Visitor Info --}}
+                            <div class="text-center py-1">
+                                <p class="font-black text-slate-800 text-base leading-tight" x-text="kunjungan.nama_pengunjung"></p>
+                                <p class="text-xs text-slate-400 mt-1">
+                                    <i class="fas fa-user-lock mr-1"></i>
+                                    <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span>
+                                </p>
                             </div>
-                             <button @click="finishVisit(kunjungan.id)" class="w-full mt-3 bg-red-100 text-red-600 font-bold py-2 rounded-lg hover:bg-red-200 transition-all active:scale-95 flex items-center justify-center gap-2 text-sm">
-                                <i class="fas fa-stop-circle"></i> Selesaikan Sekarang
-                            </button>
+
+                            {{-- Action Buttons --}}
+                            <div class="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200">
+                                {{-- Panggil Pengunjung --}}
+                                <button @click="speakVisitor(kunjungan)"
+                                    class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-500 border-2 border-blue-100 hover:border-blue-500 text-blue-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95"
+                                    title="Panggil Pengunjung">
+                                    <i class="fas fa-bullhorn text-base"></i>
+                                    <span class="text-[9px] font-black uppercase tracking-widest leading-none">Panggil</span>
+                                </button>
+                                {{-- Panggil WBP --}}
+                                <button @click="speakInmate(kunjungan)"
+                                    class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-500 border-2 border-indigo-100 hover:border-indigo-500 text-indigo-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-indigo-500/30 active:scale-95"
+                                    title="Panggil WBP">
+                                    <i class="fas fa-user-lock text-base"></i>
+                                    <span class="text-[9px] font-black uppercase tracking-widest leading-none">WBP</span>
+                                </button>
+                                {{-- Mulai Kunjungan --}}
+                                <button @click="startVisit(kunjungan.id)"
+                                    class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 border-2 border-emerald-600 text-white transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/30 active:scale-95"
+                                    title="Mulai Kunjungan">
+                                    <i class="fas fa-play text-base"></i>
+                                    <span class="text-[9px] font-black uppercase tracking-widest leading-none">Mulai</span>
+                                </button>
+                            </div>
                         </div>
                     </template>
-                     <template x-if="queues.in_progress.length === 0">
-                        <div class="text-center py-20 text-green-400">
-                            <i class="fas fa-inbox text-5xl mb-3"></i>
-                            <p class="text-lg font-medium">Tidak ada kunjungan berlangsung.</p>
+
+                    {{-- Empty State --}}
+                    <template x-if="queues.waiting.length === 0">
+                        <div class="col-span-full py-20 text-center">
+                            <div class="w-16 h-16 bg-slate-100 rounded-3xl flex items-center justify-center text-slate-300 text-3xl mx-auto mb-3">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <h3 class="font-black text-slate-600 text-sm">Tidak Ada Antrian</h3>
+                            <p class="text-xs text-slate-400 mt-1">Tidak ada kunjungan yang menunggu saat ini.</p>
                         </div>
                     </template>
                 </div>
             </div>
-            <!-- COMPLETED -->
-            <div class="bg-gray-800 rounded-2xl p-4 sm:p-6">
-                <h2 class="font-bold text-white text-lg mb-4 p-2 rounded-lg bg-gray-700 flex items-center justify-between">
-                    <span><i class="fas fa-check-circle mr-2 text-gray-400"></i> Selesai Hari Ini</span>
-                    <span class="bg-gray-500 text-white text-xs font-bold w-8 h-8 flex items-center justify-center rounded-full" x-text="queues.completed.length"></span>
-                </h2>
-                <div class="space-y-2 max-h-48 overflow-y-auto pr-2">
-                     <template x-for="kunjungan in queues.completed" :key="kunjungan.id">
-                         <div class="bg-gray-700 p-2 rounded-lg flex justify-between items-center opacity-70">
-                            <p class="font-medium text-gray-300 text-sm" x-text="kunjungan.nama_pengunjung"></p>
-                            <span class="font-bold text-gray-400 bg-gray-600 px-2 py-0.5 rounded-md text-xs" x-text="(kunjungan.registration_type === 'offline' ? 'B-' : 'A-') + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')"></span>
+        </div>
+
+        {{-- ═══ SIDEBAR (1/3) ═══ --}}
+        <div class="xl:col-span-1 space-y-5">
+
+            {{-- IN PROGRESS PANEL --}}
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600">
+                            <i class="fas fa-comments text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-black text-slate-800 text-sm">Sedang Berlangsung</h2>
+                            <p class="text-xs text-slate-400">Di dalam ruang kunjungan</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-black text-sm" x-text="queues.in_progress.length">0</span>
+                </div>
+
+                <div class="p-4 space-y-3" id="in-progress-list">
+                    <template x-for="kunjungan in queues.in_progress" :key="kunjungan.id">
+                        <div class="queue-card card-in rounded-2xl border-2 p-4 transition-all"
+                            :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding
+                                ? 'border-red-400 bg-red-50 animate-glow'
+                                : 'border-emerald-200 bg-emerald-50'">
+
+                            {{-- Header row --}}
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    <p class="font-black text-slate-800 text-sm leading-tight" x-text="kunjungan.nama_pengunjung"></p>
+                                    <p class="text-[11px] text-slate-500 mt-0.5">
+                                        <i class="fas fa-user-lock mr-1"></i>
+                                        <span x-text="kunjungan.wbp ? kunjungan.wbp.nama : '-'"></span>
+                                    </p>
+                                </div>
+                                <span class="font-black text-emerald-700 bg-white border border-emerald-200 px-2.5 py-1 rounded-xl text-xs shadow-sm"
+                                    x-text="(kunjungan.registration_type === 'offline' ? 'B' : 'A') + '-' + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')">
+                                </span>
+                            </div>
+
+                            {{-- Timer --}}
+                            <div class="rounded-xl p-3 text-center mb-3 transition-colors"
+                                :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'bg-red-600' : 'bg-slate-900'">
+                                <p class="text-[10px] uppercase tracking-widest mb-1"
+                                    :class="timers[kunjungan.id] && timers[kunjungan.id].isEnding ? 'text-red-200' : 'text-slate-400'"
+                                    x-text="timers[kunjungan.id] && timers[kunjungan.id].isFinished ? 'Waktu Habis!' : 'Sisa Waktu'">
+                                </p>
+                                <p class="text-3xl font-black timer-font tracking-widest text-white"
+                                    x-text="timers[kunjungan.id] ? timers[kunjungan.id].display : '{{ str_pad($visitDuration, 2, '0', STR_PAD_LEFT) }}:00'">
+                                </p>
+                            </div>
+
+                            {{-- Finish Button --}}
+                            <button @click="finishVisit(kunjungan.id)"
+                                class="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-100 hover:bg-red-500 border-2 border-red-200 hover:border-red-500 text-red-600 hover:text-white font-bold text-sm transition-all duration-200 active:scale-95 hover:shadow-lg hover:shadow-red-500/30">
+                                <i class="fas fa-stop-circle"></i>
+                                Selesaikan Kunjungan
+                            </button>
                         </div>
                     </template>
-                     <template x-if="queues.completed.length === 0">
-                        <div class="text-center py-10 text-gray-500">
-                            <i class="fas fa-inbox text-3xl mb-2"></i>
-                            <p class="text-sm">Belum ada kunjungan selesai.</p>
+
+                    <template x-if="queues.in_progress.length === 0">
+                        <div class="py-10 text-center">
+                            <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-300 text-xl mx-auto mb-2">
+                                <i class="fas fa-door-open"></i>
+                            </div>
+                            <p class="text-xs font-bold text-slate-400">Tidak ada kunjungan berlangsung</p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            {{-- COMPLETED PANEL --}}
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-700/50">
+                <div class="px-5 py-4 border-b border-white/10 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center text-slate-300">
+                            <i class="fas fa-flag-checkered text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-black text-white text-sm">Selesai Hari Ini</h2>
+                            <p class="text-xs text-slate-400">Kunjungan telah rampung</p>
+                        </div>
+                    </div>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-slate-300 font-black text-sm" x-text="queues.completed.length">0</span>
+                </div>
+
+                <div class="p-4 space-y-2 max-h-56 overflow-y-auto thin-scroll">
+                    <template x-for="kunjungan in queues.completed" :key="kunjungan.id">
+                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <div class="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-check text-emerald-400 text-[9px]"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-300 truncate" x-text="kunjungan.nama_pengunjung"></p>
+                            </div>
+                            <span class="font-black text-slate-500 bg-white/10 px-2 py-0.5 rounded-lg text-[11px] flex-shrink-0 ml-2"
+                                x-text="(kunjungan.registration_type === 'offline' ? 'B' : 'A') + '-' + kunjungan.nomor_antrian_harian.toString().padStart(3, '0')">
+                            </span>
+                        </div>
+                    </template>
+
+                    <template x-if="queues.completed.length === 0">
+                        <div class="py-8 text-center">
+                            <i class="fas fa-moon text-2xl text-slate-600 mb-2 block"></i>
+                            <p class="text-sm text-slate-500">Belum ada kunjungan selesai.</p>
                         </div>
                     </template>
                 </div>
@@ -181,20 +300,16 @@ function queueControl() {
             setInterval(() => this.updateTimers(), 1000);
             this.loadVoices();
             
-            // Re-load voices if they change (important for mobile)
             if (window.speechSynthesis.onvoiceschanged !== undefined) {
                 window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
             }
 
-            // Start the queue processor check
             setInterval(() => this.processSpeechQueue(), 300);
 
-            // Audio Unlocker for Mobile
             const unlock = () => {
                 const silence = new SpeechSynthesisUtterance("");
                 window.speechSynthesis.speak(silence);
                 document.removeEventListener('click', unlock);
-                console.log("Audio Unlocked for Mobile");
             };
             document.addEventListener('click', unlock);
         },
@@ -222,33 +337,28 @@ function queueControl() {
                 }
                 await this.fetchState();
             } catch(error) {
-                console.error('Error starting visit:', error);
                 Swal.fire('Error', `Terjadi kesalahan koneksi: ${error.message}`, 'error');
             }
         },
 
         async finishVisitApi(id) {
-            if (this.finishing.includes(id)) {
-                return;
-            }
+            if (this.finishing.includes(id)) return;
             try {
                 this.finishing.push(id);
                 const response = await this.postData(`{{ url('api/admin/antrian') }}/${id}/finish`);
                 if (response.success) {
                     delete this.timers[id];
                 } else {
-                     Swal.fire('Gagal', response.error || 'Gagal menyelesaikan kunjungan via API.', 'error');
+                    Swal.fire('Gagal', response.error || 'Gagal menyelesaikan kunjungan.', 'error');
                 }
                 await this.fetchState();
             } catch (error) {
-                console.error('Error finishing visit via API:', error);
                 Swal.fire('Error', `Terjadi kesalahan koneksi: ${error.message}`, 'error');
             } finally {
                 this.finishing = this.finishing.filter(i => i !== id);
             }
         },
-        
-        // Wrapper for manual finish button
+
         finishVisit(id) {
             const kunjungan = this.queues.in_progress.find(k => k.id === id);
             if (kunjungan) {
@@ -259,10 +369,8 @@ function queueControl() {
 
         updateTimers() {
             const newlyFinished = [];
-            
             this.queues.in_progress.forEach(kunjungan => {
                 if (!kunjungan.visit_started_at) return;
-
                 const startTime = new Date(kunjungan.visit_started_at).getTime();
                 const now = new Date().getTime();
                 const elapsed = Math.floor((now - startTime) / 1000);
@@ -272,7 +380,6 @@ function queueControl() {
                 if (remaining <= 0) {
                     if (!this.timers[kunjungan.id] || !this.timers[kunjungan.id].isFinished) {
                         this.timers[kunjungan.id] = { display: 'WAKTU HABIS', isEnding: true, isFinished: true };
-                        // Don't call finishVisit directly, queue it up
                         newlyFinished.push(kunjungan);
                     }
                 } else {
@@ -286,32 +393,24 @@ function queueControl() {
                 }
             });
 
-            // Now process all newly finished visits
             if (newlyFinished.length > 0) {
                 newlyFinished.forEach(kunjungan => {
-                    // Call the API to mark as finished
                     this.finishVisitApi(kunjungan.id);
-                    // Add the notification to the speech queue
-                    const visitorName = kunjungan.nama_pengunjung;
                     const prefix = kunjungan.registration_type === 'offline' ? 'B' : 'A';
                     const queueNumber = prefix + ' ' + kunjungan.nomor_antrian_harian;
                     const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
-                    const message = `Waktu kunjungan untuk ${visitorName}, nomor antrian ${queueNumber}, dengan WBP ${wbpName} telah selesai. Silahkan meninggalkan tempat kunjungan.`;
+                    const message = `Waktu kunjungan untuk ${kunjungan.nama_pengunjung}, nomor antrian ${queueNumber}, dengan WBP ${wbpName} telah selesai. Silahkan meninggalkan tempat kunjungan.`;
                     this.speak(message);
                 });
             }
         },
 
-        // --- SPEECH SYNTHESIS QUEUE SYSTEM ---
         speak(text, priority = false) {
             if (!('speechSynthesis' in window)) return;
-            
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
-
-            // Pastikan memilih suara Indonesia
             if (this.voices.length > 0) {
                 utterance.voice = this.voices[0];
             } else {
@@ -319,14 +418,7 @@ function queueControl() {
                 const idVoice = allVoices.find(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
                 if (idVoice) utterance.voice = idVoice;
             }
-
-            // Handle onend event to manage queue
-            utterance.onend = () => {
-                setTimeout(() => {
-                    this.isSpeaking = false;
-                }, 1500); 
-            };
-            
+            utterance.onend = () => { setTimeout(() => { this.isSpeaking = false; }, 1500); };
             if (priority) {
                 window.speechSynthesis.cancel();
                 this.speechQueue.unshift(utterance);
@@ -337,14 +429,12 @@ function queueControl() {
         },
 
         processSpeechQueue() {
-            if (this.isSpeaking || this.speechQueue.length === 0) {
-                return;
-            }
+            if (this.isSpeaking || this.speechQueue.length === 0) return;
             this.isSpeaking = true;
             const utteranceToSpeak = this.speechQueue.shift();
             window.speechSynthesis.speak(utteranceToSpeak);
         },
-        
+
         loadVoices() {
             if ('speechSynthesis' in window) {
                 const getVoices = () => {
@@ -360,19 +450,17 @@ function queueControl() {
         speakVisitor(kunjungan) {
             const type = kunjungan.registration_type === 'offline' ? 'offline' : 'online';
             const text = `Panggilan untuk pengunjung dengan nomor antrian ${kunjungan.nomor_antrian_harian} ${type}, atas nama ${kunjungan.nama_pengunjung}. silahkan untuk menuju ruang p2u.`;
-            this.speak(text, true); // Priority call
-            
-            // Trigger Remote Call (TV Display)
+            this.speak(text, true);
             this.postData(`{{ url('api/admin/antrian') }}/${kunjungan.id}/call`)
-                .catch(err => console.error('Gagal mengirim sinyal panggil ke server:', err));
+                .catch(err => console.error('Gagal mengirim sinyal panggil:', err));
         },
 
         speakInmate(kunjungan) {
             const wbpName = kunjungan.wbp ? kunjungan.wbp.nama : 'Warga Binaan';
             const text = `Panggilan untuk Warga Binaan atas nama ${wbpName}. Ditunggu di ruang kunjungan sekarang.`;
-            this.speak(text, true); // Priority call
+            this.speak(text, true);
         },
-        
+
         async postData(url = '', data = {}) {
             const response = await fetch(url, {
                 method: 'POST',
@@ -382,7 +470,6 @@ function queueControl() {
                 },
                 body: JSON.stringify(data)
             });
-
             if (!response.ok) {
                 const errorText = await response.text();
                 try {
