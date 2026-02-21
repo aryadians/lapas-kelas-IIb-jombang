@@ -9,42 +9,55 @@
 </style>
 
 <div class="space-y-6 pb-12" x-data="{ tab: 'jadwal' }">
-    {{-- HEADER --}}
-    <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 animate__animated animate__fadeInDown">
-        <div>
-            <h1 class="text-3xl font-black text-slate-800 tracking-tight">
-                ⚙️ Konfigurasi Sistem Kunjungan
-            </h1>
-            <p class="text-slate-500 mt-1 font-medium">Kelola seluruh pengaturan sistem layanan kunjungan Lapas dari satu tempat.</p>
+    {{-- HERO HEADER --}}
+    <div class="relative bg-gradient-to-br from-slate-900 via-purple-950 to-violet-950 rounded-3xl overflow-hidden shadow-2xl">
+        <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-purple-400 rounded-full blur-[90px] opacity-10"></div>
+            <div class="absolute -bottom-16 -left-16 w-60 h-60 bg-violet-400 rounded-full blur-[80px] opacity-10"></div>
         </div>
-    </header>
+        <div class="relative z-10 px-8 py-7">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-purple-200 text-xs font-bold uppercase tracking-widest mb-3">
+                <i class="fas fa-cogs"></i> Pengaturan Sistem
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black text-white tracking-tight">Konfigurasi Sistem Kunjungan</h1>
+            <p class="text-purple-100/60 mt-1 text-sm">Kelola seluruh pengaturan layanan kunjungan Lapas dari satu tempat.</p>
+        </div>
+    </div>
 
     @if(session('success'))
-    <div class="animate__animated animate__fadeIn">
-        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-xl shadow-sm">
-            <div class="flex items-center gap-3">
-                <i class="fas fa-check-circle text-emerald-500"></i>
-                <p class="text-emerald-700 font-bold text-sm">{{ session('success') }}</p>
-            </div>
+    <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-3.5 rounded-2xl shadow-sm">
+        <div class="w-8 h-8 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-check text-white text-sm"></i>
         </div>
+        <p class="font-bold text-sm">{{ session('success') }}</p>
     </div>
     @endif
 
     {{-- TAB NAVIGATION --}}
-    <div class="bg-white rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-100 p-1.5 flex flex-wrap gap-1 animate__animated animate__fadeInUp">
-        <button type="button" @click="tab = 'jadwal'" :class="tab === 'jadwal' ? 'bg-slate-800 text-white shadow-lg shadow-slate-300' : 'text-slate-500 hover:bg-slate-50'" class="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 flex flex-wrap gap-1">
+        <button type="button" @click="tab = 'jadwal'"
+            :class="tab === 'jadwal' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30' : 'text-slate-500 hover:bg-slate-50'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
             <i class="fas fa-calendar-alt"></i> Jadwal & Kuota
         </button>
-        <button type="button" @click="tab = 'aturan'" :class="tab === 'aturan' ? 'bg-slate-800 text-white shadow-lg shadow-slate-300' : 'text-slate-500 hover:bg-slate-50'" class="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all">
+        <button type="button" @click="tab = 'aturan'"
+            :class="tab === 'aturan' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/30' : 'text-slate-500 hover:bg-slate-50'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
             <i class="fas fa-sliders-h"></i> Aturan & Batas
         </button>
-        <button type="button" @click="tab = 'konten'" :class="tab === 'konten' ? 'bg-slate-800 text-white shadow-lg shadow-slate-300' : 'text-slate-500 hover:bg-slate-50'" class="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all">
-            <i class="fas fa-file-alt"></i> Konten & Info Publik
+        <button type="button" @click="tab = 'konten'"
+            :class="tab === 'konten' ? 'bg-violet-600 text-white shadow-md shadow-violet-500/30' : 'text-slate-500 hover:bg-slate-50'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
+            <i class="fas fa-file-alt"></i> Konten & Info
         </button>
-        <button type="button" @click="tab = 'operasional'" :class="tab === 'operasional' ? 'bg-slate-800 text-white shadow-lg shadow-slate-300' : 'text-slate-500 hover:bg-slate-50'" class="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all">
+        <button type="button" @click="tab = 'operasional'"
+            :class="tab === 'operasional' ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30' : 'text-slate-500 hover:bg-slate-50'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
             <i class="fas fa-clock"></i> Jam Operasional
         </button>
-        <button type="button" @click="tab = 'integrasi'" :class="tab === 'integrasi' ? 'bg-slate-800 text-white shadow-lg shadow-slate-300' : 'text-slate-500 hover:bg-slate-50'" class="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm transition-all">
+        <button type="button" @click="tab = 'integrasi'"
+            :class="tab === 'integrasi' ? 'bg-cyan-600 text-white shadow-md shadow-cyan-500/30' : 'text-slate-500 hover:bg-slate-50'"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all">
             <i class="fas fa-plug"></i> Integrasi API
         </button>
     </div>
@@ -465,11 +478,12 @@
             </div>
         </div>
 
-        {{-- SAVE BUTTON (Always Visible) --}}
-        <div class="flex justify-center pt-4 animate__animated animate__fadeInUp">
-            <button type="submit" class="bg-slate-900 text-white font-black px-12 py-5 rounded-[2rem] shadow-2xl hover:bg-blue-600 hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-3">
-                <i class="fas fa-save text-xl"></i>
-                <span class="text-xl uppercase tracking-tighter">Simpan Seluruh Konfigurasi</span>
+        {{-- SAVE BUTTON --}}
+        <div class="flex justify-center pt-2">
+            <button type="submit"
+                class="inline-flex items-center gap-3 bg-gradient-to-r from-slate-900 to-purple-900 hover:from-purple-700 hover:to-violet-700 text-white font-black px-10 py-4 rounded-2xl shadow-2xl shadow-slate-300 hover:-translate-y-0.5 transition-all active:scale-95">
+                <i class="fas fa-save text-lg"></i>
+                <span class="text-base uppercase tracking-tight">Simpan Seluruh Konfigurasi</span>
             </button>
         </div>
     </form>
