@@ -135,52 +135,116 @@
                 <canvas id="ageDistributionChart"></canvas>
             </div>
         </div>
+
+        {{-- TOP 10 KECAMATAN --}}
         <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-700">
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 Kecamatan Asal Pengunjung</h3>
-            <div class="h-80 w-full flex items-center justify-center">
-                <canvas id="cityDistributionChart"></canvas>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-sky-100 rounded-xl flex items-center justify-center text-sky-600">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-slate-800">Top 10 Kecamatan</h3>
+                    <p class="text-xs text-slate-400">Asal wilayah pengunjung terbanyak</p>
+                </div>
+            </div>
+            <div id="kecamatan-list" class="space-y-2.5">
+                {{-- Skeleton loading --}}
+                @for($s = 0; $s < 5; $s++)
+                <div class="h-9 bg-slate-100 animate-pulse rounded-xl"></div>
+                @endfor
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-8 mb-8">
+    {{-- TOP 10 DESA --}}
+    <div class="grid grid-cols-1 gap-6 mb-8">
         <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-750">
-            <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 Desa/Kelurahan Asal Pengunjung</h3>
-            <div class="h-80 w-full flex items-center justify-center">
-                <canvas id="villageDistributionChart"></canvas>
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-slate-800">Top 10 Desa / Kelurahan</h3>
+                    <p class="text-xs text-slate-400">Asal desa/kel. pengunjung terbanyak</p>
+                </div>
+            </div>
+            <div id="desa-list" class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+                @for($s = 0; $s < 6; $s++)
+                <div class="h-9 bg-slate-100 animate-pulse rounded-xl"></div>
+                @endfor
             </div>
         </div>
     </div>
 
     {{-- 6. MOST VISITED WBP TABLE --}}
     <div x-data="mostVisitedWbpController()" x-init="fetchData" class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-800">
-        <h3 class="text-xl font-bold text-slate-800 mb-4">Top 10 WBP Paling Sering Dikunjungi</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th @click="sortBy('nama')" class="th-sortable px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama WBP</th>
-                        <th @click="sortBy('no_registrasi')" class="th-sortable px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No. Registrasi</th>
-                        <th @click="sortBy('blok')" class="th-sortable px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blok/Kamar</th>
-                        <th @click="sortBy('visit_count')" class="th-sortable px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Kunjungan</th>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-black text-slate-800">Top 10 WBP Paling Sering Dikunjungi</h3>
+                <p class="text-xs text-slate-400">Berdasarkan jumlah kunjungan disetujui</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto rounded-xl border border-slate-100">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="bg-slate-50">
+                        <th class="px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest w-10">#</th>
+                        <th @click="sortBy('nama')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest">Nama WBP</th>
+                        <th @click="sortBy('no_registrasi')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden md:table-cell">No. Reg</th>
+                        <th @click="sortBy('blok')" class="th-sortable px-4 py-3 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest hidden sm:table-cell">Blok/Kamar</th>
+                        <th @click="sortBy('visit_count')" class="th-sortable px-4 py-3 text-right text-[11px] font-black text-slate-400 uppercase tracking-widest">Kunjungan</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="divide-y divide-slate-50">
                     <template x-if="loading">
-                        <tr><td colspan="4" class="p-6 text-center text-gray-500">Memuat data...</td></tr>
+                        <tr><td colspan="5" class="p-8 text-center">
+                            <div class="inline-flex items-center gap-2 text-slate-400">
+                                <i class="fas fa-circle-notch fa-spin"></i> Memuat data...
+                            </div>
+                        </td></tr>
                     </template>
-                    <template x-for="wbp in sortedWbp" :key="wbp.no_registrasi">
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="wbp.nama"></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="wbp.no_registrasi"></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span x-text="wbp.blok"></span> / <span x-text="wbp.kamar"></span></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900" x-text="wbp.visit_count"></td>
+                    <template x-for="(wbp, idx) in sortedWbp" :key="wbp.no_registrasi">
+                        <tr class="hover:bg-slate-50 transition-colors"
+                            :class="idx === 0 ? 'bg-amber-50/50' : ''">
+                            <td class="px-4 py-3">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black"
+                                    :class="idx === 0 ? 'bg-amber-400 text-white' : idx === 1 ? 'bg-slate-400 text-white' : idx === 2 ? 'bg-orange-400 text-white' : 'bg-slate-200 text-slate-600'"
+                                    x-text="idx + 1"></span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black text-white flex-shrink-0"
+                                        :style="`background: hsl(${(idx * 47) % 360}, 60%, 55%)`"
+                                        x-text="wbp.nama?.charAt(0)?.toUpperCase() ?? '?'"></div>
+                                    <span class="text-sm font-bold text-slate-800" x-text="wbp.nama"></span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 hidden md:table-cell">
+                                <span class="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-1 rounded-lg" x-text="wbp.no_registrasi"></span>
+                            </td>
+                            <td class="px-4 py-3 hidden sm:table-cell">
+                                <span class="text-xs text-slate-600">
+                                    <i class="fas fa-building text-slate-400 mr-1"></i>
+                                    <span x-text="(wbp.blok ?? '-') + ' / ' + (wbp.kamar ?? '-')"></span>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-black"
+                                    :class="idx === 0 ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'">
+                                    <i class="fas fa-users text-[10px]"></i>
+                                    <span x-text="wbp.visit_count"></span>
+                                </span>
+                            </td>
                         </tr>
                     </template>
                 </tbody>
             </table>
         </div>
     </div>
+
 
 </div>
 
@@ -258,23 +322,58 @@
             });
         });
         
-        // --- NEW VISITOR DEMOGRAPHICS CHARTS ---
+        // --- NEW VISITOR DEMOGRAPHICS CHARTS + RANKING TABLES ---
         fetch('{{ route("api.executive.visitor-demographics") }}').then(r => r.json()).then(data => {
+            // Age chart
             new Chart(document.getElementById('ageDistributionChart').getContext('2d'), {
                 type: 'bar',
-                data: { labels: data.age_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.age_distribution.data, backgroundColor: '#10b981' }] },
+                data: { labels: data.age_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.age_distribution.data, backgroundColor: ['#10b981','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#64748b'] }] },
                 options: commonChartOptions({ plugins: { legend: { display: false } } })
             });
-            new Chart(document.getElementById('cityDistributionChart').getContext('2d'), {
-                type: 'bar',
-                data: { labels: data.city_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.city_distribution.data, backgroundColor: '#0ea5e9' }] },
-                options: commonChartOptions({ indexAxis: 'y', plugins: { legend: { display: false } } })
-            });
-            new Chart(document.getElementById('villageDistributionChart').getContext('2d'), {
-                type: 'bar',
-                data: { labels: data.village_distribution.labels, datasets: [{ label: 'Jumlah Pengunjung', data: data.village_distribution.data, backgroundColor: '#8b5cf6' }] },
-                options: commonChartOptions({ indexAxis: 'y', plugins: { legend: { display: false } } })
-            });
+
+            // --- Ranking helpers ---
+            const rankColors = ['bg-amber-400 text-white', 'bg-slate-400 text-white', 'bg-orange-400 text-white'];
+            const defaultRankColor = 'bg-slate-200 text-slate-600';
+
+            function buildRankingList(containerId, items, colors, maxBar) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+                if (!items || items.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-sm text-center py-4">Data tidak tersedia</p>';
+                    return;
+                }
+                items.forEach((item, idx) => {
+                    const pct = maxBar > 0 ? Math.round((item.count / maxBar) * 100) : 0;
+                    const rankClass = idx < 3 ? rankColors[idx] : defaultRankColor;
+                    const barColor = colors[idx % colors.length];
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-3 group';
+                    div.innerHTML = `
+                        <span class="w-7 h-7 flex-shrink-0 rounded-full flex items-center justify-center text-xs font-black ${rankClass}">${idx + 1}</span>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs font-bold text-slate-700 truncate pr-2" title="${item.label}">${item.label}</span>
+                                <span class="text-xs font-black text-slate-500 flex-shrink-0">${item.count}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full transition-all duration-700" style="width: ${pct}%; background: ${barColor}"></div>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            // Build Kecamatan list
+            const kecItems = data.city_distribution.labels.map((label, i) => ({ label, count: data.city_distribution.data[i] }));
+            const kecMax   = kecItems[0]?.count ?? 1;
+            buildRankingList('kecamatan-list', kecItems, ['#0ea5e9','#38bdf8','#7dd3fc','#bae6fd','#e0f2fe','#0ea5e9','#38bdf8','#7dd3fc','#bae6fd','#e0f2fe'], kecMax);
+
+            // Build Desa list
+            const desaItems = data.village_distribution.labels.map((label, i) => ({ label, count: data.village_distribution.data[i] }));
+            const desaMax   = desaItems[0]?.count ?? 1;
+            buildRankingList('desa-list', desaItems, ['#8b5cf6','#a78bfa','#c4b5fd','#ddd6fe','#ede9fe','#8b5cf6','#a78bfa','#c4b5fd','#ddd6fe','#ede9fe'], desaMax);
         });
     });
 

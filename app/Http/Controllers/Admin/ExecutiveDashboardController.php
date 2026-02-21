@@ -163,110 +163,86 @@ class ExecutiveDashboardController extends Controller
 
     public function getVisitorDemographics()
     {
-        $kunjungans = Kunjungan::where('status', 'approved')->get();
+        $kunjungans = Kunjungan::where('status', 'approved')->get(['nik_ktp', 'alamat_pengunjung']);
 
         // 1. Age Distribution
-        $ageGroups = ['<20' => 0, '20-30' => 0, '30-40' => 0, '40-50' => 0, '50-60' => 0, '>60' => 0];
-        foreach ($kunjungans as $kunjungan) {
-            $age = $this->getAgeFromNik($kunjungan->nik_ktp);
+        $ageGroups = ['< 20' => 0, '20–30' => 0, '30–40' => 0, '40–50' => 0, '50–60' => 0, '> 60' => 0];
+        foreach ($kunjungans as $k) {
+            $age = $this->getAgeFromNik($k->nik_ktp);
             if ($age !== null) {
-                if ($age < 20) $ageGroups['<20']++;
-                elseif ($age <= 30) $ageGroups['20-30']++;
-                elseif ($age <= 40) $ageGroups['30-40']++;
-                elseif ($age <= 50) $ageGroups['40-50']++;
-                elseif ($age <= 60) $ageGroups['50-60']++;
-                else $ageGroups['>60']++;
+                if ($age < 20)       $ageGroups['< 20']++;
+                elseif ($age <= 30)  $ageGroups['20–30']++;
+                elseif ($age <= 40)  $ageGroups['30–40']++;
+                elseif ($age <= 50)  $ageGroups['40–50']++;
+                elseif ($age <= 60)  $ageGroups['50–60']++;
+                else                 $ageGroups['> 60']++;
             }
         }
 
-        // 2. Kecamatan Distribution (Optimized for Jombang Area)
-        $jombangKecamatan = [
-            'Bandar Kedungmulyo', 'Perak', 'Gudo', 'Diwek', 'Ngoro', 'Mojowarno', 'Bareng', 'Wonosalam', 
-            'Mojoagung', 'Sumobito', 'Jogoroto', 'Peterongan', 'Jombang', 'Megaluh', 'Tembelang', 
-            'Kesamben', 'Kudu', 'Ngusikan', 'Ploso', 'Kabuh', 'Plandaan'
-        ];
-
+        // 2. Kecamatan Distribution — Parsing dengan regex kuat
         $kecamatanCounts = $kunjungans->pluck('alamat_pengunjung')
-            ->map(function ($alamat) use ($jombangKecamatan) {
+            ->map(function ($alamat) {
                 if (!$alamat) return 'Tidak Diketahui';
 
-                $cleanAlamat = strtolower(str_replace(['.', ',', '/'], ' ', $alamat));
-                $isJombangInAlamat = str_contains($cleanAlamat, 'jombang');
-                
-                // Prioritas 1: Cari kecocokan langsung dengan daftar kecamatan Jombang
-                foreach ($jombangKecamatan as $kec) {
-                    if (str_contains($cleanAlamat, strtolower($kec))) {
-                        return 'Kec. ' . $kec;
-                    }
+                // Coba tangkap: "Kec. Xxx", "Kecamatan Xxx", "Kec Xxx" (inkl. multi-kata)
+                if (preg_match('/\bKec(?:amatan)?[.\s]+([A-Za-z\s]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                    $kec = trim(preg_replace('/\s+/', ' ', $m[1]));
+                    // Batas max 3 kata untuk kecamatan
+                    $words = explode(' ', $kec);
+                    $kec = implode(' ', array_slice($words, 0, 3));
+                    return 'Kec. ' . ucwords(strtolower($kec));
                 }
 
-                // Prioritas 2: Cari keyword "Kecamatan" atau "Kec"
-                $pos = strpos($cleanAlamat, 'kecamatan ');
-                if ($pos === false) $pos = strpos($cleanAlamat, 'kec ');
-
-                if ($pos !== false) {
-                    $substring = substr($cleanAlamat, $pos);
-                    $parts = preg_split('/[\s,]+/', trim($substring));
-                    // parts[0] is 'kecamatan' or 'kec', parts[1] is the name
-                    if (isset($parts[1]) && strlen($parts[1]) > 2) {
-                        $name = ucfirst($parts[1]);
-                        return ($isJombangInAlamat ? 'Kec. ' : 'Luar Jombang: Kec. ') . $name;
-                    }
-                }
-
-                // Fallback: Jika ada kata Jombang tapi tidak cocok kecamatan manapun
-                if ($isJombangInAlamat) return 'Jombang (Kec. Lainnya)';
-
-                return 'Luar Jombang';
+                return 'Tidak Teridentifikasi';
             })
             ->countBy()
             ->sortDesc()
             ->take(10);
 
-        // 3. Desa/Kelurahan Distribution
+        // 3. Desa/Kelurahan Distribution — Parsing dengan regex kuat
         $desaCounts = $kunjungans->pluck('alamat_pengunjung')
             ->map(function ($alamat) {
                 if (!$alamat) return 'Tidak Diketahui';
 
-                $cleanAlamat = strtolower(str_replace(['.', ',', '/'], ' ', $alamat));
-                $isJombangInAlamat = str_contains($cleanAlamat, 'jombang');
+                // Coba tangkap: "Desa Xxx", "Kel. Xxx", "Kelurahan Xxx", "Ds. Xxx"
+                if (preg_match('/\b(?:Desa|Ds\.?|Kel(?:urahan)?\.?)[.\s]+([A-Za-z\s]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                    $desa = trim(preg_replace('/\s+/', ' ', $m[1]));
+                    $words = explode(' ', $desa);
+                    $desa = implode(' ', array_slice($words, 0, 3));
 
-                // Cari keyword "Desa" atau "Kel" atau "Kelurahan"
-                $pos = strpos($cleanAlamat, 'desa ');
-                if ($pos === false) $pos = strpos($cleanAlamat, 'kel ');
-                if ($pos === false) $pos = strpos($cleanAlamat, 'kelurahan ');
-
-                if ($pos !== false) {
-                    $substring = substr($cleanAlamat, $pos);
-                    $parts = preg_split('/[\s,]+/', trim($substring));
-                    // parts[0] is 'desa'/'kel'/'kelurahan', parts[1] is the name
-                    if (isset($parts[1]) && strlen($parts[1]) > 2) {
-                        $name = ucfirst($parts[1]);
-                        return ($isJombangInAlamat ? 'Desa ' : 'Luar Jombang: Desa ') . $name;
-                    }
+                    // Tentukan prefix
+                    $prefix = preg_match('/\bKel/i', $m[0]) ? 'Kel. ' : 'Ds. ';
+                    return $prefix . ucwords(strtolower($desa));
                 }
 
-                return $isJombangInAlamat ? 'Jombang (Desa Lainnya)' : 'Luar Jombang';
+                return 'Tidak Teridentifikasi';
             })
             ->countBy()
             ->sortDesc()
             ->take(10);
 
+        // Hitung total untuk persentase
+        $totalKecamatan = $kecamatanCounts->sum();
+        $totalDesa      = $desaCounts->sum();
+
         return response()->json([
             'age_distribution' => [
                 'labels' => array_keys($ageGroups),
-                'data' => array_values($ageGroups),
+                'data'   => array_values($ageGroups),
             ],
             'city_distribution' => [
-                'labels' => $kecamatanCounts->keys(),
-                'data' => $kecamatanCounts->values(),
+                'labels'     => $kecamatanCounts->keys()->values(),
+                'data'       => $kecamatanCounts->values()->values(),
+                'total'      => $totalKecamatan,
             ],
             'village_distribution' => [
-                'labels' => $desaCounts->keys(),
-                'data' => $desaCounts->values(),
+                'labels'     => $desaCounts->keys()->values(),
+                'data'       => $desaCounts->values()->values(),
+                'total'      => $totalDesa,
             ],
         ]);
     }
+
 
     public function getMostVisitedWbp()
     {
