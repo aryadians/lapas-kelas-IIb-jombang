@@ -530,7 +530,11 @@
                                 </div>
                                 <div>
                                     <p class="font-bold text-red-800">Penting: Aturan Jadwal Pendaftaran</p>
-                                    <p class="text-sm text-red-700">Pendaftaran hanya bisa dilakukan <strong>H-1 (satu hari sebelum)</strong>. Khusus pendaftaran untuk hari <strong>Senin</strong>, formulir dibuka pada hari <strong>Jumat, Sabtu, &amp; Minggu</strong>.</p>
+                                    <p class="text-sm text-red-700">Pendaftaran paling lambat dilakukan <strong>H-{{ $leadTime ?? 1 }} sebelum jadwal kunjungan</strong>. 
+                                    @if(isset($leadTime) && $leadTime == 1)
+                                        Khusus pendaftaran untuk hari <strong>Senin</strong>, formulir dibuka pada hari <strong>Jumat, Sabtu, &amp; Minggu</strong>.
+                                    @endif
+                                    </p>
                                 </div>
                             </div>
                         </div>

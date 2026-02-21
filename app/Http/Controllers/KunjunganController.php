@@ -75,7 +75,10 @@ class KunjunganController extends Controller
                 }
             }
         }
-        return view('guest.kunjungan.create', ['datesByDay' => $datesByDay]);
+        return view('guest.kunjungan.create', [
+            'datesByDay' => $datesByDay,
+            'leadTime' => $leadTime
+        ]);
     }
 
     public function searchWbp(Request $request)
