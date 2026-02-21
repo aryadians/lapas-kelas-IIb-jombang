@@ -186,7 +186,7 @@
                     <div class="relative flex flex-col items-center text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 group hover:border-yellow-300 card-hover-scale">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-900 to-blue-800 text-yellow-400 rounded-full flex items-center justify-center font-bold text-lg sm:text-xl mb-4 shadow-lg group-hover:scale-110 transition-all duration-300">1</div>
                         <h4 class="font-bold text-slate-900 text-lg mb-2">Daftar Online (H-1)</h4>
-                        <p class="text-sm text-slate-600">Daftar via Website atau WA: <br><strong class="text-blue-700">08573333400</strong></p>
+                        <p class="text-sm text-slate-600">Daftar via Website atau WA: <br><strong class="text-blue-700">{{ $helpdeskWhatsapp ?: '08573333400' }}</strong></p>
                     </div>
                     <div class="relative flex flex-col items-center text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 group hover:border-yellow-300 card-hover-scale">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white border-4 border-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold text-lg sm:text-xl mb-4 shadow-lg group-hover:border-yellow-500 group-hover:text-yellow-600 transition-all duration-300">2</div>
@@ -327,6 +327,39 @@
                     </div>
                 </div>
             </div>
+
+            {{-- 4. SYARAT & KETENTUAN KUNJUNGAN (DINAMIS DARI ADMIN) --}}
+            @if(!empty($termsConditions))
+            <div class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 mb-12 overflow-hidden relative border border-slate-100">
+                <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-violet-500 to-violet-700"></div>
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-4">SYARAT & KETENTUAN KUNJUNGAN</h2>
+                    <p class="text-slate-500 mt-2 text-base sm:text-lg">Baca dan pahami seluruh ketentuan sebelum mendaftar</p>
+                    <div class="w-24 h-1 bg-gradient-to-r from-violet-400 to-violet-600 mx-auto mt-4 rounded-full"></div>
+                </div>
+                <div class="prose prose-slate max-w-none px-2 sm:px-4 text-slate-700 leading-relaxed">
+                    {!! $termsConditions !!}
+                </div>
+            </div>
+            @endif
+
+            {{-- HELPDESK WHATSAPP --}}
+            @if(!empty($helpdeskWhatsapp))
+            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl p-6 mb-12 border border-emerald-200 shadow-lg max-w-3xl mx-auto">
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                        <i class="fab fa-whatsapp text-3xl"></i>
+                    </div>
+                    <div class="text-center sm:text-left">
+                        <h3 class="font-bold text-emerald-800 text-lg">Butuh Bantuan?</h3>
+                        <p class="text-sm text-emerald-600">Hubungi Helpdesk Layanan Kunjungan Lapas Kelas IIB Jombang</p>
+                    </div>
+                    <a href="https://wa.me/{{ $helpdeskWhatsapp }}" target="_blank" class="ml-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-emerald-300/50 hover:scale-105 transition-all flex items-center gap-2">
+                        <i class="fab fa-whatsapp"></i> Chat WhatsApp
+                    </a>
+                </div>
+            </div>
+            @endif
 
             {{-- TOMBOL ACTION ATAU BANNER DARURAT --}}
             <div class="flex flex-col items-center justify-center space-y-6 pb-12">

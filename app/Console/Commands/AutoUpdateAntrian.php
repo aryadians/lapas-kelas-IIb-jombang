@@ -55,11 +55,17 @@ class AutoUpdateAntrian extends Command
             return 0;
         }
 
-        // 2. Tentukan sesi saat ini
+        // 2. Tentukan sesi saat ini berdasarkan jam operasional dari pengaturan admin
+        $jamBukaPagi = \App\Models\VisitSetting::where('key', 'jam_buka_pagi')->value('value') ?? '08:00';
+        $jamTutupPagi = \App\Models\VisitSetting::where('key', 'jam_tutup_pagi')->value('value') ?? '11:00';
+        $jamBukaSiang = \App\Models\VisitSetting::where('key', 'jam_buka_siang')->value('value') ?? '13:00';
+        $jamTutupSiang = \App\Models\VisitSetting::where('key', 'jam_tutup_siang')->value('value') ?? '15:00';
+
+        $currentTime = $now->format('H:i');
         $sesi = null;
-        if ($now->hour >= 8 && $now->hour < 12) {
+        if ($currentTime >= $jamBukaPagi && $currentTime < $jamTutupPagi) {
             $sesi = 'pagi';
-        } elseif ($now->hour >= 13 && $now->hour < 15) { // Assuming afternoon session ends at 15:00
+        } elseif ($currentTime >= $jamBukaSiang && $currentTime < $jamTutupSiang) {
             $sesi = 'siang';
         }
 

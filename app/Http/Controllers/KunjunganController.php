@@ -42,6 +42,8 @@ class KunjunganController extends Controller
         $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
         $isEmergencyClosed = \App\Models\VisitSetting::where('key', 'is_emergency_closed')->value('value') == '1';
         $announcement = \App\Models\VisitSetting::where('key', 'announcement_guest_page')->value('value');
+        $termsConditions = \App\Models\VisitSetting::where('key', 'terms_conditions')->value('value') ?? '';
+        $helpdeskWhatsapp = \App\Models\VisitSetting::where('key', 'helpdesk_whatsapp')->value('value') ?? '';
 
         // Mapping nama hari ke bahasa Indonesia untuk pencocokan
         $dayMapping = [
@@ -83,7 +85,9 @@ class KunjunganController extends Controller
             'leadTime' => $leadTime,
             'maxFollowers' => $maxFollowers,
             'isEmergencyClosed' => $isEmergencyClosed,
-            'announcement' => $announcement
+            'announcement' => $announcement,
+            'termsConditions' => $termsConditions,
+            'helpdeskWhatsapp' => $helpdeskWhatsapp,
         ]);
     }
 

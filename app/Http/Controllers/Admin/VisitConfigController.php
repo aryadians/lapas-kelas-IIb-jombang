@@ -36,6 +36,14 @@ class VisitConfigController extends Controller
             'visit_duration_minutes' => 'required|integer|min:1',
             'arrival_tolerance_minutes' => 'required|integer|min:0',
             'announcement_guest_page' => 'nullable|string',
+            // VALIDASI CUSTOM TAHAP II
+            'terms_conditions' => 'required|string',
+            'helpdesk_whatsapp' => 'required|string',
+            'api_token_fonnte' => 'nullable|string',
+            'jam_buka_pagi' => 'required',
+            'jam_tutup_pagi' => 'required',
+            'jam_buka_siang' => 'required',
+            'jam_tutup_siang' => 'required',
         ]);
 
         // 2. Update Schedules
@@ -62,6 +70,14 @@ class VisitConfigController extends Controller
             'arrival_tolerance_minutes' => $request->arrival_tolerance_minutes,
             'is_emergency_closed' => $request->has('is_emergency_closed') ? '1' : '0',
             'announcement_guest_page' => $request->announcement_guest_page ?? '',
+            // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
+            'terms_conditions' => $request->terms_conditions,
+            'helpdesk_whatsapp' => $request->helpdesk_whatsapp,
+            'api_token_fonnte' => $request->api_token_fonnte ?? '',
+            'jam_buka_pagi' => $request->jam_buka_pagi,
+            'jam_tutup_pagi' => $request->jam_tutup_pagi,
+            'jam_buka_siang' => $request->jam_buka_siang,
+            'jam_tutup_siang' => $request->jam_tutup_siang,
         ];
 
         foreach ($settingsToUpdate as $key => $value) {

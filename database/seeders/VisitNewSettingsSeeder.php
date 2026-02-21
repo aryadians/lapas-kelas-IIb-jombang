@@ -57,6 +57,49 @@ class VisitNewSettingsSeeder extends Seeder
                 'value' => '',
                 'display_name' => 'Teks Pengumuman/Spanduk Darurat',
                 'type' => 'text'
+            ],
+            // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
+            [
+                'key' => 'terms_conditions',
+                'value' => '<p><strong>Syarat & Ketentuan Kunjungan Lapas:</strong></p><ol><li>Pengunjung wajib membawa KTP/KK asli.</li><li>Berpakaian rapi dan sopan (tidak menggunakan celana pendek/sandal jepit).</li><li>Dilarang membawa alat komunikasi (Handphone), senjata tajam, uang tunai berlebih, dan narkoba.</li><li>Patuhi jadwal sesi yang dipilih.</li></ol>',
+                'display_name' => 'Syarat & Ketentuan Kunjungan Publik',
+                'type' => 'text'
+            ],
+            [
+                'key' => 'helpdesk_whatsapp',
+                'value' => '6281234567890',
+                'display_name' => 'Nomor WhatsApp Helpdesk/Pengaduan',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'api_token_fonnte',
+                'value' => '',
+                'display_name' => 'Token API Fonnte (WhatsApp Gateway)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'jam_buka_pagi',
+                'value' => '08:00',
+                'display_name' => 'Jam Buka Pelayanan (Sesi Pagi)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'jam_tutup_pagi',
+                'value' => '11:00',
+                'display_name' => 'Jam Tutup Pelayanan (Sesi Pagi)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'jam_buka_siang',
+                'value' => '13:00',
+                'display_name' => 'Jam Buka Pelayanan (Sesi Siang)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'jam_tutup_siang',
+                'value' => '15:00',
+                'display_name' => 'Jam Tutup Pelayanan (Sesi Siang)',
+                'type' => 'string'
             ]
         ];
 

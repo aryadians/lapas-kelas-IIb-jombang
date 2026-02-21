@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Models\Kunjungan;
+use App\Models\VisitSetting;
 use Carbon\Carbon;
 
 class WhatsAppService
@@ -23,11 +24,14 @@ class WhatsAppService
             return null;
         }
 
-        // 2. Ambil Token dari .env
-        $token = env('WHATSAPP_API_TOKEN');
+        // 2. Ambil Token dari Database (prioritas) atau .env (fallback)
+        $token = VisitSetting::where('key', 'api_token_fonnte')->value('value');
+        if (empty($token)) {
+            $token = env('WHATSAPP_API_TOKEN');
+        }
 
         if (empty($token)) {
-            Log::error("WhatsApp GAGAL: Token WHATSAPP_API_TOKEN belum diisi di file .env");
+            Log::error("WhatsApp GAGAL: Token API Fonnte belum diisi di Pengaturan Admin maupun file .env");
             return null;
         }
 
