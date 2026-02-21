@@ -282,15 +282,10 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_humas'])->group(f
 
 // =========================================================================
 // 8. ADMIN PANEL — GRUP D: KUNJUNGAN READ-ONLY untuk Humas
-// Akses: admin_humas (index & show saja — tanpa bisa ubah/hapus)
-// Note: export, kalender, stats TIDAK diberikan agar tidak ada duplikasi nama route
+// NOTE: Dihapus — route admin.kunjungan.index & show sudah ada di Grup B
+//       (role:super_admin,admin_registrasi). Humas mendapat akses kunjungan
+//       view-only melalui penambahan admin_humas di Grup B di bawah.
 // =========================================================================
-Route::middleware(['auth', 'verified', 'role:admin_humas'])->group(function () {
-    // Kunjungan index (list) — read only untuk humas
-    Route::get('kunjungan', [AdminKunjunganController::class, 'index'])->name('admin.kunjungan.index');
-    // Detail kunjungan — read only untuk humas
-    Route::get('kunjungan/{kunjungan}', [AdminKunjunganController::class, 'show'])->name('admin.kunjungan.show');
-});
 
 
 // =========================================================================

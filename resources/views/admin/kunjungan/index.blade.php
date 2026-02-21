@@ -230,7 +230,7 @@
                             <th class="px-5 py-5"><i class="fas fa-user-lock text-blue-300 mr-2"></i>WBP (Tujuan)</th>
                             <th class="px-5 py-5"><i class="fas fa-calendar-alt text-blue-300 mr-2"></i>Jadwal</th>
                             <th class="px-5 py-5"><i class="fas fa-signal text-blue-300 mr-2"></i>Status</th>
-                            <th class="px-5 py-5 text-center rounded-tr-xl"><i class="fas fa-cogs text-blue-300 mr-2"></i>Aksi</th>
+                            <th class="px-5 py-5 text-center rounded-tr-xl min-w-[160px]"><i class="fas fa-cogs text-blue-300 mr-2"></i>Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100/50">
@@ -303,26 +303,46 @@
                                     {{ $st['label'] }}
                                 </div>
                             </td>
-                            <td class="px-5 py-5 text-center align-middle">
-                                <div class="flex items-center justify-center gap-3">
-                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}" class="btn-action-3d btn-view" title="Detail">
-                                        <i class="fas fa-eye"></i>
+                            <td class="px-4 py-5 text-center align-middle whitespace-nowrap">
+                                <div class="inline-flex items-center justify-center gap-1.5 flex-nowrap">
+                                    {{-- LIHAT DETAIL --}}
+                                    <a href="{{ route('admin.kunjungan.show', $kunjungan->id) }}"
+                                        class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-sky-50 hover:bg-sky-500 border-2 border-sky-200 hover:border-sky-500 text-sky-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-sky-500/30 hover:-translate-y-0.5 active:scale-95"
+                                        title="Lihat Detail">
+                                        <i class="fas fa-eye text-sm"></i>
                                     </a>
-                                    
+
                                     @if($kunjungan->status == KunjunganStatus::PENDING)
-                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}" class="btn-action-3d btn-edit" title="Verifikasi">
-                                            <i class="fas fa-user-check"></i>
+                                        {{-- SETUJUI --}}
+                                        <a href="{{ route('admin.kunjungan.edit', $kunjungan->id) }}"
+                                            class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-50 hover:bg-emerald-500 border-2 border-emerald-200 hover:border-emerald-500 text-emerald-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-emerald-500/30 hover:-translate-y-0.5 active:scale-95"
+                                            title="Verifikasi & Setujui">
+                                            <i class="fas fa-user-check text-sm"></i>
                                         </a>
+                                        {{-- TOLAK --}}
+                                        <button type="button"
+                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')"
+                                            class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-500 border-2 border-rose-200 hover:border-rose-500 text-rose-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-rose-500/30 hover:-translate-y-0.5 active:scale-95"
+                                            title="Tolak Kunjungan">
+                                            <i class="fas fa-user-times text-sm"></i>
+                                        </button>
+
                                     @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
-                                        <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')" 
-                                            class="btn-action-3d btn-done" title="Selesai">
-                                            <i class="fas fa-check-double"></i>
+                                        {{-- SELESAI --}}
+                                        <button type="button"
+                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')"
+                                            class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-700 border-2 border-slate-200 hover:border-slate-700 text-slate-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-slate-500/30 hover:-translate-y-0.5 active:scale-95"
+                                            title="Tandai Selesai">
+                                            <i class="fas fa-check-double text-sm"></i>
                                         </button>
                                     @endif
 
-                                    <button type="button" onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')" 
-                                        class="btn-action-3d btn-delete" title="Hapus">
-                                        <i class="fas fa-trash-alt"></i>
+                                    {{-- HAPUS --}}
+                                    <button type="button"
+                                        onclick="submitSingleAction('{{ route('admin.kunjungan.destroy', $kunjungan->id) }}', 'delete', 'DELETE')"
+                                        class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 hover:bg-red-500 border-2 border-red-200 hover:border-red-500 text-red-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-red-500/30 hover:-translate-y-0.5 active:scale-95"
+                                        title="Hapus Data">
+                                        <i class="fas fa-trash-alt text-sm"></i>
                                     </button>
                                 </div>
                             </td>
