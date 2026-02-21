@@ -392,6 +392,77 @@
                     </div>
                 </div>
             </div>
+
+            {{-- EMAIL GMAIL SMTP --}}
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                <div class="bg-slate-50 px-8 py-5 border-b border-slate-100 flex items-center gap-4">
+                    <div class="w-11 h-11 bg-red-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-red-200">
+                        <i class="fas fa-envelope text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight">Konfigurasi Email (Gmail SMTP)</h2>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Pengaturan pengirim email notifikasi sistem</p>
+                    </div>
+                </div>
+                <div class="p-8 space-y-5">
+                    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                        <div>
+                            <p class="text-sm font-bold text-blue-800">Cara Mendapatkan App Password Gmail</p>
+                            <p class="text-xs text-blue-600 mt-1">Buka <a href="https://myaccount.google.com/apppasswords" target="_blank" class="underline font-bold">Google App Passwords</a> → Pilih "Mail" → Generate. Pastikan 2-Step Verification aktif di akun Gmail.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">SMTP Host</label>
+                            <input type="text" name="mail_host" value="{{ $settings['mail_host'] ?? 'smtp.gmail.com' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-mono text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="smtp.gmail.com">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">SMTP Port</label>
+                            <input type="number" name="mail_port" value="{{ $settings['mail_port'] ?? '587' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-mono text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="587">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Email Pengirim (Username SMTP)</label>
+                            <input type="email" name="mail_username" value="{{ $settings['mail_username'] ?? '' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="email@gmail.com">
+                        </div>
+                        <div class="space-y-2" x-data="{ showMailPass: false }">
+                            <label class="text-sm font-bold text-slate-700">App Password Gmail</label>
+                            <div class="relative">
+                                <input :type="showMailPass ? 'text' : 'password'" name="mail_password" value="{{ $settings['mail_password'] ?? '' }}" class="w-full p-4 pr-14 bg-slate-50 border-2 border-slate-100 rounded-2xl font-mono text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="xxxx xxxx xxxx xxxx">
+                                <button type="button" @click="showMailPass = !showMailPass" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                                    <i :class="showMailPass ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Enkripsi</label>
+                            <select name="mail_encryption" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm font-bold text-slate-700 focus:border-red-500 focus:ring-0">
+                                <option value="tls" {{ ($settings['mail_encryption'] ?? 'tls') === 'tls' ? 'selected' : '' }}>TLS (Port 587)</option>
+                                <option value="ssl" {{ ($settings['mail_encryption'] ?? '') === 'ssl' ? 'selected' : '' }}>SSL (Port 465)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Alamat Email Pengirim (From)</label>
+                            <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? '' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="noreply@gmail.com">
+                        </div>
+                    </div>
+
+                    <div class="h-px bg-slate-100"></div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Email Admin / Penerima Notifikasi</label>
+                        <input type="email" name="admin_email" value="{{ $settings['admin_email'] ?? '' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-sm text-slate-700 focus:border-red-500 focus:ring-0" placeholder="admin@gmail.com">
+                        <p class="text-[10px] text-slate-400 italic"><i class="fas fa-info-circle mr-1"></i> Email ini digunakan untuk menerima notifikasi pendaftaran baru dan laporan harian.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- SAVE BUTTON (Always Visible) --}}

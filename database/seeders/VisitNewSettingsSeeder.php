@@ -100,6 +100,49 @@ class VisitNewSettingsSeeder extends Seeder
                 'value' => '15:00',
                 'display_name' => 'Jam Tutup Pelayanan (Sesi Siang)',
                 'type' => 'string'
+            ],
+            // KONFIGURASI EMAIL (GMAIL SMTP)
+            [
+                'key' => 'mail_host',
+                'value' => 'smtp.gmail.com',
+                'display_name' => 'SMTP Host',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'mail_port',
+                'value' => '587',
+                'display_name' => 'SMTP Port',
+                'type' => 'number'
+            ],
+            [
+                'key' => 'mail_username',
+                'value' => 'tundjungm@gmail.com',
+                'display_name' => 'Email Pengirim (Username SMTP)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'mail_password',
+                'value' => 'dwvpktuptruvlkqe',
+                'display_name' => 'App Password Gmail (SMTP)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'mail_encryption',
+                'value' => 'tls',
+                'display_name' => 'Enkripsi Email',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'mail_from_address',
+                'value' => 'tundjungm@gmail.com',
+                'display_name' => 'Alamat Email Pengirim (From)',
+                'type' => 'string'
+            ],
+            [
+                'key' => 'admin_email',
+                'value' => 'tundjungm@gmail.com',
+                'display_name' => 'Email Admin / Penerima Notifikasi',
+                'type' => 'string'
             ]
         ];
 

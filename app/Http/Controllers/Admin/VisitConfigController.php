@@ -44,6 +44,14 @@ class VisitConfigController extends Controller
             'jam_tutup_pagi' => 'required',
             'jam_buka_siang' => 'required',
             'jam_tutup_siang' => 'required',
+            // VALIDASI KONFIGURASI EMAIL
+            'mail_host' => 'nullable|string',
+            'mail_port' => 'nullable|integer',
+            'mail_username' => 'nullable|string',
+            'mail_password' => 'nullable|string',
+            'mail_encryption' => 'nullable|string',
+            'mail_from_address' => 'nullable|email',
+            'admin_email' => 'nullable|email',
         ]);
 
         // 2. Update Schedules
@@ -78,6 +86,14 @@ class VisitConfigController extends Controller
             'jam_tutup_pagi' => $request->jam_tutup_pagi,
             'jam_buka_siang' => $request->jam_buka_siang,
             'jam_tutup_siang' => $request->jam_tutup_siang,
+            // KONFIGURASI EMAIL
+            'mail_host' => $request->mail_host ?? '',
+            'mail_port' => $request->mail_port ?? '587',
+            'mail_username' => $request->mail_username ?? '',
+            'mail_password' => $request->mail_password ?? '',
+            'mail_encryption' => $request->mail_encryption ?? 'tls',
+            'mail_from_address' => $request->mail_from_address ?? '',
+            'admin_email' => $request->admin_email ?? '',
         ];
 
         foreach ($settingsToUpdate as $key => $value) {
