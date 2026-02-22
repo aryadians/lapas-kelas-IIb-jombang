@@ -52,9 +52,9 @@
                 <select name="category"
                     class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl text-sm font-bold text-slate-600 focus:border-blue-400 focus:outline-none appearance-none cursor-pointer transition-all">
                     <option value="">Semua Kategori</option>
-                    <option value="LHKPN" {{ request('category') == 'LHKPN' ? 'selected' : '' }}>LHKPN</option>
-                    <option value="LAKIP" {{ request('category') == 'LAKIP' ? 'selected' : '' }}>LAKIP</option>
-                    <option value="Keuangan" {{ request('category') == 'Keuangan' ? 'selected' : '' }}>Keuangan</option>
+                    @foreach($categories as $cat)
+                    <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
                 </select>
                 <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
             </div>

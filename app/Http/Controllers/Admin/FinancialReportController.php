@@ -28,37 +28,51 @@ class FinancialReportController extends Controller
             $query->where('title', 'LIKE', '%' . $request->search . '%');
         }
 
-        $reports = $query->latest()->paginate(10);
-        return view('admin.financial_reports.index', compact('reports'));
+        $reports    = $query->latest()->paginate(10);
+        $categories = FinancialReport::select('category')->distinct()->orderBy('category')->pluck('category');
+
+        return view('admin.financial_reports.index', compact('reports', 'categories'));
     }
 
     public function create()
     {
-        return view('admin.financial_reports.create');
+        // Ambil seluruh kategori yang sudah pernah dipakai (unik), plus default
+        $defaultCategories = collect(['LHKPN', 'LAKIP', 'Keuangan', 'Renstra', 'Profil Lapas', 'RKT']);
+        $dbCategories      = FinancialReport::select('category')->distinct()->orderBy('category')->pluck('category');
+        $categories        = $defaultCategories->merge($dbCategories)->unique()->values();
+
+        return view('admin.financial_reports.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'category' => 'required|string',
-            'year' => 'required|integer|min:2000|max:' . (date('Y') + 1),
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
-            'description' => 'nullable|string',
+            'title'           => 'required|string|max:255',
+            'category'        => 'required_without:custom_category|nullable|string|max:100',
+            'custom_category' => 'required_without:category|nullable|string|max:100',
+            'year'            => 'required|integer|min:2000|max:' . (date('Y') + 1),
+            'file'            => 'required|file|mimes:pdf,doc,docx,xls,xlsx|max:10240',
+            'description'     => 'nullable|string',
         ]);
+
+        // Jika admin mengisi kategori baru, gunakan itu
+        $category = filled($request->custom_category)
+            ? trim($request->custom_category)
+            : $request->category;
 
         $filePath = $request->file('file')->store('public/reports');
 
         FinancialReport::create([
-            'title' => $request->title,
-            'category' => $request->category,
-            'year' => $request->year,
-            'description' => $request->description,
-            'file_path' => $filePath,
+            'title'        => $request->title,
+            'category'     => $category,
+            'year'         => $request->year,
+            'description'  => $request->description,
+            'file_path'    => $filePath,
             'is_published' => $request->has('is_published'),
         ]);
 
-        return redirect()->route('admin.financial-reports.index')->with('success', 'Laporan berhasil ditambahkan.');
+        return redirect()->route('admin.financial-reports.index')
+            ->with('success', "Laporan berhasil ditambahkan dalam kategori \"{$category}\".");
     }
 
     public function edit(FinancialReport $financialReport)
