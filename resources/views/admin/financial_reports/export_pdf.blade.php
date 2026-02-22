@@ -2,73 +2,73 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Informasi Publik - Lapas Jombang</title>
-    <style>
-        body { font-family: sans-serif; font-size: 11px; color: #333; margin: 0; padding: 0; }
-        .kop-surat { text-align: center; border-bottom: 3px double #000; padding-bottom: 10px; margin-bottom: 20px; }
-        .kop-surat h1 { margin: 0; font-size: 16px; text-transform: uppercase; }
-        .kop-surat h2 { margin: 2px 0; font-size: 14px; text-transform: uppercase; }
-        .kop-surat p { margin: 2px 0; font-size: 10px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; font-weight: bold; text-transform: uppercase; text-align: center; }
-        
-        .footer { margin-top: 30px; text-align: right; }
-        .footer p { margin: 0; }
-        
-        @media print {
-            .no-print { display: none; }
-            body { padding: 30px; }
-        }
-    </style>
+    <title>Laporan Informasi Publik – Lapas Kelas IIB Jombang</title>
 </head>
 <body>
-    <div class="no-print" style="text-align: center; background: #fef3c7; padding: 15px; margin-bottom: 20px; border: 1px solid #f59e0b;">
-        <button onclick="window.print()" style="padding: 10px 25px; background: #1e293b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-            <i class="fas fa-print"></i> CETAK / SIMPAN SEBAGAI PDF
-        </button>
+
+@php $title = 'Rekapitulasi Laporan Informasi Publik'; $subtitle = 'Kategori: LHKPN · LAKIP · Laporan Keuangan'; @endphp
+@include('partials.kop_surat_pdf')
+
+<table>
+    <thead>
+        <tr>
+            <th style="width:32px">No</th>
+            <th>Judul Laporan</th>
+            <th style="width:70px">Kategori</th>
+            <th style="width:45px">Tahun</th>
+            <th>Keterangan</th>
+            <th style="width:55px">Status</th>
+            <th style="width:65px">Tgl Unggah</th>
+        </tr>
+    </thead>
+    <tbody>
+        @forelse($reports as $report)
+        <tr>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td>{{ $report->title }}</td>
+            <td class="text-center">
+                @php
+                    $catColor = ['LHKPN'=>'#7c3aed','LAKIP'=>'#1d4ed8','Keuangan'=>'#047857'][$report->category] ?? '#475569';
+                @endphp
+                <span style="background:{{ $catColor }}1a; color:{{ $catColor }}; padding:2px 7px; border-radius:20px; font-weight:bold; font-size:9px; border:1px solid {{ $catColor }}44;">
+                    {{ $report->category }}
+                </span>
+            </td>
+            <td class="text-center fw-bold">{{ $report->year }}</td>
+            <td>{{ $report->description ?? '—' }}</td>
+            <td class="text-center">
+                @if($report->is_published)
+                <span style="background:#ecfdf5;color:#059669;padding:2px 7px;border-radius:20px;font-weight:bold;font-size:9px;border:1px solid #bbf7d0;">Publik</span>
+                @else
+                <span style="background:#f8fafc;color:#64748b;padding:2px 7px;border-radius:20px;font-weight:bold;font-size:9px;border:1px solid #cbd5e1;">Draft</span>
+                @endif
+            </td>
+            <td class="text-center">{{ $report->created_at->format('d/m/Y') }}</td>
+        </tr>
+        @empty
+        <tr>
+            <td colspan="7" class="text-center" style="padding:20px;color:#94a3b8;font-style:italic;">Tidak ada data laporan.</td>
+        </tr>
+        @endforelse
+    </tbody>
+</table>
+
+{{-- Footer TTD --}}
+<div class="doc-footer">
+    <div class="footer-ttd">
+        <div class="ttd-block">
+            <p class="ttd-kota">Jombang, {{ now()->translatedFormat('d F Y') }}</p>
+            <p>Kepala Lapas Kelas IIB Jombang</p>
+            <div class="ttd-space"></div>
+            <p class="ttd-nama">_____________________________</p>
+            <p class="ttd-nip">NIP. ___________________________</p>
+        </div>
     </div>
-
-    <div class="kop-surat">
-        <h2>Kementerian Imigrasi dan Pemasyarakatan</h2>
-        <h1>Lembaga Pemasyarakatan Kelas IIB Jombang</h1>
-        <p>Jl. KH. Wahid Hasyim No.155, Jombang, Jawa Timur 61419</p>
-        <p>Telepon: (0321) 861205 | Email: lapasjombang@gmail.com</p>
+    <div class="footer-system">
+        <span>Dokumen ini dicetak secara otomatis oleh Sistem Informasi Layanan Kunjungan Lapas Jombang.</span>
+        <span>{{ now()->format('d/m/Y H:i') }} WIB</span>
     </div>
+</div>
 
-    <h3 style="text-align: center; text-transform: uppercase; margin-bottom: 20px;">Rekapitulasi Laporan Informasi Publik</h3>
-
-    <table>
-        <thead>
-            <tr>
-                <th width="30">No</th>
-                <th>Judul Laporan</th>
-                <th width="80">Kategori</th>
-                <th width="50">Tahun</th>
-                <th>Keterangan</th>
-                <th width="80">Tgl Unggah</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($reports as $report)
-            <tr>
-                <td style="text-align: center;">{{ $loop->iteration }}</td>
-                <td>{{ $report->title }}</td>
-                <td style="text-align: center;">{{ $report->category }}</td>
-                <td style="text-align: center;">{{ $report->year }}</td>
-                <td>{{ $report->description ?? '-' }}</td>
-                <td style="text-align: center;">{{ $report->created_at->format('d/m/Y') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="footer">
-        <p>Dicetak pada: {{ now()->translatedFormat('d F Y H:i') }}</p>
-        <br><br><br>
-        <p><b>Admin Sistem Lapas Jombang</b></p>
-    </div>
 </body>
 </html>
