@@ -1,660 +1,460 @@
 @extends('layouts.admin')
 
+@section('title', 'Dashboard')
+
 @section('content')
-{{-- Load Animate.css --}}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-
 <style>
-    /* 3D Perspective Container */
-    .perspective-1000 { perspective: 1000px; }
-
-    /* 3D Card Effect */
-    .card-3d {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        transform-style: preserve-3d;
-        backface-visibility: hidden;
+    .stat-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .card-3d:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
-        z-index: 10;
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.18);
     }
-
-    /* Glassmorphism Panel */
-    .glass-panel {
-        background: rgba(255, 255, 255, 0.9);
+    .glass {
+        background: rgba(255,255,255,0.92);
         backdrop-filter: blur(12px);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(226,232,240,0.7);
     }
-
-    /* Modern Gradient Text */
-    .text-gradient {
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-image: linear-gradient(to right, #f8fafc, #93c5fd);
+    .quick-link {
+        transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    .quick-link:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12);
     }
 </style>
 
-<div class="space-y-8 pb-12 perspective-1000">
+<div class="space-y-6 pb-12">
 
-    {{-- 1. HERO SECTION & JAM REALTIME --}}
-    <div class="relative bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 rounded-[2rem] p-8 md:p-10 text-white shadow-2xl overflow-hidden border border-white/10 card-3d animate__animated animate__fadeInDown">
-        {{-- Background Decorations --}}
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-yellow-500 opacity-10 blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-blue-500 opacity-10 blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-        
+    {{-- ═══════════════ 1. HERO ═══════════════ --}}
+    <div class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900 rounded-3xl p-8 md:p-10 text-white shadow-2xl overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-500 opacity-[0.08] blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-indigo-500 opacity-[0.08] blur-3xl pointer-events-none"></div>
+
         <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-                <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider mb-3 text-blue-200">
-                    <i class="fas fa-layer-group mr-2"></i> Dashboard Admin
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-bold uppercase tracking-wider mb-4 text-blue-200">
+                    <i class="fas fa-layer-group text-[10px]"></i> Panel Kontrol Admin
                 </div>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
-                    Halo, <span class="text-gradient">{{ Auth::user()->name }}</span>! 👋
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
+                    Halo, <span class="bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">{{ Auth::user()->name }}</span>! 👋
                 </h1>
-                <p class="text-blue-100/80 mt-3 text-lg font-light max-w-xl leading-relaxed">
-                    Selamat datang di Panel Kontrol Sistem Informasi Lapas Kelas IIB Jombang. Pantau aktivitas terkini dalam satu pandangan.
+                <p class="text-blue-200/70 mt-2 text-sm max-w-lg leading-relaxed">
+                    Selamat datang di Sistem Informasi Lapas Kelas IIB Jombang. Pantau seluruh aktivitas kunjungan dari sini.
                 </p>
             </div>
-            
+
             {{-- Clock Widget --}}
-            <div class="text-center md:text-right bg-white/10 p-5 rounded-2xl border border-white/10 backdrop-blur-md shadow-lg min-w-[200px] transform transition hover:scale-105">
-                <p id="realtime-clock" class="text-4xl font-mono font-black text-white drop-shadow-md">{{ now()->format('H:i:s') }}</p>
-                <p id="realtime-date" class="text-xs font-bold text-blue-200 uppercase tracking-widest mt-1">{{ now()->translatedFormat('l, d F Y') }}</p>
+            <div class="text-center bg-white/10 border border-white/15 backdrop-blur-sm rounded-2xl px-6 py-4 flex-shrink-0 min-w-[180px]">
+                <p id="realtime-clock" class="text-3xl font-mono font-black text-white tracking-tight">{{ now()->format('H:i:s') }}</p>
+                <p id="realtime-date" class="text-[11px] font-bold text-blue-200/80 uppercase tracking-widest mt-1">{{ now()->translatedFormat('l, d F Y') }}</p>
+                <div class="mt-2 h-px bg-white/10"></div>
+                <div class="flex items-center justify-center gap-1.5 mt-2">
+                    @if($isMonday || $isVisitingDay)
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.7)]"></span>
+                    <span class="text-[10px] font-black text-emerald-300 uppercase tracking-widest">Hari Kunjungan</span>
+                    @else
+                    <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Libur Kunjungan</span>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
-
-
-    {{-- 2. STATISTIK CARDS --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate__animated animate__fadeInUp delay-100">
-        @php
-            $stats = [
-                ['label' => 'Menunggu Verifikasi', 'value' => $totalPendingKunjungans, 'icon' => 'fa-hourglass-half', 'color' => 'yellow', 'bg' => 'from-amber-400 to-orange-500'],
-                ['label' => 'Disetujui Hari Ini', 'value' => $totalApprovedToday, 'icon' => 'fa-calendar-check', 'color' => 'green', 'bg' => 'from-emerald-500 to-teal-600'],
-                ['label' => 'Total Pendaftar', 'value' => $totalKunjungans, 'icon' => 'fa-users', 'color' => 'blue', 'bg' => 'from-blue-600 to-indigo-600'],
-                ['label' => 'Berita Publikasi', 'value' => $totalNews, 'icon' => 'fa-newspaper', 'color' => 'purple', 'bg' => 'from-purple-500 to-violet-600'],
-            ];
-        @endphp
-
-        @foreach($stats as $stat)
-        <div class="card-3d relative overflow-hidden rounded-2xl bg-gradient-to-br {{ $stat['bg'] }} p-6 text-white shadow-lg group">
-            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity transform group-hover:scale-110 duration-500">
-                <i class="fa-solid {{ $stat['icon'] }} text-6xl"></i>
-            </div>
-            
-            <div class="relative z-10 flex flex-col justify-between h-full">
-                <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm shadow-inner">
-                        <i class="fa-solid {{ $stat['icon'] }} text-lg"></i>
-                    </div>
-                    <p class="text-xs font-bold uppercase tracking-widest opacity-90">{{ $stat['label'] }}</p>
-                </div>
-                <div>
-                    <h3 class="text-4xl font-black tracking-tight" data-counter="{{ $stat['value'] }}">
-                        {{ $stat['value'] }}
-                    </h3>
+    {{-- ═══════════════ 2. STAT CARDS ═══════════════ --}}
+    @php
+        $stats = [
+            ['label' => 'Menunggu Verifikasi', 'value' => $totalPendingKunjungans, 'icon' => 'fa-hourglass-half',  'from' => '#f59e0b', 'to' => '#f97316'],
+            ['label' => 'Disetujui Hari Ini',  'value' => $totalApprovedToday,    'icon' => 'fa-calendar-check', 'from' => '#10b981', 'to' => '#0284c7'],
+            ['label' => 'Total Pendaftar',      'value' => $totalKunjungans,       'icon' => 'fa-users',          'from' => '#3b82f6', 'to' => '#6366f1'],
+            ['label' => 'Berita Publikasi',     'value' => $totalNews,             'icon' => 'fa-newspaper',      'from' => '#8b5cf6', 'to' => '#ec4899'],
+        ];
+    @endphp
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        @foreach($stats as $s)
+        <div class="stat-card relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-5">
+            <div class="absolute top-0 left-0 w-full h-0.5" style="background: linear-gradient(to right, {{ $s['from'] }}, {{ $s['to'] }})"></div>
+            <div class="flex items-start justify-between mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white flex-shrink-0"
+                    style="background: linear-gradient(135deg, {{ $s['from'] }}, {{ $s['to'] }})">
+                    <i class="fas {{ $s['icon'] }} text-sm"></i>
                 </div>
             </div>
-            {{-- Decorative Bar --}}
-            <div class="absolute bottom-0 left-0 w-full h-1.5 bg-white/20"></div>
+            <p class="text-2xl font-black text-slate-900 tracking-tight" data-counter="{{ $s['value'] }}">{{ $s['value'] }}</p>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ $s['label'] }}</p>
         </div>
         @endforeach
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        
-        {{-- KOLOM KIRI (CHART & KUOTA) --}}
-        <div class="xl:col-span-2 space-y-8 animate__animated animate__fadeInLeft delay-200">
-            
-            {{-- CHART KUNJUNGAN --}}
-            <div class="glass-panel p-6 rounded-2xl shadow-sm relative overflow-hidden">
-                <div class="flex items-center justify-between mb-6">
+    {{-- ═══════════════ 3. MAIN LAYOUT ═══════════════ --}}
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        {{-- ── KOLOM KIRI (xl:span 2) ── --}}
+        <div class="xl:col-span-2 space-y-6">
+
+            {{-- Chart Kunjungan 7 Hari --}}
+            <div class="glass rounded-2xl shadow-sm p-6">
+                <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-800">Statistik Kunjungan</h3>
-                        <p class="text-sm text-slate-500">Data kunjungan disetujui dalam 7 hari terakhir.</p>
+                        <h3 class="font-black text-slate-800 text-base">Tren Kunjungan</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Data kunjungan disetujui dalam 7 hari terakhir.</p>
                     </div>
-                    <div class="bg-blue-50 p-2 rounded-lg text-blue-600">
-                        <i class="fas fa-chart-bar text-xl"></i>
+                    <div class="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                        <i class="fas fa-chart-line text-sm"></i>
                     </div>
                 </div>
-                <div class="h-80 w-full">
+                <div class="h-64 w-full">
                     <canvas id="visitsChart"></canvas>
                 </div>
             </div>
 
-            {{-- NEW CHARTS ROW --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {{-- Monthly Visits Chart --}}
-                <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">Kunjungan Bulanan {{ date('Y') }}</h3>
-                    <div class="h-80 w-full">
+            {{-- Chart Bulanan & Survey --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass rounded-2xl shadow-sm p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-chart-bar text-sm"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 text-sm">Kunjungan Bulanan {{ date('Y') }}</h3>
+                    </div>
+                    <div class="h-56 w-full">
                         <canvas id="monthlyVisitsChart"></canvas>
                     </div>
                 </div>
-
-                {{-- Survey Ratings Chart --}}
-                <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4">Statistik Survey IKM</h3>
-                    <div class="h-80 w-full">
+                <div class="glass rounded-2xl shadow-sm p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-8 h-8 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600">
+                            <i class="fas fa-chart-pie text-sm"></i>
+                        </div>
+                        <h3 class="font-black text-slate-800 text-sm">Statistik Survey IKM</h3>
+                    </div>
+                    <div class="h-56 w-full">
                         <canvas id="surveyRatingsChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            {{-- KUOTA HARI INI --}}
-            <div class="glass-panel p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
-                <div class="flex justify-between items-start mb-6">
+            {{-- Kuota Hari Ini --}}
+            <div class="glass rounded-2xl shadow-sm p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h3 class="text-xl font-bold text-slate-800">Pantauan Kuota</h3>
-                        <p class="text-sm text-slate-500 flex items-center gap-2 mt-1">
-                            <i class="far fa-calendar-alt text-blue-500"></i>
+                        <h3 class="font-black text-slate-800 text-base">Pantauan Kuota</h3>
+                        <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
+                            <i class="far fa-calendar-alt text-blue-400"></i>
                             {{ \Carbon\Carbon::today()->translatedFormat('l, d F Y') }}
                         </p>
                     </div>
                     @if($isMonday || $isVisitingDay)
-                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold animate-pulse">
-                            ● BUKA
-                        </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-200 animate-pulse">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Buka
+                    </span>
                     @else
-                        <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">
-                            ● TUTUP
-                        </span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-red-100 text-red-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-red-200">
+                        <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span> Tutup
+                    </span>
                     @endif
                 </div>
 
-                @if ($isMonday || $isVisitingDay)
-                    {{-- PENDAFTARAN ONLINE --}}
-                    <div class="mb-8">
-                        <h4 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2">Pendaftaran Online</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                @if($isMonday || $isVisitingDay)
+                    <div class="space-y-5">
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Pendaftaran Online</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             @if($isMonday)
-                                {{-- Sesi Pagi --}}
                                 @php $persenPagi = ($kuotaPagi > 0) ? ($pendaftarPagi / $kuotaPagi) * 100 : 0; @endphp
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600"><i class="fa-solid fa-sun"></i></div>
-                                            Sesi Pagi
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-sun text-amber-400 text-xs"></i> Sesi Pagi
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarPagi }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaPagi }} Kuota</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarPagi }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaPagi }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenPagi }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full transition-all duration-1000" style="width: {{ $persenPagi }}%"></div>
                                     </div>
+                                    <p class="text-[10px] text-slate-400 text-right font-bold">{{ round($persenPagi) }}% terisi</p>
                                 </div>
-
-                                {{-- Sesi Siang --}}
                                 @php $persenSiang = ($kuotaSiang > 0) ? ($pendaftarSiang / $kuotaSiang) * 100 : 0; @endphp
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600"><i class="fa-solid fa-cloud-sun"></i></div>
-                                            Sesi Siang
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-cloud-sun text-orange-400 text-xs"></i> Sesi Siang
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarSiang }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaSiang }} Kuota</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarSiang }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaSiang }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-orange-400 to-red-500 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenSiang }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-2.5 rounded-full transition-all duration-1000" style="width: {{ $persenSiang }}%"></div>
                                     </div>
+                                    <p class="text-[10px] text-slate-400 text-right font-bold">{{ round($persenSiang) }}% terisi</p>
                                 </div>
                             @else
-                                {{-- Hari Biasa --}}
                                 @php $persenBiasa = ($kuotaBiasa > 0) ? ($pendaftarBiasa / $kuotaBiasa) * 100 : 0; @endphp
-                                <div class="md:col-span-2 space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600"><i class="fa-solid fa-users"></i></div>
-                                            Total Kunjungan
+                                <div class="md:col-span-2 space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-users text-blue-400 text-xs"></i> Total Kunjungan
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarBiasa }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaBiasa }} Kuota</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarBiasa }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaBiasa }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ $persenBiasa }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2.5 rounded-full transition-all duration-1000" style="width: {{ $persenBiasa }}%"></div>
                                     </div>
+                                    <p class="text-[10px] text-slate-400 text-right font-bold">{{ round($persenBiasa) }}% terisi</p>
                                 </div>
                             @endif
                         </div>
-                    </div>
 
-                    {{-- PENDAFTARAN OFFLINE --}}
-                    <div>
-                        <h4 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2 flex items-center justify-between">
-                            <span>Pendaftaran Offline</span>
-                            <span class="text-xs bg-slate-100 px-2 py-1 rounded-md text-slate-500 font-bold uppercase tracking-tighter">Total: {{ $pendaftarOfflineTotal }} / {{ $kuotaOfflineTotal }}</span>
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 pt-1">Pendaftaran Offline</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             @if($isMonday)
-                                {{-- Sesi Pagi --}}
                                 @php $persenOfflinePagi = ($kuotaOfflinePagi > 0) ? ($pendaftarOfflinePagi / $kuotaOfflinePagi) * 100 : 0; @endphp
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2 text-sm">
-                                            <div class="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600 border border-yellow-100"><i class="fa-solid fa-sun text-xs"></i></div>
-                                            Sesi Pagi
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-sun text-amber-400 text-xs"></i> Pagi
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-xl font-black text-slate-800">{{ $pendaftarOfflinePagi }}</span>
-                                            <span class="text-[10px] text-slate-400 font-bold uppercase">/ {{ $kuotaOfflinePagi }}</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarOfflinePagi }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflinePagi }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflinePagi) }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-2 rounded-full" style="width: {{ min(100,$persenOfflinePagi) }}%"></div>
                                     </div>
-                                    <p class="text-[10px] font-bold text-slate-400 text-right">{{ round($persenOfflinePagi) }}% Terisi</p>
                                 </div>
-
-                                {{-- Sesi Siang --}}
                                 @php $persenOfflineSiang = ($kuotaOfflineSiang > 0) ? ($pendaftarOfflineSiang / $kuotaOfflineSiang) * 100 : 0; @endphp
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2 text-sm">
-                                            <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100"><i class="fa-solid fa-cloud-sun text-xs"></i></div>
-                                            Sesi Siang
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-cloud-sun text-orange-400 text-xs"></i> Siang
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-xl font-black text-slate-800">{{ $pendaftarOfflineSiang }}</span>
-                                            <span class="text-[10px] text-slate-400 font-bold uppercase">/ {{ $kuotaOfflineSiang }}</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarOfflineSiang }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflineSiang }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-3 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflineSiang) }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-2 rounded-full" style="width: {{ min(100,$persenOfflineSiang) }}%"></div>
                                     </div>
-                                    <p class="text-[10px] font-bold text-slate-400 text-right">{{ round($persenOfflineSiang) }}% Terisi</p>
                                 </div>
                             @else
-                                {{-- Hari Biasa --}}
                                 @php $persenOfflineBiasa = ($kuotaOfflineBiasa > 0) ? ($pendaftarOfflineBiasa / $kuotaOfflineBiasa) * 100 : 0; @endphp
-                                <div class="md:col-span-2 space-y-3">
-                                    <div class="flex justify-between items-end">
-                                        <span class="font-bold text-slate-700 flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 border border-emerald-100"><i class="fa-solid fa-users text-sm"></i></div>
-                                            Total Kunjungan Offline
+                                <div class="md:col-span-2 space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                            <i class="fas fa-users text-emerald-500 text-xs"></i> Kunjungan Offline
                                         </span>
-                                        <div class="text-right">
-                                            <span class="text-2xl font-black text-slate-800">{{ $pendaftarOfflineBiasa }}</span>
-                                            <span class="text-xs text-slate-400 font-bold uppercase">/ {{ $kuotaOfflineBiasa }} Kuota</span>
-                                        </div>
+                                        <span class="text-sm font-black text-slate-800">{{ $pendaftarOfflineBiasa }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflineBiasa }}</span></span>
                                     </div>
-                                    <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner border border-slate-200">
-                                        <div class="bg-gradient-to-r from-emerald-400 to-teal-600 h-4 rounded-full transition-all duration-1000 ease-out shadow-sm" style="width: {{ min(100, $persenOfflineBiasa) }}%"></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-emerald-400 to-teal-600 h-2.5 rounded-full" style="width: {{ min(100,$persenOfflineBiasa) }}%"></div>
                                     </div>
-                                    <p class="text-xs font-bold text-slate-400 text-right">{{ round($persenOfflineBiasa) }}% Kapasitas Terpakai</p>
+                                    <p class="text-[10px] text-slate-400 text-right font-bold">{{ round($persenOfflineBiasa) }}% terisi</p>
                                 </div>
                             @endif
                         </div>
                     </div>
                 @else
-                    <div class="bg-slate-50 text-slate-500 font-medium text-center p-8 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center gap-2">
-                        <i class="fas fa-door-closed text-4xl mb-2 text-slate-300"></i>
-                        <span>Layanan Kunjungan Tidak Tersedia Hari Ini</span>
+                    <div class="flex flex-col items-center justify-center py-10 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <i class="fas fa-door-closed text-3xl text-slate-300 mb-2"></i>
+                        <p class="text-sm font-bold text-slate-500">Layanan Kunjungan Tidak Tersedia Hari Ini</p>
                     </div>
                 @endif
             </div>
         </div>
 
-        {{-- KOLOM KANAN (QUICK ACCESS & ACTIVITY) --}}
-        <div class="space-y-8 animate__animated animate__fadeInRight delay-300">
+        {{-- ── KOLOM KANAN ── --}}
+        <div class="space-y-6">
 
-            {{-- KONTROL ANTRIAN (REAL-TIME) --}}
-            <div x-data="antrianController()" class="glass-panel p-6 rounded-2xl shadow-sm">
-                <a href="{{ route('admin.antrian.kontrol') }}" class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-users-cog text-purple-500"></i> Kontrol Antrian Hari Ini
-                </a>
-                <div class="space-y-6">
-                    {{-- Sesi Pagi --}}
-                    <div class="bg-blue-50 p-4 rounded-xl border-2 border-blue-100">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-bold text-blue-800">SESI PAGI</p>
-                                <a href="{{ route('admin.antrian.kontrol') }}">
-                                    <p class="text-4xl font-black text-blue-900" x-text="nomorPagi">...</p>
-                                </a>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <button @click="panggil('pagi')" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition shadow-md flex items-center gap-2">
-                                    <i class="fas fa-bullhorn"></i> Panggil
-                                </button>
-                                <button @click="reset('pagi')" class="px-4 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
+            {{-- ★ BARU: Status Live Kunjungan Hari Ini --}}
+            <div class="glass rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-5 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center gap-3">
+                    <div class="w-8 h-8 bg-white/20 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-satellite-dish text-white text-sm"></i>
                     </div>
-                    {{-- Sesi Siang --}}
-                    <div class="bg-orange-50 p-4 rounded-xl border-2 border-orange-100">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-bold text-orange-800">SESI SIANG</p>
-                                <a href="{{ route('admin.antrian.kontrol') }}">
-                                <p class="text-4xl font-black text-orange-900" x-text="nomorSiang">...</p>
-                                </a>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <button @click="panggil('siang')" class="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition shadow-md flex items-center gap-2">
-                                    <i class="fas fa-bullhorn"></i> Panggil
-                                </button>
-                                <button @click="reset('siang')" class="px-4 py-1 bg-red-100 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-200 transition">
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
+                    <div>
+                        <h3 class="text-sm font-black text-white">Status Kunjungan Hari Ini</h3>
+                        <p class="text-[10px] text-blue-200 font-bold uppercase tracking-widest">Live · {{ now()->translatedFormat('d M Y') }}</p>
                     </div>
                 </div>
+                @php
+                    $todayAll = \App\Models\Kunjungan::whereDate('tanggal_kunjungan', today())->get();
+                    $liveStats = [
+                        ['label'=>'Menunggu',  'count'=>$todayAll->whereIn('status',['pending'])->count(),              'color'=>'bg-amber-500',  'light'=>'bg-amber-50',  'text'=>'text-amber-700',  'icon'=>'fa-hourglass-half'],
+                        ['label'=>'Disetujui', 'count'=>$todayAll->whereIn('status',['approved','on_queue','called','serving'])->count(), 'color'=>'bg-blue-500',   'light'=>'bg-blue-50',   'text'=>'text-blue-700',   'icon'=>'fa-clipboard-check'],
+                        ['label'=>'Berlangsung','count'=>$todayAll->whereIn('status',['serving'])->count(),              'color'=>'bg-emerald-500','light'=>'bg-emerald-50','text'=>'text-emerald-700','icon'=>'fa-handshake'],
+                        ['label'=>'Selesai',   'count'=>$todayAll->where('status','completed')->count(),                 'color'=>'bg-slate-400',  'light'=>'bg-slate-50',  'text'=>'text-slate-600',  'icon'=>'fa-flag-checkered'],
+                    ];
+                @endphp
+                <div class="p-4 grid grid-cols-2 gap-3">
+                    @foreach($liveStats as $ls)
+                    <div class="{{ $ls['light'] }} rounded-xl p-3 flex items-center gap-3">
+                        <div class="w-9 h-9 {{ $ls['color'] }} rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                            <i class="fas {{ $ls['icon'] }} text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xl font-black {{ $ls['text'] }}">{{ $ls['count'] }}</p>
+                            <p class="text-[10px] font-black {{ $ls['text'] }} opacity-70 uppercase tracking-widest leading-none">{{ $ls['label'] }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="px-4 pb-4">
+                    <a href="{{ route('admin.antrian.kontrol') }}"
+                        class="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all hover:-translate-y-0.5 shadow-md shadow-blue-500/20 active:scale-95">
+                        <i class="fas fa-tachometer-alt"></i> Buka Kontrol Antrian
+                    </a>
+                </div>
             </div>
-            
-            {{-- AKSES CEPAT --}}
-            <div class="glass-panel p-6 rounded-2xl shadow-sm">
-                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    <i class="fas fa-rocket text-blue-500"></i> Akses Cepat
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @php $userRole = Auth::user()->role ?? 'user'; @endphp
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
-                    <a href="{{ route('news.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-pen-nib text-xl"></i>
-                        </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-blue-600">Tulis Berita</span>
-                    </a>
-                    @endif
-                    
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
-                    <a href="{{ route('announcements.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-yellow-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-bullhorn text-xl"></i>
-                        </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-yellow-600">Umumkan</span>
-                    </a>
-                    @endif
-                    
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_registrasi']))
-                    <a href="{{ route('admin.kunjungan.verifikasi') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-green-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-qrcode text-xl"></i>
-                        </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-green-600">Scan QR</span>
-                    </a>
-                    @endif
-                    
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_registrasi', 'admin_umum']))
-                    <a href="{{ route('admin.users.create') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-purple-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-user-plus text-xl"></i>
-                        </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-purple-600">Tambah User</span>
-                    </a>
-                    @endif
 
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_humas']))
-                    <a href="{{ route('admin.surveys.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-cyan-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-cyan-100 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-chart-pie text-xl"></i>
+            {{-- Akses Cepat --}}
+            <div class="glass rounded-2xl shadow-sm p-5">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                        <i class="fas fa-rocket text-xs"></i>
+                    </div>
+                    <h3 class="text-sm font-black text-slate-800">Akses Cepat</h3>
+                </div>
+                @php $userRole = Auth::user()->role ?? 'user'; @endphp
+                <div class="grid grid-cols-3 gap-3">
+                    @if(in_array($userRole, ['admin','super_admin','admin_humas']))
+                    <a href="{{ route('news.create') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-blue-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-pen-nib text-sm"></i>
                         </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-cyan-600">Survey IKM</span>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-blue-600 uppercase tracking-widest leading-tight">Berita</span>
+                    </a>
+                    <a href="{{ route('announcements.create') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-amber-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-bullhorn text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-amber-600 uppercase tracking-widest leading-tight">Umumkan</span>
                     </a>
                     @endif
-
-                    @if(in_array($userRole, ['admin', 'super_admin', 'admin_umum', 'admin_registrasi']))
-                    <a href="{{ route('admin.wbp.index') }}" class="group flex flex-col items-center justify-center p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-rose-300 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1">
-                        <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-users-viewfinder text-xl"></i>
+                    @if(in_array($userRole, ['admin','super_admin','admin_registrasi']))
+                    <a href="{{ route('admin.kunjungan.verifikasi') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-emerald-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-qrcode text-sm"></i>
                         </div>
-                        <span class="text-sm font-bold text-slate-600 group-hover:text-rose-600">Data WBP</span>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-emerald-600 uppercase tracking-widest leading-tight">Scan QR</span>
+                    </a>
+                    @endif
+                    @if(in_array($userRole, ['admin','super_admin','admin_registrasi','admin_umum']))
+                    <a href="{{ route('admin.users.create') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-violet-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-user-plus text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-violet-600 uppercase tracking-widest leading-tight">Tambah User</span>
+                    </a>
+                    @endif
+                    @if(in_array($userRole, ['admin','super_admin','admin_humas']))
+                    <a href="{{ route('admin.surveys.index') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-cyan-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-chart-pie text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-cyan-600 uppercase tracking-widest leading-tight">Survey</span>
+                    </a>
+                    @endif
+                    @if(in_array($userRole, ['admin','super_admin','admin_umum','admin_registrasi']))
+                    <a href="{{ route('admin.wbp.index') }}" class="quick-link group flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-white border border-slate-100 hover:border-rose-200 rounded-xl text-center">
+                        <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-users-viewfinder text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-black text-slate-500 group-hover:text-rose-600 uppercase tracking-widest leading-tight">Data WBP</span>
                     </a>
                     @endif
                 </div>
             </div>
 
-            {{-- AKTIVITAS TERBARU --}}
-            <div class="glass-panel p-0 rounded-2xl shadow-sm overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-                    <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fas fa-history text-slate-400"></i> Aktivitas Terbaru
-                    </h3>
+            {{-- Aktivitas Terbaru (Pending) --}}
+            <div class="glass rounded-2xl shadow-sm overflow-hidden">
+                <div class="px-5 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600">
+                            <i class="fas fa-hourglass-half text-xs"></i>
+                        </div>
+                        <h3 class="text-sm font-black text-slate-800">Menunggu Verifikasi</h3>
+                    </div>
+                    @if($totalPendingKunjungans > 0)
+                    <span class="w-5 h-5 bg-amber-500 text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                        {{ min($totalPendingKunjungans, 9) }}{{ $totalPendingKunjungans > 9 ? '+' : '' }}
+                    </span>
+                    @endif
                 </div>
-                <div class="p-4 space-y-2 max-h-[400px] overflow-y-auto">
+                <div class="max-h-64 overflow-y-auto divide-y divide-slate-50">
                     @forelse($pendingKunjungans as $item)
-                    <div class="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
-                        <div class="bg-amber-100 text-amber-600 h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full shadow-sm">
-                            <i class="fa-solid fa-hourglass-start"></i>
+                    <div class="flex items-center gap-3 px-5 py-3 hover:bg-slate-50 transition-colors">
+                        <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-black">
+                            {{ strtoupper(substr($item->nama_pengunjung, 0, 1)) }}
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="font-bold text-slate-800 text-sm truncate">{{ $item->nama_pengunjung }}</p>
-                            <p class="text-xs text-slate-500 mt-0.5">Mendaftar kunjungan untuk:</p>
-                            <p class="text-xs font-semibold text-blue-600">{{ \Carbon\Carbon::parse($item->tanggal_kunjungan)->translatedFormat('d M Y') }}</p>
+                            <p class="text-xs font-black text-slate-800 truncate">{{ $item->nama_pengunjung }}</p>
+                            <p class="text-[10px] text-slate-400">
+                                {{ \Carbon\Carbon::parse($item->tanggal_kunjungan)->translatedFormat('d M Y') }}
+                            </p>
                         </div>
-                        <span class="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-1 rounded">
+                        <span class="text-[10px] font-bold text-slate-400 whitespace-nowrap bg-slate-100 px-2 py-0.5 rounded-lg">
                             {{ $item->created_at->diffForHumans(null, true) }}
                         </span>
                     </div>
                     @empty
-                    <div class="flex flex-col items-center justify-center py-8 text-center text-slate-400">
-                        <i class="far fa-check-circle text-4xl mb-2 opacity-50"></i>
-                        <p class="text-sm">Tidak ada pendaftaran pending.</p>
+                    <div class="flex flex-col items-center justify-center py-8 text-center">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-500 mb-2">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <p class="text-xs font-bold text-slate-400">Semua sudah diverifikasi!</p>
                     </div>
                     @endforelse
                 </div>
-                <div class="p-3 bg-slate-50 text-center border-t border-slate-100">
-                    <a href="{{ route('admin.kunjungan.index') }}" class="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">
-                        Lihat Semua Aktivitas <i class="fas fa-arrow-right ml-1"></i>
+                <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 text-center">
+                    <a href="{{ route('admin.kunjungan.index') }}" class="text-xs font-black text-blue-600 hover:text-blue-800 uppercase tracking-widest">
+                        Lihat Semua <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
             </div>
 
-        </div>
+        </div>{{-- end kolom kanan --}}
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // --- 1. Jam Realtime ---
-    function updateClock() {
+    // ── Clock ──
+    (function tick() {
         const now = new Date();
-        const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).replace(/\./g, ':');
-        const dateString = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        
-        document.getElementById('realtime-clock').textContent = timeString;
-        document.getElementById('realtime-date').textContent = dateString;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+        const t = now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).replace(/\./g,':');
+        const d = now.toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+        document.getElementById('realtime-clock').textContent = t;
+        document.getElementById('realtime-date').textContent = d;
+        setTimeout(tick, 1000);
+    })();
 
-    // --- 2. ChartJS ---
+    // ── Charts ──
     document.addEventListener('DOMContentLoaded', () => {
-        const visitsChartCtx = document.getElementById('visitsChart')?.getContext('2d');
-        if (visitsChartCtx) {
-            // Gradient untuk Chart
-            const gradient = visitsChartCtx.createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)'); // Blue start
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); // Blue end
-
-            new Chart(visitsChartCtx, {
-                type: 'line', // Ubah ke Line agar lebih cantik untuk tren
-                data: {
-                    labels: @json($chartLabels),
-                    datasets: [{
-                        label: 'Kunjungan Disetujui',
-                        data: @json($chartData),
-                        backgroundColor: gradient,
-                        borderColor: '#3b82f6',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#3b82f6',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4 // Membuat garis melengkung halus
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            padding: 12,
-                            cornerRadius: 8,
-                            titleFont: { size: 13 },
-                            bodyFont: { size: 14, weight: 'bold' }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(226, 232, 240, 0.6)', borderDash: [5, 5] },
-                            ticks: { precision: 0, font: { family: "'Inter', sans-serif" } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { font: { family: "'Inter', sans-serif" } }
-                        }
-                    }
-                }
+        // Line chart
+        const vCtx = document.getElementById('visitsChart')?.getContext('2d');
+        if (vCtx) {
+            const g = vCtx.createLinearGradient(0,0,0,260);
+            g.addColorStop(0,'rgba(59,130,246,0.4)');
+            g.addColorStop(1,'rgba(59,130,246,0)');
+            new Chart(vCtx, {
+                type:'line',
+                data:{ labels:@json($chartLabels), datasets:[{label:'Kunjungan',data:@json($chartData),backgroundColor:g,borderColor:'#3b82f6',borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#3b82f6',pointBorderWidth:2,pointRadius:4,pointHoverRadius:6,fill:true,tension:0.4}]},
+                options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,23,42,0.9)',padding:10,cornerRadius:8,bodyFont:{size:13,weight:'bold'}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(226,232,240,0.5)',borderDash:[4,4]},ticks:{precision:0}},x:{grid:{display:false}}}}
             });
         }
-
-        const monthlyVisitsCtx = document.getElementById('monthlyVisitsChart')?.getContext('2d');
-        if (monthlyVisitsCtx) {
-            new Chart(monthlyVisitsCtx, {
-                type: 'bar',
-                data: {
-                    labels: @json($monthlyVisitsLabels),
-                    datasets: [{
-                        label: 'Kunjungan',
-                        data: @json($monthlyVisits),
-                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-                        borderColor: '#3b82f6',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0 }
-                        }
-                    }
-                }
-            });
+        // Bar chart
+        const mCtx = document.getElementById('monthlyVisitsChart')?.getContext('2d');
+        if (mCtx) {
+            new Chart(mCtx,{type:'bar',data:{labels:@json($monthlyVisitsLabels),datasets:[{label:'Kunjungan',data:@json($monthlyVisits),backgroundColor:'rgba(99,102,241,0.6)',borderColor:'#6366f1',borderWidth:1,borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'rgba(226,232,240,0.5)'}},x:{grid:{display:false}}}}});
         }
-
-        const surveyRatingsCtx = document.getElementById('surveyRatingsChart')?.getContext('2d');
-        if (surveyRatingsCtx) {
-            new Chart(surveyRatingsCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: @json($surveyRatingsLabels),
-                    datasets: [{
-                        label: 'Rating',
-                        data: @json($surveyRatings),
-                        backgroundColor: [
-                            'rgba(239, 68, 68, 0.7)',
-                            'rgba(245, 158, 11, 0.7)',
-                            'rgba(59, 130, 246, 0.7)',
-                            'rgba(34, 197, 94, 0.7)'
-                        ],
-                        borderColor: [
-                            '#ef4444',
-                            '#f59e0b',
-                            '#3b82f6',
-                            '#22c55e'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                }
-            });
+        // Doughnut chart
+        const sCtx = document.getElementById('surveyRatingsChart')?.getContext('2d');
+        if (sCtx) {
+            new Chart(sCtx,{type:'doughnut',data:{labels:@json($surveyRatingsLabels),datasets:[{data:@json($surveyRatings),backgroundColor:['rgba(239,68,68,0.75)','rgba(245,158,11,0.75)','rgba(59,130,246,0.75)','rgba(34,197,94,0.75)'],borderColor:['#ef4444','#f59e0b','#3b82f6','#22c55e'],borderWidth:2,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}}}});
         }
-        
-        // --- 3. Animasi Angka (Counter) ---
-        const counters = document.querySelectorAll('[data-counter]');
-        counters.forEach(counter => {
-            const target = +counter.getAttribute('data-counter');
-            const duration = 1500; 
-            const increment = target / (duration / 16);
-            
-            let current = 0;
-            const updateCount = () => {
-                current += increment;
-                if (current < target) {
-                    counter.innerText = Math.ceil(current);
-                    requestAnimationFrame(updateCount);
-                } else {
-                    counter.innerText = target;
-                }
-            };
-            updateCount();
+        // Counter
+        document.querySelectorAll('[data-counter]').forEach(el => {
+            const t = +el.dataset.counter, dur = 1200, inc = t / (dur/16);
+            let c = 0;
+            const step = () => { c += inc; if(c < t){ el.innerText=Math.ceil(c); requestAnimationFrame(step); } else el.innerText=t; };
+            step();
         });
     });
-
-    function antrianController() {
-        return {
-            nomorPagi: '...',
-            nomorSiang: '...',
-            init() {
-                this.fetchStatus();
-            },
-            async fetchStatus() {
-                try {
-                    const response = await fetch('{{ route("admin.antrian.status") }}');
-                    const data = await response.json();
-                    this.nomorPagi = data.pagi;
-                    this.nomorSiang = data.siang;
-                } catch (e) { console.error(e); this.nomorPagi = 'err'; this.nomorSiang = 'err'; }
-            },
-            async postAction(action, sesi) {
-                try {
-                    const response = await fetch(`{{ url('/antrian') }}/${action}`, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({ sesi: sesi })
-                    });
-                    const data = await response.json();
-                    if (data.sesi === 'pagi') this.nomorPagi = data.nomor_terpanggil;
-                    if (data.sesi === 'siang') this.nomorSiang = data.nomor_terpanggil;
-                } catch (e) { console.error(e); }
-            },
-            panggil(sesi) {
-                this.postAction('panggil', sesi);
-            },
-            reset(sesi) {
-                Swal.fire({
-                    title: `Reset Antrian Sesi ${sesi.toUpperCase()}?`,
-                    text: "Nomor antrian akan kembali ke 0.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Ya, Reset!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.postAction('reset', sesi);
-                    }
-                });
-            }
-        }
-    }
 </script>
 @endsection
