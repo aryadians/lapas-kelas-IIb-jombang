@@ -3,24 +3,123 @@
 @section('title', 'Tambah Laporan Publik')
 
 @section('content')
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- MODAL: Kelola Kategori (Tambah + Hapus) --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
+<div id="manageModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+        {{-- Header --}}
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+                    <i class="fas fa-tags text-sm"></i>
+                </div>
+                <div>
+                    <p class="font-black text-slate-800 text-sm">Kelola Kategori</p>
+                    <p class="text-[10px] text-slate-400">Tambah atau hapus kategori laporan</p>
+                </div>
+            </div>
+            <button onclick="document.getElementById('manageModal').classList.add('hidden')"
+                class="w-8 h-8 rounded-lg hover:bg-slate-200 flex items-center justify-center text-slate-400 transition-all">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+            {{-- Tambah Kategori Baru --}}
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 space-y-3">
+                <p class="text-xs font-black text-blue-700 uppercase tracking-widest">Tambah Kategori Baru</p>
+
+                {{-- Nama --}}
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 mb-1 block">Nama Kategori</label>
+                    <input type="text" id="newCatName" placeholder="mis: Laporan Tahunan, LKjIP, SPIP..."
+                        class="w-full px-3 py-2.5 bg-white border-2 border-blue-100 rounded-xl text-sm font-bold text-slate-700 focus:border-blue-400 focus:outline-none">
+                </div>
+
+                {{-- EMOJI PICKER --}}
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 mb-2 block">Pilih Ikon / Emoji</label>
+                    <div id="emojiGrid" class="grid grid-cols-8 gap-1.5">
+                        @foreach(['📄','📊','📈','📉','💰','🏦','📋','✅','🗺️','🏢','📁','🔐','🗂️','📝','💼','🔍','📌','⚖️','🎯','🔖','🏛️','👥','📅','🧾','💹','📣','🔔','🛡️','📚','✍️','🗃️','📎'] as $emoji)
+                        <button type="button" onclick="selectEmoji('{{ $emoji }}')"
+                            data-emoji="{{ $emoji }}"
+                            class="emoji-btn aspect-square rounded-xl border-2 border-transparent hover:bg-blue-100 hover:border-blue-300 text-xl flex items-center justify-center transition-all">
+                            {{ $emoji }}
+                        </button>
+                        @endforeach
+                    </div>
+                    <div class="mt-2 flex items-center gap-2">
+                        <span class="text-[10px] text-slate-400 font-medium">Atau emoji custom:</span>
+                        <input type="text" id="customEmojiInput" maxlength="4" placeholder="✏️"
+                            class="w-16 text-center px-2 py-1.5 bg-white border-2 border-slate-200 rounded-lg text-base font-medium focus:border-blue-400 focus:outline-none"
+                            oninput="selectEmoji(this.value)">
+                        <div id="selectedEmojiPreview"
+                            class="w-9 h-9 rounded-xl bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-xl font-bold text-slate-500">
+                            ?
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="submitNewCategory()"
+                    class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl transition-all text-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-plus"></i> Simpan Kategori Baru
+                </button>
+                <div id="newCatMsg" class="hidden text-sm font-bold text-center py-1 rounded-lg"></div>
+            </div>
+
+            {{-- Daftar Kategori Existing --}}
+            <div>
+                <p class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3">Kategori Saat Ini</p>
+                <div class="space-y-2" id="categoryList">
+                    @foreach($categories as $cat)
+                    <div class="flex items-center justify-between bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 category-row" id="cat-row-{{ $cat->id }}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xl w-8 text-center">
+                                @if($cat->emoji){{ $cat->emoji }}@else<i class="fas {{ $cat->icon }} text-blue-500 text-base"></i>@endif
+                            </span>
+                            <span class="font-bold text-slate-700 text-sm">{{ $cat->name }}</span>
+                        </div>
+                        <button onclick="deleteCategory({{ $cat->id }}, '{{ addslashes($cat->name) }}')"
+                            class="w-8 h-8 rounded-lg bg-red-50 border border-red-100 text-red-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center justify-center"
+                            title="Hapus kategori">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════════ --}}
+{{-- FORM UTAMA --}}
+{{-- ═══════════════════════════════════════════════════════════ --}}
 <div class="max-w-3xl mx-auto space-y-6 pb-12"
     x-data="{
         categoryMode: 'existing',
-        customCategory: '',
-        selectedCategory: '{{ old('category', $categories->first()) }}',
+        selectedCategory: '{{ old('category', $categories->first()?->name) }}',
         fileName: ''
     }">
 
     {{-- HEADER --}}
-    <div class="flex items-center gap-4">
-        <a href="{{ route('admin.financial-reports.index') }}"
-            class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm">
-            <i class="fas fa-arrow-left text-sm"></i>
-        </a>
-        <div>
-            <h1 class="text-2xl font-black text-slate-900 tracking-tight">Tambah Laporan Publik</h1>
-            <p class="text-slate-400 text-sm">Unggah dokumen informasi publik baru.</p>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.financial-reports.index') }}"
+                class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-blue-600 hover:border-blue-300 transition-all shadow-sm">
+                <i class="fas fa-arrow-left text-sm"></i>
+            </a>
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 tracking-tight">Tambah Laporan Publik</h1>
+                <p class="text-slate-400 text-sm">Unggah dokumen informasi publik baru.</p>
+            </div>
         </div>
+        <button type="button" onclick="document.getElementById('manageModal').classList.remove('hidden')"
+            class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all text-sm shadow-sm">
+            <i class="fas fa-tags"></i> Kelola Kategori
+        </button>
     </div>
 
     {{-- ERRORS --}}
@@ -47,78 +146,33 @@
                         placeholder="Contoh: LHKPN Kepala Lapas Tahun 2025">
                 </div>
 
-                {{-- ═══════════════ KATEGORI DINAMIS ═══════════════ --}}
+                {{-- KATEGORI --}}
                 <div class="space-y-3">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        Kategori Laporan <span class="text-red-500">*</span>
-                    </label>
-
-                    {{-- Toggle mode --}}
-                    <div class="flex p-1 bg-slate-100 rounded-xl w-fit gap-1">
-                        <button type="button" @click="categoryMode = 'existing'"
-                            :class="categoryMode === 'existing' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                            class="px-4 py-2 rounded-lg font-bold text-xs transition-all">
-                            <i class="fas fa-list mr-1.5"></i> Pilih yang Ada
-                        </button>
-                        <button type="button" @click="categoryMode = 'new'"
-                            :class="categoryMode === 'new' ? 'bg-white text-blue-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-                            class="px-4 py-2 rounded-lg font-bold text-xs transition-all">
-                            <i class="fas fa-plus mr-1.5"></i> Tambah Kategori Baru
-                        </button>
+                    <div class="flex items-center justify-between">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Kategori Laporan <span class="text-red-500">*</span>
+                        </label>
                     </div>
 
-                    {{-- Pilih kategori yang sudah ada --}}
-                    <div x-show="categoryMode === 'existing'" x-transition>
-                        <div class="relative">
-                            <select name="category" x-model="selectedCategory"
-                                :required="categoryMode === 'existing'"
-                                class="w-full px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:bg-white focus:border-blue-400 focus:outline-none appearance-none cursor-pointer transition-all">
-                                @foreach($categories as $cat)
-                                <option value="{{ $cat }}" {{ old('category') === $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                                @endforeach
-                            </select>
-                            <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                        </div>
-
-                        {{-- Preview badge kategori --}}
-                        <div class="flex flex-wrap gap-2 mt-3">
-                            @foreach($categories as $cat)
-                            @php
-                                $colors = ['LHKPN'=>'bg-violet-100 text-violet-700','LAKIP'=>'bg-blue-100 text-blue-700','Keuangan'=>'bg-emerald-100 text-emerald-700','Renstra'=>'bg-amber-100 text-amber-700','RKT'=>'bg-cyan-100 text-cyan-700','Profil Lapas'=>'bg-rose-100 text-rose-700'];
-                                $cc = $colors[$cat] ?? 'bg-slate-100 text-slate-600';
-                            @endphp
-                            <button type="button" @click="selectedCategory = '{{ $cat }}'"
-                                :class="selectedCategory === '{{ $cat }}' ? 'ring-2 ring-offset-1 ring-blue-400' : ''"
-                                class="{{ $cc }} px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest cursor-pointer transition-all hover:opacity-80">
-                                {{ $cat }}
-                            </button>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    {{-- Buat kategori baru --}}
-                    <div x-show="categoryMode === 'new'" x-transition>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <i class="fas fa-tag text-blue-400 text-sm"></i>
+                    {{-- Grid Badge Kategori --}}
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="categoryBadgeGrid">
+                        @foreach($categories as $cat)
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="category" value="{{ $cat->name }}" class="sr-only peer"
+                                {{ old('category', $categories->first()?->name) == $cat->name ? 'checked' : '' }}>
+                            <div class="flex items-center gap-2.5 px-3 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl peer-checked:bg-blue-50 peer-checked:border-blue-400 peer-checked:text-blue-800 group-hover:border-slate-300 transition-all">
+                                <span class="text-lg flex-shrink-0">
+                                    @if($cat->emoji){{ $cat->emoji }}@else<i class="fas {{ $cat->icon }} text-sm text-slate-500 peer-checked:text-blue-600"></i>@endif
+                                </span>
+                                <span class="font-bold text-slate-600 text-xs truncate peer-checked:text-blue-700">{{ $cat->name }}</span>
                             </div>
-                            <input type="text" name="custom_category" x-model="customCategory"
-                                :required="categoryMode === 'new'"
-                                class="w-full pl-11 pr-4 py-3 bg-blue-50 border-2 border-blue-100 rounded-xl font-bold text-blue-800 text-sm focus:bg-white focus:border-blue-400 focus:outline-none transition-all @error('custom_category') border-red-400 @enderror"
-                                placeholder="Ketik nama kategori baru, mis: Laporan Tahunan · SPIP · LKjIP">
-                        </div>
-                        <div class="mt-2 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
-                            <i class="fas fa-lightbulb text-amber-400 text-xs mt-0.5 flex-shrink-0"></i>
-                            <p class="text-xs text-amber-700 font-medium">
-                                Kategori baru akan langsung tersedia di sistem dan bisa dipilih untuk laporan berikutnya.
-                            </p>
-                        </div>
+                        </label>
+                        @endforeach
                     </div>
                 </div>
 
-                {{-- Tahun & File (grid 2) --}}
+                {{-- Tahun & File --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {{-- Tahun --}}
                     <div class="space-y-1.5">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tahun Anggaran <span class="text-red-500">*</span></label>
                         <div class="relative">
@@ -128,12 +182,11 @@
                         </div>
                     </div>
 
-                    {{-- Upload File --}}
                     <div class="space-y-1.5">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dokumen (PDF/Excel) <span class="text-red-500">*</span></label>
                         <label class="block cursor-pointer group">
                             <input type="file" name="file" required class="hidden"
-                                @change="fileName = $event.target.files[0]?.name || ''">
+                                x-on:change="fileName = $event.target.files[0]?.name || ''">
                             <div class="w-full px-4 py-3 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex items-center gap-3 group-hover:border-blue-400 group-hover:bg-blue-50 transition-all"
                                 :class="fileName ? 'border-emerald-400 bg-emerald-50' : ''">
                                 <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
@@ -189,4 +242,103 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+    // ── CSRF Token ──────────────────
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    // ── Emoji Picker ───────────────
+    let selectedEmoji = '';
+
+    function selectEmoji(emoji) {
+        selectedEmoji = emoji;
+        // Update preview
+        document.getElementById('selectedEmojiPreview').textContent = emoji || '?';
+        // Highlight grid button
+        document.querySelectorAll('.emoji-btn').forEach(btn => {
+            btn.classList.toggle('bg-blue-200', btn.dataset.emoji === emoji);
+            btn.classList.toggle('border-blue-400', btn.dataset.emoji === emoji);
+        });
+        // Sync custom input
+        document.getElementById('customEmojiInput').value = emoji;
+    }
+
+    // ── Tambah Kategori ────────────
+    async function submitNewCategory() {
+        const name  = document.getElementById('newCatName').value.trim();
+        const emoji = selectedEmoji || document.getElementById('customEmojiInput').value.trim();
+        const msgEl = document.getElementById('newCatMsg');
+
+        if (!name) {
+            showMsg(msgEl, 'Nama kategori tidak boleh kosong.', 'error');
+            return;
+        }
+
+        try {
+            const res  = await fetch('{{ route('admin.report-categories.store') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+                body: JSON.stringify({ name, emoji: emoji || null, icon: emoji ? null : 'fa-file-alt' }),
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                showMsg(msgEl, data.message, 'success');
+                document.getElementById('newCatName').value = '';
+                selectedEmoji = '';
+                document.getElementById('selectedEmojiPreview').textContent = '?';
+                document.getElementById('customEmojiInput').value = '';
+                // Refresh the page to show new category
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showMsg(msgEl, data.message || 'Terjadi kesalahan.', 'error');
+            }
+        } catch (e) {
+            showMsg(msgEl, 'Gagal menghubungi server.', 'error');
+        }
+    }
+
+    // ── Hapus Kategori ─────────────
+    async function deleteCategory(id, name) {
+        const confirmed = await Swal.fire({
+            title: `Hapus "${name}"?`,
+            text: 'Kategori yang masih dipakai laporan tidak bisa dihapus.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonText: 'Batal',
+            confirmButtonText: 'Ya, Hapus',
+        });
+        if (!confirmed.isConfirmed) return;
+
+        try {
+            const res  = await fetch(`{{ url('admin/report-categories') }}/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                Swal.fire({ icon: 'success', title: 'Dihapus!', text: data.message, timer: 2000, showConfirmButton: false });
+                document.getElementById(`cat-row-${id}`)?.remove();
+                // Also remove from badge grid
+                document.querySelectorAll(`input[value="${name}"]`).forEach(el => el.closest('label')?.remove());
+            } else {
+                Swal.fire({ icon: 'warning', title: 'Tidak bisa dihapus', text: data.message });
+            }
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
+        }
+    }
+
+    // ── Helper ─────────────────────
+    function showMsg(el, msg, type) {
+        el.textContent = msg;
+        el.className = `text-sm font-bold text-center py-1 rounded-lg ${type === 'success' ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50'}`;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3500);
+    }
+</script>
+@endpush
 @endsection

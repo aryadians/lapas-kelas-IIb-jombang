@@ -104,14 +104,15 @@
                              x-transition:enter-end="opacity-100 translate-y-0"
                              class="absolute left-0 mt-0 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50">
                             <div class="p-2 space-y-1">
-                                @php
-                                    $catIcons = ['LHKPN'=>'fa-vault','LAKIP'=>'fa-chart-line','Keuangan'=>'fa-money-bill-transfer','Renstra'=>'fa-map','RKT'=>'fa-tasks','Profil Lapas'=>'fa-building'];
-                                @endphp
                                 @foreach($navCategories as $navCat)
-                                <a href="{{ route('guest.public-reports', ['category' => $navCat]) }}"
+                                <a href="{{ route('guest.public-reports', ['category' => $navCat->name]) }}"
                                     class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
-                                    <i class="fa-solid {{ $catIcons[$navCat] ?? 'fa-file-alt' }} w-5 text-center"></i>
-                                    {{ $navCat }}
+                                    @if($navCat->emoji)
+                                        <span class="w-5 text-center text-base">{{ $navCat->emoji }}</span>
+                                    @else
+                                        <i class="fa-solid {{ $navCat->icon }} w-5 text-center"></i>
+                                    @endif
+                                    {{ $navCat->name }}
                                 </a>
                                 @endforeach
                                 <div class="h-px bg-slate-800 mx-2 my-1"></div>
@@ -207,11 +208,15 @@
                         <i class="fa-solid fa-chevron-down text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open" class="pl-4 space-y-1 bg-slate-900/50 rounded-xl py-2 mx-2">
-                        @php $catIcons = ['LHKPN'=>'fa-vault','LAKIP'=>'fa-chart-line','Keuangan'=>'fa-money-bill-transfer','Renstra'=>'fa-map','RKT'=>'fa-tasks','Profil Lapas'=>'fa-building']; @endphp
                         @foreach($navCategories as $navCat)
-                        <a href="{{ route('guest.public-reports', ['category' => $navCat]) }}"
+                        <a href="{{ route('guest.public-reports', ['category' => $navCat->name]) }}"
                             class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide">
-                            <i class="fa-solid {{ $catIcons[$navCat] ?? 'fa-file-alt' }} mr-2"></i> {{ $navCat }}
+                            @if($navCat->emoji)
+                                {{ $navCat->emoji }}
+                            @else
+                                <i class="fa-solid {{ $navCat->icon }} mr-1"></i>
+                            @endif
+                            {{ $navCat->name }}
                         </a>
                         @endforeach
                     </div>

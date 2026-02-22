@@ -36,11 +36,7 @@ class FinancialReportController extends Controller
 
     public function create()
     {
-        // Ambil seluruh kategori yang sudah pernah dipakai (unik), plus default
-        $defaultCategories = collect(['LHKPN', 'LAKIP', 'Keuangan', 'Renstra', 'Profil Lapas', 'RKT']);
-        $dbCategories      = FinancialReport::select('category')->distinct()->orderBy('category')->pluck('category');
-        $categories        = $defaultCategories->merge($dbCategories)->unique()->values();
-
+        $categories = \App\Models\ReportCategory::ordered()->get();
         return view('admin.financial_reports.create', compact('categories'));
     }
 
@@ -55,7 +51,6 @@ class FinancialReportController extends Controller
             'description'     => 'nullable|string',
         ]);
 
-        // Jika admin mengisi kategori baru, gunakan itu
         $category = filled($request->custom_category)
             ? trim($request->custom_category)
             : $request->category;
