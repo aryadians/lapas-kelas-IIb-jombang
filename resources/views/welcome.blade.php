@@ -80,36 +80,49 @@
         </div>
     </div>
 
-    {{-- Slideshow Galeri Otomatis (Lebar 80% Desktop) --}}
-    <div class="w-full relative z-10">
+    {{-- Slideshow Galeri Otomatis (Premium Cinematic Look) --}}
+    <div class="w-full relative z-10 px-4 md:px-6">
         @if(count($slideshowImages) > 0)
-        {{-- w-[95%] di HP, lg:w-[80%] di Desktop (Ini yang membuat ukurannya 80% lebar layar) --}}
-        <div class="w-[95%] lg:w-[80%] mx-auto relative">
-            <div class="swiper galeriSwiper rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 border border-slate-700">
+        {{-- w-full xls:w-[90%] 2xl:w-[85%] mx-auto --}}
+        <div class="w-full xl:w-[90%] 2xl:w-[85%] mx-auto relative group">
+            {{-- Glowing shadow effect behind the swiper --}}
+            <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            
+            <div class="swiper galeriSwiper rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 border border-slate-700/50 relative z-10">
                 <div class="swiper-wrapper">
                     @foreach($slideshowImages as $image)
-                    <div class="swiper-slide">
-                        {{-- Tinggi proporsional menyesuaikan kelebaran layar --}}
+                    <div class="swiper-slide relative flex items-center justify-center bg-black overflow-hidden group/slide">
+                        {{-- Cinematic Blurred Background --}}
+                        <img src="{{ asset($image) }}" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 transform scale-125 group-hover/slide:scale-150 transition-transform duration-[2000ms] ease-out" alt="" loading="lazy">
+                        
+                        {{-- Main Image (Tampil Utuh / object-contain) --}}
                         <img src="{{ asset($image) }}" 
                              alt="Galeri Lapas Jombang" 
-                             class="w-full h-[250px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-cover"
+                             class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-transform duration-[2000ms] ease-out group-hover/slide:scale-[1.02] cursor-pointer"
+                             onclick="showBannerPopup('{{ asset($image) }}')"
                              loading="lazy">
+                        
+                        {{-- Premium Gradient Overlay at bottom --}}
+                        <div class="absolute inset-0 z-20 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent pointer-events-none"></div>
                     </div>
                     @endforeach
                 </div>
                 
                 {{-- Pagination Dots --}}
-                <div class="swiper-pagination mb-4"></div>
+                <div class="swiper-pagination !bottom-6"></div>
                 
-                {{-- Custom Navigation Buttons --}}
-                <div class="swiper-button-prev !left-4 hidden sm:flex"></div>
-                <div class="swiper-button-next !right-4 hidden sm:flex"></div>
+                {{-- Custom Navigation Buttons with Glass effect --}}
+                <div class="swiper-button-prev !left-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg"></div>
+                <div class="swiper-button-next !right-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg"></div>
             </div>
         </div>
         @else
-        <div class="text-center py-16 bg-slate-800/50 rounded-2xl border border-dashed border-slate-600 w-[95%] lg:w-[80%] mx-auto">
-            <i class="fas fa-images text-5xl text-slate-500 mb-4"></i>
-            <p class="text-slate-400 text-lg">Belum ada gambar di folder slideshow.</p>
+        <div class="text-center py-20 bg-slate-800/50 backdrop-blur-sm rounded-[2rem] border border-dashed border-slate-600 w-full xl:w-[90%] mx-auto shadow-2xl">
+            <div class="w-20 h-20 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i class="fas fa-images text-4xl text-slate-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Galeri Kosong</h3>
+            <p class="text-slate-400">Belum ada gambar di folder slideshow.</p>
         </div>
         @endif
     </div>
@@ -572,6 +585,73 @@
             }, { threshold: 0.3 });
 
             observer.observe(statsContainer);
+        }
+    });
+</script>
+
+{{-- === LIGHTBOX MODAL UNTUK SLIDESHOW (PREMIUM UI) === --}}
+<div id="bannerLightbox" class="fixed inset-0 z-[9999] hidden bg-slate-900/95 backdrop-blur-xl flex items-center justify-center opacity-0 transition-opacity duration-500 ease-out cursor-zoom-out p-4 md:p-8">
+    {{-- Tombol Close (Glassmorphism) --}}
+    <button onclick="closeBannerPopup()" class="absolute top-4 right-4 md:top-8 md:right-8 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/30 rounded-full w-12 h-12 md:w-14 md:h-14 flex items-center justify-center transition-all duration-300 z-50 shadow-2xl hover:scale-110 cursor-pointer group">
+        <i class="fas fa-times text-xl md:text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
+    </button>
+    
+    {{-- Image Container for Glow Effect --}}
+    <div class="relative max-w-full max-h-full flex items-center justify-center group/lightbox cursor-auto">
+        {{-- Animated Glow Behind Image (Hanya Terlihat Saat Hover) --}}
+        <div class="absolute -inset-4 md:-inset-8 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-[2rem] md:rounded-[3rem] blur-2xl md:blur-3xl opacity-0 group-hover/lightbox:opacity-40 transition duration-1000 -z-10"></div>
+        
+        {{-- Gambar Full --}}
+        <img id="lightboxImg" src="" class="relative z-10 max-w-full max-h-[85vh] md:max-h-[90vh] object-contain rounded-xl md:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 transform scale-95 opacity-0 transition-all duration-500 ease-out" alt="Full Banner">
+    </div>
+</div>
+
+<script>
+    // Fungsi Tampilkan Lightbox
+    function showBannerPopup(imgSrc) {
+        const lightbox = document.getElementById('bannerLightbox');
+        const img = document.getElementById('lightboxImg');
+        img.src = imgSrc;
+        lightbox.classList.remove('hidden');
+        
+        // Trigger reflow untuk transisi CSS
+        void lightbox.offsetWidth;
+        
+        lightbox.classList.remove('opacity-0');
+        img.classList.remove('scale-95', 'opacity-0');
+        img.classList.add('scale-100', 'opacity-100');
+        document.body.style.overflow = 'hidden'; // Kunci scroll browser
+    }
+
+    // Fungsi Tutup Lightbox
+    function closeBannerPopup() {
+        const lightbox = document.getElementById('bannerLightbox');
+        const img = document.getElementById('lightboxImg');
+        
+        lightbox.classList.add('opacity-0');
+        img.classList.remove('scale-100', 'opacity-100');
+        img.classList.add('scale-95', 'opacity-0');
+        
+        // Tunggu transisi selesai baru disembunyikan (500ms)
+        setTimeout(() => {
+            lightbox.classList.add('hidden');
+            img.src = ''; // Bersihkan memori/src
+            document.body.style.overflow = ''; // Kembalikan scroll browser
+        }, 500); 
+    }
+    
+    // Tutup saat area luar gambar (background gelap) diklik
+    document.getElementById('bannerLightbox').addEventListener('click', function(e) {
+        // Jika yang diklik bukan gambar atau tombol, tapi background (atau container padding luar)
+        if (e.target.tagName !== 'IMG' && (!e.target.closest('button'))) {
+            closeBannerPopup();
+        }
+    });
+
+    // Opsional: Tutup lightbox dengan tombol ESC di keyboard
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && !document.getElementById('bannerLightbox').classList.contains('hidden')) {
+            closeBannerPopup();
         }
     });
 </script>
