@@ -17,7 +17,9 @@
         "predis/predis": "*",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.10",
-        "spatie/laravel-backup": "^9.3"
+        "spatie/laravel-backup": "^9.3",
+        "symfony/css-selector": "^7.4",
+        "symfony/dom-crawler": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
