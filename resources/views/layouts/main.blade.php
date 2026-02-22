@@ -104,15 +104,16 @@
                              x-transition:enter-end="opacity-100 translate-y-0"
                              class="absolute left-0 mt-0 w-56 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-50">
                             <div class="p-2 space-y-1">
-                                <a href="{{ route('guest.public-reports', ['category' => 'LHKPN']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
-                                    <i class="fa-solid fa-vault w-5 text-center"></i> LHKPN
+                                @php
+                                    $catIcons = ['LHKPN'=>'fa-vault','LAKIP'=>'fa-chart-line','Keuangan'=>'fa-money-bill-transfer','Renstra'=>'fa-map','RKT'=>'fa-tasks','Profil Lapas'=>'fa-building'];
+                                @endphp
+                                @foreach($navCategories as $navCat)
+                                <a href="{{ route('guest.public-reports', ['category' => $navCat]) }}"
+                                    class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
+                                    <i class="fa-solid {{ $catIcons[$navCat] ?? 'fa-file-alt' }} w-5 text-center"></i>
+                                    {{ $navCat }}
                                 </a>
-                                <a href="{{ route('guest.public-reports', ['category' => 'LAKIP']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
-                                    <i class="fa-solid fa-chart-line w-5 text-center"></i> LAKIP
-                                </a>
-                                <a href="{{ route('guest.public-reports', ['category' => 'Keuangan']) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-blue-600 hover:text-white rounded-xl transition-all">
-                                    <i class="fa-solid fa-money-bill-transfer w-5 text-center"></i> Laporan Keuangan
-                                </a>
+                                @endforeach
                                 <div class="h-px bg-slate-800 mx-2 my-1"></div>
                                 <a href="{{ route('guest.public-reports') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-yellow-500 hover:bg-slate-800 rounded-xl transition-all font-bold">
                                     <i class="fa-solid fa-list-ul w-5 text-center"></i> Semua Laporan
@@ -206,9 +207,13 @@
                         <i class="fa-solid fa-chevron-down text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open" class="pl-4 space-y-1 bg-slate-900/50 rounded-xl py-2 mx-2">
-                        <a href="{{ route('guest.public-reports', ['category' => 'LHKPN']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-vault mr-2"></i> LHKPN</a>
-                        <a href="{{ route('guest.public-reports', ['category' => 'LAKIP']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-chart-line mr-2"></i> LAKIP</a>
-                        <a href="{{ route('guest.public-reports', ['category' => 'Keuangan']) }}" class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide"><i class="fa-solid fa-money-bill-transfer mr-2"></i> Laporan Keuangan</a>
+                        @php $catIcons = ['LHKPN'=>'fa-vault','LAKIP'=>'fa-chart-line','Keuangan'=>'fa-money-bill-transfer','Renstra'=>'fa-map','RKT'=>'fa-tasks','Profil Lapas'=>'fa-building']; @endphp
+                        @foreach($navCategories as $navCat)
+                        <a href="{{ route('guest.public-reports', ['category' => $navCat]) }}"
+                            class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide">
+                            <i class="fa-solid {{ $catIcons[$navCat] ?? 'fa-file-alt' }} mr-2"></i> {{ $navCat }}
+                        </a>
+                        @endforeach
                     </div>
                 </div>
 
