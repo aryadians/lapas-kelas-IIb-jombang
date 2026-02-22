@@ -27,22 +27,44 @@ class KunjunganController extends Controller
         // Statistik hari ini untuk Dashboard Mini
         $today = Carbon::today();
         $statsToday = [
-            'total' => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
+            'total'   => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
             'pending' => Kunjungan::where('status', KunjunganStatus::PENDING)->count(),
             'serving' => Kunjungan::whereIn('status', [KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])->count(),
         ];
 
-        // Sisa kuota siang (menggunakan QuotaService)
-        $quotaService = new QuotaService();
-        $isMonday = $today->isMonday();
-        $maxSiang = $isMonday ? config('kunjungan.quota_senin_siang', 40) : config('kunjungan.quota_hari_biasa', 150);
-        
-        $usedSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)
-            ->where('sesi', 'siang')
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
-            ->count();
-        
-        $statsToday['sisa_siang'] = max(0, $maxSiang - $usedSiang);
+        // ── Sisa kuota: gunakan QuotaService (cek isDayOpen + getMaxQuota) ──
+        $quotaService  = new QuotaService();
+        $todayStr      = $today->toDateString();
+        $isDayOpen     = $quotaService->isDayOpen($todayStr);
+
+        if (!$isDayOpen) {
+            // Hari ini tutup → kuota = 0
+            $statsToday['sisa_kuota_total'] = 0;
+            $statsToday['hari_buka']        = false;
+        } else {
+            $maxPagi  = $quotaService->getMaxQuota($todayStr, 'pagi',  'online');
+            $maxSiang = $quotaService->getMaxQuota($todayStr, 'siang', 'online');
+
+            $usedPagi  = Kunjungan::whereDate('tanggal_kunjungan', $today)
+                ->where('sesi', 'pagi')
+                ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+                ->count();
+            $usedSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)
+                ->where('sesi', 'siang')
+                ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])
+                ->count();
+
+            $statsToday['sisa_kuota_total'] = max(0, ($maxPagi - $usedPagi) + ($maxSiang - $usedSiang));
+            $statsToday['hari_buka']        = true;
+        }
+
+        // Backward compat: sisa_siang tetap ada
+        $statsToday['sisa_siang'] = $isDayOpen
+            ? max(0, $quotaService->getMaxQuota($todayStr, 'siang', 'online')
+                - Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')
+                    ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED])->count())
+            : 0;
+
 
         // Jangan ambil kolom foto_ktp di index karena ukurannya besar (Base64)
         $query = Kunjungan::select(
@@ -225,33 +247,38 @@ class KunjunganController extends Controller
      */
     public function getStats()
     {
-        $today = Carbon::today();
-        
+        $today    = Carbon::today();
+        $todayStr = $today->toDateString();
+
         $stats = [
-            'total' => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
+            'total'   => Kunjungan::whereDate('tanggal_kunjungan', $today)->count(),
             'pending' => Kunjungan::where('status', KunjunganStatus::PENDING)->count(),
             'serving' => Kunjungan::whereIn('status', [KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])->count(),
         ];
 
-        // Hitung Sisa Kuota Keseluruhan Hari Ini
-        $isMonday = $today->isMonday();
-        
-        if ($isMonday) {
-            $maxPagi = config('kunjungan.quota_senin_pagi', 120);
-            $maxSiang = config('kunjungan.quota_senin_siang', 40);
-            $maxTotal = $maxPagi + $maxSiang;
+        // ── Sisa kuota: cek isDayOpen dulu via QuotaService ──
+        $quotaService = new QuotaService();
+        if (!$quotaService->isDayOpen($todayStr)) {
+            $stats['sisa_kuota_total'] = 0;
+            $stats['hari_buka']        = false;
         } else {
-            $maxTotal = config('kunjungan.quota_hari_biasa', 150);
+            $maxPagi  = $quotaService->getMaxQuota($todayStr, 'pagi',  'online');
+            $maxSiang = $quotaService->getMaxQuota($todayStr, 'siang', 'online');
+
+            $usedPagi  = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')
+                ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])
+                ->count();
+            $usedSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')
+                ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])
+                ->count();
+
+            $stats['sisa_kuota_total'] = max(0, ($maxPagi - $usedPagi) + ($maxSiang - $usedSiang));
+            $stats['hari_buka']        = true;
         }
-        
-        $usedTotal = Kunjungan::whereDate('tanggal_kunjungan', $today)
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED])
-            ->count();
-        
-        $stats['sisa_kuota_total'] = max(0, $maxTotal - $usedTotal);
 
         return response()->json($stats);
     }
+
 
     /**
      * Hapus Masal (Bulk Delete).
@@ -432,13 +459,29 @@ class KunjunganController extends Controller
     }
 
     /**
-     * Export Kunjungan data to PDF. (Placeholder)
+     * Export Kunjungan data to PDF.
      */
     protected function exportPdf(string $period, ?string $date)
     {
-        // For PDF export, you would typically use a library like barryvdh/laravel-dompdf
-        // and render a view into PDF. This is a placeholder for now.
-        return back()->with('info', 'PDF export is not yet implemented.');
+        $query = Kunjungan::with('wbp');
+
+        $label = match($period) {
+            'day'   => $date ? 'Tanggal ' . \Carbon\Carbon::parse($date)->translatedFormat('d F Y') : 'Hari Ini',
+            'week'  => 'Minggu Ini',
+            'month' => 'Bulan Ini',
+            default => 'Semua Data',
+        };
+
+        match($period) {
+            'day'   => $query->whereDate('tanggal_kunjungan', $date ?? today()),
+            'week'  => $query->whereBetween('tanggal_kunjungan', [now()->startOfWeek(), now()->endOfWeek()]),
+            'month' => $query->whereMonth('tanggal_kunjungan', now()->month)->whereYear('tanggal_kunjungan', now()->year),
+            default => null,
+        };
+
+        $kunjungans = $query->orderBy('tanggal_kunjungan')->orderBy('nomor_antrian_harian')->get();
+
+        return view('admin.kunjungan.export_pdf', compact('kunjungans', 'label', 'period'));
     }
 
     /**

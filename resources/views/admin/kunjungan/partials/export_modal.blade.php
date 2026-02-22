@@ -24,27 +24,37 @@
                 <form id="exportForm" action="{{ route('admin.kunjungan.export') }}" method="GET" class="space-y-6">
                     <div>
                         <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3">Format Data</label>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <label class="cursor-pointer group">
                                 <input type="radio" name="type" value="excel" class="peer sr-only" checked>
-                                <div class="px-4 py-4 border-2 border-slate-100 rounded-2xl text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-50/50 peer-checked:text-emerald-700 hover:-translate-y-1 transition-all shadow-sm group-hover:shadow-md bg-white">
-                                    <div class="font-black text-sm flex flex-col items-center justify-center gap-2">
-                                        <i class="fas fa-file-excel text-3xl text-emerald-500 drop-shadow-md"></i> 
+                                <div class="px-3 py-4 border-2 border-slate-100 rounded-2xl text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-50/50 peer-checked:text-emerald-700 hover:-translate-y-1 transition-all shadow-sm group-hover:shadow-md bg-white">
+                                    <div class="font-black text-xs flex flex-col items-center justify-center gap-2">
+                                        <i class="fas fa-file-excel text-3xl text-emerald-500 drop-shadow-md"></i>
                                         <span>Excel (.xlsx)</span>
                                     </div>
                                 </div>
                             </label>
                             <label class="cursor-pointer group">
                                 <input type="radio" name="type" value="csv" class="peer sr-only">
-                                <div class="px-4 py-4 border-2 border-slate-100 rounded-2xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:text-blue-700 hover:-translate-y-1 transition-all shadow-sm group-hover:shadow-md bg-white">
-                                    <div class="font-black text-sm flex flex-col items-center justify-center gap-2">
-                                        <i class="fas fa-file-csv text-3xl text-blue-500 drop-shadow-md"></i> 
+                                <div class="px-3 py-4 border-2 border-slate-100 rounded-2xl text-center peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:text-blue-700 hover:-translate-y-1 transition-all shadow-sm group-hover:shadow-md bg-white">
+                                    <div class="font-black text-xs flex flex-col items-center justify-center gap-2">
+                                        <i class="fas fa-file-csv text-3xl text-blue-500 drop-shadow-md"></i>
                                         <span>CSV (.csv)</span>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="cursor-pointer group">
+                                <input type="radio" name="type" value="pdf" class="peer sr-only" id="type_pdf">
+                                <div class="px-3 py-4 border-2 border-slate-100 rounded-2xl text-center peer-checked:border-red-500 peer-checked:bg-red-50/50 peer-checked:text-red-700 hover:-translate-y-1 transition-all shadow-sm group-hover:shadow-md bg-white">
+                                    <div class="font-black text-xs flex flex-col items-center justify-center gap-2">
+                                        <i class="fas fa-file-pdf text-3xl text-red-500 drop-shadow-md"></i>
+                                        <span>PDF (Cetak)</span>
                                     </div>
                                 </div>
                             </label>
                         </div>
                     </div>
+
                     
                     <div>
                         <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-3">Rentang Waktu</label>
@@ -65,10 +75,41 @@
             
             <div class="bg-slate-50 border-t border-slate-100 px-6 py-5 flex justify-end gap-3 rounded-b-[2rem]">
                 <button type="button" class="px-6 py-3 rounded-2xl text-slate-500 font-bold hover:bg-slate-200 hover:text-slate-700 transition-all border-2 border-transparent hover:border-slate-300" onclick="document.getElementById('closeExportModal').click()">Batal</button>
-                <button type="submit" form="exportForm" class="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black rounded-2xl shadow-[0_10px_20px_-10px_rgba(16,185,129,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(16,185,129,0.8)] transition-all hover:-translate-y-1 flex items-center gap-2">
-                    <i class="fas fa-download drop-shadow-md"></i> Mulai Download
+                <button type="button" id="btnExportSubmit" onclick="submitExportForm()"
+                    class="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black rounded-2xl shadow-[0_10px_20px_-10px_rgba(16,185,129,0.6)] hover:shadow-[0_15px_30px_-10px_rgba(16,185,129,0.8)] transition-all hover:-translate-y-1 flex items-center gap-2">
+                    <i class="fas fa-download drop-shadow-md"></i> <span id="btnExportLabel">Mulai Download</span>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+// Update button label when PDF is selected
+document.querySelectorAll('input[name="type"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        var btn = document.getElementById('btnExportLabel');
+        if (this.value === 'pdf') {
+            btn.textContent = 'Buka PDF';
+            document.getElementById('btnExportSubmit').className = document.getElementById('btnExportSubmit').className.replace('from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500', 'from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500');
+            document.getElementById('btnExportSubmit').querySelector('i').className = 'fas fa-file-pdf drop-shadow-md';
+        } else {
+            btn.textContent = 'Mulai Download';
+            document.getElementById('btnExportSubmit').className = document.getElementById('btnExportSubmit').className.replace('from-red-500 to-rose-600 hover:from-red-400 hover:to-rose-500', 'from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500');
+            document.getElementById('btnExportSubmit').querySelector('i').className = 'fas fa-download drop-shadow-md';
+        }
+    });
+});
+
+function submitExportForm() {
+    var form  = document.getElementById('exportForm');
+    var type  = document.querySelector('input[name="type"]:checked')?.value;
+    if (type === 'pdf') {
+        form.target = '_blank'; // Buka PDF di tab baru
+    } else {
+        form.target = '_self';  // Download normal
+    }
+    form.submit();
+}
+</script>
+

@@ -97,13 +97,16 @@
     {{-- 3D STATS CARDS --}}
     <div x-data="dashboardStats()" x-init="init()" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
         @php
+            $hariBuka = $statsToday['hari_buka'] ?? true;
+            $sisaKuota = $statsToday['sisa_kuota_total'] ?? 0;
             $statCards = [
-                ['title' => 'Hari Ini', 'key' => 'total', 'color' => 'blue', 'icon' => 'calendar-day', 'val' => $statsToday['total'] ?? 0, 'delay' => '0s'],
-                ['title' => 'Antrean', 'key' => 'pending', 'color' => 'amber', 'icon' => 'clock', 'val' => $statsToday['pending'] ?? 0, 'delay' => '0.1s'],
-                ['title' => 'Dilayani', 'key' => 'serving', 'color' => 'indigo', 'icon' => 'user-friends', 'val' => $statsToday['serving'] ?? 0, 'delay' => '0.2s'],
-                ['title' => 'Sisa Kuota', 'key' => 'sisa_kuota_total', 'color' => 'emerald', 'icon' => 'ticket-alt', 'val' => 0, 'delay' => '0.3s']
+                ['title' => 'Hari Ini',    'key' => 'total',    'color' => 'blue',   'icon' => 'calendar-day',  'val' => $statsToday['total']   ?? 0, 'delay' => '0s'],
+                ['title' => 'Antrean',     'key' => 'pending',  'color' => 'amber',  'icon' => 'clock',         'val' => $statsToday['pending']  ?? 0, 'delay' => '0.1s'],
+                ['title' => 'Dilayani',    'key' => 'serving',  'color' => 'indigo', 'icon' => 'user-friends',  'val' => $statsToday['serving']  ?? 0, 'delay' => '0.2s'],
+                ['title' => 'Sisa Kuota',  'key' => 'sisa_kuota_total', 'color' => $hariBuka ? 'emerald' : 'rose', 'icon' => $hariBuka ? 'ticket-alt' : 'ban', 'val' => $sisaKuota, 'delay' => '0.3s'],
             ];
         @endphp
+
 
         @foreach($statCards as $stat)
         <div class="bg-white rounded-[2rem] p-6 flex flex-col gap-4 border border-slate-100 shadow-[0_15px_30px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] transition-all duration-300 animate__animated animate__fadeInUp group relative overflow-hidden text-center sm:text-left" style="animation-delay: {{ $stat['delay'] }};">
