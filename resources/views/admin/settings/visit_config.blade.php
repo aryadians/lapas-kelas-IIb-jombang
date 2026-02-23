@@ -209,11 +209,12 @@
                                 </label>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-xs font-bold text-slate-500 uppercase">Batas Maksimal Edit (H-N Hari)</label>
+                                <label class="text-xs font-bold text-slate-500 uppercase">Batas Maksimal Pendaftaran / Edit (H-N Hari Mendatang)</label>
                                 <div class="flex items-center gap-4">
                                     <input type="number" name="edit_lead_time" value="{{ $settings['edit_lead_time'] ?? 2 }}" class="w-full p-3 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 focus:ring-0">
                                     <span class="text-slate-400 font-bold uppercase text-[10px] w-16">Hari</span>
                                 </div>
+                                <p class="text-[10px] text-slate-400 italic">Membatasi kalender "Pilih Hari" di formulir pengunjung agar tidak bisa memilih tanggal melebihi batas ini.</p>
                             </div>
                         </div>
                     </div>

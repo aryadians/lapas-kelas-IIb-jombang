@@ -25,7 +25,7 @@ class VisitNewSettingsSeeder extends Seeder
             [
                 'key' => 'edit_lead_time', 
                 'value' => '2', 
-                'display_name' => 'Batas Maksimal Edit (H-N Hari sebelum kunjungan)', 
+                'display_name' => 'Batas Maksimal Pendaftaran / Edit (H-N Hari)', 
                 'type' => 'number'
             ],
             [

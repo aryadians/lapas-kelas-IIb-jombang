@@ -157,7 +157,7 @@
                     @endif
                 </div>
 
-                @if($isMonday || $isVisitingDay)
+                @if($scheduleToday && $scheduleToday->is_open)
                     <div class="space-y-5">
                         <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Pendaftaran Online</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

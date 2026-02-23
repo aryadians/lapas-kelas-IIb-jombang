@@ -45,6 +45,11 @@ class KunjunganController extends Controller
         $announcement = \App\Models\VisitSetting::where('key', 'announcement_guest_page')->value('value');
         $termsConditions = \App\Models\VisitSetting::where('key', 'terms_conditions')->value('value') ?? '';
         $helpdeskWhatsapp = \App\Models\VisitSetting::where('key', 'helpdesk_whatsapp')->value('value') ?? '';
+        $maxLeadTime = (int) \App\Models\VisitSetting::where('key', 'edit_lead_time')->value('value') ?? 14;
+
+        if ($maxLeadTime < $leadTime) { 
+            $maxLeadTime = $leadTime + 1; // Fallback jika setting salah
+        }
 
         // Mapping nama hari ke bahasa Indonesia untuk pencocokan
         $dayMapping = [
@@ -59,28 +64,50 @@ class KunjunganController extends Controller
 
         $datesByDay = [];
         $allowedCodesByDay = [];
+        $openDays = [];
         
         foreach ($openSchedules as $schedule) {
             $dayName = $schedule->day_name;
             $datesByDay[$dayName] = [];
+            $openDays[] = $dayName; // INI YANG KETINGGALAN
             $allowedCodesByDay[$dayName] = is_array($schedule->allowed_kode_tahanan) ? $schedule->allowed_kode_tahanan : [];
         }
 
+        // Hitung hari libur (yang tidak ada di jadwal buka)
+        $allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+        $closedDays = array_diff($allDays, $openDays);
+        
+        // Format string "X, Y & Z LIBUR"
+        $closedDaysStringLower = '';
+        if (count($closedDays) > 0) {
+            $lastDay = array_pop($closedDays);
+            if (count($closedDays) > 0) {
+                $closedDaysString = strtoupper(implode(', ', $closedDays) . ' & ' . $lastDay . ' LIBUR');
+                $closedDaysStringLower = implode(', ', $closedDays) . ', & ' . $lastDay;
+            } else {
+                $closedDaysString = strtoupper($lastDay . ' LIBUR');
+                $closedDaysStringLower = $lastDay;
+            }
+        }
+        // Duplicate block removed
+
         // Mulai menghitung dari hari ini + leadTime
         $date = Carbon::today()->addDays($leadTime);
+        $maxDate = Carbon::today()->addDays($maxLeadTime);
 
-        for ($i = 0; $i < 60; $i++) {
+        // Ambil hari dari range leadTime sampai maxLeadTime
+        $diffDays = $date->diffInDays($maxDate);
+        for ($i = 0; $i <= $diffDays; $i++) {
             $currentDate = $date->copy()->addDays($i);
             $dayOfWeek = $currentDate->dayOfWeek;
             $dayNameIndo = $dayMapping[$dayOfWeek];
 
             if (in_array($dayNameIndo, $openDays)) {
-                if (count($datesByDay[$dayNameIndo]) < 4) {
-                    $datesByDay[$dayNameIndo][] = [
-                        'value' => $currentDate->format('Y-m-d'),
-                        'label' => $currentDate->translatedFormat('d F Y'),
-                    ];
-                }
+                // Tidak lagi dibatasi 4, tapi murni dari setting admin (Maks hari)
+                $datesByDay[$dayNameIndo][] = [
+                    'value' => $currentDate->format('Y-m-d'),
+                    'label' => $currentDate->translatedFormat('d F Y'),
+                ];
             }
         }
         return view('guest.kunjungan.create', [
@@ -93,6 +120,8 @@ class KunjunganController extends Controller
             'announcement' => $announcement,
             'termsConditions' => $termsConditions,
             'helpdeskWhatsapp' => $helpdeskWhatsapp,
+            'closedDaysString' => $closedDaysString,
+            'closedDaysStringLower' => $closedDaysStringLower,
         ]);
     }
 

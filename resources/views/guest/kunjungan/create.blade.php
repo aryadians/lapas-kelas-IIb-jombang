@@ -99,19 +99,23 @@
                         </div>
                     </div>
                     <div class="space-y-4 flex-grow">
+                        @foreach($openSchedules as $schedule)
                         <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border-l-4 border-blue-500 hover:shadow-md transition-all duration-300 hover:from-blue-100 hover:to-blue-200">
-                            <span class="block font-bold text-slate-900 text-sm mb-2">SETIAP SENIN</span>
+                            <span class="block font-bold text-slate-900 text-sm mb-2 uppercase">HARI {{ $schedule->day_name }}</span>
                             <div class="text-sm text-slate-600 space-y-1">
+                                <!-- Asumsi: Jika ada kuota pagi, berarti sesi pagi buka. Jam statis sementara kecuali ditambah jam di DB -->
+                                @if($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0)
                                 <div class="flex justify-between"><span>Sesi Pagi:</span> <strong class="text-blue-700">08.30 - 10.00</strong></div>
+                                @endif
+                                @if($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0)
                                 <div class="flex justify-between"><span>Sesi Siang:</span> <strong class="text-blue-700">13.30 - 14.30</strong></div>
+                                @endif
+                                @if($schedule->quota_online_morning == 0 && $schedule->quota_offline_morning == 0 && $schedule->quota_online_afternoon == 0 && $schedule->quota_offline_afternoon == 0)
+                                <div class="flex justify-between"><span>Sesi Layanan:</span> <strong class="text-red-600">Terjadwal Buka Tanpa Kuota</strong></div>
+                                @endif
                             </div>
                         </div>
-                        <div class="bg-gradient-to-r from-slate-50 to-slate-100 p-4 rounded-lg border-l-4 border-slate-500 hover:shadow-md transition-all duration-300 hover:from-slate-100 hover:to-slate-200">
-                            <span class="block font-bold text-slate-900 text-sm mb-2">SELASA - KAMIS</span>
-                            <div class="text-sm text-slate-600">
-                                <div class="flex justify-between"><span>Sesi Pagi:</span> <strong class="text-slate-700">08.30 - 10.00</strong></div>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -134,11 +138,13 @@
                         </div>
                         @endforeach
                     </div>
+                    @if(!empty($closedDaysString))
                     <div class="mt-4 text-center">
                         <span class="inline-block bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-6 py-2 rounded-full shadow-lg border border-red-400">
-                            <i class="fa-solid fa-calendar-xmark mr-2"></i> JUMAT, SABTU & MINGGU LIBUR
+                            <i class="fa-solid fa-calendar-xmark mr-2"></i> {{ $closedDaysString }}
                         </span>
                     </div>
+                    @endif
                 </div>
 
                 {{-- Card 3: Kuota Antrian --}}
@@ -152,19 +158,22 @@
                             <p class="text-xs text-slate-500">Batas Harian</p>
                         </div>
                     </div>
-                    <div class="space-y-3 flex-grow">
-                        <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
-                            <span class="text-sm font-medium text-slate-700">Senin (Pagi)</span>
-                            <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">120 Orang</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
-                            <span class="text-sm font-medium text-slate-700">Senin (Siang)</span>
-                            <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">40 Orang</span>
-                        </div>
-                        <div class="flex justify-between items-center bg-gradient-to-r from-slate-50 to-slate-100 p-3 rounded-lg border border-slate-200 hover:shadow-md transition-all duration-300 hover:from-slate-100 hover:to-slate-200">
-                            <span class="text-sm font-medium text-slate-700">Selasa - Kamis</span>
-                            <span class="bg-white text-slate-700 font-bold px-3 py-1 rounded border border-slate-200 text-sm shadow-sm">150 Orang</span>
-                        </div>
+                    <div class="space-y-3 flex-grow max-h-[300px] overflow-y-auto pr-2">
+                        @foreach($openSchedules as $schedule)
+                            @if($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0)
+                            <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
+                                <span class="text-sm font-medium text-slate-700">{{ $schedule->day_name }} <span class="text-[10px] text-emerald-600">(Pagi)</span></span>
+                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_morning + $schedule->quota_offline_morning }} Orang</span>
+                            </div>
+                            @endif
+
+                            @if($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0)
+                            <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
+                                <span class="text-sm font-medium text-slate-700">{{ $schedule->day_name }} <span class="text-[10px] text-emerald-600">(Siang)</span></span>
+                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_afternoon + $schedule->quota_offline_afternoon }} Orang</span>
+                            </div>
+                            @endif
+                        @endforeach
                     </div>
                 </div>
             </div>
@@ -571,8 +580,8 @@
                                 <div>
                                     <p class="font-bold text-red-800">Penting: Aturan Jadwal Pendaftaran</p>
                                     <p class="text-sm text-red-700">Pendaftaran paling lambat dilakukan <strong>H-{{ $leadTime ?? 1 }} sebelum jadwal kunjungan</strong>. 
-                                    @if(isset($leadTime) && $leadTime == 1)
-                                        Khusus pendaftaran untuk hari <strong>Senin</strong>, formulir dibuka pada hari <strong>Jumat, Sabtu, &amp; Minggu</strong>.
+                                    @if(isset($leadTime) && $leadTime == 1 && !empty($closedDaysStringLower))
+                                        Khusus pendaftaran untuk hari <strong>Senin</strong>, formulir dibuka pada hari <strong>{{ $closedDaysStringLower }}</strong>.
                                     @endif
                                     </p>
                                 </div>
@@ -582,6 +591,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
                                 datesByDay: {{ json_encode($datesByDay) }},
+                                allowedCodesByDay: {{ json_encode($allowedCodesByDay) }},
                                 wbpKodeTahanan: '',
                                 wbpSelected: false,
                                 selectedDay: '{{ old('selected_day', '') }}',
