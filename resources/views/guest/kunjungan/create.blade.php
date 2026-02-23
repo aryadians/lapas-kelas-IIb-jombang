@@ -582,8 +582,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
                                 datesByDay: {{ json_encode($datesByDay) }},
-                                allowedCodesByDay: {{ json_encode($allowedCodesByDay ?? []) }},
                                 wbpKodeTahanan: '',
+                                wbpSelected: false,
                                 selectedDay: '{{ old('selected_day', '') }}',
                                 selectedDate: '{{ old('tanggal_kunjungan', '') }}',
                                 selectedSesi: '{{ old('sesi', '') }}',
@@ -598,6 +598,7 @@
                                     this.$watch('selectedSesi', () => this.getQuota());
                                     
                                     window.addEventListener('wbp-selected', (e) => {
+                                        this.wbpSelected = true;
                                         this.wbpKodeTahanan = e.detail.kode_tahanan || '';
                                         if (this.selectedDay && !this.isDayAllowed(this.selectedDay)) {
                                             this.selectedDay = '';
@@ -605,13 +606,15 @@
                                         }
                                     });
                                     window.addEventListener('wbp-cleared', () => {
+                                        this.wbpSelected = false;
                                         this.wbpKodeTahanan = '';
                                     });
                                 },
                                 isDayAllowed(dayName) {
                                     const allowed = this.allowedCodesByDay[dayName] || [];
                                     if (allowed.length === 0) return true;
-                                    if (!this.wbpKodeTahanan) return true;
+                                    if (!this.wbpSelected) return true;
+                                    if (!this.wbpKodeTahanan) return false;
                                     return allowed.includes(this.wbpKodeTahanan);
                                 },
                                 get allowedDays() {
