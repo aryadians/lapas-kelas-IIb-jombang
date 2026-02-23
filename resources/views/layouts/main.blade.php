@@ -451,18 +451,13 @@
                         {{-- KOLOM KIRI: Google Maps --}}
                         <div class="w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 relative group">
                             <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.149599388365!2d112.23126867575233!3d-7.558661674643537!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e78401e73999999%3A0x26906660d6ad0951!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1706869500000!5m2!1sid!2sid"
-                                class="w-full h-full border-0 filter grayscale group-hover:grayscale-0 transition duration-500"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.19819793804368!2d112.23536313051525!3d-7.55630764432415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e784002840ce0f7%3A0x3235a7cc980a9474!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1771837181967!5m2!1sid!2sid"
+                                class="w-full h-full border-0 filter grayscale group-hover:grayscale-0 transition duration-500 relative z-0"
                                 allowfullscreen=""
                                 loading="lazy"
                                 referrerpolicy="no-referrer-when-downgrade">
                             </iframe>
-                            <div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur text-slate-900 px-4 py-2 rounded-lg text-xs font-bold shadow-lg">
-                                📍 Lokasi Lapas Kelas IIB Jombang
-                            </div>
-                            <div class="absolute top-4 right-4 bg-blue-600/90 backdrop-blur text-white px-3 py-1 rounded-lg text-xs font-semibold shadow-lg">
-                                <i class="fas fa-map-marker-alt mr-1"></i> -7.5587, 112.2313
-                            </div>
+                            
                         </div>
         
                                                 {{-- KOLOM KANAN: Informasi Kontak --}}
