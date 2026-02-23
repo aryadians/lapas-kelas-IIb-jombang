@@ -160,7 +160,7 @@
 
         {{-- Subtitle --}}
         <p class="text-lg sm:text-xl text-gray-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed animate-fade-in-up group" style="animation-delay: 0.2s;">
-            Mewujudkan pelayanan pemasyarakatan yang <span class="font-semibold text-yellow-400 group-hover:animate-glow-pulse inline-block">PASTI</span> (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif).
+            Mewujudkan pelayanan pemasyarakatan yang <span class="font-semibold text-yellow-400 group-hover:animate-glow-pulse inline-block">PRIMA</span> (Profesional, Responsif, Integritas, Modern, Akuntabel).
         </p>
 
         {{-- CTA Buttons --}}

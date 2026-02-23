@@ -478,7 +478,7 @@
                                                             </div>
                                                         </div>
                                                         <p class="text-slate-400 text-sm leading-relaxed max-w-md">
-                                                            Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PASTI (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif).
+                                                            Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PRIMA (Profesional, Responsif, Integritas, Modern, Akuntabel).
                                                         </p>
                                                     </div>
                         
