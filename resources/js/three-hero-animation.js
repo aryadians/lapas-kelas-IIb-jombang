@@ -37,8 +37,17 @@ export function initThreeHeroAnimation(canvasId) {
     camera.position.z = 5;
     cube.position.set(0, 0.5, 0); // Slightly offset the cube
 
+    let animationId;
+
     function animate() {
-        requestAnimationFrame(animate);
+        // Stop animation and clean up memory if user navigates away via Turbo
+        if (!document.getElementById(canvasId)) {
+            cancelAnimationFrame(animationId);
+            renderer.dispose();
+            return;
+        }
+
+        animationId = requestAnimationFrame(animate);
 
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
@@ -48,8 +57,9 @@ export function initThreeHeroAnimation(canvasId) {
 
     animate();
 
-    // Handle window resizing
+    // Handle window resizing (also checks if canvas exists)
     window.addEventListener('resize', () => {
+        if (!document.getElementById(canvasId)) return;
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);

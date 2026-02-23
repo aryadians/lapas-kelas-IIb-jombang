@@ -6,7 +6,7 @@
   <p><i>Digitalisasi Modern Pelayanan Publik Lembaga Pemasyarakatan Kelas IIB Jombang</i></p>
 
   <p>
-    <img src="https://img.shields.io/badge/Version-1.6.0-blue?style=for-the-badge&logo=git" alt="Version">
+    <img src="https://img.shields.io/badge/Version-1.7.0-blue?style=for-the-badge&logo=git" alt="Version">
     <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
     <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
     <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
@@ -22,25 +22,18 @@
 
 ---
 
-## 🆕 Pembaruan Terbaru (v1.6.0)
+## 🆕 Pembaruan Terbaru (v1.7.0)
 
-### Konfigurasi Terpusat (Admin Settings Overhaul)
-Halaman pengaturan admin dirombak total menjadi **antarmuka 5 tab** yang lebih terorganisir, memungkinkan semua konfigurasi dikelola tanpa perlu menyentuh file `.env` atau kode program:
+### ⚡ Performa Layaknya Aplikasi Native (SPA)
+Sistem kini diperkuat dengan **Hotwire Turbo Drive**, mengonversi seluruh navigasi website publik menjadi *Single Page Application (SPA)*. Pindah antar halaman kini tereksekusi instan tanpa *reload* layar putih penuh (No Janks!), memberikan pengalaman pengguna yang sangat cepat.
 
-| Tab | Isi Konfigurasi |
-| :--- | :--- |
-| 📅 **Jadwal & Kuota** | Manajemen hari operasional, toggle buka/tutup, kuota online & offline per sesi |
-| ⚙️ **Aturan & Batas** | Frekuensi kunjungan per NIK/WBP, lead time pendaftaran, edit guest, toleransi antrian |
-| 📄 **Konten & Info Publik** | **Trix Rich Text Editor** untuk Syarat & Ketentuan + nomor WhatsApp helpdesk publik |
-| 🕐 **Jam Operasional** | Input jam buka & tutup untuk Sesi Pagi dan Sesi Siang secara independen |
-| 🔌 **Integrasi API** | Token API Fonnte (WhatsApp Gateway) + konfigurasi lengkap **Email Gmail SMTP** |
+### 📅 Penjadwalan Dinamis Cerdas (Blok / Kode Tahanan)
+- **Mapping Jadwal Flexibel** — Admin dapat mengatur hari buka khusus untuk Kode Tahanan/Blok tertentu (Misal: Blok A hanya di hari Senin asalkan diizinkan) di panel admin.
+- **Smart Date Picker** — Formulir pendaftaran pengunjung secara otomatis beradaptasi dan hanya memunculkan opsi tanggal yang diizinkan sesuai dengan Warga Binaan yang dipilih. Mencegah kesalahan jadwal secara proaktif.
 
-### Fitur Baru yang Ditambahkan
-- **Syarat & Ketentuan Dinamis** — Teks S&K yang dapat diedit admin tampil otomatis di halaman pendaftaran publik tanpa deploy ulang.
-- **Jam Operasional Dinamis** — Cron job auto-update antrian kini membaca jam buka/tutup sesi dari database, bukan nilai hardcode.
-- **Token WA dari Database** — `WhatsAppService` membaca token API Fonnte dari panel admin (prioritas DB → fallback `.env`).
-- **Konfigurasi Email dari Panel** — SMTP host, port, username, App Password Gmail, enkripsi, dan email admin semua bisa diubah dari UI tanpa edit `.env`. Diterapkan otomatis via `DynamicMailServiceProvider`.
-- **Helpdesk WhatsApp Publik** — Nomor WA customer service tampil sebagai tombol chat di halaman pendaftaran pengunjung.
+### 🖼️ CMS Manajemen Homepage (Dynamic Banners)
+- **Manajemen Banner & Slideshow** — Carousel latar belakang hero di halaman landing publik sekarang menggunakan CMS penuh (CRUD), bukan lagi file statis. 
+- **Dukungan Media Ganda** — Admin dapat bebas mengunggah **Gambar (HD)** maupun **Video (.mp4/.webm)** sebagai slide dengan fitur pengurutan kustom dan efek Lightbox *Cinematic Glassmorphism*.
 
 ---
 
@@ -50,6 +43,7 @@ Halaman pengaturan admin dirombak total menjadi **antarmuka 5 tab** yang lebih t
 | Fitur | Deskripsi | Status |
 | :--- | :--- | :---: |
 | **Pendaftaran Mandiri** | Reservasi kunjungan online via web dengan validasi NIK dan kuota harian otomatis. | ✅ |
+| **Smart Date Picker** | Pemilihan tanggal cerdas yang otomatis menyesuaikan kuota, jadwal blok (kode tahanan), dan limit h-hari pendaftaran. | ✅ |
 | **E-Ticket QR Code** | Tiket digital unik yang dikirim langsung setelah verifikasi disetujui. | ✅ |
 | **Real-time Queue TV** | Tampilan display antrian publik untuk ruang tunggu (Smart TV ready). | ✅ |
 | **Voice Announcer** | Panggilan suara otomatis (TTS) Bahasa Indonesia untuk setiap nomor antrian. | ✅ |
@@ -65,8 +59,9 @@ Halaman pengaturan admin dirombak total menjadi **antarmuka 5 tab** yang lebih t
 | **Pendaftaran Offline** | Input data pendaftaran di tempat (walk-in) dengan fitur *Quota Warning* otomatis. | ✅ |
 | **Jam Operasional Dinamis** | Jam buka/tutup sesi pagi & siang dikelola dari panel, langsung diterapkan ke mesin antrian. | ✅ |
 | **Database Pengunjung** | Repositori data master pengunjung dengan filter loyalitas, wilayah, dan kelengkapan KTP. | ✅ |
-| **WBP Management** | Sinkronisasi data Warga Binaan, lokasi blok, sel, dan masa tahanan. | ✅ |
-| **Panel Konfigurasi 5-Tab** | Semua pengaturan sistem dikelola dari satu halaman terorganisir tanpa perlu akses server. | ✅ |
+| **WBP Management** | Sinkronisasi data Warga Binaan, lokasi blok, sel, masa tahanan, dan kode tahanan (grup). | ✅ |
+| **Panel Konfigurasi 5-Tab** | Semua pengaturan sistem dikelola dari satu halaman terorganisir tanpa perlu edit file source. | ✅ |
+| **Manajemen Banner Utama** | Unggah dan kelola slideshow gambar/video interaktif untuk halaman landing publik. | ✅ |
 
 ### 🔌 Integrasi & Notifikasi
 | Fitur | Deskripsi | Status |
@@ -92,12 +87,12 @@ Halaman pengaturan admin dirombak total menjadi **antarmuka 5 tab** yang lebih t
 Sistem ini dibangun dengan *stack* modern untuk menjamin skalabilitas dan pengalaman pengguna yang luar biasa:
 
 - **Core Engine:** Laravel 12 (Framework PHP Tercanggih).
-- **Frontend Real-time:** Alpine.js & Tailwind CSS untuk UI yang ringan dan interaktif.
-- **Rich Text Editor:** Trix Editor untuk pengelolaan konten HTML (Syarat & Ketentuan) langsung dari panel admin.
+- **SPA Navigation Engine:** Hotwire Turbo Drive (Navigasi instan via AJAX).
+- **Frontend Real-time:** Alpine.js, Tailwind CSS & Swiper.js untuk UI interaktif.
+- **Rich Text Editor:** Trix Editor untuk pengelolaan konten HTML.
 - **Image Intelligence:** Pemrosesan gambar KTP berbasis Base64 dengan kompresi otomatis untuk menghemat ruang penyimpanan.
-- **Reporting Engine:** Integrasi `Maatwebsite Excel` untuk laporan profesional dan `fslightbox` untuk penampil dokumen resolusi tinggi.
-- **Background Jobs:** Pemanfaatan Laravel Queue & Redis untuk pengiriman notifikasi massal tanpa menghambat performa server.
-- **Dynamic Config:** `DynamicMailServiceProvider` — override konfigurasi mail Laravel dari database tanpa restart server.
+- **Reporting Engine:** Integrasi `Maatwebsite Excel` untuk laporan profesional.
+- **Background Jobs:** Pemanfaatan Laravel Queue & Redis untuk pengiriman notifikasi massal secara asinkronus.
 
 ---
 
@@ -107,7 +102,7 @@ Sistem ini dibangun dengan *stack* modern untuk menjamin skalabilitas dan pengal
 Sangat disarankan untuk lingkungan produksi dan development yang stabil.
 ```bash
 # Nyalakan semua kontainer (Web, DB, Redis, Mailpit)
-./docker-start.sh
+git pull && ./docker-start.sh
 
 # Akses aplikasi
 URL: http://localhost:8080
@@ -130,7 +125,7 @@ URL: http://localhost:8000
 # Wajib dijalankan agar queue (WA & Email) berfungsi
 php artisan queue:listen --tries=3
 
-# Wajib untuk symlink storage (foto KTP, QR Code)
+# Wajib untuk symlink storage (foto KTP, QR Code, dan Banner CMS)
 php artisan storage:link
 ```
 
@@ -138,15 +133,16 @@ php artisan storage:link
 
 ## ⚙️ Konfigurasi via Panel Admin
 
-Mulai versi 1.6.0, hampir semua konfigurasi operasional dapat dikelola langsung dari **Panel Admin → Konfigurasi Sistem** tanpa perlu mengubah file `.env`:
+Hampir semua konfigurasi operasional utama dikelola langsung dari **Panel Admin → Konfigurasi Sistem** (`/admin/visit-config`), tanpa menyentuh file `.env`:
 
 | Pengaturan | Deskripsi |
 | :--- | :--- |
-| `WHATSAPP_API_TOKEN` | Token Fonnte untuk pengiriman WA |
-| `MAIL_*` | Host, port, username, App Password Gmail |
-| `ADMIN_EMAIL` | Email penerima notifikasi harian |
-| Jam Operasional | Jam buka & tutup sesi pagi dan siang |
-| Syarat & Ketentuan | Teks HTML yang tampil di halaman pendaftaran publik |
+| `WHATSAPP_API_TOKEN` | Token Fonnte untuk gateway asisten pintar via WhatsApp |
+| `MAIL_*` | Autentikasi SMTP modern via Gmail App Passwords |
+| `ADMIN_EMAIL` | Gateway peringatan kritis kepada administrator harian |
+| Jam & Hari Operasional | Aturan ketat akses kalender public untuk layanan daring vs luring |
+| Syarat & Ketentuan Kunjungan | Ketentuan Trix HTML yang tersambung live ke front desk visitor portal |
+| Kode Tahanan Validasi | Izin eksklusif pengelompokan penugasan hari WBP tertentu |
 
 ---
 
