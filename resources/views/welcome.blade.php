@@ -2,19 +2,7 @@
 
 @section('content')
 
-{{-- Script Otomatis Baca Folder Slideshow --}}
-@php
-    $slideshowPath = public_path('img/slideshow');
-    $slideshowImages = [];
-    if(\Illuminate\Support\Facades\File::exists($slideshowPath)) {
-        $files = \Illuminate\Support\Facades\File::files($slideshowPath);
-        foreach($files as $file) {
-            if(in_array(strtolower($file->getExtension()), ['jpg', 'jpeg', 'png', 'webp'])) {
-                $slideshowImages[] = 'img/slideshow/' . $file->getFilename();
-            }
-        }
-    }
-@endphp
+{{-- Banners dari Database ($banners) dilempar dari routes/web.php --}}
 
 {{-- Swiper CSS & Custom Animations --}}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -82,7 +70,7 @@
 
     {{-- Slideshow Galeri Otomatis (Premium Cinematic Look) --}}
     <div class="w-full relative z-10 px-4 md:px-6">
-        @if(count($slideshowImages) > 0)
+        @if(isset($banners) && $banners->count() > 0)
         {{-- w-full xls:w-[90%] 2xl:w-[85%] mx-auto --}}
         <div class="w-full xl:w-[90%] 2xl:w-[85%] mx-auto relative group">
             {{-- Glowing shadow effect behind the swiper --}}
@@ -90,30 +78,48 @@
             
             <div class="swiper galeriSwiper rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 border border-slate-700/50 relative z-10">
                 <div class="swiper-wrapper">
-                    @foreach($slideshowImages as $image)
+                    @foreach($banners as $banner)
                     <div class="swiper-slide relative flex items-center justify-center bg-black overflow-hidden group/slide">
-                        {{-- Cinematic Blurred Background --}}
-                        <img src="{{ asset($image) }}" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 transform scale-125 group-hover/slide:scale-150 transition-transform duration-[2000ms] ease-out" alt="" loading="lazy">
+                        @if($banner->type === 'image')
+                            {{-- Cinematic Blurred Background --}}
+                            <img src="{{ Storage::url($banner->file_path) }}" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 transform scale-125 group-hover/slide:scale-150 transition-transform duration-[2000ms] ease-out" alt="" loading="lazy">
+                            
+                            {{-- Main Image (Tampil Utuh / object-contain) --}}
+                            <img src="{{ Storage::url($banner->file_path) }}" 
+                                 alt="{{ $banner->title ?? 'Galeri Lapas Jombang' }}" 
+                                 class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-transform duration-[2000ms] ease-out group-hover/slide:scale-[1.02] cursor-pointer"
+                                 onclick="showBannerPopup('{{ Storage::url($banner->file_path) }}', 'image')"
+                                 loading="lazy">
+                        @elseif($banner->type === 'video')
+                            <video src="{{ Storage::url($banner->file_path) }}" 
+                                   class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-cover"
+                                   autoplay muted loop playsinline></video>
+                            
+                            {{-- Floating Expand Button For Video --}}
+                            <button onclick="showBannerPopup('{{ Storage::url($banner->file_path) }}', 'video')" class="absolute bottom-6 right-6 z-30 bg-black/60 hover:bg-black text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        @endif
                         
-                        {{-- Main Image (Tampil Utuh / object-contain) --}}
-                        <img src="{{ asset($image) }}" 
-                             alt="Galeri Lapas Jombang" 
-                             class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-transform duration-[2000ms] ease-out group-hover/slide:scale-[1.02] cursor-pointer"
-                             onclick="showBannerPopup('{{ asset($image) }}')"
-                             loading="lazy">
-                        
-                        {{-- Premium Gradient Overlay at bottom --}}
+                        {{-- Title Overlay (opsional) --}}
+                        @if($banner->title)
+                        <div class="absolute bottom-0 left-0 right-0 z-30 p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                            <h3 class="text-white text-xl md:text-2xl font-bold drop-shadow-lg">{{ $banner->title }}</h3>
+                        </div>
+                        @else
+                        {{-- Premium Gradient Overlay at bottom for contrast --}}
                         <div class="absolute inset-0 z-20 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent pointer-events-none"></div>
+                        @endif
                     </div>
                     @endforeach
                 </div>
                 
                 {{-- Pagination Dots --}}
-                <div class="swiper-pagination !bottom-6"></div>
+                <div class="swiper-pagination !bottom-6 z-40"></div>
                 
                 {{-- Custom Navigation Buttons with Glass effect --}}
-                <div class="swiper-button-prev !left-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg"></div>
-                <div class="swiper-button-next !right-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg"></div>
+                <div class="swiper-button-prev !left-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg z-40"></div>
+                <div class="swiper-button-next !right-6 hidden md:flex backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/30 hover:border-white/50 shadow-lg z-40"></div>
             </div>
         </div>
         @else
@@ -121,8 +127,8 @@
             <div class="w-20 h-20 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
                 <i class="fas fa-images text-4xl text-slate-400"></i>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">Galeri Kosong</h3>
-            <p class="text-slate-400">Belum ada gambar di folder slideshow.</p>
+            <h3 class="text-xl font-bold text-white mb-2">Belum Ada Banner</h3>
+            <p class="text-slate-400">Silakan tambahkan banner slide show melalui panel admin.</p>
         </div>
         @endif
     </div>
@@ -596,30 +602,53 @@
         <i class="fas fa-times text-xl md:text-2xl group-hover:rotate-90 transition-transform duration-300"></i>
     </button>
     
-    {{-- Image Container for Glow Effect --}}
+    {{-- Container for Glow Effect --}}
     <div class="relative max-w-full max-h-full flex items-center justify-center group/lightbox cursor-auto">
-        {{-- Animated Glow Behind Image (Hanya Terlihat Saat Hover) --}}
+        {{-- Animated Glow Behind Media --}}
         <div class="absolute -inset-4 md:-inset-8 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-[2rem] md:rounded-[3rem] blur-2xl md:blur-3xl opacity-0 group-hover/lightbox:opacity-40 transition duration-1000 -z-10"></div>
         
         {{-- Gambar Full --}}
-        <img id="lightboxImg" src="" class="relative z-10 max-w-full max-h-[85vh] md:max-h-[90vh] object-contain rounded-xl md:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 transform scale-95 opacity-0 transition-all duration-500 ease-out" alt="Full Banner">
+        <img id="lightboxImg" src="" class="hidden relative z-10 max-w-full max-h-[85vh] md:max-h-[90vh] object-contain rounded-xl md:rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 transform scale-95 opacity-0 transition-all duration-500 ease-out py-8" alt="Full Banner">
+        
+        {{-- Video Full --}}
+        <video id="lightboxVid" src="" class="hidden relative z-10 max-w-full max-h-[85vh] w-[80vw] object-contain rounded-xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] border border-white/10 transform scale-95 opacity-0 transition-all duration-500 ease-out" controls autoplay></video>
     </div>
 </div>
 
 <script>
     // Fungsi Tampilkan Lightbox
-    function showBannerPopup(imgSrc) {
+    function showBannerPopup(mediaSrc, type) {
         const lightbox = document.getElementById('bannerLightbox');
         const img = document.getElementById('lightboxImg');
-        img.src = imgSrc;
+        const vid = document.getElementById('lightboxVid');
+        
         lightbox.classList.remove('hidden');
         
-        // Trigger reflow untuk transisi CSS
-        void lightbox.offsetWidth;
+        if (type === 'image') {
+            img.src = mediaSrc;
+            img.classList.remove('hidden');
+            vid.classList.add('hidden');
+            vid.pause();
+            
+            // Trigger reflow untuk transisi CSS
+            void lightbox.offsetWidth;
+            
+            lightbox.classList.remove('opacity-0');
+            img.classList.remove('scale-95', 'opacity-0');
+            img.classList.add('scale-100', 'opacity-100');
+        } else if (type === 'video') {
+            vid.src = mediaSrc;
+            vid.classList.remove('hidden');
+            img.classList.add('hidden');
+            
+            vid.play();
+            
+            void lightbox.offsetWidth;
+            lightbox.classList.remove('opacity-0');
+            vid.classList.remove('scale-95', 'opacity-0');
+            vid.classList.add('scale-100', 'opacity-100');
+        }
         
-        lightbox.classList.remove('opacity-0');
-        img.classList.remove('scale-95', 'opacity-0');
-        img.classList.add('scale-100', 'opacity-100');
         document.body.style.overflow = 'hidden'; // Kunci scroll browser
     }
 
@@ -627,23 +656,34 @@
     function closeBannerPopup() {
         const lightbox = document.getElementById('bannerLightbox');
         const img = document.getElementById('lightboxImg');
+        const vid = document.getElementById('lightboxVid');
         
         lightbox.classList.add('opacity-0');
-        img.classList.remove('scale-100', 'opacity-100');
-        img.classList.add('scale-95', 'opacity-0');
+        if (!img.classList.contains('hidden')) {
+            img.classList.remove('scale-100', 'opacity-100');
+            img.classList.add('scale-95', 'opacity-0');
+        }
+        if (!vid.classList.contains('hidden')) {
+            vid.classList.remove('scale-100', 'opacity-100');
+            vid.classList.add('scale-95', 'opacity-0');
+        }
         
         // Tunggu transisi selesai baru disembunyikan (500ms)
         setTimeout(() => {
             lightbox.classList.add('hidden');
             img.src = ''; // Bersihkan memori/src
+            
+            vid.pause();
+            vid.src = '';
+            
             document.body.style.overflow = ''; // Kembalikan scroll browser
         }, 500); 
     }
     
     // Tutup saat area luar gambar (background gelap) diklik
     document.getElementById('bannerLightbox').addEventListener('click', function(e) {
-        // Jika yang diklik bukan gambar atau tombol, tapi background (atau container padding luar)
-        if (e.target.tagName !== 'IMG' && (!e.target.closest('button'))) {
+        // Jika yang diklik bukan media atau tombol, tapi background
+        if (e.target.tagName !== 'IMG' && e.target.tagName !== 'VIDEO' && (!e.target.closest('button'))) {
             closeBannerPopup();
         }
     });

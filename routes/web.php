@@ -66,14 +66,17 @@ use App\Models\Announcement;
 Route::get('/', function () {
     // Gunakan Cache untuk meningkatkan performa halaman utama
     $news = Cache::remember('homepage_news', 3600, function() {
-        return News::where('status', 'published')->latest()->take(4)->get();
+        return App\Models\News::where('status', 'published')->latest()->take(4)->get();
     });
 
     $announcements = Cache::remember('homepage_announcements', 3600, function() {
-        return Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
+        return App\Models\Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
     });
 
-    return view('welcome', compact('news', 'announcements'));
+    // Ambil Banner Aktif (Non-cached agar perubahan admin langsung terlihat)
+    $banners = App\Models\Banner::where('is_active', true)->orderBy('order_index')->get();
+
+    return view('welcome', compact('news', 'announcements', 'banners'));
 });
 
 // Halaman Statis Publik
@@ -224,6 +227,9 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::get('kunjungan/offline/success/{kunjungan}', [AdminKunjunganController::class, 'offlineSuccess'])->name('admin.kunjungan.offline.success');
 
     Route::resource('kunjungan', AdminKunjunganController::class, ['names' => 'admin.kunjungan']);
+
+    // Manajemen Banners
+    Route::resource('banners', App\Http\Controllers\Admin\BannerController::class, ['names' => 'admin.banners']);
 
     // Manajemen WBP
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
