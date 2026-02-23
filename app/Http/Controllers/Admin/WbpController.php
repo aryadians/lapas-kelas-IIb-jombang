@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class WbpController extends Controller
 {
@@ -112,6 +113,7 @@ class WbpController extends Controller
             'tanggal_ekspirasi' => 'nullable|date',
             'blok' => 'nullable|string|max:255',
             'kamar' => 'nullable|string|max:255',
+            'kode_tahanan' => 'nullable|string|max:255',
         ]);
 
         Wbp::create($request->all());
@@ -139,6 +141,7 @@ class WbpController extends Controller
             'tanggal_ekspirasi' => 'nullable|date',
             'blok' => 'nullable|string|max:255',
             'kamar' => 'nullable|string|max:255',
+            'kode_tahanan' => 'nullable|string|max:255',
         ]);
 
         $wbp->update($request->all());

@@ -28,6 +28,8 @@ class VisitConfigController extends Controller
             'schedules.*.online_afternoon' => 'required|integer|min:0',
             'schedules.*.offline_morning' => 'required|integer|min:0',
             'schedules.*.offline_afternoon' => 'required|integer|min:0',
+            'schedules.*.allowed_kode_tahanan' => 'nullable|array',
+            'schedules.*.allowed_kode_tahanan.*' => 'string',
             'limit_nik_per_week' => 'required|integer|min:1',
             'limit_wbp_per_week' => 'required|integer|min:1',
             'registration_lead_time' => 'required|integer|min:0',
@@ -63,6 +65,7 @@ class VisitConfigController extends Controller
                 'quota_online_afternoon' => $data['online_afternoon'],
                 'quota_offline_morning' => $data['offline_morning'],
                 'quota_offline_afternoon' => $data['offline_afternoon'],
+                'allowed_kode_tahanan' => isset($data['allowed_kode_tahanan']) && is_array($data['allowed_kode_tahanan']) && count($data['allowed_kode_tahanan']) > 0 ? $data['allowed_kode_tahanan'] : null,
             ]);
         }
 

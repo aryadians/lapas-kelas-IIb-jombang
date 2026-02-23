@@ -126,17 +126,13 @@
                             <p class="text-xs text-slate-500">Sesuai Status WBP</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 flex-grow">
-                        <div class="flex flex-col justify-center items-center bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border border-yellow-200 p-4 text-center h-full hover:shadow-lg hover:from-yellow-100 hover:to-yellow-200 transition-all duration-300 transform hover:scale-105">
-                            <span class="text-xs font-bold text-slate-500 uppercase mb-2">Senin & Rabu</span>
-                            <span class="text-2xl font-black text-slate-900">NAPI</span>
-                            <span class="text-[10px] text-slate-400 mt-1">(Narapidana)</span>
+                    <div class="grid grid-cols-2 gap-3 flex-grow mt-2">
+                        @foreach($openSchedules as $schedule)
+                        <div class="flex flex-col justify-center items-center bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl border border-yellow-200 p-3 text-center h-full hover:shadow-md transition-all duration-300 transform hover:scale-105">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase mb-1">{{ $schedule->day_name }}</span>
+                            <span class="text-sm font-black text-slate-900">{{ empty($schedule->allowed_kode_tahanan) ? 'SEMUA WBP' : implode(', ', $schedule->allowed_kode_tahanan) }}</span>
                         </div>
-                        <div class="flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200 p-4 text-center h-full hover:shadow-lg hover:from-blue-100 hover:to-blue-200 transition-all duration-300 transform hover:scale-105">
-                            <span class="text-xs font-bold text-slate-500 uppercase mb-2">Selasa & Kamis</span>
-                            <span class="text-2xl font-black text-slate-900">TAHANAN</span>
-                            <span class="text-[10px] text-slate-400 mt-1">(Tahanan)</span>
-                        </div>
+                        @endforeach
                     </div>
                     <div class="mt-4 text-center">
                         <span class="inline-block bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-6 py-2 rounded-full shadow-lg border border-red-400">
@@ -586,6 +582,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
                                 datesByDay: {{ json_encode($datesByDay) }},
+                                allowedCodesByDay: {{ json_encode($allowedCodesByDay ?? []) }},
+                                wbpKodeTahanan: '',
                                 selectedDay: '{{ old('selected_day', '') }}',
                                 selectedDate: '{{ old('tanggal_kunjungan', '') }}',
                                 selectedSesi: '{{ old('sesi', '') }}',
@@ -598,6 +596,26 @@
                                     if (this.selectedDate) { this.getQuota(); }
                                     this.$watch('selectedDate', () => this.getQuota());
                                     this.$watch('selectedSesi', () => this.getQuota());
+                                    
+                                    window.addEventListener('wbp-selected', (e) => {
+                                        this.wbpKodeTahanan = e.detail.kode_tahanan || '';
+                                        if (this.selectedDay && !this.isDayAllowed(this.selectedDay)) {
+                                            this.selectedDay = '';
+                                            this.handleDayChange();
+                                        }
+                                    });
+                                    window.addEventListener('wbp-cleared', () => {
+                                        this.wbpKodeTahanan = '';
+                                    });
+                                },
+                                isDayAllowed(dayName) {
+                                    const allowed = this.allowedCodesByDay[dayName] || [];
+                                    if (allowed.length === 0) return true;
+                                    if (!this.wbpKodeTahanan) return true;
+                                    return allowed.includes(this.wbpKodeTahanan);
+                                },
+                                get allowedDays() {
+                                    return Object.keys(this.datesByDay).filter(day => this.isDayAllowed(day));
                                 },
                                 handleDayChange() {
                                     this.updateAvailableDates();
@@ -683,9 +701,9 @@
                                 </label>
                                 <select name="selected_day" @change="handleDayChange()" x-model="selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white">
                                     <option value="" disabled>Pilih hari...</option>
-                                    @foreach (array_keys($datesByDay) as $day)
-                                        <option value="{{ $day }}">{{ $day }}</option>
-                                    @endforeach
+                                    <template x-for="day in allowedDays" :key="day">
+                                        <option :value="day" x-text="day"></option>
+                                    </template>
                                 </select>
                             </div>
 
@@ -1042,6 +1060,8 @@
                                     if(btnSearchManual) btnSearchManual.classList.add('hidden'); // Hide button
                                     resultsDiv.style.display = 'none';
                                     searchInput.setAttribute('aria-expanded', 'false');
+                                    
+                                    window.dispatchEvent(new CustomEvent('wbp-selected', { detail: { kode_tahanan: item.kode_tahanan } }));
                                 };
                                 resultsDiv.appendChild(div);
                             });
@@ -1070,6 +1090,8 @@
                 if(btnSearchManual) btnSearchManual.classList.remove('hidden'); // Show button
                 infoDiv.classList.add('hidden');
                 searchInput.focus();
+                
+                window.dispatchEvent(new CustomEvent('wbp-cleared'));
             });
         }
 

@@ -37,13 +37,27 @@
                         </div>
                     </div>
 
-                    <div class="relative form-group">
-                        <label for="nama_panggilan" class="block text-sm font-medium text-slate-700 mb-2">Nama Panggilan (Alias)</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-signature absolute left-3.5 top-1/2 -translate-y-1/2 transform text-slate-400"></i>
-                            <input type="text" id="nama_panggilan" name="nama_panggilan" class="form-input" value="{{ old('nama_panggilan') }}" placeholder="Contoh: Johnny">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative form-group">
+                            <label for="nama_panggilan" class="block text-sm font-medium text-slate-700 mb-2">Nama Panggilan (Alias)</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-signature absolute left-3.5 top-1/2 -translate-y-1/2 transform text-slate-400"></i>
+                                <input type="text" id="nama_panggilan" name="nama_panggilan" class="form-input" value="{{ old('nama_panggilan') }}" placeholder="Contoh: Johnny">
+                            </div>
+                            @error('nama_panggilan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
-                        @error('nama_panggilan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <div class="relative form-group">
+                            <label for="kode_tahanan" class="block text-sm font-medium text-slate-700 mb-2">Kode Tahanan</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-tag absolute left-3.5 top-1/2 -translate-y-1/2 transform text-slate-400"></i>
+                                <select id="kode_tahanan" name="kode_tahanan" class="form-input" style="padding-left: 2.5rem;">
+                                    <option value="">- Tanpa Kode -</option>
+                                    <option value="A" {{ old('kode_tahanan') == 'A' ? 'selected' : '' }}>A</option>
+                                    <option value="B" {{ old('kode_tahanan') == 'B' ? 'selected' : '' }}>B</option>
+                                </select>
+                            </div>
+                            @error('kode_tahanan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">

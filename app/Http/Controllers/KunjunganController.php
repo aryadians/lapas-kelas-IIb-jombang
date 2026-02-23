@@ -34,8 +34,9 @@ class KunjunganController extends Controller
 
     public function create()
     {
-        // Ambil hari-hari yang buka dari database
-        $openDays = \App\Models\VisitSchedule::where('is_open', true)->pluck('day_name')->toArray();
+        // Ambil jadwal yang buka
+        $openSchedules = \App\Models\VisitSchedule::where('is_open', true)->get();
+        $openDays = $openSchedules->pluck('day_name')->toArray();
         
         // Ambil Batas H-N Pendaftaran
         $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
@@ -57,10 +58,12 @@ class KunjunganController extends Controller
         ];
 
         $datesByDay = [];
-        foreach ($dayMapping as $ind) {
-            if (in_array($ind, $openDays)) {
-                $datesByDay[$ind] = [];
-            }
+        $allowedCodesByDay = [];
+        
+        foreach ($openSchedules as $schedule) {
+            $dayName = $schedule->day_name;
+            $datesByDay[$dayName] = [];
+            $allowedCodesByDay[$dayName] = is_array($schedule->allowed_kode_tahanan) ? $schedule->allowed_kode_tahanan : [];
         }
 
         // Mulai menghitung dari hari ini + leadTime
@@ -81,7 +84,9 @@ class KunjunganController extends Controller
             }
         }
         return view('guest.kunjungan.create', [
+            'openSchedules' => $openSchedules,
             'datesByDay' => $datesByDay,
+            'allowedCodesByDay' => $allowedCodesByDay,
             'leadTime' => $leadTime,
             'maxFollowers' => $maxFollowers,
             'isEmergencyClosed' => $isEmergencyClosed,
@@ -105,7 +110,8 @@ class KunjunganController extends Controller
                 'nama' => $wbp->nama,
                 'no_registrasi' => $wbp->no_registrasi,
                 'blok' => $wbp->blok ?? '-',
-                'kamar' => $wbp->kamar ?? '-'
+                'kamar' => $wbp->kamar ?? '-',
+                'kode_tahanan' => $wbp->kode_tahanan ?? ''
             ];
         });
         return response()->json($results);
@@ -148,6 +154,17 @@ class KunjunganController extends Controller
         // 1. CEK APAKAH HARI TERSEBUT BUKA
         if (!$quotaService->isDayOpen($dateStr)) {
             return back()->withErrors(['tanggal_kunjungan' => 'Layanan kunjungan tidak tersedia (TUTUP) pada hari yang Anda pilih.'])->withInput();
+        }
+
+        // 1.B CEK KODE TAHANAN WBP DENGAN JADWAL
+        $schedule = \App\Models\VisitSchedule::where('day_of_week', $tanggal->dayOfWeek)->first();
+        $wbp = Wbp::find($validatedData['wbp_id']);
+        if ($schedule && $wbp && !empty($schedule->allowed_kode_tahanan)) {
+            $wbpCode = $wbp->kode_tahanan;
+            if (empty($wbpCode) || !in_array($wbpCode, $schedule->allowed_kode_tahanan)) {
+                $allowedFormatted = implode(', ', $schedule->allowed_kode_tahanan);
+                return back()->withErrors(['tanggal_kunjungan' => "WBP dengan kode '{$wbpCode}' tidak diizinkan dikunjungi pada hari {$schedule->day_name}. Hari tersebut khusus untuk kode: {$allowedFormatted}."])->withInput();
+            }
         }
 
         // 2. CEK KUOTA (Online)

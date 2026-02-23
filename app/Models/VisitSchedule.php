@@ -13,10 +13,12 @@ class VisitSchedule extends Model
         'quota_online_morning',
         'quota_online_afternoon',
         'quota_offline_morning',
-        'quota_offline_afternoon'
+        'quota_offline_afternoon',
+        'allowed_kode_tahanan'
     ];
 
     protected $casts = [
         'is_open' => 'boolean',
+        'allowed_kode_tahanan' => 'array',
     ];
 }

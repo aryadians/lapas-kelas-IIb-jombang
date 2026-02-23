@@ -130,6 +130,12 @@
                             Blok {{ $wbp->blok ?? '-' }} / Kamar {{ $wbp->kamar ?? '-' }}
                         </span>
                         @endif
+                        @if($wbp->kode_tahanan)
+                        <span class="inline-flex items-center gap-1 text-[11px] font-bold text-teal-600 bg-teal-50 border border-teal-100 px-2 py-0.5 rounded-lg">
+                            <i class="fas fa-tag text-[9px]"></i>
+                            {{ $wbp->kode_tahanan }}
+                        </span>
+                        @endif
                     </div>
                 </div>
 

@@ -86,6 +86,7 @@
                                     <th class="pb-4 font-black uppercase text-[10px] tracking-[0.2em] text-center">Status</th>
                                     <th class="pb-4 font-black uppercase text-[10px] tracking-[0.2em] text-center">Kuota Online (P/S)</th>
                                     <th class="pb-4 font-black uppercase text-[10px] tracking-[0.2em] text-center">Kuota Offline (P/S)</th>
+                                    <th class="pb-4 font-black uppercase text-[10px] tracking-[0.2em] text-center">Kode Tahanan</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-50">
@@ -120,6 +121,20 @@
                                             <div class="relative">
                                                 <span class="absolute -top-4 left-1 text-[9px] font-black text-amber-400 uppercase">Siang</span>
                                                 <input type="number" name="schedules[{{ $schedule->id }}][offline_afternoon]" value="{{ $schedule->quota_offline_afternoon }}" class="w-20 p-2 bg-slate-50 border-2 border-slate-100 rounded-xl text-center font-bold text-slate-700 focus:border-blue-500 focus:ring-0">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-5">
+                                        <div class="flex items-center justify-center gap-3">
+                                            <div class="flex flex-col gap-1 text-left">
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" name="schedules[{{ $schedule->id }}][allowed_kode_tahanan][]" value="A" {{ is_array($schedule->allowed_kode_tahanan) && in_array('A', $schedule->allowed_kode_tahanan) ? 'checked' : '' }} class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300">
+                                                    <span class="ml-2 text-xs font-bold text-slate-700">A</span>
+                                                </label>
+                                                <label class="inline-flex items-center">
+                                                    <input type="checkbox" name="schedules[{{ $schedule->id }}][allowed_kode_tahanan][]" value="B" {{ is_array($schedule->allowed_kode_tahanan) && in_array('B', $schedule->allowed_kode_tahanan) ? 'checked' : '' }} class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300">
+                                                    <span class="ml-2 text-xs font-bold text-slate-700">B</span>
+                                                </label>
                                             </div>
                                         </div>
                                     </td>
