@@ -107,39 +107,39 @@
 {{-- ================================================================= --}}
 {{-- 1. HERO SECTION (HEADER) --}}
 {{-- ================================================================= --}}
-<section class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white min-h-[50vh] flex items-center justify-center overflow-hidden pt-32 pb-20 perspective-1000">
+<section class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white min-h-[50vh] flex items-center justify-center overflow-hidden pt-36 pb-24 perspective-1000">
     
     {{-- 3D Canvas Background --}}
     <canvas id="hero-3d-canvas" class="absolute inset-0 w-full h-full z-0 opacity-40"></canvas>
 
     {{-- Background Pattern --}}
     <div class="absolute inset-0 z-10 pointer-events-none">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/30 to-slate-900/95"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-blue-900/40 to-slate-900/95"></div>
     </div>
 
     {{-- Floating Blobs --}}
     <div class="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-        <div class="w-72 h-72 bg-purple-600/20 rounded-full blur-[80px] animate-blob animation-delay-4000 mix-blend-screen"></div>
-        <div class="w-80 h-80 bg-cyan-500/20 rounded-full blur-[80px] animate-blob animation-delay-2000 mix-blend-screen"></div>
-        <div class="w-96 h-96 bg-blue-600/20 rounded-full blur-[80px] animate-blob animation-delay-6000 mix-blend-screen"></div>
+        <div class="w-72 h-72 bg-purple-600/30 rounded-full blur-[100px] animate-blob animation-delay-4000 mix-blend-screen"></div>
+        <div class="w-80 h-80 bg-cyan-500/30 rounded-full blur-[100px] animate-blob animation-delay-2000 mix-blend-screen"></div>
+        <div class="w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] animate-blob animation-delay-6000 mix-blend-screen"></div>
     </div>
 
-    <div class="container mx-auto px-6 text-center relative z-30" data-aos="zoom-in">
+    <div class="container mx-auto px-6 text-center relative z-30" data-aos="zoom-in" data-aos-duration="1000">
         
         {{-- Badge --}}
-        <div class="inline-flex items-center px-5 py-2 rounded-full bg-white/5 backdrop-blur-lg border border-white/20 text-cyan-300 text-sm font-semibold mb-8 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105 transition-transform duration-300">
-            <i class="fas fa-life-ring mr-2 animate-spin-slow"></i>
+        <div class="inline-flex items-center px-5 py-2.5 rounded-full bg-white/5 backdrop-blur-lg border border-white/20 text-cyan-300 text-sm font-bold mb-10 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105 transition-transform duration-300">
+            <i class="fas fa-life-ring mr-2 animate-bounce"></i>
             Pusat Bantuan & Informasi
         </div>
 
         {{-- Title dengan Animasi Shimmer --}}
-        <h1 class="hero-text-3d text-5xl md:text-7xl font-black mb-6 tracking-tight leading-tight drop-shadow-2xl">
+        <h1 class="hero-text-3d text-5xl md:text-7xl font-black mb-6 tracking-tight leading-tight drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
             Pertanyaan <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-white to-blue-500 animate-text-shimmer">Umum</span>
         </h1>
         
-        <p class="hero-text-3d text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
-            Temukan jawaban cepat seputar layanan, jadwal, dan tata tertib kunjungan di Lapas Kelas IIB Jombang secara interaktif.
+        <p class="hero-text-3d text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed font-light drop-shadow-md">
+            Temukan jawaban instan seputar alur pendaftaran, jadwal layanan, dan tata tertib kunjungan di Lapas Kelas IIB Jombang.
         </p>
     </div>
 </section>
@@ -428,30 +428,36 @@
         </div>
 
         {{-- CALL TO ACTION --}}
-        <div class="mt-24" data-aos="zoom-in-up">
-            <div class="bg-gradient-to-br from-slate-800 to-blue-900 rounded-[2.5rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl border border-slate-700 transform hover:scale-[1.02] transition-transform duration-500">
+        <div class="mt-32 mb-10" data-aos="zoom-in-up">
+            <div class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-blue-500/30 transform hover:shadow-[0_20px_60px_rgba(37,99,235,0.4)] transition-all duration-500 group">
                 
                 {{-- Decorative Blob --}}
-                <div class="absolute top-0 right-0 w-80 h-80 bg-blue-500/20 rounded-full blur-[80px] -mr-20 -mt-20 animate-pulse"></div>
-                <div class="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/20 rounded-full blur-[80px] -ml-20 -mb-20 animate-pulse" style="animation-delay: 1s"></div>
+                <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/30 rounded-full blur-[100px] -mr-40 -mt-40 pointer-events-none group-hover:scale-110 transition-transform duration-1000"></div>
+                <div class="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/20 rounded-full blur-[100px] -ml-40 -mb-20 pointer-events-none group-hover:scale-110 transition-transform duration-1000" style="animation-delay: 1s"></div>
 
                 <div class="relative z-10">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-6 backdrop-blur-sm border border-white/20 shadow-lg">
-                        <i class="fas fa-headset text-4xl text-cyan-300 animate-bounce"></i>
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white/10 rounded-full mb-8 backdrop-blur-md border border-white/20 shadow-[0_0_30px_rgba(6,182,212,0.3)]">
+                        <i class="fas fa-headset text-5xl text-cyan-300 animate-bounce"></i>
                     </div>
-                    <h2 class="text-3xl md:text-5xl font-black mb-4 tracking-tight drop-shadow-lg">Masih Butuh Bantuan?</h2>
-                    <p class="text-blue-100 text-lg mb-10 max-w-xl mx-auto leading-relaxed">
-                        Jika pertanyaan Anda belum terjawab di atas, tim layanan kami siap membantu Anda melalui saluran resmi berikut.
+                    <h2 class="text-4xl md:text-6xl font-black mb-6 tracking-tight drop-shadow-lg leading-tight">Masih Butuh Bantuan?</h2>
+                    <p class="text-blue-100 text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-sm">
+                        Jangan ragu untuk menghubungi kami. Tim Layanan Lapas Jombang siap membantu menjawab keluhan maupun pertanyaan Anda secara langsung.
                     </p>
                     
-                    <div class="flex flex-col sm:flex-row justify-center gap-6">
-                        <a href="https://wa.me/6281234567890" target="_blank" class="group inline-flex items-center justify-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-green-500/50 transform hover:-translate-y-1 animate-pulse-light">
-                            <i class="fab fa-whatsapp text-3xl group-hover:rotate-12 transition-transform"></i> 
-                            <span class="text-left leading-tight">Chat WhatsApp<br><span class="text-xs font-normal opacity-80">Respon Cepat</span></span>
+                    <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                        <a href="https://wa.me/6281234567890" target="_blank" class="w-full sm:w-auto group inline-flex items-center justify-center gap-4 bg-green-500 hover:bg-green-400 text-white px-10 py-5 rounded-full font-bold transition-all shadow-[0_10px_20px_rgba(34,197,94,0.4)] hover:shadow-[0_15px_30px_rgba(34,197,94,0.6)] transform hover:-translate-y-2">
+                            <i class="fab fa-whatsapp text-4xl group-hover:scale-110 transition-transform"></i> 
+                            <div class="text-left leading-tight">
+                                <span class="text-lg">Chat WhatsApp</span><br>
+                                <span class="text-sm font-normal text-green-100">Respon Super Cepat</span>
+                            </div>
                         </a>
-                        <button onclick="showContactModal()" class="group inline-flex items-center justify-center gap-3 bg-white hover:bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-900 border border-transparent px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-blue-500/50 transform hover:-translate-y-1">
-                            <i class="fas fa-envelope text-3xl text-blue-600 group-hover:scale-110 transition-transform"></i> 
-                            <span class="text-left leading-tight">Hubungi Kami<br><span class="text-xs font-normal text-slate-500">Email & Telepon</span></span>
+                        <button onclick="showContactModal()" class="w-full sm:w-auto group inline-flex items-center justify-center gap-4 bg-white/10 hover:bg-white backdrop-blur border border-white/30 hover:border-white text-white hover:text-blue-900 px-10 py-5 rounded-full font-bold transition-all shadow-lg hover:shadow-[0_15px_30px_rgba(255,255,255,0.2)] transform hover:-translate-y-2">
+                            <i class="fas fa-envelope text-3xl group-hover:text-blue-600 transition-colors"></i> 
+                            <div class="text-left leading-tight">
+                                <span class="text-lg">Kirim Email & Telp</span><br>
+                                <span class="text-sm font-light text-slate-300 group-hover:text-blue-700">Untuk Pertanyaan Formal</span>
+                            </div>
                         </button>
                     </div>
                 </div>
