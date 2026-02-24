@@ -73,8 +73,10 @@ Route::get('/', function () {
         return App\Models\Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
     });
 
-    // Ambil Banner Aktif (Non-cached agar perubahan admin langsung terlihat)
-    $banners = App\Models\Banner::where('is_active', true)->orderBy('order_index')->get();
+    // Ambil Banner Aktif (Non-cached agar perubahan admin langsung terlihat) - DIUBAH: Sekarang dicache!
+    $banners = Cache::rememberForever('active_banners', function() {
+        return App\Models\Banner::where('is_active', true)->orderBy('order_index')->get();
+    });
 
     return view('welcome', compact('news', 'announcements', 'banners'));
 });
@@ -115,7 +117,7 @@ Route::get('/produk/{product}', [ProductController::class, 'show'])->name('produ
 // 2. SISTEM PENDAFTARAN KUNJUNGAN (GUEST)
 // =========================================================================
 Route::get('/kunjungan/daftar', [KunjunganController::class, 'create'])->name('kunjungan.create');
-Route::post('/kunjungan/daftar', [KunjunganController::class, 'store'])->name('kunjungan.store')->middleware('throttle:10,1');
+Route::post('/kunjungan/daftar', [KunjunganController::class, 'store'])->name('kunjungan.store')->middleware('throttle:guest_submission');
 
 // Status & Tiket Kunjungan
 Route::get('/kunjungan/status/{kunjungan}', [KunjunganController::class, 'status'])->name('kunjungan.status');

@@ -27,7 +27,7 @@ class QueueController extends Controller
     {
         $today = Carbon::today();
 
-        $kunjungans = Kunjungan::with('wbp')
+        $kunjungans = Kunjungan::with(['wbp', 'profilPengunjung'])
             ->whereDate('tanggal_kunjungan', $today)
             ->whereIn('status', [KunjunganStatus::APPROVED, KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED])
             ->orderBy('nomor_antrian_harian', 'asc')

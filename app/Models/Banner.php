@@ -20,4 +20,17 @@ class Banner extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($banner) {
+            \Illuminate\Support\Facades\Cache::forget('active_banners');
+        });
+
+        static::deleted(function ($banner) {
+            \Illuminate\Support\Facades\Cache::forget('active_banners');
+        });
+    }
 }

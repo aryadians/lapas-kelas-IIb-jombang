@@ -133,6 +133,15 @@ class Kunjungan extends Model
     }
 
     /**
+     * RELASI KE MODEL PROFIL PENGUNJUNG
+     * Satu Kunjungan dimiliki oleh Satu Profil Pengunjung Utama.
+     */
+    public function profilPengunjung()
+    {
+        return $this->belongsTo(ProfilPengunjung::class, 'profil_pengunjung_id');
+    }
+
+    /**
      * Route notifications for the mail channel.
      *
      * @param  \Illuminate\Notifications\Notification  $notification

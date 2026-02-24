@@ -591,6 +591,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6"
                             x-data="{
                                 datesByDay: {{ json_encode($datesByDay) }},
+                                sessionsByDay: {{ json_encode($sessionsByDay) }},
                                 allowedCodesByDay: {{ json_encode($allowedCodesByDay) }},
                                 wbpKodeTahanan: '',
                                 wbpSelected: false,
@@ -598,7 +599,8 @@
                                 selectedDate: '{{ old('tanggal_kunjungan', '') }}',
                                 selectedSesi: '{{ old('sesi', '') }}',
                                 availableDates: [],
-                                isMonday: false,
+                                availableSessions: [],
+                                hasMultipleSessions: false,
                                 quotaInfo: '',
                                 isLoading: false,
                                 init() {
@@ -622,10 +624,17 @@
                                 },
                                 isDayAllowed(dayName) {
                                     const allowed = this.allowedCodesByDay[dayName] || [];
-                                    if (allowed.length === 0) return true;
+                                    if (allowed.length === 0) return true; // Hari bebas, semua WBP bisa
                                     if (!this.wbpSelected) return true;
-                                    if (!this.wbpKodeTahanan) return false;
-                                    return allowed.includes(this.wbpKodeTahanan);
+                                    
+                                    // Amankan nilai wbpKodeTahanan dari null/undefined
+                                    const safeCode = (this.wbpKodeTahanan || '').trim().toUpperCase();
+
+                                    // Jika hari ini TERBATAS (allowed.length > 0), tapi WBP tidak memiliki kode_tahanan, maka WAJIB DIBLOKIR.
+                                    if (safeCode === '') return false;
+                                    
+                                    // Pengecekan substring (misal BII -> diawali B, maka valid)
+                                    return allowed.some(allowedCode => safeCode.startsWith(allowedCode.trim().toUpperCase()));
                                 },
                                 get allowedDays() {
                                     return Object.keys(this.datesByDay).filter(day => this.isDayAllowed(day));
@@ -637,10 +646,18 @@
                                 },
                                 updateAvailableDates() {
                                     this.availableDates = this.datesByDay[this.selectedDay] || [];
-                                    this.isMonday = (this.selectedDay === 'Senin');
+                                    this.availableSessions = this.sessionsByDay[this.selectedDay] || [];
+                                    this.hasMultipleSessions = this.availableSessions.length > 1;
+                                    
+                                    // Reset sesi secara cerdas sesuai jadwal
+                                    if (this.availableSessions.length === 1) {
+                                        this.selectedSesi = this.availableSessions[0];
+                                    } else if (this.availableSessions.length > 1 && !this.availableSessions.includes(this.selectedSesi)) {
+                                        this.selectedSesi = '';
+                                    }
                                 },
                                 async getQuota() {
-                                    if (!this.selectedDate || (this.isMonday && !this.selectedSesi)) {
+                                    if (!this.selectedDate || (this.hasMultipleSessions && !this.selectedSesi)) {
                                         this.quotaInfo = '';
                                         return;
                                     }
@@ -733,16 +750,21 @@
                                 <div class="mt-2 text-sm" x-html="quotaInfo"></div>
                             </div>
 
-                            <div x-show="isMonday" class="md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-200">
+                            <div x-show="hasMultipleSessions" style="display: none" class="md:col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-200">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2">
-                                    <i class="fa-solid fa-clock text-blue-600"></i> Sesi Kunjungan (Senin)
+                                    <i class="fa-solid fa-clock text-blue-600"></i> Pilih Sesi Kunjungan
                                 </label>
                                 <select name="sesi" x-model="selectedSesi" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white">
                                     <option value="" disabled>Pilih sesi...</option>
-                                    <option value="pagi">Sesi Pagi (08:30 - 10:00)</option>
-                                    <option value="siang">Sesi Siang (13:30 - 14:30)</option>
+                                    <option value="pagi" x-show="availableSessions.includes('pagi')">Sesi Pagi (08:30 - 10:00)</option>
+                                    <option value="siang" x-show="availableSessions.includes('siang')">Sesi Siang (13:30 - 14:30)</option>
                                 </select>
                             </div>
+                            
+                            <!-- Input tersembunyi agar form tetap ngirim input 'sesi' walau dropdownnya tidak tertampil di layar -->
+                            <template x-if="!hasMultipleSessions && availableSessions.length === 1">
+                                <input type="hidden" name="sesi" :value="availableSessions[0]">
+                            </template>
                         </div>
                     </div>
 

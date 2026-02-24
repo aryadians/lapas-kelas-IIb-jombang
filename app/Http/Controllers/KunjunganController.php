@@ -34,18 +34,24 @@ class KunjunganController extends Controller
 
     public function create()
     {
-        // Ambil jadwal yang buka
-        $openSchedules = \App\Models\VisitSchedule::where('is_open', true)->get();
+        // Ambil jadwal yang buka dari Cache
+        $openSchedules = \Illuminate\Support\Facades\Cache::rememberForever('open_schedules', function() {
+            return \App\Models\VisitSchedule::where('is_open', true)->get();
+        });
         $openDays = $openSchedules->pluck('day_name')->toArray();
         
-        // Ambil Batas H-N Pendaftaran
-        $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
-        $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
-        $isEmergencyClosed = \App\Models\VisitSetting::where('key', 'is_emergency_closed')->value('value') == '1';
-        $announcement = \App\Models\VisitSetting::where('key', 'announcement_guest_page')->value('value');
-        $termsConditions = \App\Models\VisitSetting::where('key', 'terms_conditions')->value('value') ?? '';
-        $helpdeskWhatsapp = \App\Models\VisitSetting::where('key', 'helpdesk_whatsapp')->value('value') ?? '';
-        $maxLeadTime = (int) \App\Models\VisitSetting::where('key', 'edit_lead_time')->value('value') ?? 14;
+        // Ambil Batas H-N Pendaftaran & Konfigurasi dari Cache
+        $visitSettings = \Illuminate\Support\Facades\Cache::rememberForever('visit_settings', function() {
+            return \App\Models\VisitSetting::pluck('value', 'key')->toArray();
+        });
+
+        $leadTime = (int) ($visitSettings['registration_lead_time'] ?? 1);
+        $maxFollowers = (int) ($visitSettings['max_followers_allowed'] ?? 4);
+        $isEmergencyClosed = ($visitSettings['is_emergency_closed'] ?? '0') == '1';
+        $announcement = $visitSettings['announcement_guest_page'] ?? null;
+        $termsConditions = $visitSettings['terms_conditions'] ?? '';
+        $helpdeskWhatsapp = $visitSettings['helpdesk_whatsapp'] ?? '';
+        $maxLeadTime = (int) ($visitSettings['edit_lead_time'] ?? 14);
 
         if ($maxLeadTime < $leadTime) { 
             $maxLeadTime = $leadTime + 1; // Fallback jika setting salah
@@ -64,13 +70,20 @@ class KunjunganController extends Controller
 
         $datesByDay = [];
         $allowedCodesByDay = [];
+        $sessionsByDay = [];
         $openDays = [];
         
         foreach ($openSchedules as $schedule) {
             $dayName = $schedule->day_name;
             $datesByDay[$dayName] = [];
-            $openDays[] = $dayName; // INI YANG KETINGGALAN
+            $openDays[] = $dayName;
             $allowedCodesByDay[$dayName] = is_array($schedule->allowed_kode_tahanan) ? $schedule->allowed_kode_tahanan : [];
+            
+            // Determine which sessions are open based on quotas
+            $sessions = [];
+            if ($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0) $sessions[] = 'pagi';
+            if ($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0) $sessions[] = 'siang';
+            $sessionsByDay[$dayName] = $sessions;
         }
 
         // Hitung hari libur (yang tidak ada di jadwal buka)
@@ -113,6 +126,7 @@ class KunjunganController extends Controller
         return view('guest.kunjungan.create', [
             'openSchedules' => $openSchedules,
             'datesByDay' => $datesByDay,
+            'sessionsByDay' => $sessionsByDay,
             'allowedCodesByDay' => $allowedCodesByDay,
             'leadTime' => $leadTime,
             'maxFollowers' => $maxFollowers,
@@ -146,86 +160,23 @@ class KunjunganController extends Controller
         return response()->json($results);
     }
 
-    public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService, \App\Services\QuotaService $quotaService)
+    public function store(StoreKunjunganRequest $request, KunjunganService $kunjunganService, \App\Services\RegistrationValidationService $validationService, \App\Services\QuotaService $quotaService)
     {
         $validatedData = $request->validated();
+        
+        $validationResult = $validationService->validate($validatedData);
+
+        if (!$validationResult['isValid']) {
+            if ($validationResult['field'] === 'global') {
+                return back()->with('error', $validationResult['message'])->withInput();
+            }
+            return back()->withErrors([$validationResult['field'] => $validationResult['message']])->withInput();
+        }
+
         $tanggal = Carbon::parse($validatedData['tanggal_kunjungan']);
         $dateStr = $tanggal->format('Y-m-d');
-
-        // Prevent past dates
-        if ($tanggal->isPast()) {
-            return back()->with('error', 'Tanggal kunjungan tidak boleh di masa lalu.')->withInput();
-        }
-
-        // 0.A CEK STATUS DARURAT
-        $isEmergencyClosed = \App\Models\VisitSetting::where('key', 'is_emergency_closed')->value('value') == '1';
-        if ($isEmergencyClosed) {
-            return back()->with('error', 'Mohon maaf, layanan pendaftaran kunjungan sedang ditutup sementara waktu.')->withInput();
-        }
-
-        // 0.B CEK BATAS PENGIKUT
-        $maxFollowers = (int) \App\Models\VisitSetting::where('key', 'max_followers_allowed')->value('value') ?? 4;
-        $totalFollowers = isset($validatedData['pengikut_nama']) ? count(array_filter($validatedData['pengikut_nama'])) : 0;
-        
-        if ($totalFollowers > $maxFollowers) {
-            return back()->withErrors(['pengikut_nama' => "Total maksimal rombongan pengikut tidak boleh lebih dari $maxFollowers orang."])->withInput();
-        }
-
-        // 0. CEK BATAS H-N PENDAFTARAN
-        $leadTime = (int) \App\Models\VisitSetting::where('key', 'registration_lead_time')->value('value') ?? 1;
-        $minDate = Carbon::today()->addDays($leadTime);
-        if ($tanggal->lt($minDate)) {
-            return back()->withErrors(['tanggal_kunjungan' => "Pendaftaran untuk tanggal ini sudah ditutup. Minimal pendaftaran adalah $leadTime hari sebelum kunjungan."])->withInput();
-        }
-
-        $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : 'pagi'; 
-
-        // 1. CEK APAKAH HARI TERSEBUT BUKA
-        if (!$quotaService->isDayOpen($dateStr)) {
-            return back()->withErrors(['tanggal_kunjungan' => 'Layanan kunjungan tidak tersedia (TUTUP) pada hari yang Anda pilih.'])->withInput();
-        }
-
-        // 1.B CEK KODE TAHANAN WBP DENGAN JADWAL
-        $schedule = \App\Models\VisitSchedule::where('day_of_week', $tanggal->dayOfWeek)->first();
-        $wbp = Wbp::find($validatedData['wbp_id']);
-        if ($schedule && $wbp && !empty($schedule->allowed_kode_tahanan)) {
-            $wbpCode = $wbp->kode_tahanan;
-            if (empty($wbpCode) || !in_array($wbpCode, $schedule->allowed_kode_tahanan)) {
-                $allowedFormatted = implode(', ', $schedule->allowed_kode_tahanan);
-                return back()->withErrors(['tanggal_kunjungan' => "WBP dengan kode '{$wbpCode}' tidak diizinkan dikunjungi pada hari {$schedule->day_name}. Hari tersebut khusus untuk kode: {$allowedFormatted}."])->withInput();
-            }
-        }
-
-        // 2. CEK KUOTA (Online)
-        if (!$quotaService->checkAvailability($dateStr, $sesi, 'online')) {
-            return back()->withErrors(['sesi' => 'Mohon maaf, kuota pendaftaran online untuk jadwal ini sudah penuh.'])->withInput();
-        }
-
-        // 3. LOGIKA PEMBATASAN DINAMIS (NIK & WBP)
-        $limitNik = (int) \App\Models\VisitSetting::where('key', 'limit_nik_per_week')->value('value') ?? 1;
-        $limitWbp = (int) \App\Models\VisitSetting::where('key', 'limit_wbp_per_week')->value('value') ?? 1;
-
-        $startWeek = $tanggal->copy()->subDays(6);
-
-        // Cek Batasan WBP
-        $wbpVisitCount = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
-            ->whereBetween('tanggal_kunjungan', [$startWeek->format('Y-m-d'), $dateStr])
-            ->count();
-
-        if ($wbpVisitCount >= $limitWbp) {
-            return back()->with('error', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbp kali) dalam seminggu terakhir.")->withInput();
-        }
-
-        // Cek Batasan NIK
-        $nikVisitCount = Kunjungan::where('nik_ktp', $validatedData['nik_ktp'])
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
-            ->whereBetween('tanggal_kunjungan', [$startWeek->format('Y-m-d'), $dateStr])
-            ->count();
-
-        if ($nikVisitCount >= $limitNik) {
-            return back()->with('error', "NIK Anda sudah mencapai batas maksimal melakukan kunjungan ($limitNik kali) dalam seminggu terakhir.")->withInput();
-        }
+        $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : 'pagi';
+        $validatedData['sesi'] = $sesi; // Paksa nilai null/kosong menjadi 'pagi' sesuai hitungan default, agar database tidak menyimpan null
 
         // 4. SIMPAN DATA VIA SERVICE
         try {

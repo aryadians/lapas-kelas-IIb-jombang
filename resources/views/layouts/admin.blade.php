@@ -7,6 +7,10 @@
     <title>Admin Panel - Lapas Kelas IIB Jombang</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
     
+    <!-- PWA Setup -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#1f2937">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
@@ -472,5 +476,18 @@
     </script>
 
     <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

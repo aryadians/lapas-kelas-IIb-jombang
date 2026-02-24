@@ -14,12 +14,31 @@ class KunjunganRegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * Helper function to generate valid data for a Kunjungan post request.
-     */
     private function validKunjunganData($overrides = [])
     {
         $wbp = Wbp::factory()->create();
+
+        // Create a default dynamic schedule for Tuesdays to support the tests
+        if (!\App\Models\VisitSchedule::where('day_of_week', Carbon::TUESDAY)->exists()) {
+             \App\Models\VisitSchedule::factory()->create([
+                 'day_of_week' => Carbon::TUESDAY,
+                 'day_name' => 'Selasa',
+                 'is_open' => true,
+                 'quota_online_morning' => 50,
+                 'quota_online_afternoon' => 50,
+             ]);
+        }
+        
+        // Also ensure Monday is present for specific tests
+        if (!\App\Models\VisitSchedule::where('day_of_week', Carbon::MONDAY)->exists()) {
+             \App\Models\VisitSchedule::factory()->create([
+                 'day_of_week' => Carbon::MONDAY,
+                 'day_name' => 'Senin',
+                 'is_open' => true,
+                 'quota_online_morning' => 50,
+                 'quota_online_afternoon' => 50,
+             ]);
+        }
 
         return array_merge([
             'nama_pengunjung'    => 'John Doe',

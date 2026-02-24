@@ -1,0 +1,21 @@
+{
+    "name": "Si-LAKU Admin",
+    "short_name": "Si-LAKU",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#1f2937",
+    "description": "Sistem Layanan Kunjungan Terpadu Lapas Jombang",
+    "icons": [
+        {
+            "src": "/img/logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/img/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

@@ -71,7 +71,7 @@ class KunjunganController extends Controller
             'id', 'profil_pengunjung_id', 'kode_kunjungan', 'nama_pengunjung', 
             'nik_ktp', 'tanggal_kunjungan', 'sesi', 'status', 'nomor_antrian_harian',
             'wbp_id', 'registration_type', 'created_at', 'foto_ktp'
-        )->with('wbp');
+        )->with(['wbp', 'profilPengunjung']);
 
         // ... rest of filters ...
         if ($request->filled('status')) {
@@ -367,7 +367,7 @@ class KunjunganController extends Controller
     public function kalenderData()
     {
         // 1. Ambil hanya kunjungan yang sudah disetujui.
-        $kunjungans = Kunjungan::with('wbp')->where('status', KunjunganStatus::APPROVED)->get();
+        $kunjungans = Kunjungan::with(['wbp', 'profilPengunjung'])->where('status', KunjunganStatus::APPROVED)->get();
 
         $events = [];
 
@@ -463,7 +463,7 @@ class KunjunganController extends Controller
      */
     protected function exportPdf(string $period, ?string $date)
     {
-        $query = Kunjungan::with('wbp');
+        $query = Kunjungan::with(['wbp', 'profilPengunjung']);
 
         $label = match($period) {
             'day'   => $date ? 'Tanggal ' . \Carbon\Carbon::parse($date)->translatedFormat('d F Y') : 'Hari Ini',

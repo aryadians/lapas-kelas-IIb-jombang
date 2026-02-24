@@ -139,7 +139,7 @@ class WhatsAppService
                  . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
 
         // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
+        return $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
     public function sendApproved(Kunjungan $kunjungan, ?string $qrCodeUrl = null)
@@ -156,7 +156,7 @@ class WhatsAppService
                  . "Lihat Tiket QR: {$statusUrl}\n\n"
                  . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
 
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
+        return $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
     public function sendRejected(Kunjungan $kunjungan)
@@ -188,7 +188,7 @@ class WhatsAppService
                  . "Terima kasih telah mematuhi tata tertib Lapas Kelas IIB Jombang. Hati-hati di jalan.\n\n"
                  . "_Pesan ini dikirim otomatis oleh sistem._";
 
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+        return $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
 
     /**
@@ -208,6 +208,6 @@ class WhatsAppService
                  . "Mohon datang tepat waktu dan bawa KTP Asli serta tunjukkan kode QR pada tiket ini:\n{$statusUrl}\n\n"
                  . "Terima kasih.";
 
-        $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
+        return $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
     }
 }

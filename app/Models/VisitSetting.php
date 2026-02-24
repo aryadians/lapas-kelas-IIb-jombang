@@ -12,4 +12,17 @@ class VisitSetting extends Model
         'display_name',
         'type'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($setting) {
+            \Illuminate\Support\Facades\Cache::forget('visit_settings');
+        });
+
+        static::deleted(function ($setting) {
+            \Illuminate\Support\Facades\Cache::forget('visit_settings');
+        });
+    }
 }

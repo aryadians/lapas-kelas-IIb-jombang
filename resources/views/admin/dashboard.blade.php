@@ -95,7 +95,7 @@
         <div class="xl:col-span-2 space-y-6">
 
             {{-- Chart Kunjungan 7 Hari --}}
-            <div class="glass rounded-2xl shadow-sm p-6">
+            <div class="glass rounded-2xl shadow-sm p-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 800)">
                 <div class="flex items-center justify-between mb-5">
                     <div>
                         <h3 class="font-black text-slate-800 text-base">Tren Kunjungan</h3>
@@ -105,32 +105,41 @@
                         <i class="fas fa-chart-line text-sm"></i>
                     </div>
                 </div>
-                <div class="h-64 w-full">
+                <!-- Skeleton UI -->
+                <div x-show="loading" class="h-64 w-full animate-pulse bg-slate-200 rounded-xl"></div>
+                <!-- Chart Canvas -->
+                <div class="h-64 w-full" x-show="!loading" style="display: none;">
                     <canvas id="visitsChart"></canvas>
                 </div>
             </div>
 
             {{-- Chart Bulanan & Survey --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass rounded-2xl shadow-sm p-6">
+                <div class="glass rounded-2xl shadow-sm p-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1000)">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-8 h-8 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
                             <i class="fas fa-chart-bar text-sm"></i>
                         </div>
                         <h3 class="font-black text-slate-800 text-sm">Kunjungan Bulanan {{ date('Y') }}</h3>
                     </div>
-                    <div class="h-56 w-full">
+                    <!-- Skeleton UI -->
+                    <div x-show="loading" class="h-56 w-full animate-pulse bg-slate-200 rounded-xl"></div>
+                    <!-- Chart Canvas -->
+                    <div class="h-56 w-full" x-show="!loading" style="display: none;">
                         <canvas id="monthlyVisitsChart"></canvas>
                     </div>
                 </div>
-                <div class="glass rounded-2xl shadow-sm p-6">
+                <div class="glass rounded-2xl shadow-sm p-6" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 1200)">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-8 h-8 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600">
                             <i class="fas fa-chart-pie text-sm"></i>
                         </div>
                         <h3 class="font-black text-slate-800 text-sm">Statistik Survey IKM</h3>
                     </div>
-                    <div class="h-56 w-full">
+                    <!-- Skeleton UI -->
+                    <div x-show="loading" class="h-56 w-full animate-pulse bg-slate-200 rounded-full w-48 h-48 mx-auto mt-4"></div>
+                    <!-- Chart Canvas -->
+                    <div class="h-56 w-full" x-show="!loading" style="display: none;">
                         <canvas id="surveyRatingsChart"></canvas>
                     </div>
                 </div>

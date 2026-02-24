@@ -73,9 +73,17 @@ class WbpImport implements ToCollection, SkipsEmptyRows
                 if ($this->isNumeric($data[10] ?? null)) {
                      // Jika kolom 10 angka, berarti logic geser
                 }
+                $inferredKode = null;
+                if (!empty($noReg)) {
+                    $firstChar = strtoupper(substr(trim($noReg), 0, 1));
+                    if (in_array($firstChar, ['A', 'B'])) {
+                        $inferredKode = $firstChar;
+                    }
+                }
 
                 Wbp::create([
                     'no_registrasi'     => $noReg,
+                    'kode_tahanan'      => $inferredKode,
                     'nama'              => strtoupper($nama),
                     'nama_panggilan'    => $alias,
                     'tanggal_masuk'     => $tglMasuk,
