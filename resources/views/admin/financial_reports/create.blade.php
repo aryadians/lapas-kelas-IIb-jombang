@@ -313,7 +313,7 @@
         if (!confirmed.isConfirmed) return;
 
         try {
-            const res  = await fetch(`{{ url('admin/report-categories') }}/${id}`, {
+            const res  = await fetch(`{{ url('report-categories') }}/${id}`, {
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
             });
