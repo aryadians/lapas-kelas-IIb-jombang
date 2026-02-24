@@ -71,55 +71,82 @@
     {{-- Slideshow Galeri Otomatis (Premium Cinematic Look) --}}
     <div class="w-full relative z-10 px-4 md:px-6">
         @php
+            // 1. Ambil Banner dari Database
+            $dbBanners = isset($banners) ? $banners : collect();
+
+            // 2. Ambil Banner dari Folder
             $slideshowPath = public_path('img/slideshow');
-            $slideshowFiles = [];
+            $folderBanners = [];
             if (\Illuminate\Support\Facades\File::exists($slideshowPath)) {
-                $slideshowFiles = \Illuminate\Support\Facades\File::files($slideshowPath);
+                $folderFiles = \Illuminate\Support\Facades\File::files($slideshowPath);
+                foreach ($folderFiles as $file) {
+                    $ext = strtolower($file->getExtension());
+                    if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'webm', 'ogg'])) {
+                        $folderBanners[] = (object) [
+                            'source' => 'folder',
+                            'type'   => in_array($ext, ['mp4', 'webm', 'ogg']) ? 'video' : 'image',
+                            'path'   => asset('img/slideshow/' . $file->getFilename()),
+                            'title'  => null,
+                        ];
+                    }
+                }
+            }
+
+            // Gabungkan Keduanya
+            $mergedBanners = collect();
+            foreach ($dbBanners as $db) {
+                $mergedBanners->push((object)[
+                    'source' => 'db',
+                    'type'   => $db->type,
+                    'path'   => Storage::url($db->file_path),
+                    'title'  => $db->title,
+                ]);
+            }
+            foreach ($folderBanners as $fb) {
+                $mergedBanners->push($fb);
             }
         @endphp
 
-        @if(count($slideshowFiles) > 0)
+        @if($mergedBanners->count() > 0)
         <div class="w-full xl:w-[90%] 2xl:w-[85%] mx-auto relative group">
             {{-- Glowing shadow effect behind the swiper --}}
             <div class="absolute -inset-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
             
             <div class="swiper galeriSwiper rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden bg-slate-900 border border-slate-700/50 relative z-10">
                 <div class="swiper-wrapper">
-                    @foreach($slideshowFiles as $file)
-                    @php
-                        $fileName = $file->getFilename();
-                        $assetPath = asset('img/slideshow/' . $fileName);
-                        $isImage = in_array(strtolower($file->getExtension()), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                        $isVideo = in_array(strtolower($file->getExtension()), ['mp4', 'webm', 'ogg']);
-                    @endphp
-                    
-                    @if($isImage || $isVideo)
+                    @foreach($mergedBanners as $banner)
                     <div class="swiper-slide relative flex items-center justify-center bg-black overflow-hidden group/slide">
-                        @if($isImage)
+                        @if($banner->type === 'image')
                             {{-- Cinematic Blurred Background --}}
-                            <img src="{{ $assetPath }}" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 transform scale-125 group-hover/slide:scale-150 transition-transform duration-[2000ms] ease-out" alt="" loading="lazy">
+                            <img src="{{ $banner->path }}" class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 transform scale-125 group-hover/slide:scale-150 transition-transform duration-[2000ms] ease-out" alt="" loading="lazy">
                             
                             {{-- Main Image (Tampil Utuh / object-contain) --}}
-                            <img src="{{ $assetPath }}" 
-                                 alt="Slideshow Lapas Jombang" 
+                            <img src="{{ $banner->path }}" 
+                                 alt="{{ $banner->title ?? 'Slideshow Lapas Jombang' }}" 
                                  class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.7)] transition-transform duration-[2000ms] ease-out group-hover/slide:scale-[1.02] cursor-pointer"
-                                 onclick="showBannerPopup('{{ $assetPath }}', 'image')"
+                                 onclick="showBannerPopup('{{ $banner->path }}', 'image')"
                                  loading="lazy">
-                        @elseif($isVideo)
-                            <video src="{{ $assetPath }}" 
+                        @elseif($banner->type === 'video')
+                            <video src="{{ $banner->path }}" 
                                    class="relative z-10 w-full h-[300px] sm:h-[450px] md:h-[550px] lg:h-[650px] object-cover"
                                    autoplay muted loop playsinline></video>
                             
                             {{-- Floating Expand Button For Video --}}
-                            <button onclick="showBannerPopup('{{ $assetPath }}', 'video')" class="absolute bottom-6 right-6 z-30 bg-black/60 hover:bg-black text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all">
+                            <button onclick="showBannerPopup('{{ $banner->path }}', 'video')" class="absolute bottom-6 right-6 z-30 bg-black/60 hover:bg-black text-white w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md transition-all">
                                 <i class="fas fa-expand"></i>
                             </button>
                         @endif
                         
+                        {{-- Title Overlay (opsional) --}}
+                        @if($banner->title)
+                        <div class="absolute bottom-0 left-0 right-0 z-30 p-8 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+                            <h3 class="text-white text-xl md:text-2xl font-bold drop-shadow-lg">{{ $banner->title }}</h3>
+                        </div>
+                        @else
                         {{-- Premium Gradient Overlay at bottom for contrast --}}
                         <div class="absolute inset-0 z-20 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent pointer-events-none"></div>
+                        @endif
                     </div>
-                    @endif
                     @endforeach
                 </div>
                 
@@ -137,7 +164,7 @@
                 <i class="fas fa-images text-4xl text-slate-400"></i>
             </div>
             <h3 class="text-xl font-bold text-white mb-2">Belum Ada Banner</h3>
-            <p class="text-slate-400">Silakan tambahkan gambar ke dalam folder <strong>public/img/slideshow</strong>.</p>
+            <p class="text-slate-400">Tambahkan banner slide dari Dasbor Admin atau upload ke folder <strong>public/img/slideshow</strong>.</p>
         </div>
         @endif
     </div>

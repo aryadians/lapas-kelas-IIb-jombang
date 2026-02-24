@@ -434,132 +434,141 @@
     </div>
 </div>
         
-            {{-- FOOTER --}}
-            <footer class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white pt-16 pb-8 border-t border-slate-800/50 relative overflow-hidden">
-                {{-- Background Pattern --}}
-                <div class="absolute inset-0 z-0">
-                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.03"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+            {{-- FOOTER POLISHED STYLING --}}
+            <footer class="bg-gradient-to-b from-slate-900 to-blue-950 text-white pt-24 pb-10 border-t border-slate-800/60 relative overflow-hidden mt-20">
+                {{-- Background Premium Gradients & Particles --}}
+                <div class="absolute inset-0 z-0 pointer-events-none">
+                    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.03\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"2\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+                    <div class="absolute top-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] animate-pulse-slow"></div>
+                    <div class="absolute bottom-0 left-10 w-80 h-80 bg-yellow-500/10 rounded-full blur-[100px]" style="animation-delay: 2s;"></div>
                 </div>
         
-                {{-- Floating Elements --}}
-                <div class="absolute top-20 left-10 w-20 h-20 bg-blue-500/5 rounded-full blur-xl animate-pulse"></div>
-                <div class="absolute bottom-20 right-10 w-32 h-32 bg-yellow-500/5 rounded-full blur-xl animate-pulse" style="animation-delay: 1s;"></div>
+                <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16 items-start">
         
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16 items-start">
-        
-                        {{-- KOLOM KIRI: Google Maps --}}
-                        <div class="w-full h-64 md:h-80 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 relative group">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.19819793804368!2d112.23536313051525!3d-7.55630764432415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e784002840ce0f7%3A0x3235a7cc980a9474!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1771837181967!5m2!1sid!2sid"
-                                class="w-full h-full border-0 filter grayscale group-hover:grayscale-0 transition duration-500 relative z-0"
-                                allowfullscreen=""
-                                loading="lazy"
-                                referrerpolicy="no-referrer-when-downgrade">
-                            </iframe>
-                            
+                        {{-- KOLOM KIRI: Google Maps (col-span-12 lg:col-span-5) --}}
+                        <div class="md:col-span-12 lg:col-span-5 relative group w-full" data-aos="fade-right">
+                            <div class="absolute -inset-1 bg-gradient-to-tr from-cyan-400 via-blue-500 to-yellow-400 rounded-[2rem] blur-xl opacity-20 group-hover:opacity-60 transition duration-1000 group-hover:duration-300"></div>
+                            <div class="bg-slate-800/80 p-1.5 rounded-[2rem] border border-white/10 shadow-2xl relative w-full h-[350px] lg:h-[420px]">
+                                <iframe
+                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d247.19819793804368!2d112.23536313051525!3d-7.55630764432415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e784002840ce0f7%3A0x3235a7cc980a9474!2sLapas%20Kelas%20IIB%20Jombang!5e0!3m2!1sid!2sid!4v1771837181967!5m2!1sid!2sid"
+                                    class="w-full h-full rounded-[1.75rem] border-0 filter grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out relative z-0"
+                                    allowfullscreen=""
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                                </iframe>
+                                <div class="absolute bottom-6 left-6 right-6 bg-slate-900/70 backdrop-blur-xl border border-white/10 p-4 rounded-2xl flex items-center justify-between z-10 opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center">
+                                            <i class="fas fa-map-marker-alt text-yellow-500"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Lokasi Kami</p>
+                                            <p class="text-sm font-bold text-white leading-none">Jombang, Jawa Timur</p>
+                                        </div>
+                                    </div>
+                                    <a href="https://maps.app.goo.gl/95aRWehG87J8a3eRA" target="_blank" class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-slate-900 text-xs font-black rounded-lg transition-colors shadow-lg active:scale-95">
+                                        Petunjuk Arah
+                                    </a>
+                                </div>
+                            </div>
                         </div>
+                        
+                        {{-- KOLOM KANAN: Informasi Kontak (col-span-12 lg:col-span-7) --}}
+                        <div class="md:col-span-12 lg:col-span-7 flex flex-col justify-center space-y-10" data-aos="fade-left" data-aos-delay="100">
+                            
+                            {{-- Logo & Judul --}}
+                            <div>
+                                <div class="flex items-center gap-4 mb-5">
+                                    <div class="relative group cursor-pointer drop-shadow-2xl">
+                                        <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
+                                        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16 w-auto relative transform group-hover:scale-105 transition-transform duration-500">
+                                    </div>
+                                    <div class="flex flex-col justify-center border-l-2 border-white/20 pl-4 py-1">
+                                        <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">Kemenkumham<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>
+                                    </div>
+                                </div>
+                                <p class="text-slate-300 text-base md:text-lg leading-relaxed max-w-xl font-light drop-shadow-sm border-l-4 border-blue-500 pl-4 py-1">
+                                    Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PRIMA (<span class="text-blue-300 font-semibold">Profesional, Responsif, Integritas, Modern, Akuntabel</span>).
+                                </p>
+                            </div>
+                        
+                            {{-- Tautan Terkait --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8">
+                                <div>
+                                    <h4 class="text-sm font-black text-yellow-500 mb-4 tracking-widest uppercase border-b border-white/10 pb-3">Unit Utama</h4>
+                                    <ul class="space-y-3">
+                                        <li><a href="https://www.kemenkumham.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Sekretariat Jenderal</a></li>
+                                        <li><a href="http://www.ditjenpas.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Ditjen PAS</a></li>
+                                        <li><a href="https://imigrasi.go.id/id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Ditjen Imigrasi</a></li>
+                                        <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>BPSDM</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-black text-blue-400 mb-4 tracking-widest uppercase border-b border-white/10 pb-3">Layanan Cepat</h4>
+                                    <ul class="space-y-3">
+                                        <li><a href="{{ route('kunjungan.cek_status') }}" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-search text-[10px] text-yellow-500 mr-3 group-hover:rotate-12 transition-transform"></i>Cek Status Kunjungan</a></li>
+                                        <li><a href="{{ route('display.antrian') }}" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-tv text-[10px] text-yellow-500 mr-3 group-hover:-rotate-12 transition-transform"></i>Display Antrian</a></li>
+                                        <li><a href="{{ route('survey.create') }}" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-star text-[10px] text-yellow-500 mr-3 group-hover:scale-125 transition-transform"></i>Survei IKM / Kepuasan</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        
+                            {{-- Info Kontak Pendek & Medsos --}}
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                                <div class="space-y-3">
+                                    <div class="flex items-center gap-4 group">
+                                        <div class="bg-blue-600/20 p-2.5 rounded-xl border border-blue-400/30 text-blue-400 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                            <i class="fas fa-map-marked-alt text-lg"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">Jl. KH. Wahid Hasyim No.155</p>
+                                            <p class="text-xs text-slate-400">Jombang, Jawa Timur 61419</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4 group">
+                                        <div class="bg-yellow-500/20 p-2.5 rounded-xl border border-yellow-400/30 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-slate-900 transition-colors">
+                                            <i class="fas fa-phone-alt text-lg group-hover:animate-vibrate"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+62 321 861205</p>
+                                            <p class="text-xs text-slate-400">Jam Kerja: 08:00 - 15:00 WIB</p>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                {{-- Social Media Badge --}}
+                                <div class="bg-slate-900/60 p-4 rounded-3xl border border-slate-700/50 backdrop-blur-md shrink-0">
+                                    <p class="text-[10px] text-center text-slate-400 font-bold uppercase mb-3 tracking-widest">Ikuti Kami</p>
+                                    <div class="flex gap-2">
+                                        <a href="https://www.facebook.com/humaslapasjombang/" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 text-slate-300 hover:bg-[#1877F2] hover:text-white hover:shadow-[0_0_15px_rgba(24,119,242,0.5)] border border-white/5 transition-all duration-300 transform hover:-translate-y-1">
+                                            <i class="fab fa-facebook-f"></i>
+                                        </a>
+                                        <a href="https://www.instagram.com/lapas_jombang/" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 text-slate-300 hover:bg-gradient-to-tr hover:from-[#f09433] hover:via-[#dc2743] hover:to-[#bc1888] hover:text-white hover:shadow-[0_0_15px_rgba(220,39,67,0.5)] border border-white/5 transition-all duration-300 transform hover:-translate-y-1">
+                                            <i class="fab fa-instagram"></i>
+                                        </a>
+                                        <a href="https://twitter.com/lapas_jombang" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 text-slate-300 hover:bg-[#1DA1F2] hover:text-white hover:shadow-[0_0_15px_rgba(29,161,242,0.5)] border border-white/5 transition-all duration-300 transform hover:-translate-y-1">
+                                            <i class="fab fa-twitter"></i>
+                                        </a>
+                                        <a href="https://www.youtube.com/@humaslapasjombang" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/5 text-slate-300 hover:bg-[#FF0000] hover:text-white hover:shadow-[0_0_15px_rgba(255,0,0,0.5)] border border-white/5 transition-all duration-300 transform hover:-translate-y-1">
+                                            <i class="fab fa-youtube"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
         
-                                                {{-- KOLOM KANAN: Informasi Kontak --}}
-                                                <div class="flex flex-col justify-center space-y-8">
-                        
-                                                    {{-- Logo & Judul --}}
-                                                    <div>
-                                                        <div class="flex items-center gap-3 mb-4">
-                                                            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-12 w-auto drop-shadow-lg">
-                                                            <div class="min-h-12 flex flex-col justify-center">
-                                                                <h3 class="text-xl font-bold text-white tracking-wide">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN</h3>
-                                                                <p class="text-xs text-yellow-500 font-semibold tracking-wider uppercase">Republik Indonesia</p>
-                                                            </div>
-                                                        </div>
-                                                        <p class="text-slate-400 text-sm leading-relaxed max-w-md">
-                                                            Melayani dengan sepenuh hati, mewujudkan pemasyarakatan yang PRIMA (Profesional, Responsif, Integritas, Modern, Akuntabel).
-                                                        </p>
-                                                    </div>
-                        
-                                                    {{-- NEW: Unit Utama and Internal Links --}}
-                                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                                                        <div>
-                                                            <h4 class="text-lg font-bold text-white mb-4">Unit Utama</h4>
-                                                            <ul class="space-y-2">
-                                                                <li><a href="https://www.kemenkumham.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Sekretariat Jenderal</a></li>
-                                                                <li><a href="http://www.ditjenpas.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Ditjen PAS</a></li>
-                                                                <li><a href="https://imigrasi.go.id/id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Ditjen Imigrasi</a></li>
-                                                                <li><a href="#" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Inspektorat Jenderal</a></li>
-                                                                <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">BPSDM</a></li>
-                                                            </ul>
-                                                        </div>
-                                                        <div>
-                                                            <h4 class="text-lg font-bold text-white mb-4">Internal Links</h4>
-                                                            <ul class="space-y-2">
-                                                                <li><a href="{{ route('kunjungan.cek_status') }}" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Cek Status Kunjungan</a></li>
-                                                                <li><a href="{{ route('display.antrian') }}" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Display Antrian</a></li>
-                                                                <li><a href="{{ route('survey.create') }}" class="text-slate-400 hover:text-yellow-400 transition-colors duration-300 text-sm">Survei IKM</a></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    {{-- END NEW --}}
-                        
-                                                    {{-- Detail Kontak --}}
-                                                    <div class="space-y-4">
-                                                        <div class="flex items-start gap-4 group">
-                                                            <div class="bg-slate-800/50 p-3 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-slate-900 transition-all duration-300 border border-slate-700/30">
-                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <p class="text-xs text-slate-400 font-bold uppercase mb-1">Alamat Kantor</p>
-                                                                <p class="text-white font-medium leading-snug">
-                                                                    Jl. KH. Wahid Hasyim No.155<br>
-                                                                    Jombang, Jawa Timur 61419
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                        
-                                                        <div class="flex items-start gap-4 group">
-                                                            <div class="bg-slate-800/50 p-3 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300 border border-slate-700/30">
-                                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                                                </svg>
-                                                            </div>
-                                                            <div>
-                                                                <p class="text-xs text-slate-400 font-bold uppercase mb-1">Telepon & Fax</p>
-                                                                <p class="text-white font-medium hover:text-yellow-400 transition-colors duration-300 cursor-pointer">
-                                                                    +62 321 861205
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                        
-                                                    {{-- Social Media Icons --}}
-                                                    <div class="">
-                                                        <p class="text-sm text-slate-300 font-bold uppercase mb-4">Ikuti Media Sosial Kami</p>
-                                                        <div class="flex flex-wrap gap-4">
-                                                            <a href="https://www.facebook.com/humaslapasjombang/" aria-label="Facebook" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1877F2] hover:text-white border border-slate-700/30 hover:border-[#1877F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                                                <i class="fab fa-facebook-f text-xl"></i>
-                                                            </a>
-                                                            <a href="https://twitter.com/lapas_jombang" aria-label="Twitter" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#1DA1F2] hover:text-white border border-slate-700/30 hover:border-[#1DA1F2] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                                                <i class="fab fa-twitter text-xl"></i>
-                                                            </a>
-                                                            <a href="https://www.instagram.com/lapas_jombang/" aria-label="Instagram" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-gradient-to-tr hover:from-yellow-500 hover:via-red-500 hover:to-purple-500 hover:text-white border border-slate-700/30 hover:border-pink-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                                                <i class="fab fa-instagram text-xl"></i>
-                                                            </a>
-                                                            <a href="https://www.youtube.com/@humaslapasjombang" aria-label="YouTube" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-[#FF0000] hover:text-white border border-slate-700/30 hover:border-[#FF0000] transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                                                <i class="fab fa-youtube text-xl"></i>
-                                                            </a>
-                                                            <a href="https://www.tiktok.com/@lapas_jombang" aria-label="TikTok" class="w-11 h-11 flex items-center justify-center rounded-full bg-slate-800/50 text-slate-400 hover:bg-black hover:text-white border border-slate-700/30 hover:border-slate-500 transition-all duration-300 transform hover:scale-110 shadow-lg">
-                                                                <i class="fab fa-tiktok text-xl"></i>
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>                    </div>
-        
-                    {{-- Copyright Bawah --}}
-                    <div class="mt-12 pt-8 border-t border-slate-800/50 text-center text-slate-500 text-sm">
-                        <p>© {{ date('Y') }} Lapas Kelas IIB Jombang. All rights reserved.</p>
-                        <p class="mt-2 text-xs">Developed by Tim IT</p>
+                    {{-- Copyright --}}
+                    <div class="mt-16 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
+                        <p class="text-slate-500 font-semibold text-xs drop-shadow-sm tracking-wide">
+                            © {{ date('Y') }} <span class="text-slate-300">Lapas Kelas IIB Jombang</span>. Hak Cipta Dilindungi Undang-Undang.
+                        </p>
+                        <p class="text-[10px] text-slate-600 uppercase font-black tracking-widest flex items-center gap-2">
+                            <span>Sistem & Navigasi</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                            <span>Powered by Tim IT</span>
+                        </p>
                     </div>
                 </div>
             </footer>
