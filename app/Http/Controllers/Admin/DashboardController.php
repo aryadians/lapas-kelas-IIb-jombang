@@ -27,9 +27,13 @@ class DashboardController extends Controller
         $latestNews = News::latest()->take(5)->get();
         
         // Data Kunjungan
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
         $totalPendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->count();
-        $totalApprovedKunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->count(); // Add this line
-        $totalApprovedToday = Kunjungan::where('status', KunjunganStatus::APPROVED)->whereDate('updated_at', Carbon::today())->count();
+        $totalApprovedKunjungans = Kunjungan::whereIn('status', $validStatuses)->count();
+        $totalApprovedToday = Kunjungan::whereIn('status', $validStatuses)->whereDate('updated_at', Carbon::today())->count();
         $totalRejectedKunjungans = Kunjungan::where('status', KunjunganStatus::REJECTED)->count();
         $totalKunjungans = Kunjungan::count();
         $pendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->latest()->take(5)->get();
@@ -187,10 +191,15 @@ class DashboardController extends Controller
 
     public function getStats()
     {
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
+
         // Real-time stats
         $totalPendingKunjungans = Kunjungan::where('status', KunjunganStatus::PENDING)->count();
-        $totalApprovedKunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->count();
-        $totalApprovedToday = Kunjungan::where('status', KunjunganStatus::APPROVED)->whereDate('updated_at', Carbon::today())->count();
+        $totalApprovedKunjungans = Kunjungan::whereIn('status', $validStatuses)->count();
+        $totalApprovedToday = Kunjungan::whereIn('status', $validStatuses)->whereDate('updated_at', Carbon::today())->count();
         $totalRejectedKunjungans = Kunjungan::where('status', KunjunganStatus::REJECTED)->count();
         $totalKunjungans = Kunjungan::count();
         $totalNews = News::count();
@@ -270,9 +279,13 @@ class DashboardController extends Controller
     public function rekapitulasi(Request $request)
     {
         $registrationType = $request->input('registration_type', 'all');
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
 
         // 1. Visitor Gender Statistics (Primary Visitor)
-        $genderCountsQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+        $genderCountsQuery = Kunjungan::whereIn('status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
                 return $query->where('registration_type', $registrationType);
             });
@@ -288,7 +301,7 @@ class DashboardController extends Controller
         ];
 
         // 2. Most Visited WBP
-        $mostVisitedWbpQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+        $mostVisitedWbpQuery = Kunjungan::whereIn('status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
                 return $query->where('registration_type', $registrationType);
             });
@@ -301,7 +314,7 @@ class DashboardController extends Controller
             ->get();
 
         // 3. Busiest Visit Sessions
-        $sessionCountsQuery = Kunjungan::where('status', KunjunganStatus::APPROVED)
+        $sessionCountsQuery = Kunjungan::whereIn('status', $validStatuses)
             ->when($registrationType !== 'all', function ($query) use ($registrationType) {
                 return $query->where('registration_type', $registrationType);
             });
@@ -323,7 +336,11 @@ class DashboardController extends Controller
 
     public function demografi(Request $request)
     {
-        $kunjungans = Kunjungan::where('status', KunjunganStatus::APPROVED)->get();
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
+        $kunjungans = Kunjungan::whereIn('status', $validStatuses)->get();
 
         // 1. Age Distribution
         $ageGroups = [
@@ -394,7 +411,12 @@ class DashboardController extends Controller
 
     public function barangBawaan(Request $request)
     {
-        $itemCounts = Kunjungan::where('status', KunjunganStatus::APPROVED)
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
+        
+        $itemCounts = Kunjungan::whereIn('status', $validStatuses)
             ->whereNotNull('barang_bawaan')
             ->where('barang_bawaan', '!=', '')
             ->get()

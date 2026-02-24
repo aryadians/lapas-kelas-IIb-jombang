@@ -885,15 +885,15 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    // --- LOGIKA POPUP BERHASIL (MENGGUNAKAN SETTIMEOUT AGAR STABIL) ---
+    // --- LOGIKA POPUP BERHASIL (MENGGUNAKAN SETTIMEOUT AGAR STABIL DI SPA/TURBO) ---
     @if(session('success'))
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                @php
-                    $kunjunganId = session('kunjungan_id');
-                    $statusUrl = $kunjunganId ? route('kunjungan.status', $kunjunganId) : null;
-                @endphp
-                
+        setTimeout(function() {
+            @php
+                $kunjunganId = session('kunjungan_id');
+                $statusUrl = $kunjunganId ? route('kunjungan.status', $kunjunganId) : null;
+            @endphp
+            
+            if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     icon: 'success',
                     title: 'Pendaftaran Berhasil!',
@@ -917,8 +917,8 @@
                         window.location.href = "{{ $statusUrl }}";
                     }
                 });
-            }, 500); 
-        });
+            }
+        }, 500); 
     @endif
 
     document.addEventListener('DOMContentLoaded', function() {

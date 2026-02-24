@@ -111,7 +111,130 @@
         </div>
     </div>
 
-    {{-- 4. CHARTS ROW 2 --}}
+    {{-- 4. PANTUAN KUOTA HARI INI --}}
+    <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-350 border-l-4 border-blue-500 mb-8">
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h3 class="font-black text-slate-800 text-lg">Pantauan Kuota Hari Ini</h3>
+                <p class="text-sm text-slate-500 mt-0.5 flex items-center gap-1.5">
+                    <i class="far fa-calendar-alt text-blue-400"></i>
+                    {{ \Carbon\Carbon::today()->translatedFormat('l, d F Y') }}
+                </p>
+            </div>
+            @if($isMonday || $isVisitingDay)
+            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest border border-emerald-200 animate-pulse">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full"></span> Buka Layanan
+            </span>
+            @else
+            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-red-100 text-red-600 rounded-full text-xs font-black uppercase tracking-widest border border-red-200">
+                <span class="w-2 h-2 bg-red-500 rounded-full"></span> Tutup Layanan
+            </span>
+            @endif
+        </div>
+
+        @if($scheduleToday && $scheduleToday->is_open)
+            <div class="space-y-6 mt-6">
+                {{-- ONLINE --}}
+                <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2">Pendaftaran Online</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @if($isMonday)
+                        @php $persenPagi = ($kuotaPagi > 0) ? ($pendaftarPagi / $kuotaPagi) * 100 : 0; @endphp
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-sun text-amber-400 text-sm"></i> Sesi Pagi
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarPagi }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaPagi }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-3 rounded-full transition-all duration-1000" style="width: {{ $persenPagi }}%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 text-right font-bold">{{ round($persenPagi) }}% terisi</p>
+                        </div>
+                        @php $persenSiang = ($kuotaSiang > 0) ? ($pendaftarSiang / $kuotaSiang) * 100 : 0; @endphp
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-cloud-sun text-orange-400 text-sm"></i> Sesi Siang
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarSiang }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaSiang }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-3 rounded-full transition-all duration-1000" style="width: {{ $persenSiang }}%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 text-right font-bold">{{ round($persenSiang) }}% terisi</p>
+                        </div>
+                    @else
+                        @php $persenBiasa = ($kuotaBiasa > 0) ? ($pendaftarBiasa / $kuotaBiasa) * 100 : 0; @endphp
+                        <div class="md:col-span-2 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-users text-blue-400 text-sm"></i> Total Kunjungan Online
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarBiasa }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaBiasa }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-1000" style="width: {{ $persenBiasa }}%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 text-right font-bold">{{ round($persenBiasa) }}% terisi</p>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- OFFLINE --}}
+                <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 pb-2 pt-4">Pendaftaran Offline (Pemberian Nomor Antrian)</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @if($isMonday)
+                        @php $persenOfflinePagi = ($kuotaOfflinePagi > 0) ? ($pendaftarOfflinePagi / $kuotaOfflinePagi) * 100 : 0; @endphp
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-sun text-amber-400 text-sm"></i> Sesi Pagi
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarOfflinePagi }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflinePagi }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-2.5 rounded-full" style="width: {{ min(100,$persenOfflinePagi) }}%"></div>
+                            </div>
+                        </div>
+                        @php $persenOfflineSiang = ($kuotaOfflineSiang > 0) ? ($pendaftarOfflineSiang / $kuotaOfflineSiang) * 100 : 0; @endphp
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-cloud-sun text-orange-400 text-sm"></i> Sesi Siang
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarOfflineSiang }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflineSiang }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-gradient-to-r from-orange-400 to-rose-500 h-2.5 rounded-full" style="width: {{ min(100,$persenOfflineSiang) }}%"></div>
+                            </div>
+                        </div>
+                    @else
+                        @php $persenOfflineBiasa = ($kuotaOfflineBiasa > 0) ? ($pendaftarOfflineBiasa / $kuotaOfflineBiasa) * 100 : 0; @endphp
+                        <div class="md:col-span-2 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-600 flex items-center gap-1.5">
+                                    <i class="fas fa-users text-emerald-500 text-sm"></i> Total Kunjungan Offline
+                                </span>
+                                <span class="text-base font-black text-slate-800">{{ $pendaftarOfflineBiasa }} <span class="text-slate-400 font-bold text-xs">/ {{ $kuotaOfflineBiasa }}</span></span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-emerald-400 to-teal-600 h-3 rounded-full" style="width: {{ min(100,$persenOfflineBiasa) }}%"></div>
+                            </div>
+                            <p class="text-xs text-slate-400 text-right font-bold">{{ round($persenOfflineBiasa) }}% terisi</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @else
+            <div class="bg-slate-50 border border-slate-100 rounded-xl p-6 text-center mt-6">
+                <i class="fas fa-calendar-times text-slate-300 text-4xl mb-3"></i>
+                <p class="text-slate-500 font-medium">Layanan kunjungan hari ini ditutup atau tidak ada jadwal.</p>
+            </div>
+        @endif
+    </div>
+
+    {{-- 5. CHARTS ROW 2 --}}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="card-3d glass-panel p-4 sm:p-6 rounded-xl shadow-lg border animate__animated animate__fadeInUp delay-400">
             <h3 class="text-xl font-bold text-slate-800 mb-4">Demografi Pengunjung (Gender)</h3>

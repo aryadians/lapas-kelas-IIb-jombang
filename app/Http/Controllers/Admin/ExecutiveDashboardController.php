@@ -13,17 +13,82 @@ class ExecutiveDashboardController extends Controller
 {
     public function index()
     {
-        return view('admin.executive.index');
+        $today = Carbon::today();
+        $isMonday = $today->isMonday();
+        $isVisitingDay = $today->isTuesday() || $today->isWednesday() || $today->isThursday();
+        
+        $pendaftarPagi = $kuotaPagi = $pendaftarSiang = $kuotaSiang = $pendaftarBiasa = $kuotaBiasa = null;
+        $pendaftarOfflinePagi = $kuotaOfflinePagi = $pendaftarOfflineSiang = $kuotaOfflineSiang = $pendaftarOfflineBiasa = $kuotaOfflineBiasa = null;
+        $pendaftarOfflineTotal = 0;
+        $kuotaOfflineTotal = 0;
+
+        $scheduleToday = \App\Models\VisitSchedule::where('day_of_week', $today->dayOfWeek)->first();
+
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
+
+        if ($isMonday && $scheduleToday && $scheduleToday->is_open) {
+            // Online
+            $pendaftarPagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->whereIn('status', $validStatuses)->where('registration_type', 'online')->count();
+            $kuotaPagi = $scheduleToday->quota_online_morning;
+            $pendaftarSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->whereIn('status', $validStatuses)->where('registration_type', 'online')->count();
+            $kuotaSiang = $scheduleToday->quota_online_afternoon;
+            
+            // Offline
+            $pendaftarOfflinePagi = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'pagi')->whereIn('status', $validStatuses)->where('registration_type', 'offline')->count();
+            $kuotaOfflinePagi = $scheduleToday->quota_offline_morning;
+            $pendaftarOfflineSiang = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('sesi', 'siang')->whereIn('status', $validStatuses)->where('registration_type', 'offline')->count();
+            $kuotaOfflineSiang = $scheduleToday->quota_offline_afternoon;
+
+            $pendaftarOfflineTotal = $pendaftarOfflinePagi + $pendaftarOfflineSiang;
+            $kuotaOfflineTotal = $kuotaOfflinePagi + $kuotaOfflineSiang;
+
+        } elseif ($isVisitingDay && $scheduleToday && $scheduleToday->is_open) {
+            // Online
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'online')->count();
+            $kuotaBiasa = $scheduleToday->quota_online_morning; 
+            
+            // Offline
+            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'offline')->count();
+            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning; 
+
+            $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
+            $kuotaOfflineTotal = $kuotaOfflineBiasa;
+        }
+
+        return view('admin.executive.index', compact(
+            'isMonday',
+            'isVisitingDay',
+            'scheduleToday',
+            'pendaftarPagi',
+            'kuotaPagi',
+            'pendaftarSiang',
+            'kuotaSiang',
+            'pendaftarBiasa',
+            'kuotaBiasa',
+            'pendaftarOfflinePagi',
+            'kuotaOfflinePagi',
+            'pendaftarOfflineSiang',
+            'kuotaOfflineSiang',
+            'pendaftarOfflineBiasa',
+            'kuotaOfflineBiasa',
+            'pendaftarOfflineTotal',
+            'kuotaOfflineTotal'
+        ));
     }
 
     public function kunjunganTrend()
     {
+        $validStatuses = ['approved', 'called', 'in_progress', 'completed'];
+
         // Monthly Trend
         $monthlyData = Kunjungan::select(
                 DB::raw('DATE_FORMAT(tanggal_kunjungan, "%Y-%m") as month'),
                 DB::raw('count(*) as count')
             )
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->where('tanggal_kunjungan', '>=', Carbon::now()->subYear())
             ->groupBy('month')
             ->orderBy('month', 'asc')
@@ -44,7 +109,7 @@ class ExecutiveDashboardController extends Controller
                 DB::raw('DATE(tanggal_kunjungan) as day'),
                 DB::raw('count(*) as count')
             )
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->where('tanggal_kunjungan', '>=', Carbon::now()->subDays(30))
             ->groupBy('day')
             ->orderBy('day', 'asc')
@@ -74,11 +139,12 @@ class ExecutiveDashboardController extends Controller
 
     public function kunjunganHeatmap()
     {
+        $validStatuses = ['approved', 'called', 'in_progress', 'completed'];
         $heatmapData = Kunjungan::select(
                 DB::raw('HOUR(created_at) as hour'),
                 DB::raw('count(*) as count')
             )
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('hour')
             ->orderBy('hour', 'asc')
             ->pluck('count', 'hour');
@@ -95,15 +161,17 @@ class ExecutiveDashboardController extends Controller
 
     public function demographics()
     {
+        $validStatuses = ['approved', 'called', 'in_progress', 'completed'];
+
         // Gender
         $genderData = Kunjungan::select('jenis_kelamin', DB::raw('count(*) as count'))
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('jenis_kelamin')
             ->pluck('count', 'jenis_kelamin');
 
         // Relationship
         $relationshipData = Kunjungan::select('hubungan', DB::raw('count(*) as count'))
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('hubungan')
             ->pluck('count', 'hubungan');
 
@@ -121,24 +189,26 @@ class ExecutiveDashboardController extends Controller
 
     public function getKpis()
     {
-        $totalVisits30d = Kunjungan::where('status', 'approved')
+        $validStatuses = ['approved', 'called', 'in_progress', 'completed'];
+
+        $totalVisits30d = Kunjungan::whereIn('status', $validStatuses)
             ->where('tanggal_kunjungan', '>=', Carbon::now()->subDays(30))
             ->count();
 
         $busiestDay = Kunjungan::select(DB::raw('DAYNAME(tanggal_kunjungan) as day'), DB::raw('count(*) as count'))
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('day')
             ->orderBy('count', 'desc')
             ->first();
 
         $busiestHour = Kunjungan::select(DB::raw('HOUR(created_at) as hour'), DB::raw('count(*) as count'))
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('hour')
             ->orderBy('count', 'desc')
             ->first();
 
         $topRelationship = Kunjungan::select('hubungan', DB::raw('count(*) as count'))
-            ->where('status', 'approved')
+            ->whereIn('status', $validStatuses)
             ->groupBy('hubungan')
             ->orderBy('count', 'desc')
             ->first();
@@ -163,7 +233,8 @@ class ExecutiveDashboardController extends Controller
 
     public function getVisitorDemographics()
     {
-        $kunjungans = Kunjungan::where('status', 'approved')->get(['nik_ktp', 'alamat_pengunjung']);
+        $validStatuses = ['approved', 'called', 'in_progress', 'completed'];
+        $kunjungans = Kunjungan::whereIn('status', $validStatuses)->get(['nik_ktp', 'alamat_pengunjung']);
 
         // 1. Age Distribution
         $ageGroups = ['< 20' => 0, '20–30' => 0, '30–40' => 0, '40–50' => 0, '50–60' => 0, '> 60' => 0];
@@ -246,7 +317,12 @@ class ExecutiveDashboardController extends Controller
 
     public function getMostVisitedWbp()
     {
-        $mostVisitedWbp = Kunjungan::where('status', KunjunganStatus::APPROVED)
+        $validStatuses = [
+            KunjunganStatus::APPROVED, KunjunganStatus::CALLED, 
+            KunjunganStatus::IN_PROGRESS, KunjunganStatus::COMPLETED
+        ];
+
+        $mostVisitedWbp = Kunjungan::whereIn('status', $validStatuses)
             ->join('wbps', 'kunjungans.wbp_id', '=', 'wbps.id')
             ->select('wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar', DB::raw('count(kunjungans.wbp_id) as visit_count'))
             ->groupBy('kunjungans.wbp_id', 'wbps.nama', 'wbps.no_registrasi', 'wbps.blok', 'wbps.kamar')

@@ -366,8 +366,15 @@ class KunjunganController extends Controller
      */
     public function kalenderData()
     {
-        // 1. Ambil hanya kunjungan yang sudah disetujui.
-        $kunjungans = Kunjungan::with(['wbp', 'profilPengunjung'])->where('status', KunjunganStatus::APPROVED)->get();
+        // 1. Ambil semua kunjungan yang valid (Disetujui, Dipanggil, Sedang Berlangsung, Selesai)
+        $validStatuses = [
+            KunjunganStatus::APPROVED,
+            KunjunganStatus::CALLED,
+            KunjunganStatus::IN_PROGRESS,
+            KunjunganStatus::COMPLETED
+        ];
+        
+        $kunjungans = Kunjungan::with(['wbp', 'profilPengunjung'])->whereIn('status', $validStatuses)->get();
 
         $events = [];
 
