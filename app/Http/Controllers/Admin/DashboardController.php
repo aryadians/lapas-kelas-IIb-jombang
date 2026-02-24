@@ -371,17 +371,45 @@ class DashboardController extends Controller
             'Perempuan' => $genderCounts['Perempuan'] ?? 0,
         ];
 
-        // 3. City Distribution
-        $cityCounts = $kunjungans->pluck('alamat_pengunjung')
+        // 3. Kecamatan Distribution — Parsing dengan regex kuat
+        $kecamatanCounts = $kunjungans->pluck('alamat_pengunjung')
             ->map(function ($alamat) {
-                $parts = explode(' ', $alamat);
-                return trim(end($parts));
+                if (!$alamat) return 'Tidak Diketahui';
+
+                // Tangkap: "Kec. Xxx", "Kecamatan Xxx", "Kec Xxx", "Kec.Xxx" dst.
+                if (preg_match('/\bKec(?:amatan)?[\.\s:]*([A-Za-z0-9\s\-]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                    $kec = trim(preg_replace('/\s+/', ' ', $m[1]));
+                    $words = explode(' ', $kec);
+                    $kec = implode(' ', array_slice($words, 0, 3));
+                    return 'Kec. ' . ucwords(strtolower($kec));
+                }
+
+                return 'Tidak Teridentifikasi';
             })
             ->countBy()
             ->sortDesc()
             ->take(10);
 
-        return view('admin.rekapitulasi.demografi', compact('ageGroups', 'visitorGender', 'cityCounts'));
+        // 4. Desa/Kelurahan Distribution
+        $desaCounts = $kunjungans->pluck('alamat_pengunjung')
+            ->map(function ($alamat) {
+                if (!$alamat) return 'Tidak Diketahui';
+
+                if (preg_match('/\b(?:Desa|Ds|Kel(?:urahan)?)[\.\s:]*([A-Za-z0-9\s\-]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                    $desa = trim(preg_replace('/\s+/', ' ', $m[1]));
+                    $words = explode(' ', $desa);
+                    $desa = implode(' ', array_slice($words, 0, 3));
+                    $prefix = preg_match('/\bKel/i', $m[0]) ? 'Kel. ' : 'Ds. ';
+                    return $prefix . ucwords(strtolower($desa));
+                }
+
+                return 'Tidak Teridentifikasi';
+            })
+            ->countBy()
+            ->sortDesc()
+            ->take(10);
+
+        return view('admin.rekapitulasi.demografi', compact('ageGroups', 'visitorGender', 'kecamatanCounts', 'desaCounts'));
     }
 
     private function getAgeFromNik($nik)

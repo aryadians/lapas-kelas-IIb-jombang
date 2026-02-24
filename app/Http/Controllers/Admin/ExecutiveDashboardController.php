@@ -255,8 +255,8 @@ class ExecutiveDashboardController extends Controller
             ->map(function ($alamat) {
                 if (!$alamat) return 'Tidak Diketahui';
 
-                // Coba tangkap: "Kec. Xxx", "Kecamatan Xxx", "Kec Xxx" (inkl. multi-kata)
-                if (preg_match('/\bKec(?:amatan)?[.\s]+([A-Za-z\s]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                // Tangkap: "Kec. Xxx", "Kecamatan Xxx", "Kec Xxx", "Kec.Xxx" dst.
+                if (preg_match('/\bKec(?:amatan)?[\.\s:]*([A-Za-z0-9\s\-]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
                     $kec = trim(preg_replace('/\s+/', ' ', $m[1]));
                     // Batas max 3 kata untuk kecamatan
                     $words = explode(' ', $kec);
@@ -275,13 +275,13 @@ class ExecutiveDashboardController extends Controller
             ->map(function ($alamat) {
                 if (!$alamat) return 'Tidak Diketahui';
 
-                // Coba tangkap: "Desa Xxx", "Kel. Xxx", "Kelurahan Xxx", "Ds. Xxx"
-                if (preg_match('/\b(?:Desa|Ds\.?|Kel(?:urahan)?\.?)[.\s]+([A-Za-z\s]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
+                // Tangkap: "Desa Xxx", "Kel. Xxx", "Kelurahan Xxx", "Ds. Xxx", "Ds.Xxx" dst.
+                if (preg_match('/\b(?:Desa|Ds|Kel(?:urahan)?)[\.\s:]*([A-Za-z0-9\s\-]+?)(?:\s*[,\/\n]|$)/i', $alamat, $m)) {
                     $desa = trim(preg_replace('/\s+/', ' ', $m[1]));
                     $words = explode(' ', $desa);
                     $desa = implode(' ', array_slice($words, 0, 3));
 
-                    // Tentukan prefix
+                    // Tentukan prefix (Default Ds. jika dari Desa/Ds, Kel. jika dari Kelurahan)
                     $prefix = preg_match('/\bKel/i', $m[0]) ? 'Kel. ' : 'Ds. ';
                     return $prefix . ucwords(strtolower($desa));
                 }

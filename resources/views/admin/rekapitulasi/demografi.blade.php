@@ -9,8 +9,8 @@
     $lakiTotal   = $visitorGender['Laki-laki'] ?? 0;
     $wanitaTotal = $visitorGender['Perempuan'] ?? 0;
     $totalGender = $lakiTotal + $wanitaTotal;
-    $topCity     = $cityCounts->keys()->first() ?? '—';
-    $topCityVal  = $cityCounts->values()->first() ?? 0;
+    $topKec      = $kecamatanCounts->keys()->first() ?? '—';
+    $topKecVal   = $kecamatanCounts->values()->first() ?? 0;
 @endphp
 
 <div class="space-y-6 pb-12">
@@ -46,8 +46,8 @@
         </div>
         <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
             <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mb-3"><i class="fas fa-map-pin"></i></div>
-            <p class="text-base font-black text-slate-800 leading-tight">{{ Str::limit($topCity, 18) }}</p>
-            <p class="text-xs text-slate-400 mt-0.5">Kota terbanyak ({{ $topCityVal }})</p>
+            <p class="text-base font-black text-slate-800 leading-tight">{{ Str::limit($topKec, 18) }}</p>
+            <p class="text-xs text-slate-400 mt-0.5">Top Kecamatan ({{ $topKecVal }})</p>
         </div>
     </div>
 
@@ -65,29 +65,60 @@
         </div>
     </div>
 
-    {{-- KOTA/KECAMATAN --}}
+    {{-- KECAMATAN --}}
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h3 class="font-black text-slate-800 mb-1">Top 10 Kota / Kecamatan Asal</h3>
-        <p class="text-xs text-slate-400 mb-5">Berdasarkan field alamat pengunjung</p>
+        <h3 class="font-black text-slate-800 mb-1 text-lg">Top 10 Kecamatan Asal</h3>
+        <p class="text-xs text-slate-400 mb-6">Analisis wilayah tingkat kecamatan pendaftar</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            <div class="h-80"><canvas id="cityChart"></canvas></div>
-            {{-- Ranking list di sebelah kanan --}}
+            <div class="h-80"><canvas id="kecChart"></canvas></div>
+            {{-- Ranking list --}}
             <div class="space-y-2.5">
-                @php $cityMax = $cityCounts->values()->first() ?? 1; $ci = 0; @endphp
-                @foreach($cityCounts->take(10) as $city => $count)
-                @php $ci++; @endphp
+                @php $kecMax = $kecamatanCounts->values()->first() ?? 1; $ki = 0; @endphp
+                @foreach($kecamatanCounts->take(10) as $kec => $count)
+                @php $ki++; @endphp
                 <div class="flex items-center gap-3">
                     <span class="w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center flex-shrink-0
-                        {{ $ci === 1 ? 'bg-amber-400 text-white' : ($ci === 2 ? 'bg-slate-400 text-white' : ($ci === 3 ? 'bg-orange-400 text-white' : 'bg-slate-200 text-slate-600')) }}">
-                        {{ $ci }}
+                        {{ $ki === 1 ? 'bg-amber-400 text-white' : ($ki === 2 ? 'bg-slate-400 text-white' : ($ki === 3 ? 'bg-orange-400 text-white' : 'bg-slate-200 text-slate-600')) }}">
+                        {{ $ki }}
                     </span>
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-bold text-slate-700 truncate" title="{{ $city }}">{{ $city }}</span>
+                            <span class="text-xs font-bold text-slate-700 truncate" title="{{ $kec }}">{{ $kec }}</span>
                             <span class="text-xs font-black text-slate-500 ml-2 flex-shrink-0">{{ $count }}</span>
                         </div>
                         <div class="bg-slate-100 rounded-full h-1.5">
-                            <div class="h-1.5 rounded-full bg-violet-500" style="width: {{ $cityMax > 0 ? round($count/$cityMax*100) : 0 }}%"></div>
+                            <div class="h-1.5 rounded-full bg-violet-600" style="width: {{ $kecMax > 0 ? round($count/$kecMax*100) : 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    {{-- DESA / KELURAHAN --}}
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <h3 class="font-black text-slate-800 mb-1 text-lg">Top 10 Desa / Kelurahan Asal</h3>
+        <p class="text-xs text-slate-400 mb-6">Analisis wilayah tingkat desa/kelurahan</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div class="h-80"><canvas id="desaChart"></canvas></div>
+            {{-- Ranking list --}}
+            <div class="space-y-2.5">
+                @php $desaMax = $desaCounts->values()->first() ?? 1; $di = 0; @endphp
+                @foreach($desaCounts->take(10) as $desa => $count)
+                @php $di++; @endphp
+                <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 rounded-full text-[11px] font-black flex items-center justify-center flex-shrink-0
+                        {{ $di === 1 ? 'bg-indigo-400 text-white' : ($di === 2 ? 'bg-slate-400 text-white' : ($di === 3 ? 'bg-blue-400 text-white' : 'bg-slate-200 text-slate-600')) }}">
+                        {{ $di }}
+                    </span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-slate-700 truncate" title="{{ $desa }}">{{ $desa }}</span>
+                            <span class="text-xs font-black text-slate-500 ml-2 flex-shrink-0">{{ $count }}</span>
+                        </div>
+                        <div class="bg-slate-100 rounded-full h-1.5">
+                            <div class="h-1.5 rounded-full bg-indigo-500" style="width: {{ $desaMax > 0 ? round($count/$desaMax*100) : 0 }}%"></div>
                         </div>
                     </div>
                 </div>
@@ -126,12 +157,26 @@ document.addEventListener('DOMContentLoaded', () => {
             plugins: { legend: { position: 'bottom', labels: { font: { size: 12, weight: 'bold' }, padding: 20 } }, tooltip: tooltipOpt } }
     });
 
-    new Chart(document.getElementById('cityChart'), {
+    // KECAMATAN CHART
+    new Chart(document.getElementById('kecChart'), {
         type: 'bar',
         data: {
-            labels: {!! json_encode($cityCounts->keys()) !!},
-            datasets: [{ data: {!! json_encode($cityCounts->values()) !!},
+            labels: {!! json_encode($kecamatanCounts->keys()) !!},
+            datasets: [{ data: {!! json_encode($kecamatanCounts->values()) !!},
                 backgroundColor: 'rgba(139,92,246,0.75)', borderRadius: 8, borderWidth: 0 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: tooltipOpt },
+            scales: { x: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: 'rgba(226,232,240,0.6)' } }, y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' } } } } }
+    });
+
+    // DESA CHART
+    new Chart(document.getElementById('desaChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($desaCounts->keys()) !!},
+            datasets: [{ data: {!! json_encode($desaCounts->values()) !!},
+                backgroundColor: 'rgba(79, 70, 229, 0.75)', borderRadius: 8, borderWidth: 0 }]
         },
         options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false }, tooltip: tooltipOpt },
