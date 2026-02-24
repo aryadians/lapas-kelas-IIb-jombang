@@ -10,7 +10,7 @@
             🛡️ LAPAS KELAS IIB JOMBANG
         </span>
         <span style="background: #2563eb; color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
-            ⚖️ KEMENKUMHAM RI
+            ⚖️ KEMINIPAS RI
         </span>
     </div>
     <h1 style="color: #fbbf24; text-align: center; margin: 10px 0 5px 0; font-size: 24px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Reset Password Akun</h1>

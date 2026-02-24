@@ -485,7 +485,7 @@
                                         <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16 w-auto relative transform group-hover:scale-105 transition-transform duration-500">
                                     </div>
                                     <div class="flex flex-col justify-center border-l-2 border-white/20 pl-4 py-1">
-                                        <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">Kemenkumham<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>
+                                        <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">Keminipas<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>
                                     </div>
                                 </div>
                                 <p class="text-slate-300 text-base md:text-lg leading-relaxed max-w-xl font-light drop-shadow-sm border-l-4 border-blue-500 pl-4 py-1">
@@ -498,7 +498,7 @@
                                 <div>
                                     <h4 class="text-sm font-black text-yellow-500 mb-4 tracking-widest uppercase border-b border-white/10 pb-3">Unit Utama</h4>
                                     <ul class="space-y-3">
-                                        <li><a href="https://www.kemenkumham.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Sekretariat Jenderal</a></li>
+                                        <li><a href="https://www.keminipas.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Sekretariat Jenderal</a></li>
                                         <li><a href="http://www.ditjenpas.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Ditjen PAS</a></li>
                                         <li><a href="https://imigrasi.go.id/id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>Ditjen Imigrasi</a></li>
                                         <li><a href="https://bpsdm.kemenimipas.go.id/" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-chevron-right text-[10px] text-blue-500 mr-3 group-hover:translate-x-1 group-hover:text-yellow-400 transition-all"></i>BPSDM</a></li>
