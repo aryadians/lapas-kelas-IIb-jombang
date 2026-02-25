@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class BannerController extends Controller
 {
@@ -29,18 +30,28 @@ class BannerController extends Controller
         ]);
 
         $file = $request->file('file');
-        $extension = $file->getClientOriginalExtension();
-        $type = in_array(strtolower($extension), ['mp4', 'webm']) ? 'video' : 'image';
+        $extension = strtolower($file->getClientOriginalExtension());
+        $mime = $file->getMimeType();
+        $type = in_array($extension, ['mp4', 'webm']) ? 'video' : 'image';
         
-        $path = $file->store('banners', 'public');
+        if ($type === 'image') {
+            // Store as Base64
+            $fileData = file_get_contents($file->getRealPath());
+            $filePath = 'data:' . $mime . ';base64,' . base64_encode($fileData);
+        } else {
+            // Store as File Path
+            $filePath = $file->store('banners', 'public');
+        }
 
         Banner::create([
             'title' => $request->title,
             'type' => $type,
-            'file_path' => $path,
+            'file_path' => $filePath,
             'is_active' => $request->has('is_active'),
             'order_index' => $request->order_index ?? 0,
         ]);
+
+        Cache::forget('active_banners');
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner berhasil ditambahkan.');
     }
@@ -65,29 +76,43 @@ class BannerController extends Controller
         ];
 
         if ($request->hasFile('file')) {
-            // Hapus file lama
-            if (Storage::disk('public')->exists($banner->file_path)) {
-                Storage::disk('public')->delete($banner->file_path);
+            // Hapus file lama jika tipe sebelumnya adalah video/file storage
+            if ($banner->type === 'video' || !str_starts_with($banner->file_path, 'data:')) {
+                if (Storage::disk('public')->exists($banner->file_path)) {
+                    Storage::disk('public')->delete($banner->file_path);
+                }
             }
 
             $file = $request->file('file');
-            $extension = $file->getClientOriginalExtension();
-            $data['type'] = in_array(strtolower($extension), ['mp4', 'webm']) ? 'video' : 'image';
-            $data['file_path'] = $file->store('banners', 'public');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $mime = $file->getMimeType();
+            $data['type'] = in_array($extension, ['mp4', 'webm']) ? 'video' : 'image';
+            
+            if ($data['type'] === 'image') {
+                $fileData = file_get_contents($file->getRealPath());
+                $data['file_path'] = 'data:' . $mime . ';base64,' . base64_encode($fileData);
+            } else {
+                $data['file_path'] = $file->store('banners', 'public');
+            }
         }
 
         $banner->update($data);
+        Cache::forget('active_banners');
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner berhasil diperbarui.');
     }
 
     public function destroy(Banner $banner)
     {
-        if (Storage::disk('public')->exists($banner->file_path)) {
-            Storage::disk('public')->delete($banner->file_path);
+        // Hanya hapus file jika bukan Base64
+        if (!str_starts_with($banner->file_path, 'data:')) {
+            if (Storage::disk('public')->exists($banner->file_path)) {
+                Storage::disk('public')->delete($banner->file_path);
+            }
         }
         
         $banner->delete();
+        Cache::forget('active_banners');
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner berhasil dihapus.');
     }

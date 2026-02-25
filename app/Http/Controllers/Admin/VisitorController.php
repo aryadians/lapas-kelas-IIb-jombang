@@ -68,10 +68,13 @@ class VisitorController extends Controller
         $visitors = $query->paginate(10);
         $visitors->appends($request->all());
 
-        // Transform collection to set foto_ktp from latest visit
+        // Transform collection to set foto_ktp from profile image or latest visit
         $visitors->getCollection()->transform(function ($visitor) {
             $latestKunjungan = $visitor->kunjungans->first();
-            $visitor->foto_ktp = $latestKunjungan ? $latestKunjungan->foto_ktp : null;
+            
+            // Prioritaskan kolom image di ProfilPengunjung, fallback ke foto_ktp kunjungan terakhir
+            $visitor->foto_ktp = $visitor->image ?: ($latestKunjungan ? $latestKunjungan->foto_ktp : null);
+            
             $visitor->total_kunjungan = $visitor->kunjungans_count;
             $visitor->last_visit = $latestKunjungan ? $latestKunjungan->tanggal_kunjungan : null;
             $visitor->last_wbp = $latestKunjungan && $latestKunjungan->wbp ? $latestKunjungan->wbp->nama : '-';

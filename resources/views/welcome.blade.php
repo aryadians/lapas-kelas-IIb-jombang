@@ -95,10 +95,15 @@
             // Gabungkan Keduanya
             $mergedBanners = collect();
             foreach ($dbBanners as $db) {
+                // Handle hybrid Base64 vs Storage Path
+                $path = str_starts_with($db->file_path, 'data:') 
+                    ? $db->file_path 
+                    : Storage::url($db->file_path);
+
                 $mergedBanners->push((object)[
                     'source' => 'db',
                     'type'   => $db->type,
-                    'path'   => Storage::url($db->file_path),
+                    'path'   => $path,
                     'title'  => $db->title,
                 ]);
             }

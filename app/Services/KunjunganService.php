@@ -34,17 +34,10 @@ class KunjunganService
         return DB::transaction(function () use ($data, $fileKtp, $filesPengikut, $nomorAntrian) {
             
             // 1. Process Main KTP Image
-            $fotoKtpPath = null;
-            $base64FotoUtama = null;
+            $fotoKtpBase64 = null;
             if ($fileKtp) {
                 $compressed = ImageService::compressUploadedFile($fileKtp, 1200, 80);
-                // SAVE TO DISK
-                $filename = 'ktp_' . time() . '_' . Str::random(10) . '.jpg';
-                $path = 'uploads/ktp/' . $filename;
-                Storage::disk('public')->put($path, $compressed);
-                $fotoKtpPath = $path;
-                // Keep backward compatibility for variable checking if needed, but we use path now
-                $base64FotoUtama = $path; 
+                $fotoKtpBase64 = 'data:image/jpeg;base64,' . base64_encode($compressed);
             }
 
             // 2. Update/Create Profil Pengunjung
@@ -56,6 +49,7 @@ class KunjunganService
                     'email'         => $data['email_pengunjung'],
                     'alamat'        => $data['alamat_lengkap'],
                     'jenis_kelamin' => $data['jenis_kelamin'],
+                    'image'         => $fotoKtpBase64,
                 ]
             );
 
@@ -87,27 +81,21 @@ class KunjunganService
                 'no_wa_pengunjung'  => $data['nomor_hp'],
                 'alamat_pengunjung' => $data['alamat_lengkap'],
                 
-                'foto_ktp'              => $fotoKtpPath,
-                'foto_ktp_path'         => $fotoKtpPath,
-                'foto_ktp_processed_at' => $fotoKtpPath ? now() : null,
+                'foto_ktp'              => $fotoKtpBase64,
+                'foto_ktp_path'         => null, // We use Base64 now
+                'foto_ktp_processed_at' => $fotoKtpBase64 ? now() : null,
             ]);
 
             // 5. Process Pengikut
             if (isset($data['pengikut_nama']) && is_array($data['pengikut_nama'])) {
                 foreach ($data['pengikut_nama'] as $index => $nama) {
                     if (!empty($nama)) {
-                        $base64FotoPengikut = null;
+                        $fotoPengikutBase64 = null;
                         
-                        // Check if file exists in the passed files array
-                        // The Request usually passes files separately, but we need to map them by index
                         if (isset($filesPengikut[$index])) {
                              $fileP = $filesPengikut[$index];
                              $compressedP = ImageService::compressUploadedFile($fileP, 1000, 80);
-                             
-                             $filenameP = 'pengikut_' . time() . '_' . Str::random(10) . '.jpg';
-                             $pathP = 'uploads/pengikut/' . $filenameP;
-                             Storage::disk('public')->put($pathP, $compressedP);
-                             $base64FotoPengikut = $pathP;
+                             $fotoPengikutBase64 = 'data:image/jpeg;base64,' . base64_encode($compressedP);
                         }
 
                         Pengikut::create([
@@ -115,17 +103,28 @@ class KunjunganService
                             'nama'          => $nama,
                             'nik'           => $data['pengikut_nik'][$index] ?? null,
                             'hubungan'      => $data['pengikut_hubungan'][$index] ?? null,
-                            'barang_bawaan' => null, // Assuming not passed in form as array based on controller logic
-                            'foto_ktp'      => $base64FotoPengikut,
-                            'foto_ktp_path' => $base64FotoPengikut,
-                            'foto_ktp_processed_at' => $base64FotoPengikut ? now() : null,
+                            'barang_bawaan' => null,
+                            'foto_ktp'      => $fotoPengikutBase64,
+                            'foto_ktp_path' => null,
+                            'foto_ktp_processed_at' => $fotoPengikutBase64 ? now() : null,
                         ]);
                     }
                 }
             }
 
-            // 6. Generate QR Code
+            // 6. Generate QR Code & Store as Base64 in barcode column
             $qrCodePath = $this->generateQrCode($kunjungan);
+            
+            // Simpan QR Code Base64 ke kolom barcode
+            try {
+                $qrBase64 = 'data:image/png;base64,' . base64_encode(QrCode::format('png')->size(400)->margin(2)->generate($kunjungan->qr_token));
+                $kunjungan->update(['barcode' => $qrBase64]);
+                
+                // Juga update di ProfilPengunjung jika diinginkan (sesuai instruksi yang menyebut profil_pengunjung juga simpan barcode)
+                $profil->update(['barcode' => $qrBase64]);
+            } catch (\Exception $e) {
+                Log::error("Failed to generate Base64 QR: " . $e->getMessage());
+            }
 
             // 7. Dispatch Notifications
             $this->dispatchNotifications($kunjungan, $qrCodePath);

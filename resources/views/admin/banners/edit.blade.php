@@ -3,6 +3,9 @@
 @section('title', 'Edit Banner')
 
 @section('content')
+{{-- Load Animate.css --}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
 <div class="space-y-6 max-w-4xl mx-auto">
     {{-- Header Section --}}
     <div class="flex items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
@@ -18,7 +21,7 @@
     </div>
 
     {{-- Form --}}
-    <form action="{{ route('admin.banners.update', $banner->id) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <form id="bannerForm" action="{{ route('admin.banners.update', $banner->id) }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         @csrf
         @method('PUT')
 
@@ -98,15 +101,51 @@
         {{-- Footer/Submit --}}
         <div class="bg-slate-50 px-8 py-5 border-t border-slate-100 flex items-center justify-end gap-3">
             <a href="{{ route('admin.banners.index') }}" class="px-6 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition-colors">Batal</a>
-            <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-500 text-white font-bold hover:bg-amber-600 shadow-md hover:shadow-lg transition-all active:scale-95">
-                <i class="fas fa-save mr-2"></i> Update Banner
+            <button type="submit" id="submitBtn" class="px-6 py-2.5 rounded-xl bg-amber-500 text-white font-bold hover:bg-amber-600 shadow-md hover:shadow-lg transition-all active:scale-95 flex items-center gap-2">
+                <i class="fas fa-save"></i> <span>Update Banner</span>
             </button>
         </div>
     </form>
 </div>
 
-{{-- SCRIPT MEDIA PREVIEW --}}
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    const swal3DConfig = {
+        showClass: { popup: 'animate__animated animate__zoomInDown animate__faster' },
+        hideClass: { popup: 'animate__animated animate__zoomOutUp animate__faster' },
+        customClass: {
+            popup: 'rounded-3xl shadow-2xl border-4 border-white/50 backdrop-blur-xl',
+            title: 'text-2xl font-black text-slate-800',
+            confirmButton: 'rounded-xl px-6 py-3 font-bold shadow-lg transition-all hover:-translate-y-1',
+            cancelButton: 'rounded-xl px-6 py-3 font-bold shadow-lg bg-slate-200 text-slate-600 hover:bg-slate-300 transition-all hover:-translate-y-1'
+        },
+        buttonsStyling: false
+    };
+
+    {{-- Error Alert from Session --}}
+    @if($errors->any())
+        Swal.fire({
+            ...swal3DConfig,
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Mohon periksa kembali formulir Anda.',
+            confirmButtonText: 'Perbaiki',
+            customClass: {
+                ...swal3DConfig.customClass,
+                confirmButton: swal3DConfig.customClass.confirmButton + ' bg-rose-500 text-white hover:bg-rose-600 shadow-rose-200'
+            }
+        });
+    @endif
+
+    {{-- Loading on Submit --}}
+    document.getElementById('bannerForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-circle-notch animate-spin"></i> Memproses...';
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+    });
+
     function previewMedia(input) {
         const previewContainer = document.getElementById('media-preview');
         const imgPreview = document.getElementById('img-preview');
@@ -143,4 +182,5 @@
         document.getElementById('media-preview').classList.add('hidden');
     }
 </script>
+@endpush
 @endsection

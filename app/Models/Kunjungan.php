@@ -58,6 +58,7 @@ class Kunjungan extends Model
         'foto_ktp_processed_at',
         'status',
         'qr_token',
+        'barcode',
         'notification_logs',
         'pengikut_laki',
         'pengikut_perempuan',
@@ -100,10 +101,16 @@ class Kunjungan extends Model
 
     /**
      * Accessor untuk URL QR Code.
+     * Mendukung data Base64 maupun Path file.
      */
     public function getQrCodeUrlAttribute(): string
     {
-        // Cek apakah file lokal ada
+        // 1. Prioritas Utama: Kolom barcode (Base64)
+        if (!empty($this->barcode)) {
+            return $this->barcode;
+        }
+
+        // 2. Cek apakah file lokal ada (Backward Compatibility)
         $path = 'qrcodes/' . $this->id . '.png';
         if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
             return asset('storage/' . $path);
@@ -114,7 +121,7 @@ class Kunjungan extends Model
             return asset('storage/' . $pathSvg);
         }
 
-        // Fallback ke API eksternal jika file lokal tidak ada
+        // 3. Fallback ke API eksternal jika file lokal tidak ada
         return "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . urlencode($this->qr_token ?? $this->kode_kunjungan);
     }
 

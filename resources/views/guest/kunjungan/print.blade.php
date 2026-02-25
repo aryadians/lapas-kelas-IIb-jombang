@@ -90,8 +90,7 @@
 
         {{-- QR CODE --}}
         <div class="flex justify-center mb-6">
-            {{-- Menggunakan API QR Code Server (Gratis & Stabil) --}}
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={{ $kunjungan->qr_token }}&bgcolor=ffffff" 
+            <img src="{{ $kunjungan->qr_code_url }}" 
                  alt="QR Code" class="w-24 h-24 border-4 border-gray-800 p-1 rounded">
         </div>
         <p class="text-center text-xs font-mono mb-6">{{ $kunjungan->qr_token }}</p>

@@ -254,12 +254,22 @@ class KunjunganController extends Controller
                         $qrContent = QrCode::format('png')->size(400)->margin(2)->generate($kunjungan->qr_token);
                         $qrCodePath = 'qrcodes/' . $kunjungan->id . '.png';
                         Storage::disk('public')->put($qrCodePath, $qrContent);
+                        
+                        // Simpan Base64 ke database
+                        $kunjungan->update(['barcode' => 'data:image/png;base64,' . base64_encode($qrContent)]);
                     } catch (\Exception $e) {
                         $qrContent = QrCode::format('svg')->size(400)->margin(2)->generate($kunjungan->qr_token);
                         $qrCodePath = 'qrcodes/' . $kunjungan->id . '.svg';
                         Storage::disk('public')->put($qrCodePath, $qrContent);
                     }
                     $fullQrPath = Storage::disk('public')->path($qrCodePath);
+                } else {
+                    // Jika file ada tapi kolom barcode kosong, isi juga
+                    if (empty($kunjungan->barcode)) {
+                        $qrContent = file_get_contents($fullQrPath);
+                        $mimeType = str_ends_with($qrCodePath, '.svg') ? 'image/svg+xml' : 'image/png';
+                        $kunjungan->update(['barcode' => 'data:' . $mimeType . ';base64,' . base64_encode($qrContent)]);
+                    }
                 }
             }
 

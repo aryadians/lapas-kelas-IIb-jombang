@@ -14,6 +14,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel; // ADDED
 use App\Exports\KunjunganExport;   // ADDED
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use App\Services\QuotaService;
 
@@ -150,13 +151,25 @@ class KunjunganController extends Controller
         ];
 
         // 3. Generate QR Token jika Approved & belum punya token
-        if ($statusBaru === KunjunganStatus::APPROVED->value && is_null($kunjungan->qr_token)) {
-            $updateData['qr_token'] = Str::random(40);
+        if ($statusBaru === KunjunganStatus::APPROVED->value) {
+            if (is_null($kunjungan->qr_token)) {
+                $updateData['qr_token'] = (string) Str::uuid();
+            }
+            
+            // Generate Base64 Barcode
+            try {
+                $token = $updateData['qr_token'] ?? $kunjungan->qr_token;
+                $qrContent = QrCode::format('png')->size(400)->margin(2)->generate($token);
+                $updateData['barcode'] = 'data:image/png;base64,' . base64_encode($qrContent);
+            } catch (\Exception $e) {
+                Log::error("Admin Kunjungan Update: Failed to generate Base64 QR: " . $e->getMessage());
+            }
         }
 
         // 3b. Hapus QR Token jika ditolak
         if ($statusBaru === KunjunganStatus::REJECTED->value) {
             $updateData['qr_token'] = null;
+            $updateData['barcode'] = null;
         }
 
         // 4. Update Database
@@ -229,9 +242,22 @@ class KunjunganController extends Controller
         foreach ($kunjungans as $kunjungan) {
             $updateData = ['status' => $status];
 
-            // Generate Token jika Approved
-            if ($status === KunjunganStatus::APPROVED->value && is_null($kunjungan->qr_token)) {
-                $updateData['qr_token'] = Str::random(40);
+            // Generate Token & Barcode jika Approved
+            if ($status === KunjunganStatus::APPROVED->value) {
+                if (is_null($kunjungan->qr_token)) {
+                    $updateData['qr_token'] = (string) Str::uuid();
+                }
+                
+                try {
+                    $token = $updateData['qr_token'] ?? $kunjungan->qr_token;
+                    $qrContent = QrCode::format('png')->size(400)->margin(2)->generate($token);
+                    $updateData['barcode'] = 'data:image/png;base64,' . base64_encode($qrContent);
+                } catch (\Exception $e) {
+                    Log::error("Admin Kunjungan Bulk Update: Failed to generate Base64 QR: " . $e->getMessage());
+                }
+            } elseif ($status === KunjunganStatus::REJECTED->value) {
+                $updateData['qr_token'] = null;
+                $updateData['barcode'] = null;
             }
 
             // Update triggers observer for notifications
@@ -594,9 +620,17 @@ class KunjunganController extends Controller
             'status' => \App\Enums\KunjunganStatus::APPROVED,
             'registration_type' => 'offline',
             'nomor_antrian_harian' => $nomorAntrian,
-            'qr_token' => Str::random(40),
+            'qr_token' => (string) Str::uuid(),
             'kode_kunjungan' => $kodeKunjungan,
         ]);
+        
+        // Simpan QR Code Base64 ke kolom barcode
+        try {
+            $qrContent = QrCode::format('png')->size(400)->margin(2)->generate($kunjungan->qr_token);
+            $kunjungan->update(['barcode' => 'data:image/png;base64,' . base64_encode($qrContent)]);
+        } catch (\Exception $e) {
+            Log::error("Admin Kunjungan Create Offline: Failed to generate Base64 QR: " . $e->getMessage());
+        }
 
         return redirect()->route('admin.kunjungan.offline.success', $kunjungan->id)
             ->with('success', 'Pendaftaran offline berhasil.');

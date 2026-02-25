@@ -215,8 +215,8 @@
                         {{-- NOMOR ANTRIAN --}}
                         <div class="mt-8 pt-6 border-t border-dashed border-slate-300 text-center">
                             <div class="mb-4 flex flex-col items-center">
-                                <div class="p-3 bg-white border-2 border-slate-900 rounded-lg inline-block">
-                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(120)->generate($kunjungan->qr_token ?? $kunjungan->kode_kunjungan) !!}
+                                <div class="p-3 bg-white border-2 border-slate-900 rounded-lg inline-block overflow-hidden">
+                                    <img src="{{ $kunjungan->qr_code_url }}" alt="QR Code" class="w-28 h-28 object-contain">
                                 </div>
                                 <p class="text-[10px] text-slate-500 mt-2 font-mono">Scan QR Code di Loket</p>
                             </div>

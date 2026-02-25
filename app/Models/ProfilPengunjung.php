@@ -16,6 +16,8 @@ class ProfilPengunjung extends Model
         'email',
         'alamat',
         'jenis_kelamin',
+        'image',
+        'barcode',
     ];
 
     public function user()

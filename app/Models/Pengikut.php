@@ -17,7 +17,8 @@ class Pengikut extends Model
         'barang_bawaan',
         'foto_ktp',
         'foto_ktp_path',
-        'foto_ktp_processed_at'
+        'foto_ktp_processed_at',
+        'barcode'
     ];
 
     protected $dates = [
