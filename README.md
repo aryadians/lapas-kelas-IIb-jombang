@@ -6,7 +6,7 @@
   <p><i>Digitalisasi Modern Pelayanan Publik Lembaga Pemasyarakatan Kelas IIB Jombang</i></p>
 
   <p>
-    <img src="https://img.shields.io/badge/Version-1.7.0-blue?style=for-the-badge&logo=git" alt="Version">
+    <img src="https://img.shields.io/badge/Version-1.8.0-blue?style=for-the-badge&logo=git" alt="Version">
     <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
     <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
     <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
@@ -22,18 +22,19 @@
 
 ---
 
-## 🆕 Pembaruan Terbaru (v1.7.0)
+## 🆕 Pembaruan Terbaru
 
-### ⚡ Performa Layaknya Aplikasi Native (SPA)
-Sistem kini diperkuat dengan **Hotwire Turbo Drive**, mengonversi seluruh navigasi website publik menjadi *Single Page Application (SPA)*. Pindah antar halaman kini tereksekusi instan tanpa *reload* layar putih penuh (No Janks!), memberikan pengalaman pengguna yang sangat cepat.
+### 🚀 Versi 1.8.0 (Terbaru)
+- **💾 Arsitektur Zero-File Storage (Base64)** — Sistem kini beralih ke penyimpanan **Base64 (LongText)** untuk Foto KTP dan QR Code. Dokumen kini tersimpan aman di dalam database, meningkatkan portabilitas data dan menghilangkan ketergantungan pada file fisik server.
+- **🖼️ CMS Banner Hybrid** — Manajemen banner kini mendukung mode cerdas: **Gambar** disimpan via Base64 (Database), sedangkan **Video** tetap melalui File Storage untuk menjaga performa.
+- **🏷️ Legenda Kode Kunjungan (A/B)** — UI Pendaftaran kini dilengkapi keterangan pemetaan status WBP: **Kode A untuk Tahanan** dan **Kode B untuk Narapidana**.
+- **🔔 Polished UI Alerts** — Integrasi **SweetAlert2** pada seluruh modul manajemen banner untuk pengalaman pengguna yang lebih premium dan interaktif.
 
-### 📅 Penjadwalan Dinamis Cerdas (Blok / Kode Tahanan)
-- **Mapping Jadwal Flexibel** — Admin dapat mengatur hari buka khusus untuk Kode Tahanan/Blok tertentu (Misal: Blok A hanya di hari Senin asalkan diizinkan) di panel admin.
-- **Smart Date Picker** — Formulir pendaftaran pengunjung secara otomatis beradaptasi dan hanya memunculkan opsi tanggal yang diizinkan sesuai dengan Warga Binaan yang dipilih. Mencegah kesalahan jadwal secara proaktif.
-
-### 🖼️ CMS Manajemen Homepage (Dynamic Banners)
-- **Manajemen Banner & Slideshow** — Carousel latar belakang hero di halaman landing publik sekarang menggunakan CMS penuh (CRUD), bukan lagi file statis. 
-- **Dukungan Media Ganda** — Admin dapat bebas mengunggah **Gambar (HD)** maupun **Video (.mp4/.webm)** sebagai slide dengan fitur pengurutan kustom dan efek Lightbox *Cinematic Glassmorphism*.
+### ⚡ Versi 1.7.0
+- **⚡ Performa Native (SPA)** — Diperkuat dengan **Hotwire Turbo Drive**, memberikan navigasi instan tanpa *reload* halaman penuh (No Janks!).
+- **📅 Penjadwalan Dinamis Cerdas** — Admin dapat memetakan hari buka khusus berdasarkan Kode Tahanan atau Blok secara fleksibel.
+- **📅 Smart Date Picker** — Formulir pendaftaran otomatis memfilter opsi tanggal yang diizinkan sesuai status WBP yang dipilih.
+- **🖼️ CMS Manajemen Homepage** — Carousel latar belakang hero menggunakan sistem CRUD penuh untuk pengelolaan Gambar HD dan Video.
 
 ---
 
@@ -43,12 +44,12 @@ Sistem kini diperkuat dengan **Hotwire Turbo Drive**, mengonversi seluruh naviga
 | Fitur | Deskripsi | Status |
 | :--- | :--- | :---: |
 | **Pendaftaran Mandiri** | Reservasi kunjungan online via web dengan validasi NIK dan kuota harian otomatis. | ✅ |
-| **Smart Date Picker** | Pemilihan tanggal cerdas yang otomatis menyesuaikan kuota, jadwal blok (kode tahanan), dan limit h-hari pendaftaran. | ✅ |
-| **E-Ticket QR Code** | Tiket digital unik yang dikirim langsung setelah verifikasi disetujui. | ✅ |
+| **Smart Date Picker** | Pemilihan tanggal cerdas yang otomatis menyesuaikan kuota, jadwal blok, dan limit pendaftaran. | ✅ |
+| **E-Ticket QR Code** | Tiket digital Base64 yang tersimpan permanen di database, siap cetak kapan saja. | ✅ |
 | **Real-time Queue TV** | Tampilan display antrian publik untuk ruang tunggu (Smart TV ready). | ✅ |
 | **Voice Announcer** | Panggilan suara otomatis (TTS) Bahasa Indonesia untuk setiap nomor antrian. | ✅ |
 | **Survei IKM Digital** | Pengisian indeks kepuasan masyarakat pasca kunjungan untuk evaluasi instansi. | ✅ |
-| **Syarat & Ketentuan** | Teks S&K kunjungan yang dapat diedit admin, tampil dinamis di halaman publik. | ✅ |
+| **Aksesibilitas Widget** | Fitur khusus disabilitas: TTS, Kontras Tinggi, Font Disleksia, dan Kursor Besar. | ✅ |
 | **Helpdesk WhatsApp** | Tombol chat WA langsung ke petugas, nomor dikelola dari panel admin. | ✅ |
 
 ### 🛠️ Modul Admin & Operasional
@@ -57,49 +58,28 @@ Sistem kini diperkuat dengan **Hotwire Turbo Drive**, mengonversi seluruh naviga
 | **Mini Dashboard** | Pantauan beban kerja harian (Pending, Serving, Sisa Kuota) dalam satu pandangan. | ✅ |
 | **Smart Quota Manager** | Manajemen kuota dinamis (Sesi Pagi/Siang) dengan visual progres bar yang responsif. | ✅ |
 | **Pendaftaran Offline** | Input data pendaftaran di tempat (walk-in) dengan fitur *Quota Warning* otomatis. | ✅ |
-| **Jam Operasional Dinamis** | Jam buka/tutup sesi pagi & siang dikelola dari panel, langsung diterapkan ke mesin antrian. | ✅ |
-| **Database Pengunjung** | Repositori data master pengunjung dengan filter loyalitas, wilayah, dan kelengkapan KTP. | ✅ |
-| **WBP Management** | Sinkronisasi data Warga Binaan, lokasi blok, sel, masa tahanan, dan kode tahanan (grup). | ✅ |
-| **Panel Konfigurasi 5-Tab** | Semua pengaturan sistem dikelola dari satu halaman terorganisir tanpa perlu edit file source. | ✅ |
-| **Manajemen Banner Utama** | Unggah dan kelola slideshow gambar/video interaktif untuk halaman landing publik. | ✅ |
-
-### 🔌 Integrasi & Notifikasi
-| Fitur | Deskripsi | Status |
-| :--- | :--- | :---: |
-| **WhatsApp Gateway (Fonnte)** | Notifikasi otomatis (Pending, Approved, Rejected, QR Code, Reminder H-1). Token dikelola dari panel. | ✅ |
-| **Email Notifikasi (Gmail SMTP)** | Konfigurasi SMTP Gmail (host, port, username, App Password) langsung dari UI admin. | ✅ |
-| **Auto-cancel Antrian** | Kunjungan yang melewati toleransi waktu dibatalkan otomatis oleh cron scheduler. | ✅ |
-| **Background Jobs (Queue)** | Pengiriman WA & Email diproses via Laravel Queue + Redis tanpa blokir request utama. | ✅ |
-
-### 🔐 Keamanan & Audit (Security & Trust)
-| Fitur | Deskripsi | Status |
-| :--- | :--- | :---: |
-| **Timeline Audit Trail** | Log aktivitas lengkap: mencatat siapa petugas yang melakukan aksi, apa yang diubah, dan kapan waktunya. | ✅ |
-| **Notification Logs** | Pelacakan status pengiriman WhatsApp/Email (Sent/Failed) beserta alasan teknis kegagalannya. | ✅ |
-| **NIK Masking** | Proteksi privasi dengan menyensor 6 digit tengah NIK pada antarmuka admin. | ✅ |
-| **RBAC System** | Pembatasan hak akses ketat (Super Admin, Admin Registrasi, Admin Humas, Petugas). | ✅ |
-| **Konfigurasi Tanpa .env** | Kredensial API (WA & Email) disimpan di database terenkripsi, bukan file konfigurasi server. | ✅ |
+| **Database Pengunjung** | Repositori data master pengunjung dengan filter loyalitas dan integrasi foto Base64. | ✅ |
+| **WBP Management** | Sinkronisasi data Warga Binaan, lokasi blok, sel, masa tahanan, dan kode tahanan. | ✅ |
+| **Manajemen Banner** | Unggah dan kelola slideshow gambar/video interaktif dengan efek Lightbox. | ✅ |
+| **Panel Konfigurasi 5-Tab** | Semua pengaturan sistem dikelola dari satu halaman terorganisir. | ✅ |
 
 ---
 
 ## 🛠️ Arsitektur Teknologi
 
-Sistem ini dibangun dengan *stack* modern untuk menjamin skalabilitas dan pengalaman pengguna yang luar biasa:
+Sistem ini dibangun dengan *stack* modern untuk menjamin skalabilitas:
 
 - **Core Engine:** Laravel 12 (Framework PHP Tercanggih).
 - **SPA Navigation Engine:** Hotwire Turbo Drive (Navigasi instan via AJAX).
 - **Frontend Real-time:** Alpine.js, Tailwind CSS & Swiper.js untuk UI interaktif.
-- **Rich Text Editor:** Trix Editor untuk pengelolaan konten HTML.
-- **Image Intelligence:** Pemrosesan gambar KTP berbasis Base64 dengan kompresi otomatis untuk menghemat ruang penyimpanan.
-- **Reporting Engine:** Integrasi `Maatwebsite Excel` untuk laporan profesional.
-- **Background Jobs:** Pemanfaatan Laravel Queue & Redis untuk pengiriman notifikasi massal secara asinkronus.
+- **Image Intelligence:** Pemrosesan media berbasis **Base64** dengan kompresi otomatis.
+- **Background Jobs:** Pemanfaatan Laravel Queue & Redis untuk pengiriman notifikasi massal.
 
 ---
 
 ## 📦 Panduan Instalasi Cepat
 
-### **Opsi A: Docker (Enterprise Way) 🐳**
-Sangat disarankan untuk lingkungan produksi dan development yang stabil.
+### **Opsi A: Docker 🐳**
 ```bash
 # Nyalakan semua kontainer (Web, DB, Redis, Mailpit)
 git pull && ./docker-start.sh
@@ -108,7 +88,7 @@ git pull && ./docker-start.sh
 URL: http://localhost:8080
 ```
 
-### **Opsi B: Manual (Development) 🛠️**
+### **Opsi B: Manual 🛠️**
 ```bash
 # Instalasi dependensi & setup database
 composer run setup
@@ -125,32 +105,9 @@ URL: http://localhost:8000
 # Wajib dijalankan agar queue (WA & Email) berfungsi
 php artisan queue:listen --tries=3
 
-# Wajib untuk symlink storage (foto KTP, QR Code, dan Banner CMS)
+# Wajib untuk symlink storage (khusus untuk Video Banner & Logo)
 php artisan storage:link
 ```
-
----
-
-## ⚙️ Konfigurasi via Panel Admin
-
-Hampir semua konfigurasi operasional utama dikelola langsung dari **Panel Admin → Konfigurasi Sistem** (`/admin/visit-config`), tanpa menyentuh file `.env`:
-
-| Pengaturan | Deskripsi |
-| :--- | :--- |
-| `WHATSAPP_API_TOKEN` | Token Fonnte untuk gateway asisten pintar via WhatsApp |
-| `MAIL_*` | Autentikasi SMTP modern via Gmail App Passwords |
-| `ADMIN_EMAIL` | Gateway peringatan kritis kepada administrator harian |
-| Jam & Hari Operasional | Aturan ketat akses kalender public untuk layanan daring vs luring |
-| Syarat & Ketentuan Kunjungan | Ketentuan Trix HTML yang tersambung live ke front desk visitor portal |
-| Kode Tahanan Validasi | Izin eksklusif pengelompokan penugasan hari WBP tertentu |
-
----
-
-## 📊 Pelaporan & Ekspor Data
-Sistem menyediakan modul pelaporan yang siap saji untuk keperluan manajerial:
-- **Laporan Kunjungan:** Filter harian, mingguan, bulanan ke format **Excel (.xlsx)**.
-- **Database Profil:** Rekapitulasi seluruh pengunjung unik ke format **CSV**.
-- **Cetak Tiket:** Optimasi layout PDF untuk pencetakan tiket antrian fisik.
 
 ---
 
