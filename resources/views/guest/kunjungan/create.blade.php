@@ -138,6 +138,24 @@
                         </div>
                         @endforeach
                     </div>
+
+                    {{-- KETERANGAN KODE --}}
+                    <div class="mt-6 pt-4 border-t border-yellow-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-yellow-500"></i> Keterangan Kode
+                        </p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="flex items-center gap-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-100">
+                                <span class="w-6 h-6 flex items-center justify-center bg-yellow-500 text-white text-xs font-black rounded-md">B</span>
+                                <span class="text-xs font-bold text-slate-700">Narapidana</span>
+                            </div>
+                            <div class="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg border border-blue-100">
+                                <span class="w-6 h-6 flex items-center justify-center bg-blue-600 text-white text-xs font-black rounded-md">A</span>
+                                <span class="text-xs font-bold text-slate-700">Tahanan</span>
+                            </div>
+                        </div>
+                    </div>
+
                     @if(!empty($closedDaysString))
                     <div class="mt-4 text-center">
                         <span class="inline-block bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-6 py-2 rounded-full shadow-lg border border-red-400">
