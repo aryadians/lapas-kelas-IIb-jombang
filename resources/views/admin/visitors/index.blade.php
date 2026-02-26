@@ -72,7 +72,8 @@
                 {{-- Sort --}}
                 <div class="relative lg:w-60">
                     <select name="sort" class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-teal-400 focus:outline-none font-bold text-slate-600 cursor-pointer text-sm appearance-none transition-all">
-                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>🆕 Terbaru</option>
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>🆕 Terbaru (Profil)</option>
+                        <option value="latest_visit" {{ request('sort') == 'latest_visit' ? 'selected' : '' }}>📅 Kunjungan Terakhir</option>
                         <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>⏳ Terlama</option>
                         <option value="most_visited" {{ request('sort') == 'most_visited' ? 'selected' : '' }}>🔥 Teraktif</option>
                     </select>

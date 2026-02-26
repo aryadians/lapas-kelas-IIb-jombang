@@ -53,6 +53,14 @@ class VisitorController extends Controller
         // 4. Pengurutan (Loyalty / Terbaru)
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
+            case 'latest_visit':
+                $query->leftJoin('kunjungans', function($join) {
+                    $join->on('profil_pengunjungs.nik', '=', 'kunjungans.nik_ktp')
+                        ->whereRaw('kunjungans.id IN (select MAX(id) from kunjungans group by nik_ktp)');
+                })
+                ->select('profil_pengunjungs.*')
+                ->orderBy('kunjungans.tanggal_kunjungan', 'desc');
+                break;
             case 'most_visited':
                 $query->orderBy('kunjungans_count', 'desc');
                 break;
