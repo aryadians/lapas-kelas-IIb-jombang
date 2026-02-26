@@ -41,14 +41,19 @@ class ProfileController extends Controller
     {
         $request->validate([
             'nama' => ['required', 'string', 'max:255'],
-            'nik' => ['required', 'string', 'digits:16'],
+            'identitas_type' => ['required', 'in:nik,lainnya'],
+            'nik' => [
+                $request->identitas_type === 'nik' ? 'required' : 'nullable',
+                'string',
+                $request->identitas_type === 'nik' ? 'digits:16' : 'max:16',
+            ],
             'hubungan' => ['required', 'string', 'max:100'],
         ]);
 
         $user = $request->user();
         $profil = $user->profilPengunjung;
 
-        $pengikut = \App\Models\Pengikut::create($request->all());
+        $pengikut = \App\Models\Pengikut::create($request->only(['nama', 'nik', 'hubungan']));
         $profil->pengikuts()->attach($pengikut);
 
         return Redirect::route('profile.pengikut')->with('status', 'pengikut-saved');

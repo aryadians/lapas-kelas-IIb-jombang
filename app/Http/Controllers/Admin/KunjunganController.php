@@ -131,9 +131,49 @@ class KunjunganController extends Controller
             'hubungan' => 'required|string|max:100',
             'wbp_id' => 'required|exists:wbps,id',
             'pengikut.*.nama' => 'nullable|string|max:255',
-            'pengikut.*.nik' => 'nullable|string|digits:16',
+            'pengikut.*.identitas_type' => 'nullable|in:nik,lainnya',
+            'pengikut.*.nik' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($request) {
+                    $segments = explode('.', $attribute);
+                    $id = $segments[1];
+                    $type = $request->input("pengikut.$id.identitas_type");
+                    
+                    if ($type === 'nik') {
+                        if (empty($value)) {
+                            $fail('NIK Pengikut wajib diisi jika tipe adalah NIK.');
+                        } elseif (!is_numeric($value)) {
+                            $fail('NIK Pengikut harus berupa angka.');
+                        } elseif (strlen($value) !== 16) {
+                            $fail('NIK Pengikut harus tepat 16 digit.');
+                        }
+                    } elseif (!empty($value) && strlen($value) > 16) {
+                        $fail('Nomor Identitas tidak boleh lebih dari 16 karakter.');
+                    }
+                },
+            ],
             'new_pengikut.*.nama' => 'nullable|string|max:255',
-            'new_pengikut.*.nik' => 'nullable|string|digits:16',
+            'new_pengikut.*.identitas_type' => 'nullable|in:nik,lainnya',
+            'new_pengikut.*.nik' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($request) {
+                    $segments = explode('.', $attribute);
+                    $index = $segments[1];
+                    $type = $request->input("new_pengikut.$index.identitas_type");
+                    
+                    if ($type === 'nik') {
+                        if (empty($value)) {
+                            $fail('NIK Pengikut baru wajib diisi jika tipe adalah NIK.');
+                        } elseif (!is_numeric($value)) {
+                            $fail('NIK Pengikut baru harus berupa angka.');
+                        } elseif (strlen($value) !== 16) {
+                            $fail('NIK Pengikut baru harus tepat 16 digit.');
+                        }
+                    } elseif (!empty($value) && strlen($value) > 16) {
+                        $fail('Nomor Identitas pengikut baru tidak boleh lebih dari 16 karakter.');
+                    }
+                },
+            ],
         ]);
 
         $statusBaru = $request->status;
@@ -182,6 +222,8 @@ class KunjunganController extends Controller
                     \App\Models\Pengikut::where('id', $pId)->update([
                         'nama' => $pData['nama'],
                         'nik' => $pData['nik'],
+                        // identitas_type tidak disimpan di tabel pengikut, 
+                        // tapi kita pastikan data nik sesuai (sudah divalidasi di atas)
                     ]);
                 }
             }

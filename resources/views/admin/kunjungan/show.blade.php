@@ -508,7 +508,7 @@
                                 </div>
                                 <div class="flex-grow">
                                     <h4 class="font-bold text-slate-800 leading-tight">{{ $pengikut->nama }}</h4>
-                                    <p class="text-[11px] font-mono text-slate-500 tracking-wider mb-2 mt-0.5">NIK: {{ $pengikut->nik ?? '-' }}</p>
+                                    <p class="text-[11px] font-mono text-slate-500 tracking-wider mb-2 mt-0.5">ID: {{ $pengikut->nik ?? '-' }}</p>
                                     
                                     <div class="flex flex-wrap gap-2">
                                         <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-1 rounded border border-indigo-100 font-bold uppercase tracking-widest"><i class="fas fa-link mr-1 opacity-50"></i> {{ $pengikut->hubungan }}</span>

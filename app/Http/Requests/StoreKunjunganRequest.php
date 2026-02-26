@@ -38,8 +38,31 @@ class StoreKunjunganRequest extends FormRequest
             
             // Pengikut
             'pengikut_nama'                 => 'nullable|array|max:4',
+            'pengikut_identitas_type'       => 'nullable|array|max:4',
+            'pengikut_identitas_type.*'     => 'nullable|in:nik,lainnya',
             'pengikut_nik'                  => 'nullable|array|max:4',
-            'pengikut_nik.*'                => 'nullable|numeric|digits:16', 
+            'pengikut_nik.*'                => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $index = explode('.', $attribute)[1];
+                    $type = $this->input("pengikut_identitas_type.$index");
+                    
+                    if ($type === 'nik') {
+                        if (empty($value)) {
+                            $fail('NIK Pengikut wajib diisi jika tipe identitas adalah NIK.');
+                        } elseif (!is_numeric($value)) {
+                            $fail('NIK Pengikut harus berupa angka.');
+                        } elseif (strlen($value) !== 16) {
+                            $fail('NIK Pengikut harus tepat 16 digit.');
+                        }
+                    } else {
+                        // Case 'lainnya'
+                        if (!empty($value) && strlen($value) > 16) {
+                            $fail('Nomor Identitas tidak boleh lebih dari 16 karakter.');
+                        }
+                    }
+                },
+            ],
             'pengikut_hubungan'             => 'nullable|array|max:4',
             'pengikut_foto'                 => 'nullable|array|max:4',
             'pengikut_foto.*'               => 'nullable|image|max:2048',
@@ -55,9 +78,8 @@ class StoreKunjunganRequest extends FormRequest
     {
         return [
             'pengikut_nama.max'       => 'Jumlah pengikut tidak boleh lebih dari 4 orang.',
-            'pengikut_nik.*.digits'   => 'NIK Pengikut harus berjumlah tepat 16 digit.',
-            'pengikut_nik.*.numeric'  => 'NIK Pengikut harus berupa angka.',
             'nik_ktp.digits'          => 'NIK Pengunjung Utama harus berjumlah 16 digit.',
+            'nik_ktp.numeric'         => 'NIK Pengunjung Utama harus berupa angka.',
             'foto_ktp.max'            => 'Ukuran foto KTP maksimal 2MB.',
             'pengikut_foto.*.max'     => 'Ukuran foto pengikut maksimal 2MB per file.',
         ];

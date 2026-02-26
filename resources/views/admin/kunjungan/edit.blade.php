@@ -22,6 +22,25 @@
     </div>
     @endif
 
+    {{-- Tampilkan Error Validasi --}}
+    @if($errors->any())
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-xl">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-circle text-red-400"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-bold text-red-800">Ada kesalahan input:</h3>
+                <ul class="mt-1 list-disc list-inside text-xs text-red-700">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <form action="{{ route('admin.kunjungan.update', $kunjungan->id) }}" method="POST">
         @csrf
         @method('PATCH')
@@ -92,7 +111,7 @@
                             </div>
                             <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight">Koreksi Data Pengikut</h2>
                         </div>
-                        <button type="button" @click="new_pengikuts.push({nama: '', nik: ''})" class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Tambah Pengikut">
+                        <button type="button" @click="new_pengikuts.push({nama: '', nik: '', identityType: 'nik'})" class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Tambah Pengikut">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
@@ -100,7 +119,12 @@
                         <div class="space-y-6">
                             @if($kunjungan->pengikuts->count() > 0)
                                 @foreach($kunjungan->pengikuts as $pengikut)
-                                <div class="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 space-y-4">
+                                @php
+                                    // Deteksi tipe identitas default berdasarkan data yang ada
+                                    $isNumeric16 = is_numeric($pengikut->nik) && strlen($pengikut->nik) === 16;
+                                    $defaultType = $isNumeric16 ? 'nik' : 'lainnya';
+                                @endphp
+                                <div class="bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 space-y-4" x-data="{ identityType: '{{ $defaultType }}' }">
                                     <p class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Pengikut #{{ $loop->iteration }}</p>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="space-y-1">
@@ -108,8 +132,19 @@
                                             <input type="text" name="pengikut[{{ $pengikut->id }}][nama]" value="{{ $pengikut->nama }}" class="w-full p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
                                         </div>
                                         <div class="space-y-1">
-                                            <label class="text-[9px] font-black text-slate-400 uppercase ml-1">NIK</label>
-                                            <input type="text" name="pengikut[{{ $pengikut->id }}][nik]" value="{{ $pengikut->nik }}" maxlength="16" class="w-full p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
+                                            <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Identitas (NIK/Lainnya)</label>
+                                            <div class="flex gap-2">
+                                                <select x-model="identityType" name="pengikut[{{ $pengikut->id }}][identitas_type]" class="rounded-xl border-2 border-slate-100 bg-white text-xs font-bold text-slate-600 focus:border-emerald-500 focus:ring-0 px-2">
+                                                    <option value="nik">NIK</option>
+                                                    <option value="lainnya">Lainnya</option>
+                                                </select>
+                                                <input :type="identityType === 'nik' ? 'number' : 'text'" 
+                                                       name="pengikut[{{ $pengikut->id }}][nik]" 
+                                                       value="{{ $pengikut->nik }}" 
+                                                       :required="identityType === 'nik'"
+                                                       maxlength="16" 
+                                                       class="flex-1 p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -129,8 +164,19 @@
                                             <input type="text" :name="'new_pengikut['+index+'][nama]'" x-model="item.nama" required class="w-full p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
                                         </div>
                                         <div class="space-y-1">
-                                            <label class="text-[9px] font-black text-slate-400 uppercase ml-1">NIK</label>
-                                            <input type="text" :name="'new_pengikut['+index+'][nik]'" x-model="item.nik" required maxlength="16" class="w-full p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
+                                            <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Identitas (NIK/Lainnya)</label>
+                                            <div class="flex gap-2">
+                                                <select x-model="item.identityType" :name="'new_pengikut['+index+'][identitas_type]'" class="rounded-xl border-2 border-slate-100 bg-white text-xs font-bold text-slate-600 focus:border-emerald-500 focus:ring-0 px-2">
+                                                    <option value="nik">NIK</option>
+                                                    <option value="lainnya">Lainnya</option>
+                                                </select>
+                                                <input :type="item.identityType === 'nik' ? 'number' : 'text'" 
+                                                       :name="'new_pengikut['+index+'][nik]'" 
+                                                       x-model="item.nik" 
+                                                       :required="item.identityType === 'nik'"
+                                                       maxlength="16" 
+                                                       class="flex-1 p-3 bg-white border-2 border-slate-100 rounded-xl font-bold text-slate-700 text-sm focus:border-emerald-500 focus:ring-0">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

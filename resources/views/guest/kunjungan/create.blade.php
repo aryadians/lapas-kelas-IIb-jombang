@@ -802,7 +802,7 @@
                             
                             <div>
                                 <button type="button" 
-                                    @click="if(followers.length < {{ $maxFollowers }}) followers.push({id: Date.now()})"
+                                    @click="if(followers.length < {{ $maxFollowers }}) followers.push({id: Date.now(), identityType: 'nik'})"
                                     :disabled="followers.length >= {{ $maxFollowers }}"
                                     :class="followers.length >= {{ $maxFollowers }} ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700'"
                                     class="text-xs text-white font-bold py-2 px-3 rounded-lg shadow transition flex items-center gap-1"
@@ -836,8 +836,19 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-xs font-semibold text-slate-600 mb-1">NIK (KTP/KIA)</label>
-                                            <input type="number" name="pengikut_nik[]" class="w-full rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2" placeholder="Nomor Induk Kependudukan">
+                                            <label class="block text-xs font-semibold text-slate-600 mb-1">Identitas (NIK/Lainnya)</label>
+                                            <div class="flex gap-2">
+                                                <select x-model="follower.identityType" name="pengikut_identitas_type[]" class="rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-xs px-2 py-2 bg-gray-50">
+                                                    <option value="nik">NIK</option>
+                                                    <option value="lainnya">Lainnya</option>
+                                                </select>
+                                                <input :type="follower.identityType === 'nik' ? 'number' : 'text'" 
+                                                       name="pengikut_nik[]" 
+                                                       :required="follower.identityType === 'nik'"
+                                                       :placeholder="follower.identityType === 'nik' ? 'Wajib 16 digit' : 'Opsional (SIM/Paspor/dll)'"
+                                                       class="flex-1 rounded-lg border-2 border-gray-200 focus:border-emerald-500 text-sm px-3 py-2"
+                                                       x-on:input="if(follower.identityType === 'nik' && $el.value.length > 16) $el.value = $el.value.slice(0, 16)">
+                                            </div>
                                         </div>
 
                                         <div>
