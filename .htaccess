@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Redirect semua traffic ke folder /public agar Laravel berjalan normal
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
