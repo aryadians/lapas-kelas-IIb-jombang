@@ -96,7 +96,7 @@
                 <div class="space-y-1.5">
                     <label for="email" class="block text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Email</label>
                     <div class="input-group">
-                        <input id="email" type="email" name="email" :value="old('email')" required autofocus placeholder="nama@keminipas.go.id">
+                        <input id="email" type="email" name="email" :value="old('email')" required autofocus placeholder="nama@kemenimipas.go.id">
                         <i class="fas fa-envelope icon"></i>
                     </div>
                     <x-input-error :messages="$errors->get('email')" class="mt-1 ml-1 text-xs" />

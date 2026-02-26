@@ -78,7 +78,7 @@
                                 <span class="xl:hidden">LAPAS JOMBANG</span> {{-- Tampil di layar laptop biasa agar tidak nabrak --}}
                             </span>
                             <span class="text-[10px] text-yellow-500 uppercase tracking-wider font-semibold hidden md:block whitespace-nowrap">
-                                KEMENTRIAN IMIGRASI DAN PEMASYARAKATAN RI
+                                KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI
                             </span>
                         </div>
                     </a>
@@ -485,7 +485,7 @@
                                         <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16 w-auto relative transform group-hover:scale-105 transition-transform duration-500">
                                     </div>
                                     <div class="flex flex-col justify-center border-l-2 border-white/20 pl-4 py-1">
-                                        <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">Keminipas<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>
+                                        <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>
                                     </div>
                                 </div>
                                 <p class="text-slate-300 text-base md:text-lg leading-relaxed max-w-xl font-light drop-shadow-sm border-l-4 border-blue-500 pl-4 py-1">

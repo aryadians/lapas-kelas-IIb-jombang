@@ -79,7 +79,7 @@
             <div class="text-center mb-8">
                 <div class="inline-flex items-center text-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-950 to-blue-900 text-yellow-400 px-4 py-3 sm:px-6 rounded-full font-bold shadow-2xl border-2 border-yellow-500 border-opacity-50 text-xs sm:text-sm">
                     <i class="fa-solid fa-landmark text-base sm:text-lg"></i>
-                    <span class="sm:hidden">KEMINIPAS RI</span>
+                    <span class="sm:hidden">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI</span>
                     <span class="hidden sm:inline">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI</span>
                     <i class="fa-solid fa-scale-balanced text-base sm:text-lg"></i>
                 </div>

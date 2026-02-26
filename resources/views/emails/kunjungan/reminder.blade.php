@@ -29,7 +29,7 @@
             <div class="header">
                 <img src="{{ $message->embed(public_path('img/logo.png')) }}" alt="Logo Lapas" class="logo-img">
                 <h1>Lapas Kelas IIB Jombang</h1>
-                <div style="color: #cbd5e1; font-size: 12px; margin-top: 5px;">Kementerian Hukum dan HAM Republik Indonesia</div>
+                <div style="color: #cbd5e1; font-size: 12px; margin-top: 5px;">Kementerian Imigrasi dan Pemasyarakatan Republik Indonesia</div>
             </div>
 
             <div class="body">

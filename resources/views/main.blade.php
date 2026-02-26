@@ -72,7 +72,7 @@
                 <h3 class="text-white text-lg font-bold mb-4 border-b border-gray-600 pb-2">Tautan Terkait</h3>
                 <ul class="text-sm space-y-2">
                     <li><a href="#" class="hover:text-white">Ditjen Pas</a></li>
-                    <li><a href="#" class="hover:text-white">Keminipas Jatim</a></li>
+                    <li><a href="#" class="hover:text-white">Kementerian Imigrasi dan Pemasyarakatan Jatim</a></li>
                 </ul>
             </div>
         </div>

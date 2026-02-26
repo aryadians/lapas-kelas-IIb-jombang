@@ -10,7 +10,7 @@
             🛡️ LAPAS KELAS IIB JOMBANG
         </span>
         <span style="background: #2563eb; color: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
-            ⚖️ KEMINIPAS RI
+            ⚖️ KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN RI
         </span>
     </div>
     <h1 style="color: #fbbf24; text-align: center; margin: 10px 0 5px 0; font-size: 24px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Reset Password Akun</h1>
@@ -92,7 +92,7 @@
     <p style="color: #475569; font-size: 12px; margin: 0; line-height: 1.5;">
         Email ini dikirim secara otomatis oleh Sistem Informasi Pemasyarakatan<br>
         <strong>Lembaga Pemasyarakatan Kelas IIB Jombang</strong><br>
-        &copy; {{ date('Y') }} Kementerian Hukum dan HAM Republik Indonesia<br>
+        &copy; {{ date('Y') }} Kementerian Imigrasi dan Pemasyarakatan Republik Indonesia<br>
         <em>"Mewujudkan Pemasyarakatan yang Bermartabat"</em>
     </p>
 </div>
