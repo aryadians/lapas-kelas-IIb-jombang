@@ -7,6 +7,15 @@
     - $title    : Judul dokumen (required)
     - $subtitle : Sub-judul atau periode (optional)
 --}}
+@php
+    // Konversi logo ke Base64 agar pasti muncul di PDF
+    $logoPath = public_path('img/logo.png');
+    $logoBase64 = '';
+    if (file_exists($logoPath)) {
+        $logoData = base64_encode(file_get_contents($logoPath));
+        $logoBase64 = 'data:image/png;base64,' . $logoData;
+    }
+@endphp
 <style>
     /* ── Reset & Base ── */
     * { box-sizing: border-box; }
@@ -209,9 +218,9 @@
 {{-- ── KOP SURAT ── --}}
 <div class="kop-wrapper">
     <div class="kop-inner">
-        {{-- Logo kiri (Kemenkumham / Kemenimipas) --}}
+        {{-- Logo kiri (Kemenimipas) --}}
         <img class="kop-logo"
-            src="{{ public_path('img/logo.png') }}"
+            src="{{ $logoBase64 }}"
             alt="Logo"
             onerror="this.style.display='none'">
 
@@ -227,7 +236,7 @@
 
         {{-- Logo kanan (Garuda / bisa diganti) --}}
         <img class="kop-logo-right"
-            src="{{ public_path('img/logo.png') }}"
+            src="{{ $logoBase64 }}"
             alt="Logo"
             onerror="this.style.display='none'">
     </div>

@@ -10,6 +10,8 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -18,7 +20,7 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class VisitorExport implements
     FromCollection, WithHeadings, WithMapping,
-    WithStyles, ShouldAutoSize, WithTitle, WithEvents
+    WithStyles, ShouldAutoSize, WithTitle, WithEvents, WithDrawings
 {
     const LAST_COL    = 'J';
     const DATA_START  = 11;
@@ -28,6 +30,20 @@ class VisitorExport implements
         return ProfilPengunjung::withCount('kunjungans')
             ->with(['kunjungans' => fn ($q) => $q->with('wbp')->latest('tanggal_kunjungan')->limit(1)])
             ->get();
+    }
+
+    public function drawings()
+    {
+        $drawing = new Drawing();
+        $drawing->setName('Logo Kemenimipas');
+        $drawing->setDescription('Logo Kemenimipas');
+        $drawing->setPath(public_path('img/logo.png'));
+        $drawing->setHeight(60);
+        $drawing->setCoordinates('A1');
+        $drawing->setOffsetX(10);
+        $drawing->setOffsetY(10);
+
+        return $drawing;
     }
 
     public function title(): string

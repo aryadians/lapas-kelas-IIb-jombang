@@ -8,32 +8,6 @@
     @include('partials.kop_surat_pdf')
 </head>
 <body>
-    {{-- KOP SURAT RESMI --}}
-    <div class="kop-container">
-        <img src="{{ public_path('img/logo.png') }}" alt="Logo" class="logo-left">
-        <div class="kop-text">
-            <div class="kop-line1">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN REPUBLIK INDONESIA</div>
-            <div class="kop-line2">KANTOR WILAYAH JAWA TIMUR</div>
-            <div class="kop-line3">LEMBAGA PEMASYARAKATAN KELAS IIB JOMBANG</div>
-            <div class="kop-addr">Jl. KH. Wahid Hasyim No. 155 Jombang, Jawa Timur 61419 | Telp. (0321) 861205</div>
-        </div>
-        <img src="{{ public_path('img/logo.png') }}" alt="Logo" class="logo-right">
-    </div>
-    <div class="kop-divider"></div>
-
-    {{-- JUDUL DOKUMEN --}}
-    <div class="doc-title-block">
-        <div class="doc-title">LAPORAN DATA KUNJUNGAN</div>
-        <div class="doc-subtitle">Periode: {{ strtoupper($label) }}</div>
-    </div>
-
-    {{-- META STRIP --}}
-    <div class="meta-strip">
-        <span>📅 Dicetak: {{ now()->translatedFormat('d F Y, H:i') }} WIB</span>
-        <span>👤 Oleh: {{ auth()->user()?->name ?? 'Admin' }}</span>
-        <span>📊 Total Data: {{ $kunjungans->count() }} kunjungan</span>
-    </div>
-
     {{-- REKAP STATISTIK --}}
     @php
         use App\Enums\KunjunganStatus;

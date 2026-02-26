@@ -12,6 +12,8 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithDrawings;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -24,7 +26,7 @@ use PhpOffice\PhpSpreadsheet\Chart\Chart;
 
 class KunjunganExport implements
     FromCollection, WithHeadings, WithMapping,
-    WithStyles, ShouldAutoSize, WithTitle, WithColumnFormatting, WithEvents
+    WithStyles, ShouldAutoSize, WithTitle, WithColumnFormatting, WithEvents, WithDrawings
 {
     protected $period;
     protected $date;
@@ -38,6 +40,20 @@ class KunjunganExport implements
     {
         $this->period = $period;
         $this->date   = $date ? Carbon::parse($date) : null;
+    }
+
+    public function drawings()
+    {
+        $drawing = new Drawing();
+        $drawing->setName('Logo Kemenimipas');
+        $drawing->setDescription('Logo Kemenimipas');
+        $drawing->setPath(public_path('img/logo.png'));
+        $drawing->setHeight(60);
+        $drawing->setCoordinates('A1');
+        $drawing->setOffsetX(10);
+        $drawing->setOffsetY(10);
+
+        return $drawing;
     }
 
     public function collection()
