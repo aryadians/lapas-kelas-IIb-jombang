@@ -528,10 +528,10 @@
 
                             <div class="group">
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                                    <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Wajib)
+                                    <i class="fa-solid fa-envelope text-blue-500"></i> Alamat Email (Opsional)
                                 </label>
-                                <input id="email_pengunjung" type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required placeholder="contoh@gmail.com">
-                                <p class="text-[10px] text-slate-400 mt-1">*Tiket dan Status akan dikirim ke email ini.</p>
+                                <input id="email_pengunjung" type="email" name="email_pengunjung" value="{{ old('email_pengunjung') }}" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" placeholder="contoh@gmail.com">
+                                <p class="text-[10px] text-slate-400 mt-1">*Kosongkan jika tidak ingin menerima tiket via email.</p>
                             </div>
 
                             <div class="md:col-span-2 group">

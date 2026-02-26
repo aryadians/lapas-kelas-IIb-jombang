@@ -26,7 +26,7 @@ class StoreKunjunganRequest extends FormRequest
             'nama_pengunjung'               => 'required|string|max:255',
             'nik_ktp'                       => 'required|numeric|digits:16',
             'nomor_hp'                      => 'required|string',
-            'email_pengunjung'              => 'required|email',
+            'email_pengunjung'              => 'nullable|email',
             'alamat_lengkap'                => 'required|string',
             'barang_bawaan'                 => 'nullable|string',
             'jenis_kelamin'                 => 'required|in:Laki-laki,Perempuan',

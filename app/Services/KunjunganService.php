@@ -191,13 +191,15 @@ class KunjunganService
             Log::error('KunjunganService: Failed to dispatch WA: ' . $e->getMessage());
         }
 
-        // 2. Email Notification
-        try {
-            // Use Path for attachment
-            $fullQrPath = Storage::disk('public')->path($qrCodePath);
-            Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, $fullQrPath));
-        } catch (\Exception $e) {
-            Log::error('KunjunganService: Failed to dispatch Email: ' . $e->getMessage());
+        // 2. Email Notification (Hanya jika email diisi)
+        if (!empty($kunjungan->email_pengunjung)) {
+            try {
+                // Use Path for attachment
+                $fullQrPath = Storage::disk('public')->path($qrCodePath);
+                Mail::to($kunjungan->email_pengunjung)->send(new KunjunganStatusMail($kunjungan, $fullQrPath));
+            } catch (\Exception $e) {
+                Log::error('KunjunganService: Failed to dispatch Email: ' . $e->getMessage());
+            }
         }
     }
 }
