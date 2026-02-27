@@ -740,29 +740,11 @@
             </script>
         
             @stack('scripts')
-        {{-- NProgress for visual loading feedback --}}
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
-    <style>
-        #nprogress .bar { background: #3b82f6 !important; height: 3px !important; }
-        #nprogress .peg { box-shadow: 0 0 10px #3b82f6, 0 0 5px #3b82f6 !important; }
-    </style>
-
-    <script>
-        // Tampilkan loading bar saat mulai pindah halaman
-        window.addEventListener('beforeunload', () => NProgress.start());
-        // Jika menggunakan instant.page, kita bisa trigger start lebih awal
-        document.addEventListener('click', (e) => {
-            const link = e.target.closest('a');
-            if (link && link.href && !link.target && !link.href.includes('#')) {
-                NProgress.start();
-            }
-        });
-    </script>
-
-    {{-- Instant Page for Faster Navigation --}}
-    <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
-</body>
-        
-        </html>
+        {{-- NProgress dihapus sesuai permintaan --}}
+    
+        {{-- Instant Page for Faster Navigation --}}
+        <script src="//instant.page/5.2.0" type="module" integrity="sha384-jnZyxPjiipSbm6WFEJp1hi6VExjQ7uE6TRiMUNGR6fInGo4InAsISAbHsGuNwXAY"></script>
+    </body>
+    
+    </html>
         
