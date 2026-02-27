@@ -40,8 +40,8 @@
         <div class="mb-4 flex flex-col items-center">
             <a href="{{ url('/') }}" class="flex flex-col items-center group">
                 {{-- Logo bulat dengan border --}}
-                <div class="relative mb-4">
-                    <img src="{{ asset('img/logo.png') }}" class="w-24 h-24 rounded-full border-4 border-yellow-500 shadow-2xl group-hover:scale-110 transition-transform duration-300 bg-white p-2" alt="Logo Lapas Kelas IIB Jombang">
+                <div class="relative mb-4 shrink-0 flex-none w-24 h-24">
+                    <img src="{{ asset('img/logo.png') }}" class="w-full h-full aspect-square object-contain rounded-full border-4 border-yellow-500 shadow-2xl group-hover:scale-110 transition-transform duration-300 bg-white p-2" alt="Logo Lapas Kelas IIB Jombang">
                     <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
                 </div>
                 <h2 class="text-2xl font-bold text-white tracking-wide text-center">LAPAS KELAS IIB JOMBANG</h2>

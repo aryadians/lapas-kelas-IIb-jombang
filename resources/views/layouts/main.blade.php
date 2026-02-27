@@ -63,9 +63,9 @@
                 {{-- PERBAIKAN 2: Margin negatif diperbesar (-ml-4 di mobile, -ml-10 di desktop) untuk menggeser paksa ke kiri --}}
               <div class="flex-shrink-0 flex items-center gap-2 -ml-2 lg:-ml-6 pl-6">
                     <a href="{{ url('/') }}" class="flex items-center gap-2 group">
-                        <div class="relative">
+                        <div class="relative shrink-0 flex-none h-10 w-10 lg:h-12 lg:w-12">
                             {{-- Logo Image --}}
-                            <img class="h-10 w-10 lg:h-12 lg:w-12 rounded-full border-2 border-yellow-500 shadow-lg group-hover:scale-105 transition-transform duration-300 bg-white p-1"
+                            <img class="w-full h-full aspect-square object-contain rounded-full border-2 border-yellow-500 shadow-lg group-hover:scale-105 transition-transform duration-300 bg-white p-1"
                                 src="{{ asset('img/logo.png') }}"
                                 alt="Logo Lapas">
                             <div class="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-20 group-hover:opacity-40 transition-opacity"></div>
@@ -480,9 +480,9 @@
                             {{-- Logo & Judul --}}
                             <div>
                                 <div class="flex items-center gap-4 mb-5">
-                                    <div class="relative group cursor-pointer drop-shadow-2xl">
+                                    <div class="relative group cursor-pointer drop-shadow-2xl shrink-0 flex-none w-16 h-16">
                                         <div class="absolute -inset-2 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full blur opacity-20 group-hover:opacity-60 transition duration-500"></div>
-                                        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-16 w-auto relative transform group-hover:scale-105 transition-transform duration-500">
+                                        <img src="{{ asset('img/logo.png') }}" alt="Logo" class="w-full h-full aspect-square object-contain bg-white p-1 rounded-full relative transform group-hover:scale-105 transition-transform duration-500 border-2 border-yellow-500 shadow-lg">
                                     </div>
                                     <div class="flex flex-col justify-center border-l-2 border-white/20 pl-4 py-1">
                                         <h3 class="text-xl md:text-2xl font-black text-white tracking-widest uppercase">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN<span class="block text-sm md:text-base font-medium font-sans text-yellow-400 tracking-wider">Republik Indonesia</span></h3>

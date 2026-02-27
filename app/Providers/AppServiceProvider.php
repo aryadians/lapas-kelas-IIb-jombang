@@ -29,6 +29,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (env('FORCE_HTTPS', false)) {
+            $host = request()->getHost();
+            if (!in_array($host, ['localhost', '127.0.0.1', '::1'])) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+        }
+
         RateLimiter::for('guest_submission', function (Request $request) {
             return Limit::perMinute(3)->by($request->ip());
         });
