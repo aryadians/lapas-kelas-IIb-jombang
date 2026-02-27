@@ -467,7 +467,7 @@
                                             <p class="text-sm font-bold text-white leading-none">Jombang, Jawa Timur</p>
                                         </div>
                                     </div>
-                                    <a href="https://maps.app.goo.gl/95aRWehG87J8a3eRA" target="_blank" class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-slate-900 text-xs font-black rounded-lg transition-colors shadow-lg active:scale-95">
+                                    <a href="https://maps.app.goo.gl/tZvXwoiNGTNPJmjf9" target="_blank" class="px-3 py-1.5 bg-yellow-500 hover:bg-yellow-400 text-slate-900 text-xs font-black rounded-lg transition-colors shadow-lg active:scale-95">
                                         Petunjuk Arah
                                     </a>
                                 </div>
