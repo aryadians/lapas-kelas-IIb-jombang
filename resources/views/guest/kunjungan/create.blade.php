@@ -36,7 +36,7 @@
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
 <div x-data="{ 
-    showForm: {{ session('errors') || session('error') ? 'true' : 'false' }} 
+    showForm: {{ (session('errors') || session('error') || request()->has('form')) ? 'true' : 'false' }} 
 }" class="bg-slate-50 min-h-screen pb-20">
 
     {{-- ============================================================== --}}
@@ -62,12 +62,22 @@
                 <p class="text-base sm:text-lg text-gray-200 max-w-4xl mx-auto leading-relaxed drop-shadow-sm">
                     Mohon pelajari <strong class="text-yellow-300 underline decoration-yellow-400">Jadwal</strong>, <strong class="text-yellow-300 underline decoration-yellow-400">Alur Layanan</strong>, dan <strong class="text-yellow-300 underline decoration-yellow-400">Ketentuan Barang</strong> di bawah ini sebelum mengisi formulir pendaftaran demi kelancaran kunjungan Anda.
                 </p>
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-sm font-medium">
-                        <i class="fa-solid fa-shield-alt mr-2"></i> Aman & Terpercaya
-                    </div>
-                    <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-sm font-medium">
-                        <i class="fa-solid fa-clock mr-2"></i> Proses Cepat
+                
+                {{-- Quick Action Buttons for Better UX --}}
+                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'instant'})" 
+                        class="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-slate-950 font-black py-4 px-10 rounded-full shadow-2xl transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 group">
+                        <i class="fa-solid fa-file-signature text-xl group-hover:rotate-12 transition-transform"></i>
+                        LANGSUNG ISI FORMULIR
+                    </button>
+                    
+                    <div class="flex gap-3">
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-xs sm:text-sm font-medium">
+                            <i class="fa-solid fa-shield-alt mr-2 text-yellow-400"></i> Aman & Terpercaya
+                        </div>
+                        <div class="bg-white bg-opacity-10 backdrop-blur-sm border border-white border-opacity-20 px-4 py-2 rounded-full text-white text-xs sm:text-sm font-medium">
+                            <i class="fa-solid fa-clock mr-2 text-yellow-400"></i> Proses Cepat
+                        </div>
                     </div>
                 </div>
             </div>
@@ -406,7 +416,7 @@
                         </p>
                     </div>
 
-                    <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'smooth'})"
+                    <button @click="showForm = true; window.scrollTo({top: 0, behavior: 'instant'})"
                         class="group relative inline-flex items-center justify-start overflow-hidden rounded-full bg-gradient-to-r from-blue-950 to-black px-8 py-4 sm:px-12 sm:py-6 font-bold text-white transition-all duration-300 hover:from-black hover:to-blue-950 hover:scale-105 shadow-2xl hover:shadow-blue-900/50 border-2 border-yellow-500 border-opacity-50">
                         <span class="absolute right-0 -mt-12 h-32 w-8 translate-x-12 rotate-12 bg-gradient-to-b from-yellow-500 to-yellow-600 opacity-30 transition-all duration-1000 ease-out group-hover:-translate-x-40"></span>
                         <span class="relative flex items-center gap-3 text-base sm:text-lg tracking-wide">
