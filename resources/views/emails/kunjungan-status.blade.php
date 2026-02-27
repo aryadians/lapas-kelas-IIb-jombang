@@ -127,10 +127,10 @@
                     </table>
 
                     {{-- QR CODE AREA --}}
-                    {{-- Kita menggunakan CID Attachment, BUKAN generate on-the-fly --}}
-                    <div style="text-align: center; margin: 25px 0; padding: 20px; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 8px;">
-                        <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px;">
-                            {{ $kunjungan->status === \App\Enums\KunjunganStatus::APPROVED ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Menunggu Aktivasi):' }}
+                    {{-- Kita menggunakan CID Attachment agar gambar muncul meskipun offline/spam --}}
+                    <div style="text-align: center; margin: 25px 0; padding: 20px; background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <p style="margin: 0 0 15px 0; color: #64748b; font-size: 13px; font-weight: bold;">
+                            {{ $kunjungan->status === \App\Enums\KunjunganStatus::APPROVED ? 'Tunjukkan QR Code ini kepada petugas:' : 'QR Code (Akan Aktif Setelah Disetujui):' }}
                         </p>
                         
                         @php
@@ -147,20 +147,20 @@
                         @endphp
 
                         @if($finalPath)
-                            @if(str_ends_with($finalPath, '.svg'))
-                                {{-- SVG fallback: Use API to get PNG for email client compatibility --}}
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($kunjungan->qr_token) }}" 
-                                     alt="QR Code" 
-                                     style="width: 200px; height: 200px;">
-                            @else
+                            {{-- Gunakan $message->embed untuk CID embedding yang paling stabil --}}
+                            <div style="background: white; padding: 10px; display: inline-block; border-radius: 8px;">
                                 <img src="{{ $message->embed($finalPath) }}" 
-                                     alt="QR Code" 
-                                     style="width: 200px; height: 200px;">
-                            @endif
+                                     alt="QR Code Kunjungan" 
+                                     width="200"
+                                     height="200"
+                                     style="display: block; width: 200px; height: 200px; border: none;">
+                            </div>
                         @else
-                            <div style="padding: 20px; border: 1px solid #ddd; background: #fff; display: inline-block;">
-                                <p style="margin: 0; font-size: 12px; color: #666;">QR Code tersedia di halaman status:</p>
-                                <strong style="font-size: 16px;">{{ $kunjungan->kode_kunjungan }}</strong>
+                            {{-- Fallback jika file fisik belum digenerate --}}
+                            <div style="padding: 20px; border: 2px solid #e2e8f0; background: #f8fafc; display: inline-block; border-radius: 8px;">
+                                <p style="margin: 0; font-size: 12px; color: #64748b;">Kode Booking Anda:</p>
+                                <strong style="font-size: 24px; color: #1e293b; letter-spacing: 2px;">{{ $kunjungan->kode_kunjungan }}</strong>
+                                <p style="margin: 5px 0 0 0; font-size: 10px; color: #94a3b8;">(Bawa kode ini saat datang ke Lapas)</p>
                             </div>
                         @endif
                     </div>
@@ -199,8 +199,13 @@
 
             {{-- FOOTER --}}
             <div class="footer">
-                <p style="margin: 0; font-weight: bold;">Lembaga Pemasyarakatan Kelas IIB Jombang</p>
+                <p style="margin: 0; font-weight: bold; color: #475569;">Lembaga Pemasyarakatan Kelas IIB Jombang</p>
                 <p style="margin: 5px 0 0 0;">Jl. Wahid Hasyim No. 123, Jombang, Jawa Timur</p>
+                <div style="margin: 20px 0; padding: 10px; background-color: #fef2f2; border-radius: 6px; border: 1px solid #fee2e2;">
+                    <p style="margin: 0; color: #b91c1c; font-size: 11px;">
+                        <strong>💡 Tips:</strong> Jika email ini masuk ke folder <strong>SPAM</strong>, mohon klik <strong>"Bukan Spam"</strong> atau <strong>"Laporkan Bukan Spam"</strong> agar gambar QR Code dapat muncul dengan sempurna di lain waktu.
+                    </p>
+                </div>
                 <p style="margin: 15px 0 0 0; opacity: 0.7;">&copy; {{ date('Y') }} Sistem Informasi Lapas Kelas IIB Jombang. All rights reserved.</p>
             </div>
         </div>

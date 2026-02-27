@@ -939,6 +939,7 @@
                     html: `<div class="text-center">
                             <p class="mb-4 text-slate-700">{!! session('success') !!}</p>
                             <p class="text-xs text-slate-500 bg-slate-100 p-2 rounded">Silakan klik tombol di bawah untuk melihat kode booking dan tiket antrian Anda.</p>
+                            <p class="text-[10px] mt-2 text-red-500 font-semibold italic">PENTING: Cek folder SPAM jika email konfirmasi tidak muncul di kotak masuk utama.</p>
                            </div>`,
                     @if($statusUrl)
                     confirmButtonText: '<i class="fa-solid fa-ticket mr-2"></i> LIHAT TIKET SAYA',
