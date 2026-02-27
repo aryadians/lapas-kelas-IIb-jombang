@@ -54,6 +54,7 @@ class VisitConfigController extends Controller
             'mail_encryption' => 'nullable|string',
             'mail_from_address' => 'nullable|email',
             'admin_email' => 'nullable|email',
+            'monday_registration_special' => 'nullable|boolean',
         ]);
 
         // 2. Update Schedules
@@ -97,11 +98,20 @@ class VisitConfigController extends Controller
             'mail_encryption' => $request->mail_encryption ?? 'tls',
             'mail_from_address' => $request->mail_from_address ?? '',
             'admin_email' => $request->admin_email ?? '',
+            'monday_registration_special' => $request->has('monday_registration_special') ? '1' : '0',
         ];
 
         foreach ($settingsToUpdate as $key => $value) {
             if ($value !== null) {
-                VisitSetting::updateOrCreate(['key' => $key], ['value' => $value]);
+                $updateData = ['value' => $value];
+                
+                // Jika setting belum ada, kita perlu memberikan display_name dan type default agar tidak error database
+                if ($key === 'monday_registration_special') {
+                    $updateData['display_name'] = 'Pendaftaran Khusus Hari Senin (Jumat-Minggu)';
+                    $updateData['type'] = 'boolean';
+                }
+
+                VisitSetting::updateOrCreate(['key' => $key], $updateData);
             }
         }
 

@@ -110,6 +110,9 @@ class KunjunganController extends Controller
 
         // Ambil hari dari range leadTime sampai maxLeadTime
         $diffDays = $date->diffInDays($maxDate);
+        $isMondaySpecial = ($visitSettings['monday_registration_special'] ?? '0') == '1';
+        $isTodayFridayToSunday = now()->isFriday() || now()->isSaturday() || now()->isSunday();
+
         for ($i = 0; $i <= $diffDays; $i++) {
             $currentDate = $date->copy()->addDays($i);
             $dayOfWeek = $currentDate->dayOfWeek;
@@ -123,6 +126,39 @@ class KunjunganController extends Controller
                 ];
             }
         }
+
+        // TAMBAHAN KHUSUS HARI SENIN
+        if ($isMondaySpecial && $isTodayFridayToSunday) {
+            $nextMonday = now()->next(Carbon::MONDAY);
+            $dayNameIndo = $dayMapping[Carbon::MONDAY];
+            
+            // Cek apakah Senin tersebut sudah masuk dalam list (untuk menghindari duplikat jika leadTime pendek)
+            $isMondayExists = false;
+            if (isset($datesByDay[$dayNameIndo])) {
+                foreach ($datesByDay[$dayNameIndo] as $existing) {
+                    if ($existing['value'] === $nextMonday->format('Y-m-d')) {
+                        $isMondayExists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$isMondayExists && in_array($dayNameIndo, $openDays)) {
+                // Tambahkan Senin mendatang ke awal list tanggal Senin
+                $newMonday = [
+                    'value' => $nextMonday->format('Y-m-d'),
+                    'label' => $nextMonday->translatedFormat('d F Y'),
+                ];
+                
+                if (!isset($datesByDay[$dayNameIndo])) {
+                    $datesByDay[$dayNameIndo] = [];
+                }
+                
+                // Unshift agar muncul paling depan jika ada Senin berikutnya lagi
+                array_unshift($datesByDay[$dayNameIndo], $newMonday);
+            }
+        }
+
         return view('guest.kunjungan.create', [
             'openSchedules' => $openSchedules,
             'datesByDay' => $datesByDay,

@@ -53,8 +53,14 @@ class RegistrationValidationService
 
         // 0. CEK BATAS H-N PENDAFTARAN
         $leadTime = (int) ($visitSettings['registration_lead_time'] ?? 1);
+        $isMondaySpecial = ($visitSettings['monday_registration_special'] ?? '0') == '1';
+        $isTargetMonday = $tanggal->isMonday();
+        $isTodayFridayToSunday = now()->isFriday() || now()->isSaturday() || now()->isSunday();
+
+        $allowMonday = $isMondaySpecial && $isTargetMonday && $isTodayFridayToSunday;
+
         $minDate = Carbon::today()->addDays($leadTime);
-        if ($tanggal->lt($minDate)) {
+        if ($tanggal->lt($minDate) && !$allowMonday) {
             return $this->error('tanggal_kunjungan', "Pendaftaran untuk tanggal ini sudah ditutup. Minimal pendaftaran adalah $leadTime hari sebelum kunjungan.");
         }
 

@@ -217,6 +217,19 @@
                                 <p class="text-[10px] text-slate-400 italic">Membatasi kalender "Pilih Hari" di formulir pengunjung agar tidak bisa memilih tanggal melebihi batas ini.</p>
                             </div>
                         </div>
+                        <div class="h-px bg-slate-100"></div>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                <div>
+                                    <h3 class="font-black text-blue-900 leading-tight">Pendaftaran Khusus Hari Senin</h3>
+                                    <p class="text-[10px] text-blue-600 font-medium">Izinkan pendaftaran Senin mulai hari Jumat-Minggu (Abaikan H-N)</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="monday_registration_special" value="1" class="sr-only peer" {{ ($settings['monday_registration_special'] ?? '0') == '1' ? 'checked' : '' }}>
+                                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

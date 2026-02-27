@@ -143,6 +143,12 @@ class VisitNewSettingsSeeder extends Seeder
                 'value' => 'tundjungm@gmail.com',
                 'display_name' => 'Email Admin / Penerima Notifikasi',
                 'type' => 'string'
+            ],
+            [
+                'key' => 'monday_registration_special',
+                'value' => '0',
+                'display_name' => 'Pendaftaran Khusus Hari Senin (Jumat-Minggu)',
+                'type' => 'boolean'
             ]
         ];
 
