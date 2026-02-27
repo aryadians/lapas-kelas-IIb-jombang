@@ -36,6 +36,14 @@
             <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.02"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
         </div>
 
+        {{-- TOMBOL KEMBALI KE BERANDA (POLISHED) --}}
+        <div class="absolute top-6 left-6 sm:top-8 sm:left-8 z-50">
+            <a href="{{ url('/') }}" class="inline-flex items-center gap-2.5 px-6 py-2.5 bg-white/5 hover:bg-white/20 text-white backdrop-blur-xl border border-white/10 hover:border-white/40 rounded-full transition-all duration-300 shadow-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:-translate-y-1 group group-hover:bg-white/10">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="font-bold text-[13px] tracking-widest uppercase drop-shadow-md">Kembali</span>
+            </a>
+        </div>
+
         {{-- LOGO DI ATAS FORM --}}
         <div class="mb-4 flex flex-col items-center">
             <a href="{{ url('/') }}" class="flex flex-col items-center group">
