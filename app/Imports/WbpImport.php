@@ -17,10 +17,18 @@ class WbpImport implements ToCollection, SkipsEmptyRows
     public function collection(Collection $rows)
     {
         $processedRegistrations = [];
+        $blokIdx = -1;
+        $kamarIdx = -1;
 
         foreach ($rows as $index => $row) {
             // Lewati header jika baris pertama mengandung kata kunci tertentu
-            if ($index === 0 && $this->isHeader($row)) {
+            if ($this->isHeader($row)) {
+                // Dinamis mencari indeks kolom Blok dan Kamar jika ada
+                foreach ($row->values()->toArray() as $colIdx => $colName) {
+                    $cn = strtolower(trim((string)$colName));
+                    if (str_contains($cn, 'blok')) $blokIdx = $colIdx;
+                    if (str_contains($cn, 'kamar') || str_contains($cn, 'sel')) $kamarIdx = $colIdx;
+                }
                 continue;
             }
 
@@ -33,6 +41,14 @@ class WbpImport implements ToCollection, SkipsEmptyRows
             $tglEkspirasi = null;
             $blok = '-';
             $kamar = '-';
+
+            // Ambil dari deteksi indeks header dinamis (jika ada)
+            if ($blokIdx !== -1 && isset($data[$blokIdx]) && trim((string)$data[$blokIdx]) !== '') {
+                $blok = trim((string)$data[$blokIdx]);
+            }
+            if ($kamarIdx !== -1 && isset($data[$kamarIdx]) && trim((string)$data[$kamarIdx]) !== '') {
+                $kamar = trim((string)$data[$kamarIdx]);
+            }
 
             // LOGIKA DETEKSI KOLOM (FLEXIBLE)
             foreach ($data as $cellIndex => $cell) {
@@ -68,11 +84,23 @@ class WbpImport implements ToCollection, SkipsEmptyRows
             // Simpan jika minimal ada Nama dan No Reg
             if ($nama && $noReg && !in_array($noReg, $processedRegistrations)) {
                 
-                // Jika posisi kolom fix (format khusus file Excel yang Anda berikan):
-                // 0: Nama, 1: No Reg, 2: Tgl Masuk, 3: Tgl Ekspirasi, 10: Blok, 11: Kamar
-                if ($this->isNumeric($data[10] ?? null)) {
-                     // Jika kolom 10 angka, berarti logic geser
+                // Jika posisi kolom fix (format khusus file Excel SDP Lapas standar)
+                // Fallback jika tidak ditemukan nama header 'blok' / 'kamar'
+                if ($blok === '-' && isset($data[10]) && trim((string)$data[10]) !== '') {
+                     $blok = trim((string)$data[10]);
                 }
+                if ($kamar === '-' && isset($data[11]) && trim((string)$data[11]) !== '') {
+                     $kamar = trim((string)$data[11]);
+                }
+                
+                // Fallback format CSV Ringkas (misal Kolom 4 & 5)
+                if ($blok === '-' && isset($data[4]) && !preg_match('/^\d{1,2}[\/\-]\d{1,2}/', (string)$data[4]) && strlen(trim((string)$data[4])) <= 10) {
+                     $blok = trim((string)$data[4]);
+                }
+                if ($kamar === '-' && isset($data[5]) && !preg_match('/^\d{1,2}[\/\-]\d{1,2}/', (string)$data[5]) && strlen(trim((string)$data[5])) <= 10) {
+                     $kamar = trim((string)$data[5]);
+                }
+
                 $inferredKode = null;
                 if (!empty($noReg)) {
                     $firstChar = strtoupper(substr(trim($noReg), 0, 1));
