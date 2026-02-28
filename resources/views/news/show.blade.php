@@ -107,17 +107,53 @@
         </div>
 
         {{-- Main Content --}}
-        <article class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <article class="bg-white rounded-2xl shadow-xl overflow-hidden mt-6">
             @if(is_array($news->image) && count($news->image) > 0)
-                <div class="relative">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-{{ min(count($news->image), 3) }} gap-4 p-8 bg-gray-50">
-                        @foreach($news->image as $img)
-                            <div class="relative group overflow-hidden rounded-xl shadow-lg">
-                                <img src="{{ $img }}" alt="{{ $news->title }}" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {{-- Instagram-Style Image Slider using Alpine.js --}}
+                <div x-data="{ 
+                        activeSlide: 0, 
+                        totalSlides: {{ count($news->image) }},
+                        next() { this.activeSlide = this.activeSlide === this.totalSlides - 1 ? 0 : this.activeSlide + 1; },
+                        prev() { this.activeSlide = this.activeSlide === 0 ? this.totalSlides - 1 : this.activeSlide - 1; }
+                    }" 
+                    class="relative w-full aspect-square md:aspect-[4/3] bg-gray-100 overflow-hidden group">
+                    
+                    {{-- Slides Container --}}
+                    <div class="flex h-full transition-transform duration-500 ease-in-out" 
+                         :style="`transform: translateX(-${activeSlide * 100}%)`">
+                        @foreach($news->image as $index => $img)
+                            <div class="w-full h-full flex-shrink-0 relative bg-black/5 flex items-center justify-center">
+                                <img src="{{ $img }}" alt="{{ $news->title }} - Slide {{ $index + 1 }}" 
+                                     class="w-full h-full object-contain backdrop-blur-2xl" loading="lazy">
                             </div>
                         @endforeach
                     </div>
+
+                    {{-- Left & Right Navigation Arrows --}}
+                    @if(count($news->image) > 1)
+                        <button @click="prev()" 
+                                class="absolute top-1/2 left-4 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity z-10 focus:outline-none">
+                            <i class="fas fa-chevron-left text-sm md:text-base"></i>
+                        </button>
+                        <button @click="next()" 
+                                class="absolute top-1/2 right-4 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white text-gray-800 shadow-lg flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity z-10 focus:outline-none">
+                            <i class="fas fa-chevron-right text-sm md:text-base"></i>
+                        </button>
+                        
+                        {{-- Instagram-like Dots/Pagination Indicator --}}
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10 shrink-0">
+                            <template x-for="i in totalSlides" :key="i">
+                                <button @click="activeSlide = i - 1"
+                                        class="transition-all duration-300 rounded-full bg-white shadow-sm"
+                                        :class="activeSlide === (i - 1) ? 'w-2 h-2 opacity-100' : 'w-1.5 h-1.5 opacity-50 hover:opacity-100'"></button>
+                            </template>
+                        </div>
+                        
+                        {{-- Image Counter Badge (Top Right) --}}
+                        <div class="absolute top-4 right-4 bg-black/60 text-white text-[10px] md:text-xs font-bold px-2.5 py-1 rounded-full backdrop-blur-sm z-10 tracking-widest">
+                            <span x-text="activeSlide + 1"></span> / {{ count($news->image) }}
+                        </div>
+                    @endif
                 </div>
             @endif
 
