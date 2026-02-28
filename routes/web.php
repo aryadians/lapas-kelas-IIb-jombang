@@ -69,23 +69,7 @@ Route::get('/sitemap.xml', function () {
 // =========================================================================
 // 1. HALAMAN DEPAN (PUBLIK - PENGUNJUNG)
 // =========================================================================
-Route::get('/', function () {
-    // Gunakan Cache untuk meningkatkan performa halaman utama
-    $news = Cache::remember('homepage_news', 3600, function() {
-        return App\Models\News::where('status', 'published')->latest()->take(4)->get();
-    });
-
-    $announcements = Cache::remember('homepage_announcements', 3600, function() {
-        return App\Models\Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
-    });
-
-    // Ambil Banner Aktif (Non-cached agar perubahan admin langsung terlihat) - DIUBAH: Sekarang dicache!
-    $banners = Cache::rememberForever('active_banners', function() {
-        return App\Models\Banner::where('is_active', true)->orderBy('order_index')->get();
-    });
-
-    return view('welcome', compact('news', 'announcements', 'banners'));
-});
+Route::get('/', [HomeController::class, 'index']);
 
 // Halaman Statis Publik
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');

@@ -7,6 +7,7 @@ use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class NewsController extends Controller
 {
@@ -71,6 +72,8 @@ class NewsController extends Controller
         }
 
         News::create($data);
+
+        Cache::forget('homepage_news');
 
         return redirect()->route('news.index')->with('success', 'Berita berhasil ditambahkan!');
     }
@@ -140,6 +143,8 @@ class NewsController extends Controller
 
         $news->update($data);
 
+        Cache::forget('homepage_news');
+
         return redirect()->route('news.index')->with('success', 'Berita berhasil diperbarui!');
     }
 
@@ -153,6 +158,8 @@ class NewsController extends Controller
         }
 
         $news->delete();
+
+        Cache::forget('homepage_news');
 
         return redirect()->route('news.index')->with('success', 'Berita berhasil dihapus!');
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AnnouncementController extends Controller
 {
@@ -44,6 +45,8 @@ class AnnouncementController extends Controller
 
         Announcement::create($request->all());
 
+        Cache::forget('homepage_announcements');
+
         return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil dibuat!');
     }
 
@@ -71,6 +74,8 @@ class AnnouncementController extends Controller
 
         $announcement->update($request->all());
 
+        Cache::forget('homepage_announcements');
+
         return redirect()->route('announcements.index')->with('success', 'Pengumuman berhasil diperbarui!');
     }
 
@@ -78,6 +83,7 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
+        Cache::forget('homepage_announcements');
         return redirect()->route('announcements.index')->with('success', 'Pengumuman dihapus!');
     }
 }

@@ -11,6 +11,8 @@ use Symfony\Component\DomCrawler\Crawler;
 use App\Models\News; 
 use App\Models\Announcement; 
 
+use App\Models\Banner; 
+
 class HomeController extends Controller
 {
     /**
@@ -20,11 +22,19 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        // Ambil data berita dan pengumuman untuk view (Sesuaikan Model-nya jika berbeda)
-        // Jika Anda mem-pass variabel ini dari route closure di web.php sebelumnya, 
-        // lebih rapi dipindah ke controller seperti ini.
-        $news = News::latest()->take(2)->get(); 
-        $announcements = Announcement::latest()->take(5)->get();
+        // Gunakan Cache untuk meningkatkan performa halaman utama
+        $news = Cache::remember('homepage_news', 3600, function() {
+            return News::where('status', 'published')->latest()->take(4)->get();
+        });
+
+        $announcements = Cache::remember('homepage_announcements', 3600, function() {
+            return Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
+        });
+
+        // Ambil Banner Aktif
+        $banners = Cache::rememberForever('active_banners', function() {
+            return Banner::where('is_active', true)->orderBy('order_index')->get();
+        });
 
         // Caching data slide Kemenimipas selama 2 jam (7200 detik)
         $kemenimipasSlides = Cache::remember('kemenimipas_slides', 7200, function () {
@@ -64,8 +74,7 @@ class HomeController extends Controller
             }
         });
 
-        // Pastikan nama view sesuai dengan file blade landing page Anda (misal 'welcome')
-        return view('welcome', compact('news', 'announcements', 'kemenimipasSlides'));
+        return view('welcome', compact('news', 'announcements', 'banners', 'kemenimipasSlides'));
     }
 
     /**
