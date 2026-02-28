@@ -22,25 +22,22 @@ class HomeController extends Controller
      */
     public function index(): View
     {
-        // Gunakan Cache untuk meningkatkan performa halaman utama
-        $news = Cache::remember('homepage_news', 3600, function() {
-            // Hanya ambil kolom penting demi menghemat kapasitas cache DB
-            // Hindari mengambil 'content' atau 'image' (base64) secara utuh ke Cache
-            return News::select('id', 'title', 'slug', 'created_at', 'status', 'image')
-                ->where('status', 'published')
-                ->latest()
-                ->take(4)
-                ->get()
-                ->map(function ($item) {
-                    // Ambil gambar pertama saja jika berupa array base64, lalu hapus sisa elemen untuk hemat ukuran cache
-                    if (is_array($item->image) && count($item->image) > 0) {
-                        $item->image = [$item->image[0]];
-                    } else {
-                        $item->image = [];
-                    }
-                    return $item;
-                });
-        });
+        // Mengambil 4 berita terbaru langsung dari Database tanpa Cache.
+        // Base64 image payload terlalu besar untuk MySQL cache table limit (max_allowed_packet).
+        $news = News::select('id', 'title', 'slug', 'content', 'created_at', 'status', 'image')
+            ->where('status', 'published')
+            ->latest()
+            ->take(4)
+            ->get()
+            ->map(function ($item) {
+                // Ambil gambar pertama saja untuk preview homepage
+                if (is_array($item->image) && count($item->image) > 0) {
+                    $item->image = [$item->image[0]];
+                } else {
+                    $item->image = [];
+                }
+                return $item;
+            });
 
         $announcements = Cache::remember('homepage_announcements', 3600, function() {
             return Announcement::where('status', 'published')->orderBy('date', 'desc')->take(5)->get();
