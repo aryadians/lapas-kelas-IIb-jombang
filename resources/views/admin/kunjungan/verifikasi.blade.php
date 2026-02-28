@@ -364,29 +364,37 @@
 
                 html5Qrcode = new Html5Qrcode("qr-reader");
 
-                Html5Qrcode.getCameras().then(devices => {
-                    if (devices && devices.length) {
-                        let cameraId = devices[0].id;
-                        const backCamera = devices.find(d => d.label.toLowerCase().includes('back'));
-                        if (backCamera) {
-                            cameraId = backCamera.id;
+                // Start with environment (rear) camera configuration
+                const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+                
+                html5Qrcode.start(
+                    { facingMode: "environment" },
+                    config,
+                    onScanSuccess,
+                    onScanFailure
+                ).catch((err) => {
+                    // Fallback to getting list of cameras if facingMode fails
+                    console.log("Facing mode 'environment' failed, falling back to device list.", err);
+                    Html5Qrcode.getCameras().then(devices => {
+                        if (devices && devices.length) {
+                            // Try to find a back camera, otherwise just use the first one
+                            let cameraId = devices[0].id;
+                            const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('rear'));
+                            if (backCamera) {
+                                cameraId = backCamera.id;
+                            }
+                            html5Qrcode.start({ deviceId: { exact: cameraId } }, config, onScanSuccess, onScanFailure)
+                            .catch(e => {
+                                showError('Error Kamera', 'Gagal memulai kamera. Pastikan Anda telah memberikan izin akses.');
+                                console.error("Fallback camera start error:", e);
+                            });
+                        } else {
+                            showError('Kamera Tidak Ditemukan', 'Tidak ada perangkat kamera yang terdeteksi di perangkat Anda.');
                         }
-                        
-                        html5Qrcode.start(
-                            { deviceId: { exact: cameraId } },
-                            { fps: 10, qrbox: { width: 250, height: 250 } },
-                            onScanSuccess,
-                            onScanFailure
-                        ).catch((err) => {
-                            showError('Error Kamera', 'Gagal memulai kamera. Pastikan Anda telah memberikan izin akses kamera di browser.');
-                            console.error("Camera start error:", err);
-                        });
-                    } else {
-                        showError('Kamera Tidak Ditemukan', 'Tidak ada perangkat kamera yang terdeteksi di perangkat Anda.');
-                    }
-                }).catch(err => {
-                    showError('Izin Kamera Ditolak', 'Akses ke kamera diperlukan untuk memindai QR Code. Mohon izinkan akses pada browser Anda.');
-                    console.error("Camera permission error:", err);
+                    }).catch(err => {
+                        showError('Izin Kamera Ditolak', 'Akses ke kamera diperlukan untuk memindai QR Code. Mohon izinkan akses pada browser Anda.');
+                        console.error("Camera permission error:", err);
+                    });
                 });
             });
         }
