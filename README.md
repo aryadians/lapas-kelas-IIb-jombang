@@ -12,6 +12,10 @@
     <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
     <img src="https://img.shields.io/badge/Redis-Realtime-DC382D?style=for-the-badge&logo=redis&logoColor=white" alt="Redis">
     <img src="https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
+  <p>
+    <a href="https://lapasjombang.id/" target="_blank">
+      <img src="https://img.shields.io/badge/Website_Resmi-lapasjombang.id-000000?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website Resmi">
+    </a>
   </p>
 </div>
 
@@ -24,7 +28,14 @@
 
 ## 🆕 Pembaruan Terbaru
 
-### 🚀 Versi 1.8.0 (Terbaru)
+### 🚀 Versi 1.8.1 (Terbaru)
+- **🌐 Production Ready** — Sistem kini telah *live* dan dapat diakses publik melalui domain resmi [lapasjombang.id](https://lapasjombang.id/).
+- **⚡ Real-time Cache Sinkronisasi** — Berita dan Pengumuman di beranda kini otomatis tersinkronisasi (*cache invalidation*) secara *real-time* setiap kali admin melakukan penambahan, perubahan, atau penghapusan data.
+- **📷 Smart QR Scanner** — Fitur *Scan* QR Code kini ditingkatkan untuk secara cerdas memprioritaskan penggunaan kamera belakang (*Environment-facing camera*) pada perangkat *mobile* demi kenyamanan petugas.
+- **🎫 Comprehensive Ticket Details** — Optimalisasi *Eager Loading* pada relasi database memastikan detail Nomor Blok dan Kamar Warga Binaan dapat selalu tampil akurat di tiket pengunjung.
+- **✅ Quick Action Update** — Perbaikan pada fungsionalitas tombol jalan pintas (Selesai/Tolak) di tabel Kunjungan Admin dengan *routing* status khusus yang mem-*bypass* validasi form lengkap.
+
+### ✨ Versi 1.8.0
 - **💾 Arsitektur Zero-File Storage (Base64)** — Sistem kini beralih ke penyimpanan **Base64 (LongText)** untuk Foto KTP dan QR Code. Dokumen kini tersimpan aman di dalam database, meningkatkan portabilitas data dan menghilangkan ketergantungan pada file fisik server.
 - **🖼️ CMS Banner Hybrid** — Manajemen banner kini mendukung mode cerdas: **Gambar** disimpan via Base64 (Database), sedangkan **Video** tetap melalui File Storage untuk menjaga performa.
 - **🏷️ Legenda Kode Kunjungan (A/B)** — UI Pendaftaran kini dilengkapi keterangan pemetaan status WBP: **Kode A untuk Tahanan** dan **Kode B untuk Narapidana**.
