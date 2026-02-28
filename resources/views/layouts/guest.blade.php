@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="Pendaftaran Kunjungan Online Lapas Kelas IIB Jombang. Daftarkan kunjungan Anda dengan mudah dan cepat.">
+    <meta name="keywords" content="Daftar Kunjungan Lapas, Tiket Kunjungan Lapas Jombang, Antrian Lapas Jombang">
 
     <title>Lapas Kelas IIB Jombang - Sistem Informasi Pemasyarakatan</title>
 

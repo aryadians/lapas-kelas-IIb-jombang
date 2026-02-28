@@ -1,2 +1,5 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /dashboard
+
+Sitemap: https://lapasjombang.id/sitemap.xml

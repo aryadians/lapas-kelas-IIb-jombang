@@ -60,6 +60,12 @@ use App\Models\Announcement;
 |
 */
 
+// SITEMAP XML untuk SEO
+Route::get('/sitemap.xml', function () {
+    return response()->view('sitemap')->header('Content-Type', 'text/xml');
+});
+
+
 // =========================================================================
 // 1. HALAMAN DEPAN (PUBLIK - PENGUNJUNG)
 // =========================================================================

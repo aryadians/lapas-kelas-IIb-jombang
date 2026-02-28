@@ -161,7 +161,7 @@
                         <a href="{{ route('news.edit', $item->id) }}" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-200 flex items-center justify-center transition-all shadow-sm" title="Edit">
                             <i class="fas fa-pen text-xs"></i>
                         </a>
-                        <button onclick="confirmDelete(event, '{{ $item->id }}', '{{ addslashes(Str::limit($item->title, 20)) }}')" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200 flex items-center justify-center transition-all shadow-sm" title="Hapus">
+                        <button onclick="confirmDeleteNews(event, '{{ $item->id }}', '{{ addslashes(Str::limit($item->title, 20)) }}')" class="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-500 hover:text-red-600 hover:border-red-200 flex items-center justify-center transition-all shadow-sm" title="Hapus">
                             <i class="fas fa-trash text-xs"></i>
                         </button>
                         <form id="delete-form-{{ $item->id }}" action="{{ route('news.destroy', $item->id) }}" method="POST" class="hidden">
@@ -208,7 +208,7 @@
         buttonsStyling: false
     };
 
-    function confirmDelete(event, id, title) {
+    function confirmDeleteNews(event, id, title) {
         event.preventDefault();
         
         Swal.fire({

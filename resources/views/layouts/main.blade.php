@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{-- CSRF Token Wajib untuk AJAX --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="Website Resmi Lapas Kelas IIB Jombang - Sistem Informasi Pelayanan Kunjungan, Berita Terkini, dan Informasi Publik Lembaga Pemasyarakatan Jombang.">
+    <meta name="keywords" content="Lapas Jombang, Lapas Kelas IIB Jombang, Pendaftaran Kunjungan Lapas, Kemenkumham Jombang, Berita Lapas, Pemasyarakatan">
+    <meta name="author" content="Lapas Kelas IIB Jombang">
+    
+    {{-- Open Graph / Facebook --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="Lapas Kelas IIB Jombang">
+    <meta property="og:description" content="Website Resmi Lapas Kelas IIB Jombang - Sistem Informasi Pelayanan Kunjungan.">
+    <meta property="og:image" content="{{ asset('img/logo.png') }}">
 
     <title>Lapas Kelas IIB Jombang</title>
 

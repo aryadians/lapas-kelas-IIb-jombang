@@ -157,7 +157,7 @@
                                 class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-indigo-100 hover:text-indigo-600 flex items-center justify-center text-slate-500 text-sm transition-all" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button onclick="confirmDelete(event, '{{ $item->id }}', '{{ addslashes($item->title) }}')"
+                            <button onclick="confirmDeleteAnnouncement(event, '{{ $item->id }}', '{{ addslashes($item->title) }}')"
                                 class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-100 hover:text-red-600 flex items-center justify-center text-slate-500 text-sm transition-all" title="Hapus">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
@@ -194,7 +194,7 @@
 </div>
 
 <script>
-    function confirmDelete(event, id, title) {
+    function confirmDeleteAnnouncement(event, id, title) {
         event.preventDefault();
         Swal.fire({
             customClass: {
