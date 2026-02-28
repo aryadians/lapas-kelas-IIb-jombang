@@ -25,9 +25,11 @@
         removeAllVideos: false,
         addImages(files) {
             Array.from(files).forEach(f => this.newImages.push({ file: f, url: URL.createObjectURL(f), name: f.name, size: (f.size/1024/1024).toFixed(2) }));
+            this.syncToInput('images', this.newImages);
         },
         addVideos(files) {
             Array.from(files).forEach(f => this.newVideos.push({ file: f, url: URL.createObjectURL(f), name: f.name, size: (f.size/1024/1024).toFixed(2) }));
+            this.syncToInput('videos', this.newVideos);
         },
         removeNewImage(idx) { this.newImages.splice(idx, 1); this.syncToInput('images', this.newImages); },
         removeNewVideo(idx) { this.newVideos.splice(idx, 1); this.syncToInput('videos', this.newVideos); },

@@ -24,9 +24,11 @@
         videos: [],
         addImages(files) {
             Array.from(files).forEach(f => this.images.push({ file: f, url: URL.createObjectURL(f), name: f.name, size: (f.size/1024/1024).toFixed(2) }));
+            this.syncToInput('images', this.images);
         },
         addVideos(files) {
             Array.from(files).forEach(f => this.videos.push({ file: f, url: URL.createObjectURL(f), name: f.name, size: (f.size/1024/1024).toFixed(2) }));
+            this.syncToInput('videos', this.videos);
         },
         removeImage(idx) { this.images.splice(idx, 1); this.syncToInput('images', this.images); },
         removeVideo(idx) { this.videos.splice(idx, 1); this.syncToInput('videos', this.videos); },
