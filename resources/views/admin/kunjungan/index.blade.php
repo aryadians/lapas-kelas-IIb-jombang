@@ -324,7 +324,7 @@
                                         </a>
                                         {{-- TOLAK --}}
                                         <button type="button"
-                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'rejected', 'PATCH')"
+                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update-status', $kunjungan->id) }}', 'rejected', 'PATCH')"
                                             class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-rose-50 hover:bg-rose-500 border-2 border-rose-200 hover:border-rose-500 text-rose-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-rose-500/30 hover:-translate-y-0.5 active:scale-95"
                                             title="Tolak Kunjungan">
                                             <i class="fas fa-user-times text-sm"></i>
@@ -333,7 +333,7 @@
                                     @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
                                         {{-- SELESAI --}}
                                         <button type="button"
-                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update', $kunjungan->id) }}', 'completed', 'PATCH')"
+                                            onclick="submitSingleAction('{{ route('admin.kunjungan.update-status', $kunjungan->id) }}', 'completed', 'PATCH')"
                                             class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-slate-50 hover:bg-slate-700 border-2 border-slate-200 hover:border-slate-700 text-slate-600 hover:text-white transition-all duration-200 hover:shadow-lg hover:shadow-slate-500/30 hover:-translate-y-0.5 active:scale-95"
                                             title="Tandai Selesai">
                                             <i class="fas fa-check-double text-sm"></i>

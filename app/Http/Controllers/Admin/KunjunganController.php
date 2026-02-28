@@ -245,6 +245,44 @@ class KunjunganController extends Controller
     }
 
     /**
+     * Update status kunjungan dengan cepat (Untuk aksi tombol dari tabel).
+     */
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approved,rejected,pending,completed,called,in_progress',
+        ]);
+
+        $kunjungan = Kunjungan::findOrFail($id);
+        $statusBaru = $request->status;
+        $updateData = ['status' => $statusBaru];
+
+        // Generate QR Token jika Approved
+        if ($statusBaru === KunjunganStatus::APPROVED->value) {
+            if (is_null($kunjungan->qr_token)) {
+                $updateData['qr_token'] = (string) Str::uuid();
+            }
+            try {
+                $token = $updateData['qr_token'] ?? $kunjungan->qr_token;
+                $qrContent = QrCode::format('png')->size(400)->margin(2)->generate($token);
+                $updateData['barcode'] = 'data:image/png;base64,' . base64_encode($qrContent);
+            } catch (\Exception $e) {
+                Log::error("Admin Kunjungan UpdateStatus: Failed to generate QR: " . $e->getMessage());
+            }
+        }
+
+        // Hapus QR Token jika ditolak
+        if ($statusBaru === KunjunganStatus::REJECTED->value) {
+            $updateData['qr_token'] = null;
+            $updateData['barcode'] = null;
+        }
+
+        $kunjungan->update($updateData);
+
+        return back()->with('success', 'Status kunjungan berhasil diperbarui.');
+    }
+
+    /**
      * Hapus satu data kunjungan.
      */
     public function destroy($id)
