@@ -60,7 +60,11 @@
                     <label class="block text-sm font-bold text-slate-700 mb-2 border-b border-slate-100 pb-2">Media Saat Ini</label>
                     <div class="h-48 rounded-2xl border-2 border-slate-200 bg-slate-50 overflow-hidden relative shadow-inner">
                         @if($banner->type === 'image')
-                            <img src="{{ Storage::url($banner->file_path) }}" class="w-full h-full object-cover">
+                            @if(str_starts_with($banner->file_path, 'data:image'))
+                                <img src="{{ $banner->file_path }}" class="w-full h-full object-cover">
+                            @else
+                                <img src="{{ Storage::url($banner->file_path) }}" class="w-full h-full object-cover">
+                            @endif
                         @elseif($banner->type === 'video')
                             <video src="{{ Storage::url($banner->file_path) }}" class="w-full h-full object-cover" controls muted></video>
                         @endif
