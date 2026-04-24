@@ -22,14 +22,8 @@
         </div>
     </div>
 @endif
-                    <a href="{{ route('kunjungan.create', ['form' => 1]) }}" class="inline-flex items-center gap-2 bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-xs hover:bg-red-700 transition-all shadow-md active:scale-95">
-                        <i class="fa-solid fa-file-signature"></i> Daftar Kunjungan Baru
-                    </a>
-                </div>
-            </div>
-        @endif
 
-        <form action="{{ route('kunjungan.cek_status') }}" method="GET" class="space-y-6">
+    <form action="{{ route('kunjungan.cek_status') }}" method="GET" class="space-y-6">
             <div class="relative group">
                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <i class="fa-solid fa-barcode text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
