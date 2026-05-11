@@ -492,7 +492,7 @@
                     <i class="fas fa-external-link-alt text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
                 </a>
 
-                <a href="https://wa.me/6285733333400" target="_blank" rel="noopener noreferrer"
+                <a href="https://wa.me/{{ $visitSettings['helpdesk_whatsapp'] ?? '6285733333400' }}" target="_blank" rel="noopener noreferrer"
                     class="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d">
                     <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                     <i class="fab fa-whatsapp text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
@@ -536,7 +536,7 @@
                         <i class="fas fa-phone text-2xl text-white"></i>
                     </div>
                     <h3 class="font-bold mb-2">Telepon & Fax</h3>
-                    <p class="text-slate-300 text-sm">+62 857 3333 3400</p>                </div>
+                    <p class="text-slate-300 text-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '62 857 3333 3400' }}</p>                </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 card-hover-scale group">
                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="fas fa-envelope text-2xl text-white"></i>

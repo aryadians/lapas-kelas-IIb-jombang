@@ -532,7 +532,7 @@
                                             <i class="fas fa-phone-alt text-lg group-hover:animate-vibrate"></i>
                                         </div>
                                         <div>
-                                           <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+62 857 3333 3400</p>
+                                           <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '62 857 3333 3400' }}</p>
                                            <p class="text-xs text-slate-400">Jam Kerja: 08:00 - 15:00 WIB</p>
                                         </div>                                    </div>
                                 </div>

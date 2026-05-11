@@ -107,12 +107,11 @@ class HomeController extends Controller
     /**
      * Display the contact page.
      *
-     * @return string
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function contact()
     {
-        // Placeholder: A proper view should be created for this.
-        return "Contact page is under construction.";
+        return redirect()->to(url('/') . '#kontak');
     }
 
     /**

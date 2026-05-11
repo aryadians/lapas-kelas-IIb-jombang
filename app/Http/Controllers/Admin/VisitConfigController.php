@@ -83,8 +83,8 @@ class VisitConfigController extends Controller
             'is_emergency_closed' => $request->has('is_emergency_closed') ? '1' : '0',
             'announcement_guest_page' => $request->announcement_guest_page ?? '',
             // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
-            'terms_conditions' => clean($request->terms_conditions),
-            'helpdesk_whatsapp' => $request->helpdesk_whatsapp,
+            'terms_conditions' => $request->terms_conditions,
+            'helpdesk_whatsapp' => preg_replace('/[^0-9]/', '', $request->helpdesk_whatsapp),
             'api_token_fonnte' => $request->api_token_fonnte ?? '',
             'jam_buka_pagi' => $request->jam_buka_pagi,
             'jam_tutup_pagi' => $request->jam_tutup_pagi,
