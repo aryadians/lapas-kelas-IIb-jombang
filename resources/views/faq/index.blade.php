@@ -414,10 +414,10 @@
                         Layanan kunjungan tatap muka tersedia setiap hari <strong>Senin - Sabtu</strong>.
                         <div class="mt-2 grid grid-cols-2 gap-2 max-w-xs">
                             <div class="bg-teal-50 text-teal-700 px-3 py-1 rounded text-sm text-center border border-teal-100">
-                                <strong>Sesi Pagi</strong><br>08.30 - 11.30
+                                <strong>Sesi Pagi</strong><br>{{ str_replace(':', '.', $visitSettings['jam_buka_pagi'] ?? '08.30') }} - {{ str_replace(':', '.', $visitSettings['jam_tutup_pagi'] ?? '10.00') }}
                             </div>
                             <div class="bg-teal-50 text-teal-700 px-3 py-1 rounded text-sm text-center border border-teal-100">
-                                <strong>Sesi Siang</strong><br>13.00 - 14.30
+                                <strong>Sesi Siang</strong><br>{{ str_replace(':', '.', $visitSettings['jam_buka_siang'] ?? '13.30') }} - {{ str_replace(':', '.', $visitSettings['jam_tutup_siang'] ?? '14.30') }}
                             </div>
                         </div>
                         <div class="mt-2 text-xs text-red-500 italic">*(Minggu & Hari Libur Nasional Tutup)</div>

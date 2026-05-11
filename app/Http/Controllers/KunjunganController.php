@@ -172,6 +172,7 @@ class KunjunganController extends Controller
             'helpdeskWhatsapp' => $helpdeskWhatsapp,
             'closedDaysString' => $closedDaysString,
             'closedDaysStringLower' => $closedDaysStringLower,
+            'visitSettings' => $visitSettings,
         ]);
     }
 

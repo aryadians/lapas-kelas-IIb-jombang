@@ -190,7 +190,7 @@
                                 @if($kunjungan->sesi)
                                     <p class="text-slate-900 font-bold capitalize">{{ $kunjungan->sesi }}</p>
                                     <p class="text-xs text-slate-500">
-                                        {{ $kunjungan->sesi == 'pagi' ? '08.30 - 11.30' : '13.00 - 14.30' }} WIB
+                                        {{ $kunjungan->sesi == 'pagi' ? str_replace(':', '.', $visitSettings['jam_buka_pagi'] ?? '08.30') . ' - ' . str_replace(':', '.', $visitSettings['jam_tutup_pagi'] ?? '10.00') : str_replace(':', '.', $visitSettings['jam_buka_siang'] ?? '13.30') . ' - ' . str_replace(':', '.', $visitSettings['jam_tutup_siang'] ?? '14.30') }} WIB
                                     </p>
                                 @else
                                     <p class="text-slate-900 font-bold">Sesuai Jadwal</p>

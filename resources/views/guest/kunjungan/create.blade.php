@@ -959,8 +959,8 @@
                                 </label>
                                 <select name="sesi" x-model="selectedSesi" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white">
                                     <option value="" disabled>Pilih sesi...</option>
-                                    <option value="pagi" x-show="availableSessions.includes('pagi')">Sesi Pagi (08:30 - 10:00)</option>
-                                    <option value="siang" x-show="availableSessions.includes('siang')">Sesi Siang (13:30 - 14:30)</option>
+                                    <option value="pagi" x-show="availableSessions.includes('pagi')">Sesi Pagi ({{ $visitSettings['jam_buka_pagi'] ?? '08:30' }} - {{ $visitSettings['jam_tutup_pagi'] ?? '10:00' }})</option>
+                                    <option value="siang" x-show="availableSessions.includes('siang')">Sesi Siang ({{ $visitSettings['jam_buka_siang'] ?? '13:30' }} - {{ $visitSettings['jam_tutup_siang'] ?? '14:30' }})</option>
                                 </select>
                             </div>
                             

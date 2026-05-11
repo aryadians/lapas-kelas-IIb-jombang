@@ -224,8 +224,8 @@
                                 <i class="fa-solid fa-clock text-blue-600"></i> Sesi Kunjungan
                             </label>
                             <select id="sesi" name="sesi" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white" required>
-                                <option value="pagi" {{ old('sesi') == 'pagi' ? 'selected' : '' }}>Sesi Pagi (08:30 - 11:30)</option>
-                                <option value="siang" {{ old('sesi') == 'siang' ? 'selected' : '' }}>Sesi Siang (13:30 - 15:00)</option>
+                                <option value="pagi" {{ old('sesi') == 'pagi' ? 'selected' : '' }}>Sesi Pagi ({{ $visitSettings['jam_buka_pagi'] ?? '08:30' }} - {{ $visitSettings['jam_tutup_pagi'] ?? '10:00' }})</option>
+                                <option value="siang" {{ old('sesi') == 'siang' ? 'selected' : '' }}>Sesi Siang ({{ $visitSettings['jam_buka_siang'] ?? '13:30' }} - {{ $visitSettings['jam_tutup_siang'] ?? '14:30' }})</option>
                             </select>
                         </div>
 
