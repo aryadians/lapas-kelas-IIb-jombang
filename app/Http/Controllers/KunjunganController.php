@@ -79,10 +79,10 @@ class KunjunganController extends Controller
             $openDays[] = $dayName;
             $allowedCodesByDay[$dayName] = is_array($schedule->allowed_kode_tahanan) ? $schedule->allowed_kode_tahanan : [];
             
-            // Determine which sessions are open based on quotas
+            // Determine which sessions are open based on online quotas for guest registration
             $sessions = [];
-            if ($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0) $sessions[] = 'pagi';
-            if ($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0) $sessions[] = 'siang';
+            if ($schedule->quota_online_morning > 0) $sessions[] = 'pagi';
+            if ($schedule->quota_online_afternoon > 0) $sessions[] = 'siang';
             $sessionsByDay[$dayName] = $sessions;
         }
 

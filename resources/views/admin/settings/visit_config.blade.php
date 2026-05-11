@@ -33,6 +33,22 @@
     </div>
     @endif
 
+    @if ($errors->any())
+    <div class="flex items-start gap-3 bg-red-50 border border-red-200 text-red-800 px-5 py-3.5 rounded-2xl shadow-sm">
+        <div class="w-8 h-8 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i class="fas fa-exclamation-triangle text-white text-sm"></i>
+        </div>
+        <div>
+            <p class="font-bold text-sm mb-1">Gagal menyimpan konfigurasi. Periksa kembali isian Anda:</p>
+            <ul class="list-disc list-inside text-xs">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+    @endif
+
     {{-- TAB NAVIGATION --}}
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-1.5 flex flex-wrap gap-1">
         <button type="button" @click="tab = 'jadwal'"
