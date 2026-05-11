@@ -133,6 +133,10 @@
                         </div>
                     </div>
 
+                    <a href="https://sdm.lapasjombang.id/" target="_blank" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-1">
+                        SDM <i class="fa-solid fa-external-link-alt text-[10px]"></i>
+                    </a>
+
                     <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-2">
                         <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -222,6 +226,10 @@
                         @endforeach
                     </div>
                 </div>
+
+                <a href="https://sdm.lapasjombang.id/" target="_blank" class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
+                    <i class="fa-solid fa-users w-5 text-center"></i> SDM <i class="fa-solid fa-external-link-alt text-[10px]"></i>
+                </a>
 
                 <a href="{{ route('live.antrian') }}" class="flex items-center gap-2 px-3 py-2 rounded-md text-base font-semibold text-gray-300 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
                     <span class="relative flex h-3 w-3">
