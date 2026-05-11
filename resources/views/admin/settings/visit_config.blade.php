@@ -352,6 +352,13 @@
                 </div>
                 <div class="p-8 space-y-5">
                     <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Teks Berjalan (Info Terkini)</label>
+                        <textarea name="info_terkini" rows="3" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 focus:border-violet-500 focus:ring-0 text-sm" placeholder="Masukkan teks info terkini...">{{ $settings['info_terkini'] ?? '' }}</textarea>
+                    </div>
+                </div>
+
+                <div class="p-8 space-y-5">
+                    <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700">Nomor WhatsApp Helpdesk / Pengaduan</label>
                         <div class="flex items-center gap-3">
                             <span class="bg-emerald-100 text-emerald-700 font-black px-4 py-4 rounded-l-2xl border-2 border-r-0 border-emerald-200 text-sm">+62</span>

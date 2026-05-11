@@ -62,12 +62,17 @@
             </div>
             <div class="marquee-container ml-4 flex-1 border-l border-slate-600 pl-4">
                 <div class="marquee-content text-slate-200 text-sm sm:text-base font-medium tracking-wide">
-                    Selamat Datang di Website Resmi Lembaga Pemasyarakatan Kelas IIB Jombang. Mewujudkan Pelayanan Pemasyarakatan yang PASTI (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif). <span class="mx-6 text-yellow-500/50">✦</span> Komitmen Kami Memberikan Pelayanan Terbaik <span class="mx-6 text-yellow-500/50">✦</span> Laporkan Segala Bentuk Pungli, Layanan Kami GRATIS!
+                    {{ $visitSettings['info_terkini'] ?? 'Selamat Datang di Website Resmi Lembaga Pemasyarakatan Kelas IIB Jombang.' }}
                 </div>
-            </div>
-        </div>
-    </div>
+                </div>
+                </div>
+                </div>
 
+                {{-- ... (later in the file, update quick response button) --}}
+                {{-- Example update for WhatsApp button (ensure it matches the correct location) --}}
+                <a href="https://wa.me/6285733333400" target="_blank" class="fixed bottom-24 right-6 z-50 bg-green-500 text-white rounded-full p-4 shadow-lg hover:bg-green-600 transition-all">
+                <i class="fab fa-whatsapp text-3xl"></i>
+                </a>
     {{-- Slideshow Galeri Otomatis (Premium Cinematic Look) --}}
     <div class="w-full relative z-10 px-4 md:px-6">
         @php

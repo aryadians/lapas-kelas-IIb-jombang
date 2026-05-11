@@ -78,6 +78,12 @@ class VisitNewSettingsSeeder extends Seeder
                 'type' => 'string'
             ],
             [
+                'key' => 'info_terkini',
+                'value' => 'Selamat Datang di Website Resmi Lembaga Pemasyarakatan Kelas IIB Jombang. Mewujudkan Pelayanan Pemasyarakatan yang PASTI (Profesional, Akuntabel, Sinergi, Transparan, dan Inovatif).',
+                'display_name' => 'Teks Berjalan (Info Terkini)',
+                'type' => 'text'
+            ],
+            [
                 'key' => 'jam_buka_pagi',
                 'value' => '08:30',
                 'display_name' => 'Jam Buka Pelayanan (Sesi Pagi)',

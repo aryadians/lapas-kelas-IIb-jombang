@@ -38,6 +38,7 @@ class VisitConfigController extends Controller
             'visit_duration_minutes' => 'required|integer|min:1',
             'arrival_tolerance_minutes' => 'required|integer|min:0',
             'announcement_guest_page' => 'nullable|string',
+            'info_terkini' => 'nullable|string',
             // VALIDASI CUSTOM TAHAP II
             'terms_conditions' => 'required|string',
             'helpdesk_whatsapp' => 'required|string',
