@@ -34,14 +34,14 @@ class KunjunganController extends Controller
 
     public function create()
     {
-        // Ambil jadwal yang buka dari Cache
-        $openSchedules = \Illuminate\Support\Facades\Cache::rememberForever('open_schedules', function() {
+        // Ambil jadwal yang buka dari Cache (1 menit agar lebih realtime)
+        $openSchedules = \Illuminate\Support\Facades\Cache::remember('open_schedules', 60, function() {
             return \App\Models\VisitSchedule::where('is_open', true)->get();
         });
         $openDays = $openSchedules->pluck('day_name')->toArray();
         
-        // Ambil Batas H-N Pendaftaran & Konfigurasi dari Cache
-        $visitSettings = \Illuminate\Support\Facades\Cache::rememberForever('visit_settings', function() {
+        // Ambil Batas H-N Pendaftaran & Konfigurasi dari Cache (1 menit agar lebih realtime)
+        $visitSettings = \Illuminate\Support\Facades\Cache::remember('visit_settings', 60, function() {
             return \App\Models\VisitSetting::pluck('value', 'key')->toArray();
         });
 

@@ -196,17 +196,17 @@
                     </div>
                     <div class="space-y-3 flex-grow max-h-[300px] overflow-y-auto pr-2">
                         @foreach($openSchedules as $schedule)
-                            @if($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0)
+                            @if($schedule->quota_online_morning > 0)
                             <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
                                 <span class="text-sm font-medium text-slate-700">{{ $schedule->day_name }} <span class="text-[10px] text-emerald-600">(Pagi)</span></span>
-                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_morning + $schedule->quota_offline_morning }} Orang</span>
+                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_morning }} Orang</span>
                             </div>
                             @endif
 
-                            @if($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0)
+                            @if($schedule->quota_online_afternoon > 0)
                             <div class="flex justify-between items-center bg-gradient-to-r from-emerald-50 to-emerald-100 p-3 rounded-lg border border-emerald-200 hover:shadow-md transition-all duration-300 hover:from-emerald-100 hover:to-emerald-200">
                                 <span class="text-sm font-medium text-slate-700">{{ $schedule->day_name }} <span class="text-[10px] text-emerald-600">(Siang)</span></span>
-                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_afternoon + $schedule->quota_offline_afternoon }} Orang</span>
+                                <span class="bg-white text-emerald-700 font-bold px-3 py-1 rounded border border-emerald-200 text-sm shadow-sm">{{ $schedule->quota_online_afternoon }} Orang</span>
                             </div>
                             @endif
                         @endforeach

@@ -50,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
         // Share visitSettings globally
         try {
             if (Schema::hasTable('visit_settings')) {
-                $visitSettings = \Illuminate\Support\Facades\Cache::rememberForever('visit_settings', function() {
+                $visitSettings = \Illuminate\Support\Facades\Cache::remember('visit_settings', 60, function() {
                     return VisitSetting::pluck('value', 'key')->toArray();
                 });
                 View::share('visitSettings', $visitSettings);

@@ -68,12 +68,12 @@ class DashboardController extends Controller
 
         } elseif ($isVisitingDay && $scheduleToday && $scheduleToday->is_open) {
             // Online
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
-            $kuotaBiasa = $scheduleToday->quota_online_morning; // Assuming morning holds the full quota for regular days or combining them
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'online')->count();
+            $kuotaBiasa = $scheduleToday->quota_online_morning + $scheduleToday->quota_online_afternoon; 
             
             // Offline
-            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
-            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning; // Assuming morning holds full quota or combining them
+            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'offline')->count();
+            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning + $scheduleToday->quota_offline_afternoon;
 
             $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
             $kuotaOfflineTotal = $kuotaOfflineBiasa;
@@ -237,12 +237,12 @@ class DashboardController extends Controller
 
         } elseif ($isVisitingDay && $scheduleToday && $scheduleToday->is_open) {
             // Online
-            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'online')->count();
-            $kuotaBiasa = $scheduleToday->quota_online_morning;
+            $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'online')->count();
+            $kuotaBiasa = $scheduleToday->quota_online_morning + $scheduleToday->quota_online_afternoon;
             
             // Offline
-            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->where('status', KunjunganStatus::APPROVED)->where('registration_type', 'offline')->count();
-            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning;
+            $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('status', $validStatuses)->where('registration_type', 'offline')->count();
+            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning + $scheduleToday->quota_offline_afternoon;
 
             $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
             $kuotaOfflineTotal = $kuotaOfflineBiasa;

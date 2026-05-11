@@ -48,11 +48,11 @@ class ExecutiveDashboardController extends Controller
         } elseif ($isVisitingDay && $scheduleToday && $scheduleToday->is_open) {
             // Online
             $pendaftarBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('kunjungans.status', $validStatuses)->where('kunjungans.registration_type', 'online')->count();
-            $kuotaBiasa = $scheduleToday->quota_online_morning; 
+            $kuotaBiasa = $scheduleToday->quota_online_morning + $scheduleToday->quota_online_afternoon; 
             
             // Offline
             $pendaftarOfflineBiasa = Kunjungan::whereDate('tanggal_kunjungan', $today)->whereIn('kunjungans.status', $validStatuses)->where('kunjungans.registration_type', 'offline')->count();
-            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning; 
+            $kuotaOfflineBiasa = $scheduleToday->quota_offline_morning + $scheduleToday->quota_offline_afternoon; 
 
             $pendaftarOfflineTotal = $pendaftarOfflineBiasa;
             $kuotaOfflineTotal = $kuotaOfflineBiasa;
