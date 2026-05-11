@@ -145,7 +145,7 @@
         </div>
         <div class="flex-1 relative overflow-hidden h-full flex items-center">
             <marquee class="text-sm md:text-lg font-light text-slate-200 tracking-wide absolute w-full" scrollamount="4 md:6">
-                Selamat Datang di Layanan Kunjungan Lapas Kelas IIB Jombang. Budayakan antri dan patuhi tata tertib yang berlaku. | Jadwal Kunjungan: Pagi 08.00 - 11.30 WIB, Siang 13.00 - 14.30 WIB. | Dilarang keras membawa barang terlarang!
+                Selamat Datang di Layanan Kunjungan Lapas Kelas IIB Jombang. Budayakan antri dan patuhi tata tertib yang berlaku. | Jadwal Kunjungan: Pagi {{ $visitSettings['jam_buka_pagi'] ?? '08.00' }} - {{ $visitSettings['jam_tutup_pagi'] ?? '11.00' }} WIB, Siang {{ $visitSettings['jam_buka_siang'] ?? '13.00' }} - {{ $visitSettings['jam_tutup_siang'] ?? '14.30' }} WIB. | Dilarang keras membawa barang terlarang!
             </marquee>
         </div>
         <div class="px-6 text-xs text-slate-500 font-mono hidden md:block">

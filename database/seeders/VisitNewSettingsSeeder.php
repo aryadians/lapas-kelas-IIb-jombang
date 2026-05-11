@@ -79,25 +79,25 @@ class VisitNewSettingsSeeder extends Seeder
             ],
             [
                 'key' => 'jam_buka_pagi',
-                'value' => '08:00',
+                'value' => '08:30',
                 'display_name' => 'Jam Buka Pelayanan (Sesi Pagi)',
                 'type' => 'string'
             ],
             [
                 'key' => 'jam_tutup_pagi',
-                'value' => '11:00',
+                'value' => '10:00',
                 'display_name' => 'Jam Tutup Pelayanan (Sesi Pagi)',
                 'type' => 'string'
             ],
             [
                 'key' => 'jam_buka_siang',
-                'value' => '13:00',
+                'value' => '13:30',
                 'display_name' => 'Jam Buka Pelayanan (Sesi Siang)',
                 'type' => 'string'
             ],
             [
                 'key' => 'jam_tutup_siang',
-                'value' => '15:00',
+                'value' => '14:30',
                 'display_name' => 'Jam Tutup Pelayanan (Sesi Siang)',
                 'type' => 'string'
             ],

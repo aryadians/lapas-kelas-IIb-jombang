@@ -533,7 +533,7 @@
                                         </div>
                                         <div>
                                            <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '62 857 3333 3400' }}</p>
-                                           <p class="text-xs text-slate-400">Jam Kerja: 08:00 - 15:00 WIB</p>
+                                           <p class="text-xs text-slate-400">Jam Layanan: {{ $visitSettings['jam_buka_pagi'] ?? '08:00' }} - {{ $visitSettings['jam_tutup_siang'] ?? '15:00' }} WIB</p>
                                         </div>                                    </div>
                                 </div>
                         

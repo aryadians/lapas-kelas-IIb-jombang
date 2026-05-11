@@ -115,12 +115,12 @@
                         <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border-l-4 border-blue-500 hover:shadow-md transition-all duration-300 hover:from-blue-100 hover:to-blue-200">
                             <span class="block font-bold text-slate-900 text-sm mb-2 uppercase">HARI {{ $schedule->day_name }}</span>
                             <div class="text-sm text-slate-600 space-y-1">
-                                <!-- Asumsi: Jika ada kuota pagi, berarti sesi pagi buka. Jam statis sementara kecuali ditambah jam di DB -->
+                                <!-- Asumsi: Jika ada kuota pagi, berarti sesi pagi buka. -->
                                 @if($schedule->quota_online_morning > 0 || $schedule->quota_offline_morning > 0)
-                                <div class="flex justify-between"><span>Sesi Pagi:</span> <strong class="text-blue-700">08.30 - 10.00</strong></div>
+                                <div class="flex justify-between"><span>Sesi Pagi:</span> <strong class="text-blue-700">{{ str_replace(':', '.', $visitSettings['jam_buka_pagi'] ?? '08.30') }} - {{ str_replace(':', '.', $visitSettings['jam_tutup_pagi'] ?? '10.00') }}</strong></div>
                                 @endif
                                 @if($schedule->quota_online_afternoon > 0 || $schedule->quota_offline_afternoon > 0)
-                                <div class="flex justify-between"><span>Sesi Siang:</span> <strong class="text-blue-700">13.30 - 14.30</strong></div>
+                                <div class="flex justify-between"><span>Sesi Siang:</span> <strong class="text-blue-700">{{ str_replace(':', '.', $visitSettings['jam_buka_siang'] ?? '13.30') }} - {{ str_replace(':', '.', $visitSettings['jam_tutup_siang'] ?? '14.30') }}</strong></div>
                                 @endif
                                 @if($schedule->quota_online_morning == 0 && $schedule->quota_offline_morning == 0 && $schedule->quota_online_afternoon == 0 && $schedule->quota_offline_afternoon == 0)
                                 <div class="flex justify-between"><span>Sesi Layanan:</span> <strong class="text-red-600">Terjadwal Buka Tanpa Kuota</strong></div>
