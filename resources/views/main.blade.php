@@ -64,8 +64,8 @@
                 <h3 class="text-white text-lg font-bold mb-4 border-b border-gray-600 pb-2">Hubungi Kami</h3>
                 <ul class="text-sm space-y-2">
                     <li>📍 Jl. KH. Wahid Hasyim, Jombang</li>
-                    <li>📞 (0321) 123456</li>
-                    <li>📧 humas@lapasjombang.go.id</li>
+                    <li>📞 +6285733333400</li>
+                    <li>📧 layananlapasjombang@gmail.com</li>
                 </ul>
             </div>
             <div>
