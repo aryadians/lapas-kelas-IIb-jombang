@@ -95,16 +95,16 @@
                 </div>
 
                 {{-- Menu Tengah --}}
-                <div class="hidden md:flex space-x-4 lg:space-x-8 items-center justify-center flex-1"> 
+                <div class="hidden md:flex space-x-2 lg:space-x-4 xl:space-x-6 items-center justify-center flex-1 overflow-hidden"> 
                     {{-- Tambahkan flex-1 agar menu tengah berusaha mengambil ruang tengah, tapi logo tetap di kiri --}}
-                    <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Beranda</a>
-                    <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Profil</a>
-                    <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Berita</a>
-                    <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300">Pengumuman</a>
+                    <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Beranda</a>
+                    <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Profil</a>
+                    <a href="{{ route('news.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Berita</a>
+                    <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Pengumuman</a>
                     
                     {{-- Dropdown Informasi Publik --}}
                     <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                        <button class="text-gray-300 group-hover:text-white px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-1">
+                        <button class="text-gray-300 group-hover:text-white px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-1">
                             Informasi Publik
                             <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
                         </button>
@@ -133,18 +133,18 @@
                         </div>
                     </div>
 
-                    <a href="https://sdm.lapasjombang.id/" target="_blank" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-1">
+                    <a href="https://sdm.lapasjombang.id/" target="_blank" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-1">
                         SDM <i class="fa-solid fa-external-link-alt text-[10px]"></i>
                     </a>
 
-                    <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-semibold transition-all duration-300 flex items-center gap-2">
+                    <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-2">
                         <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 lg:h-3 lg:w-3 bg-red-500"></span>
                         </span>
                         Live Antrian
                     </a>
-                    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-sm lg:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
                         <i class="fas fa-store"></i> Galeri
                     </a>
                 </div>
