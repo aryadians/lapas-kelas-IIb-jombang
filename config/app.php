@@ -102,6 +102,8 @@ return [
 
     'key' => env('APP_KEY'),
 
+    'force_https' => env('FORCE_HTTPS', false),
+
     'previous_keys' => [
         ...array_filter(
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
