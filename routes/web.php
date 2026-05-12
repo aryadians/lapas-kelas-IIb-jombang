@@ -239,6 +239,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     // Kontrol Antrian
     Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
     Route::post('/antrian/panggil-spesifik', [AntrianController::class, 'panggilSpesifik'])->name('admin.antrian.panggil-spesifik');
+    Route::post('/antrian/panggil-range', [AntrianController::class, 'panggilRange'])->name('admin.antrian.panggil-range');
     Route::post('/antrian/panggil', [AntrianController::class, 'panggil'])->name('admin.antrian.panggil');
     Route::post('/antrian/reset', [AntrianController::class, 'reset'])->name('admin.antrian.reset');
     Route::get('/antrian/status', [AntrianController::class, 'getStatus'])->name('admin.antrian.status');

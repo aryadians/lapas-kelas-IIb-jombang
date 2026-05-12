@@ -357,13 +357,19 @@
                     setTimeout(() => {
                         window.speechSynthesis.cancel();
                         
-                        // Format nomor dengan prefix jika ada
-                        let nomorLabel = callData.nomor;
-                        if (callData.prefix) {
-                            nomorLabel = `${callData.prefix} ${callData.nomor}`;
+                        let text = "";
+                        if (callData.type === 'range') {
+                            const prefix = callData.prefix || "";
+                            text = `Nomor antrian ${prefix} ${callData.start} sampai ${prefix} ${callData.end}. Silahkan menuju ke ${callData.loket || 'petugas'}.`;
+                        } else {
+                            // Format nomor dengan prefix jika ada
+                            let nomorLabel = callData.nomor;
+                            if (callData.prefix) {
+                                nomorLabel = `${callData.prefix} ${callData.nomor}`;
+                            }
+                            text = `Panggilan nomor antrian ${nomorLabel}. Atas nama ${callData.nama || 'Pengunjung'}. Silahkan menuju ke ${callData.loket || 'petugas'}.`;
                         }
                         
-                        const text = `Panggilan nomor antrian ${nomorLabel}. Atas nama ${callData.nama || 'Pengunjung'}. Silahkan menuju ke ${callData.loket || 'petugas'}.`;
                         const ut = new SpeechSynthesisUtterance(text);
                         ut.lang = 'id-ID';
                         ut.rate = 0.9;

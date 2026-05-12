@@ -80,12 +80,23 @@
             {{-- Preset Buttons --}}
             <div class="space-y-2">
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preset Range</label>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button @click="setRange(1, 5)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">1-5</button>
                     <button @click="setRange(1, 10)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">1-10</button>
                     <button @click="setRange(11, 20)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">11-20</button>
                     <button @click="setRange(21, 50)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">21-50</button>
                     <button @click="setRange(1, 300)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">Reset</button>
+                </div>
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aksi Massal</label>
+                <div class="flex gap-2">
+                    <button @click="panggilRange()" 
+                        class="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-black text-sm shadow-lg shadow-indigo-500/30 hover:bg-indigo-700 transition-all">
+                        <i class="fas fa-users mr-2"></i> Panggil Range (<span x-text="startRange + ' s/d ' + endRange"></span>)
+                    </button>
                 </div>
             </div>
         </div>
@@ -129,6 +140,7 @@ function panggilManual() {
         loket: 'loket pendaftaran',
         startRange: 1,
         endRange: 10,
+        isCallingBatch: false,
         voicesLoaded: false,
         voices: [],
         init() {
@@ -152,40 +164,85 @@ function panggilManual() {
             }
             return nums;
         },
-        async panggil(nomor) {
+        async panggilRange() {
+            const start = this.startRange;
+            const end = this.endRange;
+            const prefix = this.prefix;
+            const type = prefix === 'A' ? 'online' : 'offline';
+
             // TTS Lokal
-            if (!('speechSynthesis' in window)) { console.warn("Browser tidak mendukung suara."); }
-            else {
+            if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                const type = this.prefix === 'A' ? 'online' : 'offline';
-                const text = `Nomor antrian ${nomor} ${type}, silahkan menuju ke ${this.loket}.`;
+                const text = `Nomor antrian ${prefix} ${start} sampai ${prefix} ${end} ${type}, silahkan menuju ke ${this.loket}.`;
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'id-ID';
                 utterance.rate = 0.9;
-                utterance.pitch = 1.0;
                 if (this.voices.length > 0) utterance.voice = this.voices[0];
                 window.speechSynthesis.speak(utterance);
             }
 
             // Kirim ke Display via API
             try {
-                const response = await fetch('{{ route("admin.antrian.panggil-spesifik") }}', {
+                await fetch('{{ route("admin.antrian.panggil-range") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({
-                        nomor: nomor,
-                        prefix: this.prefix,
+                        start: start,
+                        end: end,
+                        prefix: prefix,
                         loket: this.loket
                     })
                 });
-                const data = await response.json();
-                console.log('Manual call broadcast:', data);
             } catch (error) {
-                console.error('Gagal broadcast panggilan:', error);
+                console.error('Gagal broadcast range:', error);
             }
+        },
+        async panggil(nomor) {
+            return new Promise(async (resolve) => {
+                // TTS Lokal
+                if (!('speechSynthesis' in window)) { 
+                    console.warn("Browser tidak mendukung suara.");
+                    resolve();
+                } else {
+                    window.speechSynthesis.cancel();
+                    const type = this.prefix === 'A' ? 'online' : 'offline';
+                    const text = `Nomor antrian ${nomor} ${type}, silahkan menuju ke ${this.loket}.`;
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    if (this.voices.length > 0) utterance.voice = this.voices[0];
+                    
+                    utterance.onend = () => resolve();
+                    utterance.onerror = () => resolve();
+                    
+                    window.speechSynthesis.speak(utterance);
+                    
+                    // Safety timeout jika onend tidak terpanggil
+                    setTimeout(resolve, 5000);
+                }
+
+                // Kirim ke Display via API (Fire and forget, don't wait for display)
+                try {
+                    fetch('{{ route("admin.antrian.panggil-spesifik") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            nomor: nomor,
+                            prefix: this.prefix,
+                            loket: this.loket
+                        })
+                    });
+                } catch (error) {
+                    console.error('Gagal broadcast panggilan:', error);
+                }
+            });
         }
     }
 }

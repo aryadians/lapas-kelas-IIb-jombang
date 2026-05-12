@@ -98,6 +98,32 @@ class AntrianController extends Controller
         return response()->json(['success' => true, 'payload' => $payload]);
     }
 
+    public function panggilRange(Request $request)
+    {
+        $request->validate([
+            'start' => 'required|integer',
+            'end' => 'required|integer',
+            'prefix' => 'required|string|max:1',
+            'loket' => 'nullable|string'
+        ]);
+
+        $payload = [
+            'type' => 'range',
+            'start' => $request->start,
+            'end' => $request->end,
+            'prefix' => $request->prefix,
+            'loket' => $request->loket,
+            'status' => 'panggil',
+            'nama' => 'Rombongan Pengunjung',
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+        ];
+
+        Cache::put('latest_call', $payload, 60);
+        AntrianUpdated::dispatch($payload);
+
+        return response()->json(['success' => true, 'payload' => $payload]);
+    }
+
     public function getStatus()
     {
         $statusPagi = $this->getStatusForSesi('pagi');
