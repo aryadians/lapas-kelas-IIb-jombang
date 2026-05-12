@@ -71,6 +71,33 @@ class AntrianController extends Controller
         return view('admin.antrian.panggil_manual');
     }
 
+    public function panggilSpesifik(Request $request)
+    {
+        $request->validate([
+            'nomor' => 'required|integer',
+            'prefix' => 'required|string|max:1',
+            'loket' => 'nullable|string'
+        ]);
+
+        $payload = [
+            'nomor' => $request->nomor,
+            'prefix' => $request->prefix,
+            'loket' => $request->loket,
+            'status' => 'panggil',
+            'nama' => 'Pengunjung',
+            'type' => $request->prefix === 'A' ? 'online' : 'offline',
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+        ];
+
+        // Simpan ke cache agar display bisa mendeteksi lewat polling (fallback jika broadcasting gagal)
+        Cache::put('latest_call', $payload, 60);
+
+        // Broadcast event untuk real-time (jika menggunakan Pusher/Reverb)
+        AntrianUpdated::dispatch($payload);
+
+        return response()->json(['success' => true, 'payload' => $payload]);
+    }
+
     public function getStatus()
     {
         $statusPagi = $this->getStatusForSesi('pagi');

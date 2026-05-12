@@ -111,19 +111,25 @@ class QueueController extends Controller
      */
     public function call(Kunjungan $kunjungan)
     {
+        $prefix = $kunjungan->registration_type === 'offline' ? 'B' : 'A';
         $type = $kunjungan->registration_type === 'offline' ? 'offline' : 'online';
-        $formattedNomor = $kunjungan->nomor_antrian_harian . ' ' . $type;
 
-        // Cache the call signal for 20 seconds
-        // "latest_call" will be polled by the display page
-        \Illuminate\Support\Facades\Cache::put('latest_call', [
+        $payload = [
             'type' => 'visitor',
-            'nomor' => $formattedNomor,
+            'nomor' => $kunjungan->nomor_antrian_harian,
+            'prefix' => $prefix,
             'nama' => $kunjungan->nama_pengunjung,
-            'loket' => 'Pintu Utama', // Or dynamic based on context
+            'loket' => 'Pintu Utama',
             'uuid' => \Illuminate\Support\Str::uuid()->toString(),
-            'timestamp' => now()->timestamp
-        ], 20);
+            'timestamp' => now()->timestamp,
+            'registration_type' => $type
+        ];
+
+        // Cache for polling display
+        \Illuminate\Support\Facades\Cache::put('latest_call', $payload, 20);
+        
+        // Broadcast for real-time display
+        AntrianUpdated::dispatch($payload);
 
         return response()->json([
             'success' => true,

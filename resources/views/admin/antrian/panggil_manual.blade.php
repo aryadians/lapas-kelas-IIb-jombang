@@ -51,6 +51,18 @@
                 </div>
             </div>
 
+            {{-- Range Antrian --}}
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Rentang Nomor Antrian</label>
+                <div class="flex items-center gap-2">
+                    <input type="number" x-model.number="startRange" min="1" 
+                        class="w-20 px-3 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 focus:border-blue-400 focus:outline-none text-sm">
+                    <span class="text-slate-400 font-bold">s/d</span>
+                    <input type="number" x-model.number="endRange" min="1" 
+                        class="w-20 px-3 py-2.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 focus:border-blue-400 focus:outline-none text-sm">
+                </div>
+            </div>
+
             {{-- Loket --}}
             <div class="space-y-2">
                 <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tujuan Loket</label>
@@ -65,11 +77,15 @@
                 </div>
             </div>
 
-            {{-- Info prefix aktif --}}
-            <div class="ml-auto hidden md:block">
-                <div class="bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3 text-center">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Prefix Aktif</p>
-                    <p class="text-3xl font-black" :class="prefix === 'A' ? 'text-blue-600' : 'text-emerald-600'" x-text="prefix"></p>
+            {{-- Preset Buttons --}}
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Preset Range</label>
+                <div class="flex gap-2">
+                    <button @click="setRange(1, 5)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">1-5</button>
+                    <button @click="setRange(1, 10)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">1-10</button>
+                    <button @click="setRange(11, 20)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">11-20</button>
+                    <button @click="setRange(21, 50)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">21-50</button>
+                    <button @click="setRange(1, 300)" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold text-slate-600">Reset</button>
                 </div>
             </div>
         </div>
@@ -77,7 +93,7 @@
 
     {{-- GRID NOMOR --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-3">
-        <template x-for="n in 300" :key="n">
+        <template x-for="n in getNumbers()" :key="n">
             <button @click="panggil(n)"
                 class="group relative aspect-square bg-white rounded-2xl border-2 border-slate-100 flex flex-col items-center justify-center transition-all duration-200 overflow-hidden"
                 :class="prefix === 'A'
@@ -111,6 +127,8 @@ function panggilManual() {
     return {
         prefix: 'A',
         loket: 'loket pendaftaran',
+        startRange: 1,
+        endRange: 10,
         voicesLoaded: false,
         voices: [],
         init() {
@@ -123,17 +141,51 @@ function panggilManual() {
             this.voices = window.speechSynthesis.getVoices().filter(v => v.lang.includes('id-ID') || v.lang.includes('ind'));
             if (this.voices.length > 0) this.voicesLoaded = true;
         },
-        panggil(nomor) {
-            if (!('speechSynthesis' in window)) { alert("Browser tidak mendukung suara."); return; }
-            window.speechSynthesis.cancel();
-            const type = this.prefix === 'A' ? 'online' : 'offline';
-            const text = `Nomor antrian ${nomor} ${type}, silahkan menuju ke ${this.loket}.`;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'id-ID';
-            utterance.rate = 0.9;
-            utterance.pitch = 1.0;
-            if (this.voices.length > 0) utterance.voice = this.voices[0];
-            window.speechSynthesis.speak(utterance);
+        setRange(start, end) {
+            this.startRange = start;
+            this.endRange = end;
+        },
+        getNumbers() {
+            let nums = [];
+            for (let i = this.startRange; i <= this.endRange; i++) {
+                nums.push(i);
+            }
+            return nums;
+        },
+        async panggil(nomor) {
+            // TTS Lokal
+            if (!('speechSynthesis' in window)) { console.warn("Browser tidak mendukung suara."); }
+            else {
+                window.speechSynthesis.cancel();
+                const type = this.prefix === 'A' ? 'online' : 'offline';
+                const text = `Nomor antrian ${nomor} ${type}, silahkan menuju ke ${this.loket}.`;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                if (this.voices.length > 0) utterance.voice = this.voices[0];
+                window.speechSynthesis.speak(utterance);
+            }
+
+            // Kirim ke Display via API
+            try {
+                const response = await fetch('{{ route("admin.antrian.panggil-spesifik") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        nomor: nomor,
+                        prefix: this.prefix,
+                        loket: this.loket
+                    })
+                });
+                const data = await response.json();
+                console.log('Manual call broadcast:', data);
+            } catch (error) {
+                console.error('Gagal broadcast panggilan:', error);
+            }
         }
     }
 }

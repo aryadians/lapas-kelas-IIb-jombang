@@ -356,7 +356,14 @@
 
                     setTimeout(() => {
                         window.speechSynthesis.cancel();
-                        const text = `Panggilan nomor antrian ${callData.nomor}. Atas nama ${callData.nama}. Silahkan masuk ke ruang kunjungan.`;
+                        
+                        // Format nomor dengan prefix jika ada
+                        let nomorLabel = callData.nomor;
+                        if (callData.prefix) {
+                            nomorLabel = `${callData.prefix} ${callData.nomor}`;
+                        }
+                        
+                        const text = `Panggilan nomor antrian ${nomorLabel}. Atas nama ${callData.nama || 'Pengunjung'}. Silahkan menuju ke ${callData.loket || 'petugas'}.`;
                         const ut = new SpeechSynthesisUtterance(text);
                         ut.lang = 'id-ID';
                         ut.rate = 0.9;
