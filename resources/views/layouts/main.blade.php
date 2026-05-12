@@ -45,6 +45,7 @@
         .acc-grayscale { filter: grayscale(100%); }
         .acc-contrast { filter: invert(100%) hue-rotate(180deg); }
         .acc-dyslexia * { font-family: 'OpenDyslexic', sans-serif !important; }
+        [x-cloak] { display: none !important; }
 
         .acc-cursor,
         .acc-cursor a,
@@ -95,7 +96,7 @@
                 </div>
 
                 {{-- Menu Tengah --}}
-                <div class="hidden md:flex space-x-2 lg:space-x-4 xl:space-x-6 items-center justify-center flex-1 overflow-hidden"> 
+                <div class="hidden md:flex space-x-2 lg:space-x-4 xl:space-x-6 items-center justify-center flex-1"> 
                     {{-- Tambahkan flex-1 agar menu tengah berusaha mengambil ruang tengah, tapi logo tetap di kiri --}}
                     <a href="{{ url('/') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Beranda</a>
                     <a href="{{ route('profile.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Profil</a>
