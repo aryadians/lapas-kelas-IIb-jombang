@@ -47,7 +47,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
-            'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi', 'admin_umum', 'user'])],
+            'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi'])],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -77,7 +77,7 @@ class UserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi', 'admin_umum', 'user'])],
+            'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi'])],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
         ]);
 

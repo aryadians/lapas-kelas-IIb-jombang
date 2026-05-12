@@ -114,8 +114,6 @@
                             'super_admin' => ['label' => 'Super Admin', 'icon' => 'fa-crown', 'color' => 'text-red-500', 'desc' => 'Akses penuh ke seluruh sistem.'],
                             'admin_humas' => ['label' => 'Admin Humas', 'icon' => 'fa-bullhorn', 'color' => 'text-blue-500', 'desc' => 'Mengelola berita & pengumuman.'],
                             'admin_registrasi' => ['label' => 'Admin Registrasi', 'icon' => 'fa-clipboard-list', 'color' => 'text-purple-500', 'desc' => 'Verifikasi pendaftaran kunjungan.'],
-                            'admin_umum' => ['label' => 'Admin Umum', 'icon' => 'fa-cog', 'color' => 'text-green-500', 'desc' => 'Pengaturan umum sistem.'],
-                            'user' => ['label' => 'User Biasa', 'icon' => 'fa-user', 'color' => 'text-slate-500', 'desc' => 'Akses terbatas standar.'],
                         ];
                     @endphp
 

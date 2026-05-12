@@ -103,12 +103,13 @@
                     <a href="{{ route('announcements.public.index') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300">Pengumuman</a>
                     
                     {{-- Dropdown Informasi Publik --}}
-                    <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
-                        <button class="text-gray-300 group-hover:text-white px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-1">
+                    <div class="relative group" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <button @click="open = !open" class="text-gray-300 group-hover:text-white px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-1">
                             Informasi Publik
                             <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
                         </button>
                         <div x-show="open" 
+                             x-cloak
                              x-transition:enter="transition ease-out duration-200"
                              x-transition:enter-start="opacity-0 translate-y-2"
                              x-transition:enter-end="opacity-100 translate-y-0"
@@ -212,7 +213,7 @@
                         Informasi Publik
                         <i class="fa-solid fa-chevron-down text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
                     </button>
-                    <div x-show="open" class="pl-4 space-y-1 bg-slate-900/50 rounded-xl py-2 mx-2">
+                    <div x-show="open" x-cloak class="pl-4 space-y-1 bg-slate-900/50 rounded-xl py-2 mx-2">
                         @foreach($navCategories as $navCat)
                         <a href="{{ route('guest.public-reports', ['category' => $navCat->name]) }}"
                             class="block px-3 py-2 text-sm text-gray-400 hover:text-white transition-colors tracking-wide">
