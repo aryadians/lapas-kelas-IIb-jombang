@@ -143,20 +143,20 @@
     <div class="container mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            @foreach($products as $i => $item)
+            @forelse($products as $i => $item)
             <div class="product-card rounded-3xl overflow-hidden relative group" data-aos="fade-up" data-aos-delay="{{ $i * 100 }}">
                 
-                {{-- Gambar Produk (Trigger Swing Alert saat diklik) --}}
+                {{-- Gambar Produk --}}
                 <div class="relative h-72 overflow-hidden cursor-pointer swing-trigger" 
-                     data-img="{{ $item['image'] }}" 
-                     data-title="{{ $item['name'] }}">
+                     data-img="{{ $item->image_path }}" 
+                     data-title="{{ $item->title }}">
                     
-                    <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                    <img src="{{ $item->image_path }}" alt="{{ $item->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                     
                     {{-- Overlay Badge --}}
                     <div class="absolute top-4 left-4 z-10">
                         <span class="bg-white/95 backdrop-blur text-slate-900 text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                            {{ $item['category'] }}
+                            {{ $item->status }}
                         </span>
                     </div>
 
@@ -169,30 +169,34 @@
                 {{-- Info Produk --}}
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-3">
-                        <h3 class="text-xl font-bold text-slate-800 leading-tight">{{ $item['name'] }}</h3>
+                        <h3 class="text-xl font-bold text-slate-800 leading-tight">{{ $item->title }}</h3>
                     </div>
                     
                     <p class="text-slate-600 text-sm mb-4 line-clamp-3 leading-relaxed">
-                        {{ $item['description'] }}
+                        {{ $item->description }}
                     </p>
 
                     <div class="space-y-2 mb-6 text-xs text-slate-500 font-medium">
+                        @if($item->material)
                         <div class="flex items-center gap-2">
                             <i class="fas fa-layer-group w-4 text-blue-500"></i>
-                            <span>Bahan: {{ $item['material'] }}</span>
+                            <span>Bahan: {{ $item->material }}</span>
                         </div>
+                        @endif
+                        @if($item->dimension)
                         <div class="flex items-center gap-2">
                             <i class="fas fa-ruler-combined w-4 text-emerald-500"></i>
-                            <span>Dimensi: {{ $item['dimensions'] }}</span>
+                            <span>Dimensi: {{ $item->dimension }}</span>
                         </div>
+                        @endif
                         <div class="flex items-center gap-2">
                             <i class="fas fa-check-circle w-4 text-amber-500"></i>
-                            <span>Status: {{ $item['stock'] }}</span>
+                            <span>Status: {{ $item->status }}</span>
                         </div>
                     </div>
                     
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                        <p class="text-xl font-black text-slate-700">{{ $item['price'] }}</p>
+                        <p class="text-xl font-black text-slate-700">{{ $item->price ? 'Rp ' . number_format($item->price, 0, ',', '.') : 'Hubungi Kami' }}</p>
                         
                         {{-- Mini Buttons Marketplace --}}
                         <div class="flex gap-2">
@@ -209,7 +213,12 @@
                     </div>
                 </div>
             </div>
-            @endforeach
+            @empty
+                <div class="col-span-3 text-center py-20 text-slate-400">
+                    <i class="fas fa-box-open text-5xl mb-4"></i>
+                    <p>Belum ada karya yang ditampilkan.</p>
+                </div>
+            @endforelse
 
         </div>
     </div>
