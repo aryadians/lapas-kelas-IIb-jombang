@@ -181,6 +181,25 @@
                         <h3 class="text-xl font-bold text-slate-800 leading-tight">{{ $item['name'] }}</h3>
                     </div>
                     
+                    <p class="text-slate-600 text-sm mb-4 line-clamp-3 leading-relaxed">
+                        {{ $item['description'] }}
+                    </p>
+
+                    <div class="space-y-2 mb-6 text-xs text-slate-500 font-medium">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-layer-group w-4 text-blue-500"></i>
+                            <span>Bahan: {{ $item['material'] }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-ruler-combined w-4 text-emerald-500"></i>
+                            <span>Dimensi: {{ $item['dimensions'] }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-check-circle w-4 text-amber-500"></i>
+                            <span>Status: {{ $item['stock'] }}</span>
+                        </div>
+                    </div>
+                    
                     <div class="flex items-center justify-between pt-4 border-t border-slate-100">
                         <p class="text-xl font-black text-slate-700">{{ $item['price'] }}</p>
                         
@@ -248,6 +267,14 @@
                 imageUrl: img,
                 imageWidth: 400,
                 imageAlt: title,
+                html: `
+                    <div class="text-left mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <p class="text-slate-600 text-sm mb-4 leading-relaxed">${this.closest('.product-card').querySelector('p.text-slate-600').innerText}</p>
+                        <div class="grid grid-cols-1 gap-2 text-xs font-semibold text-slate-500">
+                            ${this.closest('.product-card').querySelector('.space-y-2').innerHTML}
+                        </div>
+                    </div>
+                `,
                 showConfirmButton: false,
                 showCloseButton: true,
                 showClass: { popup: 'animate__animated animate__swing animate__fast' },
