@@ -137,7 +137,7 @@
                                     <i class="fas fa-images"></i>
                                 </div>
                                 <p class="font-bold text-slate-700">Klik atau Drag & Drop Gambar</p>
-                                <p class="text-xs text-slate-400 mt-1">PNG, JPG, WEBP — Maks. 5MB per file</p>
+                                <p class="text-xs text-slate-400 mt-1">PNG, JPG, WEBP — Maks. 20MB per file</p>
                             </div>
                             @error('images.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
 
