@@ -250,10 +250,15 @@
                             $roleLabel = $roleConfig[$userRole] ?? ucfirst(str_replace('_', ' ', $userRole));
                         @endphp
                         <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wide">{{ $roleLabel }}</p>
+                        <a href="{{ route('admin.profile.edit') }}" class="text-[10px] text-blue-600 font-bold hover:underline">Edit Profil</a>
                     </div>
-                    <div class="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-lg border-2 border-yellow-500 shadow-md">
-                        {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
-                    </div>
+                    <a href="{{ route('admin.profile.edit') }}" class="h-10 w-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-lg border-2 border-yellow-500 shadow-md hover:scale-105 transition-transform">
+                        @if(Auth::user()->avatar)
+                            <img src="{{ Auth::user()->avatar }}" class="h-full w-full rounded-full object-cover">
+                        @else
+                            {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                        @endif
+                    </a>
                 </div>
             </header>
 
