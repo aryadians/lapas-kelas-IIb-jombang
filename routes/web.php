@@ -293,11 +293,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_humas'])->group(f
     Route::resource('financial-reports', \App\Http\Controllers\Admin\FinancialReportController::class)->names('admin.financial-reports');
 
     // Manajemen Kategori Laporan
-    Route::prefix('report-categories')->name('admin.report-categories.')->group(function () {
-        Route::get('/',                                                       [\App\Http\Controllers\Admin\ReportCategoryController::class, 'index'])  ->name('index');
-        Route::post('/',                                                      [\App\Http\Controllers\Admin\ReportCategoryController::class, 'store'])  ->name('store');
-        Route::delete('/{reportCategory}',                                   [\App\Http\Controllers\Admin\ReportCategoryController::class, 'destroy'])->name('destroy');
-    });
+    Route::resource('report-categories', \App\Http\Controllers\Admin\ReportCategoryController::class)->names('admin.report-categories');
 });
 
 

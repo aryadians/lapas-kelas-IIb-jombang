@@ -6,11 +6,26 @@ use App\Http\Controllers\Controller;
 use App\Models\FinancialReport;
 use App\Models\ReportCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportCategoryController extends Controller
 {
     /**
-     * Simpan kategori baru (dari form create laporan).
+     * Tampilkan halaman manajemen kategori.
+     */
+    public function index()
+    {
+        $categories = ReportCategory::ordered()->get();
+        
+        if (request()->wantsJson()) {
+            return response()->json($categories);
+        }
+
+        return view('admin.report_categories.index', compact('categories'));
+    }
+
+    /**
+     * Simpan kategori baru.
      */
     public function store(Request $request)
     {
@@ -20,18 +35,62 @@ class ReportCategoryController extends Controller
             'emoji' => 'nullable|string|max:10',
         ]);
 
-        ReportCategory::create([
+        $category = ReportCategory::create([
             'name'       => trim($request->name),
             'icon'       => $request->icon  ?: 'fa-file-alt',
             'emoji'      => $request->emoji ?: null,
             'sort_order' => ReportCategory::max('sort_order') + 1,
         ]);
 
-        return response()->json([
-            'success'  => true,
-            'message'  => "Kategori \"{$request->name}\" berhasil ditambahkan.",
-            'category' => ['name' => trim($request->name), 'icon' => $request->icon ?: 'fa-file-alt', 'emoji' => $request->emoji],
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'  => true,
+                'message'  => "Kategori \"{$request->name}\" berhasil ditambahkan.",
+                'category' => $category,
+            ]);
+        }
+
+        return redirect()->route('admin.report-categories.index')->with('success', "Kategori \"{$request->name}\" berhasil ditambahkan.");
+    }
+
+    /**
+     * Update kategori.
+     */
+    public function update(Request $request, ReportCategory $reportCategory)
+    {
+        $request->validate([
+            'name'  => 'required|string|max:100|unique:report_categories,name,' . $reportCategory->id,
+            'icon'  => 'nullable|string|max:50',
+            'emoji' => 'nullable|string|max:10',
+            'sort_order' => 'nullable|integer',
         ]);
+
+        $oldName = $reportCategory->name;
+        $newName = trim($request->name);
+
+        DB::transaction(function () use ($reportCategory, $oldName, $newName, $request) {
+            $reportCategory->update([
+                'name'       => $newName,
+                'icon'       => $request->icon  ?: 'fa-file-alt',
+                'emoji'      => $request->emoji ?: null,
+                'sort_order' => $request->sort_order ?? $reportCategory->sort_order,
+            ]);
+
+            // Jika nama berubah, update semua laporan yang menggunakan kategori ini
+            if ($oldName !== $newName) {
+                FinancialReport::where('category', $oldName)->update(['category' => $newName]);
+            }
+        });
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Kategori \"{$newName}\" berhasil diperbarui.",
+                'category' => $reportCategory,
+            ]);
+        }
+
+        return redirect()->route('admin.report-categories.index')->with('success', "Kategori \"{$newName}\" berhasil diperbarui.");
     }
 
     /**
@@ -42,26 +101,19 @@ class ReportCategoryController extends Controller
         $inUse = FinancialReport::where('category', $reportCategory->name)->count();
 
         if ($inUse > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => "Tidak bisa dihapus. Kategori \"{$reportCategory->name}\" masih digunakan oleh {$inUse} laporan.",
-            ], 422);
+            $msg = "Tidak bisa dihapus. Kategori \"{$reportCategory->name}\" masih digunakan oleh {$inUse} laporan.";
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 422);
+            }
+            return back()->with('error', $msg);
         }
 
         $reportCategory->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Kategori \"{$reportCategory->name}\" berhasil dihapus.",
-        ]);
-    }
-
-    /**
-     * API: list kategori untuk picker (JSON).
-     */
-    public function index()
-    {
-        $categories = ReportCategory::ordered()->get(['id', 'name', 'icon', 'emoji']);
-        return response()->json($categories);
+        $msg = "Kategori \"{$reportCategory->name}\" berhasil dihapus.";
+        if (request()->ajax() || request()->wantsJson()) {
+            return response()->json(['success' => true, 'message' => $msg]);
+        }
+        return redirect()->route('admin.report-categories.index')->with('success', $msg);
     }
 }

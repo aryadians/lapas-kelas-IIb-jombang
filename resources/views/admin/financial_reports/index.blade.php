@@ -3,7 +3,7 @@
 @section('title', 'Laporan Informasi Publik')
 
 @section('content')
-<div class="space-y-6 pb-12" x-data="categoryManager()">
+<div class="space-y-6 pb-12">
 
     {{-- HERO HEADER --}}
     <div class="relative bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-3xl overflow-hidden shadow-2xl">
@@ -31,10 +31,10 @@
                         <i class="fas fa-file-pdf text-rose-400"></i> PDF
                     </a>
                 </div>
-                <button type="button" @click="openModal()"
+                <a href="{{ route('admin.report-categories.index') }}"
                     class="inline-flex items-center gap-2 bg-indigo-900/50 hover:bg-indigo-800 text-indigo-100 font-bold px-5 py-2.5 rounded-2xl shadow-sm border border-indigo-400/30 transition-all hover:-translate-y-0.5 active:scale-95 text-sm">
                     <i class="fas fa-tags"></i> Kelola Kategori
-                </button>
+                </a>
                 <a href="{{ route('admin.financial-reports.create') }}"
                     class="inline-flex items-center gap-2 bg-white text-indigo-700 hover:bg-indigo-50 font-black px-5 py-2.5 rounded-2xl shadow-xl transition-all hover:-translate-y-0.5 active:scale-95 text-sm">
                     <i class="fas fa-plus"></i> Tambah Laporan
@@ -117,10 +117,20 @@
                         </td>
                         <td class="px-5 py-4">
                             @php
-                                $catColors = ['LHKPN'=>'bg-violet-100 text-violet-700 border-violet-200','LAKIP'=>'bg-blue-100 text-blue-700 border-blue-200','Keuangan'=>'bg-emerald-100 text-emerald-700 border-emerald-200'];
-                                $cc = $catColors[$report->category] ?? 'bg-slate-100 text-slate-600 border-slate-200';
+                                $category = \App\Models\ReportCategory::where('name', $report->category)->first();
                             @endphp
-                            <span class="px-2.5 py-1 rounded-xl {{ $cc }} text-[10px] font-black uppercase tracking-widest border">{{ $report->category }}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-sm">
+                                    @if($category && $category->emoji)
+                                        {{ $category->emoji }}
+                                    @elseif($category)
+                                        <i class="fas {{ $category->icon }} text-blue-500"></i>
+                                    @else
+                                        <i class="fas fa-folder text-slate-400"></i>
+                                    @endif
+                                </div>
+                                <span class="font-bold text-slate-600 text-xs">{{ $report->category }}</span>
+                            </div>
                         </td>
                         <td class="px-5 py-4 text-center">
                             <span class="text-base font-black text-slate-700">{{ $report->year }}</span>
@@ -173,63 +183,6 @@
     <div class="pt-2">{{ $reports->links() }}</div>
     @endif
 
-    {{-- KELOLA KATEGORI MODAL --}}
-    <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="closeModal()"></div>
-        <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl relative z-10 flex flex-col max-h-[90vh]" x-transition.scale.95>
-            
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-3xl">
-                <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
-                    <i class="fas fa-tags text-indigo-500"></i> Kelola Kategori
-                </h2>
-                <button @click="closeModal()" class="w-8 h-8 rounded-full bg-slate-200 text-slate-500 hover:bg-rose-500 hover:text-white transition-colors">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="p-6 flex-1 overflow-y-auto">
-                <div class="mb-6 bg-blue-50/50 border border-blue-100 p-4 rounded-2xl flex flex-col sm:flex-row gap-3 items-end">
-                    <div class="flex-1 w-full">
-                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-widest mb-1.5">Nama Kategori Baru</label>
-                        <input type="text" x-model="newCategory" placeholder="Misal: LAKIP, RKA, dll" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all text-sm font-medium">
-                    </div>
-                    <button @click="addCategory()" :disabled="isLoading" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all active:scale-95 text-sm whitespace-nowrap">
-                        <span x-show="!isLoading"><i class="fas fa-plus mr-1.5"></i> Tambah</span>
-                        <span x-show="isLoading"><i class="fas fa-spinner fa-spin mr-1.5"></i> Proses...</span>
-                    </button>
-                </div>
-
-                <div class="relative">
-                    <div x-show="isFetching" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-xl">
-                        <i class="fas fa-circle-notch fa-spin text-3xl text-indigo-500"></i>
-                    </div>
-                    
-                    <ul class="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
-                        <template x-for="cat in categories" :key="cat.id">
-                            <li class="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center">
-                                        <i class="fas" :class="cat.icon || 'fa-folder'"></i>
-                                    </div>
-                                    <span class="font-bold text-slate-700" x-text="cat.name"></span>
-                                </div>
-                                <button @click="deleteCategory(cat.id)" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center" title="Hapus Kategori">
-                                    <i class="fas fa-trash-alt text-xs"></i>
-                                </button>
-                            </li>
-                        </template>
-                        <template x-if="categories.length === 0">
-                            <li class="p-6 text-center text-slate-400 italic text-sm">Belum ada kategori.</li>
-                        </template>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="p-5 border-t border-slate-100 bg-slate-50 rounded-b-3xl text-right">
-                <button @click="closeModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition-colors text-sm">Tutup</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <form id="deleteForm" method="POST" class="hidden">@csrf @method('DELETE')</form>
@@ -260,107 +213,6 @@
             customClass: { popup:'rounded-3xl', confirmButton:'px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl mx-1', cancelButton:'px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl mx-1' }, buttonsStyling: false
         }).then(r => { if(r.isConfirmed) document.getElementById('bulkDeleteForm').submit(); });
     }
-
-    function categoryManager() {
-        return {
-            isModalOpen: false,
-            categories: [],
-            newCategory: '',
-            isLoading: false,
-            isFetching: false,
-            
-            openModal() {
-                this.isModalOpen = true;
-                this.fetchCategories();
-            },
-            
-            closeModal() {
-                this.isModalOpen = false;
-                this.newCategory = '';
-            },
-            
-            async fetchCategories() {
-                this.isFetching = true;
-                try {
-                    const response = await fetch('{{ route('admin.report-categories.index') }}');
-                    if (response.ok) {
-                        this.categories = await response.json();
-                    }
-                } catch (error) {
-                    console.error('Error fetching categories:', error);
-                } finally {
-                    this.isFetching = false;
-                }
-            },
-            
-            async addCategory() {
-                if (!this.newCategory.trim()) return;
-                this.isLoading = true;
-                try {
-                    const response = await fetch('{{ route('admin.report-categories.store') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ name: this.newCategory.trim(), icon: 'fa-file-alt' })
-                    });
-                    
-                    const result = await response.json();
-                    if (result.success) {
-                        this.newCategory = '';
-                        this.fetchCategories();
-                        Swal.fire({ icon: 'success', title: 'Berhasil', text: result.message, timer: 2000, showConfirmButton: false });
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'Gagal', text: result.message || 'Terjadi kesalahan.' });
-                    }
-                } catch (error) {
-                    Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan server.' });
-                } finally {
-                    this.isLoading = false;
-                }
-            },
-            
-            async deleteCategory(id) {
-                Swal.fire({
-                    title: 'Hapus Kategori?',
-                    text: "Pastikan tidak ada laporan yang menggunakan kategori ini.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal',
-                    customClass: { popup:'rounded-3xl', confirmButton:'px-5 py-2.5 bg-red-600 text-white font-bold rounded-xl mx-1', cancelButton:'px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl mx-1' }, buttonsStyling: false
-                }).then(async (result) => {
-                    if (result.isConfirmed) {
-                        this.isFetching = true;
-                        try {
-                            const deleteUrl = `{{ route('admin.report-categories.destroy', ':id') }}`.replace(':id', id);
-                            const response = await fetch(deleteUrl, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                }
-                            });
-                            const resData = await response.json();
-                            
-                            if (response.ok && resData.success) {
-                                this.fetchCategories();
-                                Swal.fire({ icon: 'success', title: 'Dihapus', text: resData.message, timer: 2000, showConfirmButton: false });
-                            } else {
-                                Swal.fire({ icon: 'error', title: 'Gagal', text: resData.message || 'Gagal menghapus kategori.' });
-                            }
-                        } catch (error) {
-                            Swal.fire({ icon: 'error', title: 'Gagal', text: 'Terjadi kesalahan server.' });
-                        } finally {
-                            this.isFetching = false;
-                        }
-                    }
-                });
-            }
-        }
-    }
 </script>
 @endpush
 @endsection
-
