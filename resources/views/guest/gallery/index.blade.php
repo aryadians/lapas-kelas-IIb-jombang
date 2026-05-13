@@ -97,7 +97,8 @@
 
         {{-- Judul dengan Animasi Text Shimmer --}}
         <h1 class="text-4xl md:text-7xl font-black text-white mb-8 leading-tight drop-shadow-2xl" data-aos="zoom-in">
-            Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-300 animate-text-shimmer">Bimker</span> Lapas
+            <span class="block text-2xl md:text-4xl uppercase tracking-[0.3em] mb-4">Galeri</span>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-300 animate-text-shimmer">Hasil Karya Warga Binaan<br>Lapas Kelas IIB Jombang</span>
         </h1>
 
         <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-12" data-aos="fade-up">

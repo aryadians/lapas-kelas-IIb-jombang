@@ -140,19 +140,18 @@
                     </a>
 
                     <a href="{{ route('live.antrian') }}" class="text-gray-300 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-semibold transition-all duration-300 flex items-center gap-2">
-                        <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 lg:h-3 lg:w-3 bg-red-500"></span>
-                        </span>
-                        Live Antrian
-                        </a>
-                        <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
-                        <i class="fas fa-store"></i> Galeri
-                        </a>
-                        <a href="{{ route('guest.integrasi') }}" class="text-emerald-400 hover:text-white hover:border-b-2 hover:border-emerald-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
-                        <i class="fa-solid fa-file-contract"></i> Integrasi
-                        </a>
-                        </div>
+                    <span class="relative flex h-2 w-2 lg:h-3 lg:w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 lg:h-3 lg:w-3 bg-red-500"></span>
+                    </span>
+                    Live Antrian
+                    </a>
+                    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                    <i class="fas fa-store"></i> Galeri
+                    </a>
+                    <a href="{{ route('guest.integrasi') }}" class="text-emerald-400 hover:text-white hover:border-b-2 hover:border-emerald-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                    <i class="fa-solid fa-file-contract"></i> Integrasi
+                    </a>                        </div>
 
                 {{-- Menu Kanan --}}
                 <div class="hidden md:flex items-center gap-4">
