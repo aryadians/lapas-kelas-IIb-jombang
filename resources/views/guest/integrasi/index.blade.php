@@ -8,100 +8,80 @@
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
     [x-cloak] { display: none !important; }
-    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; }
+    .card-3d { background: white; border-radius: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); transition: transform 0.3s; }
+    .step-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 1rem; padding: 1.5rem; text-align: center; }
+    .arrow-down { font-size: 2rem; color: #cbd5e1; text-align: center; margin: 10px 0; }
 </style>
 @endpush
 
-{{-- HERO SECTION --}}
-<section class="relative bg-slate-900 text-white pt-32 pb-24">
+<section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 text-white pt-32 pb-24">
     <div class="container mx-auto px-6 text-center">
-        <h1 class="text-4xl md:text-5xl font-black mb-6">Alur dan Informasi Formulir<br class="hidden md:block"> Usulan Integrasi</h1>
-        <p class="text-slate-400 max-w-2xl mx-auto">Panduan operasional untuk Remisi Reguler, Pembebasan Bersyarat, dan Cuti Bersyarat.</p>
+        <h1 class="text-4xl md:text-5xl font-black mb-6">Alur & Informasi Formulir Usulan Integrasi</h1>
+        <p class="text-blue-200 max-w-2xl mx-auto">Panduan operasional untuk Remisi Reguler, PB, dan CB.</p>
     </div>
 </section>
 
 <section class="py-16 bg-slate-50" x-data="{ tab: 'remisi' }">
     <div class="container mx-auto px-6 max-w-6xl">
-        
-        {{-- CTA WA --}}
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 rounded-3xl p-8 mb-16 text-white text-center shadow-lg" data-aos="fade-up">
-            <h3 class="text-2xl font-black mb-4">Butuh Tanya Jawab Seputar Integrasi?</h3>
-            <p class="text-emerald-100 mb-6 max-w-xl mx-auto">Kami siap membantu Anda. Klik tombol di bawah ini untuk terhubung langsung dengan admin layanan integrasi melalui WhatsApp.</p>
-            <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-3 bg-white text-emerald-700 px-8 py-4 rounded-full font-black text-lg hover:bg-emerald-50 transition-all shadow-xl hover:scale-105">
-                <i class="fab fa-whatsapp text-2xl"></i> Chat Layanan Integrasi
+        <div class="flex flex-wrap justify-center gap-3 mb-16">
+            <button @click="tab = 'remisi'" :class="tab === 'remisi' ? 'bg-blue-600 text-white shadow-xl' : 'bg-white text-slate-600 border'" class="px-8 py-4 rounded-full font-black transition">Remisi Reguler</button>
+            <button @click="tab = 'pb'" :class="tab === 'pb' ? 'bg-amber-600 text-white shadow-xl' : 'bg-white text-slate-600 border'" class="px-8 py-4 rounded-full font-black transition">Pembebasan Bersyarat</button>
+            <button @click="tab = 'cb'" :class="tab === 'cb' ? 'bg-indigo-600 text-white shadow-xl' : 'bg-white text-slate-600 border'" class="px-8 py-4 rounded-full font-black transition">Cuti Bersyarat</button>
+        </div>
+
+        <div class="card-3d p-8 md:p-12 mb-16" data-aos="fade-up">
+            <h4 class="text-2xl font-black text-slate-800 mb-8 flex items-center gap-3">
+                <i class="fas fa-layer-group text-blue-500"></i> Proses Pengajuan (8 Langkah UPT)
+            </h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @foreach(['Pendataan Napi', 'Input data & Dokumen', 'Sidang TPP', 'Pelaksanaan Sidang', 'Kontrol Sidang', 'Verifikasi Sidang', 'Upload Surat Pengantar', 'Kirim ke Ditjenpas'] as $index => $step)
+                <div class="step-box hover:border-blue-500 transition-colors">
+                    <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-black mb-3 mx-auto">{{ $index + 1 }}</div>
+                    <p class="text-xs font-bold text-slate-700">{{ $step }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Dynamic Tab Content --}}
+        <div class="space-y-8">
+            <div x-show="tab === 'remisi'" class="card-3d p-10 border-l-8 border-blue-600">
+                <h2 class="text-2xl font-black text-blue-900 mb-6 flex items-center gap-3"><i class="fas fa-calendar-alt"></i> 1. Alur Remisi Reguler</h2>
+                <div class="text-slate-700 space-y-4">
+                    <p>Remisi merupakan hak pengurangan masa pidana... (teks lengkap user)...</p>
+                    <div class="flex flex-col gap-2 font-bold">
+                        <div>Tahap 1 (UPT): <span class="font-normal">8 Langkah UPT.</span></div>
+                        <div>Tahap 2 (KANWIL): <span class="font-normal">Verifikasi usulan.</span></div>
+                        <div>Tahap 3 (DITJENPAS): <span class="font-normal">Verifikasi, Generate SK Kolektif, Tanda Tangan Elektronik.</span></div>
+                        <div>Tahap 4 (UPT): <span class="font-normal">Menerima data SK (Tanpa Cetak).</span></div>
+                        <div>Tahap 5 (KANWIL): <span class="font-normal">Menerima tembusan SK.</span></div>
+                    </div>
+                </div>
+            </div>
+            {{-- PB & CB --}}
+            <div x-show="tab === 'pb' || tab === 'cb'" class="card-3d p-10 border-l-8 border-amber-600">
+                <h2 class="text-2xl font-black text-amber-900 mb-6 flex items-center gap-3" x-text="tab === 'pb' ? '2. Pembebasan Bersyarat (PB)' : '3. Cuti Bersyarat (CB)'"></h2>
+                <div class="bg-amber-50 p-6 rounded-2xl border-l-4 border-amber-400 mb-6 text-amber-900 font-black">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> Perbedaan: Verifikasi Ditjenpas Max 3 Hari, Tanda Tangan DIRJEN, UPT Cetak SK H-3, Kanwil Cetak SK.
+                </div>
+                <div class="text-slate-700 space-y-4">
+                    <div class="flex flex-col gap-2 font-bold">
+                        <div>Tahap 1 (UPT): <span class="font-normal">8 Langkah UPT.</span></div>
+                        <div>Tahap 2 (KANWIL): <span class="font-normal">Verifikasi usulan.</span></div>
+                        <div>Tahap 3 (DITJENPAS): <span class="font-normal">Verifikasi (Max 3 hari), Dirjen Sign.</span></div>
+                        <div>Tahap 4 (UPT): <span class="font-normal">Menerima data & CETAK SK H-3.</span></div>
+                        <div>Tahap 5 (KANWIL): <span class="font-normal">Menerima tembusan & CETAK SURAT KEPUTUSAN.</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- CTA BOTTOM --}}
+        <div class="text-center mt-20" data-aos="fade-up">
+            <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-4 bg-emerald-600 text-white px-10 py-5 rounded-full font-black text-lg hover:bg-emerald-700 transition shadow-2xl hover:scale-105">
+                <i class="fab fa-whatsapp text-3xl"></i> Tanya Jawab Integrasi
             </a>
         </div>
-
-        <div class="prose max-w-none mb-12">
-            <p class="text-lg text-slate-700 leading-relaxed">
-                Berikut adalah panduan dan alur operasional untuk Formulir Usulan Integrasi yang mencakup Remisi Reguler, Pembebasan Bersyarat, dan Cuti Bersyarat.
-            </p>
-        </div>
-
-        {{-- TABS NAVIGATION --}}
-        <div class="flex flex-wrap justify-center gap-3 mb-12">
-            <button @click="tab = 'remisi'" :class="tab === 'remisi' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600'" class="px-6 py-3 rounded-full font-bold shadow transition border">1. Remisi Reguler</button>
-            <button @click="tab = 'pb'" :class="tab === 'pb' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600'" class="px-6 py-3 rounded-full font-bold shadow transition border">2. Pembebasan Bersyarat</button>
-            <button @click="tab = 'cb'" :class="tab === 'cb' ? 'bg-blue-600 text-white' : 'bg-white text-slate-600'" class="px-6 py-3 rounded-full font-bold shadow transition border">3. Cuti Bersyarat</button>
-        </div>
-
-        {{-- TAB CONTENTS --}}
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-            
-            {{-- REMISI --}}
-            <div x-show="tab === 'remisi'" x-cloak>
-                <h2 class="text-2xl font-black text-blue-900 mb-6 flex items-center gap-3"><i class="fas fa-calendar-alt"></i> 1. Alur Pengusulan Remisi Reguler</h2>
-                <p class="mb-6 text-slate-700 leading-relaxed">Ini merupakan prosedur operasional standar dalam pengusulan remisi. Pada alur ini, tidak terdapat batasan waktu spesifik yang ditetapkan untuk proses verifikasi di tingkat pusat. Selain itu, pihak UPT dan Kanwil cukup menerima data Surat Keputusan (SK) secara digital dari pusat tanpa adanya kewajiban untuk mencetak fisik dokumen tersebut melalui sistem.</p>
-                
-                <div class="space-y-4 text-sm">
-                    <p><strong>Tahap 1 (UPT):</strong> Proses dimulai di tingkat Unit Pelaksana Teknis dengan mendata narapidana yang telah memenuhi syarat. Petugas kemudian melengkapi input data dan dokumen pendukung, membuat daftar usulan untuk sidang TPP (Tim Pengamat Pemasyarakatan), melaksanakan sidang, serta melakukan kontrol dan verifikasi hasil sidang. Setelah selesai, surat pengantar diunggah dan seluruh data dikirim ke Ditjenpas dengan memberikan tembusan kepada Kanwil.</p>
-                    <p><strong>Tahap 2 (KANWIL):</strong> Pihak Kantor Wilayah bertugas melakukan verifikasi usulan terhitung sejak data dan dokumen usulan diterima dari UPT.</p>
-                    <p><strong>Tahap 3 (DITJENPAS):</strong> Di tingkat pusat, dilakukan verifikasi usulan secara komprehensif, pembuatan persetujuan, proses penerbitan (generate) SK Kolektif, hingga pelaksanaan penandatanganan elektronik. (Catatan: Jika terdapat kekurangan atau perlu perbaikan, berkas akan langsung dikembalikan ke UPT).</p>
-                    <p><strong>Tahap 4 (UPT):</strong> UPT menerima distribusi data SK yang telah diterbitkan oleh pusat.</p>
-                    <p><strong>Tahap 5 (KANWIL):</strong> Kanwil menerima tembusan pengiriman SK dari pusat sebagai bentuk pelaporan dan arsip digital.</p>
-                </div>
-            </div>
-
-            {{-- PB --}}
-            <div x-show="tab === 'pb'" x-cloak>
-                <h2 class="text-2xl font-black text-amber-900 mb-6 flex items-center gap-3"><i class="fas fa-door-open"></i> 2. Alur Pengusulan Pembebasan Bersyarat (PB)</h2>
-                <p class="mb-6 text-slate-700 leading-relaxed">Alur ini memiliki tingkat urgensi yang lebih tinggi dibandingkan Remisi Reguler. Perbedaan paling mendasar terletak pada adanya tenggat waktu verifikasi yang ketat di Ditjenpas (maksimal 3 hari kerja). Selain itu, terdapat kewajiban pencetakan SK secara fisik pada tahap akhir oleh pihak UPT maupun Kanwil.</p>
-                
-                <div class="space-y-4 text-sm">
-                    <p><strong>Tahap 1 (UPT):</strong> Menjalankan 8 langkah proses pengajuan yang sama persis dengan tahap awal pada alur Remisi Reguler.</p>
-                    <p><strong>Tahap 2 (KANWIL):</strong> Melakukan verifikasi usulan segera setelah berkas pengajuan diterima dari UPT.</p>
-                    <p><strong>Tahap 3 (DITJENPAS):</strong> Melakukan verifikasi kelayakan usulan dengan batas waktu maksimal 3 hari. Setelah diverifikasi, pusat akan membuat persetujuan, men-generate SK Kolektif, dan memproses penandatanganan elektronik secara langsung oleh Direktur Jenderal (Dirjen). (Catatan: Berkas yang memerlukan perbaikan akan dikembalikan ke UPT).</p>
-                    <p><strong>Tahap 4 (UPT):</strong> Menerima data persetujuan dari pusat dan diwajibkan untuk Cetak SK pada H-3 pelaksanaan.</p>
-                    <p><strong>Tahap 5 (KANWIL):</strong> Menerima tembusan pengiriman dari pusat dan bertugas untuk melakukan Cetak Surat Keputusan.</p>
-                </div>
-            </div>
-
-            {{-- CB --}}
-            <div x-show="tab === 'cb'" x-cloak>
-                <h2 class="text-2xl font-black text-indigo-900 mb-6 flex items-center gap-3"><i class="fas fa-home"></i> 3. Alur Pengusulan Cuti Bersyarat (CB)</h2>
-                <p class="mb-6 text-slate-700 leading-relaxed">Secara sistematis dan operasional aplikasi, tahapan pengajuan Cuti Bersyarat memiliki alur yang identik dengan Pembebasan Bersyarat, baik dalam hal kedisiplinan waktu verifikasi maupun kewajiban administratif di tahap akhir.</p>
-                
-                <div class="space-y-4 text-sm">
-                    <p><strong>Tahap 1 (UPT):</strong> Menjalankan 8 langkah proses pengajuan awal yang sama dengan alur integrasi lainnya.</p>
-                    <p><strong>Tahap 2 (KANWIL):</strong> Memproses verifikasi usulan sejak data diterima dari UPT.</p>
-                    <p><strong>Tahap 3 (DITJENPAS):</strong> Melakukan verifikasi usulan secara cepat dengan batas waktu maksimal 3 hari. Proses berlanjut ke pembuatan persetujuan, generate SK Kolektif, dan penandatanganan elektronik oleh Dirjen. (Catatan: Berkas yang tidak lengkap akan dikembalikan ke UPT).</p>
-                    <p><strong>Tahap 4 (UPT):</strong> Menerima data dari pusat dan wajib melakukan Cetak SK pada H-3.</p>
-                    <p><strong>Tahap 5 (KANWIL):</strong> Menerima tembusan pengiriman data SK dan bertugas untuk Cetak Surat Keputusan.</p>
-                </div>
-            </div>
-        </div>
-
-        {{-- RINGKASAN PERBANDINGAN --}}
-        <div class="mt-12 bg-slate-900 text-white p-8 rounded-3xl shadow-xl">
-            <h3 class="text-xl font-black mb-6">Ringkasan Perbedaan Utama:</h3>
-            <div class="space-y-4 text-sm text-slate-300">
-                <p>• <strong>Waktu Verifikasi Pusat (Ditjenpas):</strong> Pengusulan Remisi Reguler tidak mencantumkan batas waktu verifikasi yang kaku. Sebaliknya, Pembebasan dan Cuti Bersyarat dibatasi dengan ketat maksimal 3 hari penyelesaian.</p>
-                <p>• <strong>Tanda Tangan Pusat:</strong> SK Remisi Reguler cukup menggunakan "Penandatanganan Elektronik" standar. Namun, Pembebasan dan Cuti Bersyarat mensyaratkan otoritas yang spesifik berupa "Penandatanganan Elektronik Dirjen".</p>
-                <p>• <strong>Output UPT (Tahap 4):</strong> Pada Remisi Reguler, UPT hanya bertindak sebagai penerima data SK. Pada Pembebasan dan Cuti Bersyarat, UPT memiliki kewajiban administratif ekstra untuk Cetak SK pada H-3.</p>
-                <p>• <strong>Output Kanwil (Tahap 5):</strong> Pada Remisi Reguler, Kanwil hanya menerima tembusan SK sebagai informasi. Sedangkan pada Pembebasan dan Cuti Bersyarat, Kanwil diwajibkan untuk turut serta mencetak Surat Keputusan.</p>
-            </div>
-        </div>
-
     </div>
 </section>
 
