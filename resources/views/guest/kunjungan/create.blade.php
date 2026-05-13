@@ -327,7 +327,7 @@
                         </div>
                     </div>
                     <div class="p-4 sm:p-6">
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 text-center">
                             <div class="bg-gradient-to-br from-red-50 to-red-100 p-3 sm:p-4 rounded-lg flex flex-col items-center justify-center h-20 sm:h-24 hover:shadow-lg transition-all duration-300 card-hover-scale border border-red-200">
                                 <span class="text-xl sm:text-2xl mb-2">🍢</span>
                                 <span class="text-xs font-bold text-red-800 leading-tight">Makanan Berongga</span>
@@ -363,6 +363,10 @@
                             <div class="bg-gradient-to-br from-red-50 to-red-100 p-3 sm:p-4 rounded-lg flex flex-col items-center justify-center h-20 sm:h-24 hover:shadow-lg transition-all duration-300 card-hover-scale border border-red-200">
                                 <span class="text-xl sm:text-2xl mb-2">🤢</span>
                                 <span class="text-xs font-bold text-red-800 leading-tight">Bau Menyengat</span>
+                            </div>
+                            <div class="bg-gradient-to-br from-red-50 to-red-100 p-3 sm:p-4 rounded-lg flex flex-col items-center justify-center h-20 sm:h-24 hover:shadow-lg transition-all duration-300 card-hover-scale border border-red-200">
+                                <span class="text-xl sm:text-2xl mb-2">🥻</span>
+                                <span class="text-xs font-bold text-red-800 leading-tight">Sarung / Selimut</span>
                             </div>
                         </div>
                     </div>
