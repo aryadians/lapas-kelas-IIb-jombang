@@ -46,7 +46,7 @@ class GaleriController extends Controller
             'dimension' => $request->dimension,
             'status' => $request->status,
             'order_index' => $request->order_index ?? 0,
-            'is_active' => $request->has('is_active'),
+            'is_active' => $request->has('is_active') ? true : false,
         ]);
 
         return redirect()->route('admin.galeri.index')->with('success', 'Data galeri berhasil ditambahkan.');
@@ -71,7 +71,7 @@ class GaleriController extends Controller
         ]);
 
         $data = $request->only(['title', 'description', 'price', 'material', 'dimension', 'status', 'order_index']);
-        $data['is_active'] = $request->has('is_active');
+        $data['is_active'] = $request->has('is_active') ? true : false;
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
