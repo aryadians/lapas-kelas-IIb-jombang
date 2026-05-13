@@ -458,7 +458,7 @@
                 @endforeach
             },
             get availableSessions() {
-                if (!this.selectedDate) return ['pagi', 'siang'];
+                if (!this.selectedDate) return ['pagi'];
                 const day = this.dateToDay[this.selectedDate];
                 return this.sessionsByDay[day] || [];
             },
@@ -592,7 +592,7 @@
                             <label class="block text-xs font-black text-slate-600 uppercase mb-2">Pilih Sesi</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <button type="button" x-show="availableSessions.includes('pagi')" @click="selectedSesi = 'pagi'" :class="selectedSesi === 'pagi' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Pagi</button>
-                                <button type="button" x-show="availableSessions.includes('siang')" @click="selectedSesi = 'siang'" :class="selectedSesi === 'siang' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Siang</button>
+                                <button type="button" x-show="selectedDate && availableSessions.includes('siang')" @click="selectedSesi = 'siang'" :class="selectedSesi === 'siang' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Siang</button>
                             </div>
                         </div>
                     </div>
