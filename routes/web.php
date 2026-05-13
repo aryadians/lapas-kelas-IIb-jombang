@@ -236,6 +236,9 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     // Manajemen Pegawai
     Route::resource('pegawai', \App\Http\Controllers\Admin\PegawaiController::class)->names('admin.pegawai');
 
+    // Manajemen Galeri
+    Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class)->names('admin.galeri');
+
     // Manajemen WBP
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
     Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
