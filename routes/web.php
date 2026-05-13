@@ -84,6 +84,7 @@ Route::post('/survei/simpan', [SurveyController::class, 'store'])->name('survey.
 Route::get('/galeri-karya', [GalleryController::class, 'index'])->name('gallery.index');
 Route::get('/profil', [HomeController::class, 'profile'])->name('profile.index');
 Route::get('/informasi-publik', [HomeController::class, 'publicReports'])->name('guest.public-reports');
+Route::get('/usulan-integrasi', [HomeController::class, 'integrasi'])->name('guest.integrasi');
 
 // Fitur Informasi Realtime Publik
 Route::get('/live-antrian', [HomeController::class, 'liveAntrian'])->name('live.antrian');

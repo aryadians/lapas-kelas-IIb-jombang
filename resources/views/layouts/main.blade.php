@@ -145,11 +145,14 @@
                             <span class="relative inline-flex rounded-full h-2 w-2 lg:h-3 lg:w-3 bg-red-500"></span>
                         </span>
                         Live Antrian
-                    </a>
-                    <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                        </a>
+                        <a href="{{ route('gallery.index') }}" class="text-yellow-400 hover:text-white hover:border-b-2 hover:border-yellow-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
                         <i class="fas fa-store"></i> Galeri
-                    </a>
-                </div>
+                        </a>
+                        <a href="{{ route('guest.integrasi') }}" class="text-emerald-400 hover:text-white hover:border-b-2 hover:border-emerald-500 px-1 py-2 text-xs lg:text-sm xl:text-base font-bold transition-all duration-300 flex items-center gap-2">
+                        <i class="fa-solid fa-file-contract"></i> Integrasi
+                        </a>
+                        </div>
 
                 {{-- Menu Kanan --}}
                 <div class="hidden md:flex items-center gap-4">
@@ -244,7 +247,9 @@
         <a href="{{ route('gallery.index') }}" class="block px-3 py-2 rounded-md text-base font-bold text-yellow-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
             <i class="fas fa-store mr-2"></i> Galeri Karya
         </a>
-
+        <a href="{{ route('guest.integrasi') }}" class="block px-3 py-2 rounded-md text-base font-bold text-emerald-400 hover:text-white hover:bg-slate-800/50 transition-all duration-300">
+            <i class="fa-solid fa-file-contract mr-2"></i> Integrasi WBP
+        </a>
                 @if (Route::has('login'))
                 <a href="{{ route('login') }}" class="block px-3 py-2 mt-2 rounded-md text-base font-medium text-gray-400 hover:text-yellow-400 hover:bg-slate-800/50 transition-all duration-300">
                     @auth Dashboard @else Login Petugas @endauth

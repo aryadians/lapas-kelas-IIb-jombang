@@ -152,6 +152,11 @@ class HomeController extends Controller
         return view('guest.public_reports.index', compact('reports', 'category'));
     }
 
+    public function integrasi(): View
+    {
+        return view('guest.integrasi.index');
+    }
+
     /**
      * Display the digital announcement board.
      *
