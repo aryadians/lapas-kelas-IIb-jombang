@@ -104,6 +104,81 @@ class KunjunganController extends Controller
     }
 
     /**
+     * Kirim ulang notifikasi (WA/Email) secara manual.
+     */
+    public function resendNotification(Request $request, Kunjungan $kunjungan)
+    {
+        $type = $request->input('type'); // 'email', 'whatsapp'
+        $status = $kunjungan->status;
+
+        // 1. Tambahkan log baru untuk upaya kirim ulang ini
+        $logs = $kunjungan->notification_logs ?? [];
+        $newLog = [
+            'timestamp' => now()->toDateTimeString(),
+            'status_at_time' => $status->value . ' (Resend Manual)',
+            'email' => ($type === 'email') ? 'pending' : 'skipped',
+            'whatsapp' => ($type === 'whatsapp') ? 'pending' : 'skipped',
+        ];
+        $logs[] = $newLog;
+        
+        // Simpan log awal
+        \DB::table('kunjungans')->where('id', $kunjungan->id)->update([
+            'notification_logs' => json_encode($logs)
+        ]);
+        $kunjungan->notification_logs = $logs;
+
+        // 2. Trigger Notifikasi sesuai Status dan Tipe
+        try {
+            if ($type === 'email') {
+                if (empty($kunjungan->email_pengunjung)) {
+                    throw new \Exception('Email pengunjung kosong.');
+                }
+
+                if ($status === KunjunganStatus::COMPLETED) {
+                    $kunjungan->notify(new \App\Notifications\SendSurveyLink());
+                } elseif (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::REJECTED])) {
+                    $qrPath = null;
+                    if ($status === KunjunganStatus::APPROVED) {
+                        // Gunakan QR Code yang sudah ada atau fallback ke URL
+                        if (\Storage::disk('public')->exists("qrcodes/{$kunjungan->id}.png")) {
+                            $qrPath = \Storage::disk('public')->path("qrcodes/{$kunjungan->id}.png");
+                        }
+                    }
+                    Mail::to($kunjungan->email_pengunjung)->queue(new KunjunganStatusMail($kunjungan, $qrPath));
+                } else {
+                    throw new \Exception('Status kunjungan tidak mendukung pengiriman notifikasi ini.');
+                }
+                
+                $kunjungan->updateNotificationLog('email', 'sent');
+            } 
+            
+            elseif ($type === 'whatsapp') {
+                if (empty($kunjungan->no_wa_pengunjung)) {
+                    throw new \Exception('Nomor WhatsApp pengunjung kosong.');
+                }
+
+                if ($status === KunjunganStatus::COMPLETED) {
+                    \App\Jobs\SendWhatsAppCompletedNotification::dispatch($kunjungan);
+                } elseif ($status === KunjunganStatus::APPROVED) {
+                    $qrUrl = $kunjungan->barcode ?: \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
+                    \App\Jobs\SendWhatsAppApprovedNotification::dispatch($kunjungan, $qrUrl);
+                } elseif ($status === KunjunganStatus::REJECTED) {
+                    \App\Jobs\SendWhatsAppRejectedNotification::dispatch($kunjungan);
+                } else {
+                    throw new \Exception('Status kunjungan tidak mendukung pengiriman notifikasi ini.');
+                }
+                
+                // Job WA akan mengupdate log secara otomatis saat selesai (Job handle() method)
+            }
+
+            return back()->with('success', 'Permintaan kirim ulang notifikasi ' . strtoupper($type) . ' telah diproses.');
+        } catch (\Exception $e) {
+            $kunjungan->updateNotificationLog($type, 'failed', $e->getMessage());
+            return back()->with('error', 'Gagal mengirim ulang notifikasi: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Menampilkan formulir edit kunjungan (untuk verifikasi manual).
      */
     public function edit($id)

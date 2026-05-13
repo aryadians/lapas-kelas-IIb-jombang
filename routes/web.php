@@ -221,6 +221,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
     Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
     Route::patch('kunjungan/{kunjungan}/update-status', [AdminKunjunganController::class, 'updateStatus'])->name('admin.kunjungan.update-status');
+    Route::post('kunjungan/{kunjungan}/resend-notification', [AdminKunjunganController::class, 'resendNotification'])->name('admin.kunjungan.resend-notification');
 
     // Pendaftaran Offline
     Route::get('kunjungan/create-offline', [AdminKunjunganController::class, 'createOffline'])->name('admin.kunjungan.createOffline');

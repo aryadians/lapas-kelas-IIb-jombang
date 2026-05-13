@@ -373,9 +373,15 @@
                                         </div>
                                         <div class="flex-grow">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Email Delivery</p>
-                                            <p class="text-sm font-bold text-slate-800 capitalize flex items-center gap-1">
-                                                {{ $log['email'] }}
-                                                @if($log['email'] == 'sent') <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> @endif
+                                            <p class="text-sm font-bold text-slate-800 capitalize flex items-center justify-between gap-2">
+                                                <span>{{ $log['email'] }}</span>
+                                                @if($log['email'] == 'sent') 
+                                                    <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
+                                                @elseif($log['email'] != 'pending' && $log['email'] != 'skipped')
+                                                    <button onclick="resendNotification('email')" class="bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-[9px] px-2 py-1 rounded-lg font-black transition-all uppercase border border-rose-200 shadow-sm flex items-center gap-1">
+                                                        <i class="fas fa-redo-alt text-[8px]"></i> Kirim Ulang
+                                                    </button>
+                                                @endif
                                             </p>
                                             @if(isset($log['email_reason']))
                                                 <p class="text-[10px] text-rose-500 mt-1 italic w-full truncate" title="{{ $log['email_reason'] }}">{{ $log['email_reason'] }}</p>
@@ -399,9 +405,15 @@
                                         </div>
                                         <div class="flex-grow">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">WhatsApp Delivery</p>
-                                            <p class="text-sm font-bold text-slate-800 capitalize flex items-center gap-1">
-                                                {{ $log['whatsapp'] }}
-                                                @if($log['whatsapp'] == 'sent') <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> @endif
+                                            <p class="text-sm font-bold text-slate-800 capitalize flex items-center justify-between gap-2">
+                                                <span>{{ $log['whatsapp'] }}</span>
+                                                @if($log['whatsapp'] == 'sent') 
+                                                    <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
+                                                @elseif($log['whatsapp'] != 'pending' && $log['whatsapp'] != 'skipped')
+                                                    <button onclick="resendNotification('whatsapp')" class="bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-[9px] px-2 py-1 rounded-lg font-black transition-all uppercase border border-rose-200 shadow-sm flex items-center gap-1">
+                                                        <i class="fas fa-redo-alt text-[8px]"></i> Kirim Ulang
+                                                    </button>
+                                                @endif
                                             </p>
                                             @if(isset($log['whatsapp_reason']))
                                                 <p class="text-[10px] text-rose-500 mt-1 italic w-full truncate" title="{{ $log['whatsapp_reason'] }}">{{ $log['whatsapp_reason'] }}</p>
@@ -602,6 +614,11 @@
     <input type="hidden" name="wbp_id" value="{{ $kunjungan->wbp_id }}">
 </form>
 
+<form id="resend-notification-form" method="POST" style="display: none;">
+    @csrf
+    <input type="hidden" name="type" id="resend-type">
+</form>
+
 {{-- SCRIPT --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -616,6 +633,28 @@
         },
         buttonsStyling: false
     };
+
+    function resendNotification(type) {
+        Swal.fire({
+            ...swal3DConfig,
+            title: 'Kirim Ulang Notifikasi?',
+            html: `Apakah Anda yakin ingin mengirim ulang notifikasi <b>${type.toUpperCase()}</b> kepada pengunjung ini?`,
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Kirim Sekarang',
+            cancelButtonText: 'Batal',
+            customClass: {
+                ...swal3DConfig.customClass,
+                confirmButton: swal3DConfig.customClass.confirmButton + ' bg-blue-600 text-white mr-4'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('resend-notification-form');
+                form.action = "{{ route('admin.kunjungan.resend-notification', $kunjungan->id) }}";
+                document.getElementById('resend-type').value = type;
+                form.submit();
+            }
+        });
+    }
 
     function showFollowerKtp(src, nama) {
         const modal = document.getElementById('followerKtpModal');
