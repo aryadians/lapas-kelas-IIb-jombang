@@ -141,7 +141,7 @@
                 {{-- Info --}}
                 <div class="text-center md:text-left flex-1 relative z-10">
                     <div class="inline-flex items-center px-4 py-1.5 bg-gradient-to-r from-yellow-50 to-white text-yellow-600 rounded-full text-sm font-bold tracking-widest uppercase mb-4 shadow-sm border border-yellow-200/50">
-                        <i class="fas fa-star text-xs mr-2"></i> Pimpinan Tertinggi
+                        <i class="fas fa-star text-xs mr-2"></i> Kalapas
                     </div>
                     <h2 class="text-4xl md:text-5xl font-black text-slate-800 mb-2 leading-tight">RINO SOLEH SUMITRO, <span class="block text-2xl md:text-3xl text-slate-500 mt-1 font-bold">A.Md.IP, S.H. M.H.</span></h2>
                     <p class="text-xl md:text-2xl text-blue-600 font-black tracking-wide uppercase mb-6 drop-shadow-sm">Kepala Lapas Kelas IIB Jombang</p>
