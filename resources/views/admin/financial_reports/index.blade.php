@@ -334,7 +334,7 @@
                     if (result.isConfirmed) {
                         this.isFetching = true;
                         try {
-                            const response = await fetch(`{{ url('admin/report-categories') }}/${id}`, {
+                            const response = await fetch(`{{ url('report-categories') }}/${id}`, {
                                 method: 'DELETE',
                                 headers: {
                                     'Content-Type': 'application/json',
