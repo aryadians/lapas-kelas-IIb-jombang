@@ -86,64 +86,95 @@
 </section>
 
 {{-- ALUR INTEGRASI --}}
-<section class="py-16 bg-slate-50">
+<section class="py-20 bg-slate-50 relative overflow-hidden">
+    {{-- Decorative Background Elements --}}
+    <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white to-transparent opacity-50"></div>
+    
     <div class="container mx-auto px-6 max-w-5xl">
-        <div class="text-center mb-16" data-aos="fade-up">
-            <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-4">Prosedur Pengajuan</h2>
-            <div class="w-24 h-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 mx-auto rounded-full"></div>
+        <div class="text-center mb-20" data-aos="fade-up">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-widest mb-4">
+                <i class="fas fa-project-diagram"></i> Visualisasi Alur
+            </div>
+            <h2 class="text-3xl md:text-5xl font-black text-slate-900 mb-4">Prosedur Pengajuan</h2>
+            <div class="w-24 h-2 bg-gradient-to-r from-blue-600 to-indigo-700 mx-auto rounded-full"></div>
             <p class="mt-6 text-slate-600 max-w-2xl mx-auto text-lg">
-                Langkah-langkah yang harus dipenuhi oleh WBP dan penjamin dalam proses pengajuan program integrasi.
+                Proses transparan dan terukur untuk memastikan hak-hak WBP terpenuhi sesuai regulasi yang berlaku.
             </p>
         </div>
 
-        <div class="relative">
+        <div class="relative space-y-12">
             {{-- Step 1 --}}
-            <div class="relative flex items-start gap-6 md:gap-10 mb-12" data-aos="fade-up" data-aos-delay="100">
-                <div class="step-line hidden md:block"></div>
-                <div class="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 step-circle rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-black">
-                    1
+            <div class="relative flex items-start gap-6 md:gap-12" data-aos="fade-left" data-aos-delay="100">
+                {{-- Arrow Connector --}}
+                <div class="absolute top-16 left-6 md:left-10 bottom-[-3rem] w-1 bg-gradient-to-b from-blue-500 via-blue-300 to-transparent z-0 hidden md:flex items-center justify-center">
+                    <div class="absolute bottom-0 w-4 h-4 border-b-4 border-r-4 border-blue-300 rotate-45 transform -translate-x-[1.5px]"></div>
                 </div>
-                <div class="glass-card flex-1 rounded-3xl p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">Persiapan Dokumen (WBP & Penjamin)</h3>
-                    <p class="text-slate-600 leading-relaxed mb-4">WBP dan pihak keluarga (penjamin) melengkapi persyaratan administrasi seperti KTP, Kartu Keluarga, Surat Jaminan, dan Surat Keterangan dari Kepala Desa/Lurah.</p>
-                    <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl">
-                        <p class="text-sm text-blue-800 font-medium"><i class="fas fa-info-circle mr-2 text-blue-500"></i>Pastikan seluruh dokumen adalah fotokopi legalisir terbaru.</p>
+
+                <div class="w-12 h-12 md:w-20 md:h-20 flex-shrink-0 step-circle rounded-2xl flex flex-col items-center justify-center text-white relative z-10">
+                    <span class="text-[10px] md:text-xs font-black opacity-50 uppercase mb-1">Tahap 1</span>
+                    <i class="fas fa-folder-open text-xl md:text-3xl"></i>
+                </div>
+                <div class="glass-card flex-1 rounded-[2rem] p-6 md:p-10 border-l-4 border-blue-600">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                        Lengkapi Berkas Administrasi
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed mb-6 text-base md:text-lg">Keluarga (Penjamin) menyiapkan dokumen wajib: Fotokopi KTP, KK, Surat Jaminan Keluarga, dan Surat Keterangan Domisili dari Desa/Kelurahan.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <i class="fas fa-check-circle text-emerald-500"></i>
+                            <span class="text-sm font-bold text-slate-700">Legalisir Lurah/Camat</span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                            <i class="fas fa-check-circle text-emerald-500"></i>
+                            <span class="text-sm font-bold text-slate-700">KTP Penjamin Aktif</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{-- Step 2 --}}
-            <div class="relative flex items-start gap-6 md:gap-10 mb-12" data-aos="fade-up" data-aos-delay="200">
-                <div class="step-line hidden md:block"></div>
-                <div class="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 step-circle rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-black">
-                    2
+            <div class="relative flex items-start gap-6 md:gap-12" data-aos="fade-left" data-aos-delay="200">
+                {{-- Arrow Connector --}}
+                <div class="absolute top-16 left-6 md:left-10 bottom-[-3rem] w-1 bg-gradient-to-b from-blue-400 via-blue-200 to-transparent z-0 hidden md:block">
+                    <div class="absolute bottom-0 w-4 h-4 border-b-4 border-r-4 border-blue-200 rotate-45 transform -translate-x-[1.5px]"></div>
                 </div>
-                <div class="glass-card flex-1 rounded-3xl p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">Penilaian Berkelakuan Baik (SPPN)</h3>
-                    <p class="text-slate-600 leading-relaxed">WBP mengikuti program pembinaan kepribadian dan kemandirian secara aktif. SPPN (Sistem Penilaian Pembinaan Narapidana) akan mengevaluasi kelayakan administratif dan substantif WBP.</p>
+
+                <div class="w-12 h-12 md:w-20 md:h-20 flex-shrink-0 step-circle rounded-2xl flex flex-col items-center justify-center text-white relative z-10">
+                    <span class="text-[10px] md:text-xs font-black opacity-50 uppercase mb-1">Tahap 2</span>
+                    <i class="fas fa-user-check text-xl md:text-3xl"></i>
+                </div>
+                <div class="glass-card flex-1 rounded-[2rem] p-6 md:p-10 border-l-4 border-blue-400">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4">Penilaian Melalui SPPN</h3>
+                    <p class="text-slate-600 leading-relaxed text-base md:text-lg">Petugas melakukan penilaian perilaku melalui instrumen SPPN. WBP wajib menunjukkan perubahan perilaku positif dan aktif dalam program pembinaan.</p>
                 </div>
             </div>
 
             {{-- Step 3 --}}
-            <div class="relative flex items-start gap-6 md:gap-10 mb-12" data-aos="fade-up" data-aos-delay="300">
-                <div class="step-line hidden md:block"></div>
-                <div class="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 step-circle rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-black">
-                    3
+            <div class="relative flex items-start gap-6 md:gap-12" data-aos="fade-left" data-aos-delay="300">
+                {{-- Arrow Connector --}}
+                <div class="absolute top-16 left-6 md:left-10 bottom-[-3rem] w-1 bg-gradient-to-b from-blue-300 via-emerald-200 to-transparent z-0 hidden md:block">
+                    <div class="absolute bottom-0 w-4 h-4 border-b-4 border-r-4 border-emerald-200 rotate-45 transform -translate-x-[1.5px]"></div>
                 </div>
-                <div class="glass-card flex-1 rounded-3xl p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-slate-800 mb-3">Sidang TPP (Tim Pengamat Pemasyarakatan)</h3>
-                    <p class="text-slate-600 leading-relaxed">Usulan dibahas dalam Sidang TPP Lapas untuk merekomendasikan apakah WBP layak diberikan program integrasi ke tingkat Kanwil dan Ditjenpas.</p>
+
+                <div class="w-12 h-12 md:w-20 md:h-20 flex-shrink-0 step-circle rounded-2xl flex flex-col items-center justify-center text-white relative z-10">
+                    <span class="text-[10px] md:text-xs font-black opacity-50 uppercase mb-1">Tahap 3</span>
+                    <i class="fas fa-gavel text-xl md:text-3xl"></i>
+                </div>
+                <div class="glass-card flex-1 rounded-[2rem] p-6 md:p-10 border-l-4 border-blue-300">
+                    <h3 class="text-xl md:text-2xl font-black text-slate-800 mb-4">Sidang Tim TPP</h3>
+                    <p class="text-slate-600 leading-relaxed text-base md:text-lg">Usulan Integrasi dibahas secara kolektif dalam Sidang Tim Pengamat Pemasyarakatan (TPP) untuk mendapatkan rekomendasi persetujuan.</p>
                 </div>
             </div>
 
             {{-- Step 4 --}}
-            <div class="relative flex items-start gap-6 md:gap-10" data-aos="fade-up" data-aos-delay="400">
-                <div class="w-12 h-12 md:w-16 md:h-16 flex-shrink-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white text-xl md:text-2xl font-black shadow-lg shadow-emerald-500/40 relative z-10">
-                    <i class="fas fa-check"></i>
+            <div class="relative flex items-start gap-6 md:gap-12" data-aos="fade-left" data-aos-delay="400">
+                <div class="w-12 h-12 md:w-20 md:h-20 flex-shrink-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex flex-col items-center justify-center text-white relative z-10 shadow-lg shadow-emerald-500/30">
+                    <span class="text-[10px] md:text-xs font-black opacity-50 uppercase mb-1">Final</span>
+                    <i class="fas fa-file-contract text-xl md:text-3xl"></i>
                 </div>
-                <div class="glass-card flex-1 rounded-3xl p-6 md:p-8 border-emerald-200 bg-emerald-50/50">
-                    <h3 class="text-xl font-bold text-emerald-900 mb-3">Penerbitan SK Integrasi</h3>
-                    <p class="text-emerald-800/80 leading-relaxed">Jika disetujui, SK (Surat Keputusan) Pembebasan Bersyarat / Cuti Bersyarat akan diterbitkan oleh Direktorat Jenderal Pemasyarakatan.</p>
+                <div class="glass-card flex-1 rounded-[2rem] p-6 md:p-10 border-l-4 border-emerald-500 bg-emerald-50/30">
+                    <h3 class="text-xl md:text-2xl font-black text-emerald-900 mb-4">Penerbitan SK Integrasi</h3>
+                    <p class="text-emerald-800/80 leading-relaxed text-base md:text-lg">Data dikirim secara daring melalui Sistem Database Pemasyarakatan (SDP) ke Pusat untuk penerbitan SK Pembebasan Bersyarat atau Cuti Bersyarat.</p>
                 </div>
             </div>
         </div>
