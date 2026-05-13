@@ -334,7 +334,8 @@
                     if (result.isConfirmed) {
                         this.isFetching = true;
                         try {
-                            const response = await fetch(`{{ url('report-categories') }}/${id}`, {
+                            const deleteUrl = `{{ route('admin.report-categories.destroy', ':id') }}`.replace(':id', id);
+                            const response = await fetch(deleteUrl, {
                                 method: 'DELETE',
                                 headers: {
                                     'Content-Type': 'application/json',

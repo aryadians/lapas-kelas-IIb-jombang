@@ -8,7 +8,7 @@
         ['nama' => 'MOCH. ARIEF KAFANIE, A.Md.P., S.H', 'jabatan' => 'Ka. KPLP', 'seksi' => 'Kesatuan Pengamanan Lapas'],
         ['nama' => 'AFIF EKO SUHARIYANTO, S.H., M.H', 'jabatan' => 'Kasubag Tata Usaha', 'seksi' => 'Sub Bagian Tata Usaha'],
         ['nama' => 'RD EPA FATIMAH, A.Md.IP.,S.H', 'jabatan' => 'Kasi Binadik & Giatja', 'seksi' => 'Bimbingan & Kegiatan Kerja'],
-        ['nama' => 'HENDRI KURNIAWAN, S.H', 'jabatan' => 'Kasi Adm. Kamtib', 'seksi' => 'Administrasi Keamanan & Tata Tertib'],
+        ['nama' => 'WAYAN RIASA, S.H', 'jabatan' => 'Kasi Adm. Kamtib', 'seksi' => 'Administrasi Keamanan & Tata Tertib'],
     ];
 
     $level3 = [
@@ -67,6 +67,24 @@
             background-color: #eff6ff;
             color: #2563eb;
         }
+
+        /* --- 3. VIDEO CONTAINER --- */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
     </style>
 @endpush
 {{-- ================================================================= --}}
@@ -91,17 +109,17 @@
         
         {{-- Badge Kecil --}}
         <div class="inline-flex items-center px-5 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/20 text-sm font-semibold mb-8 text-blue-200 shadow-[0_0_15px_rgba(255,255,255,0.1)]">
-            <i class="fas fa-sitemap mr-2 animate-bounce"></i>
-            Struktur Organisasi
+            <i class="fas fa-building mr-2 animate-bounce"></i>
+            Profil Lembaga
         </div>
 
         {{-- Judul dengan Animasi Shimmer --}}
         <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-tight drop-shadow-2xl">
-            Susunan <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-300 animate-text-shimmer">Pimpinan</span>
+            Lapas <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-white to-yellow-300 animate-text-shimmer">Kelas IIB Jombang</span>
         </h1>
         
         <p class="text-xl md:text-2xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-light drop-shadow-lg">
-            Mengenal jajaran pejabat struktural yang berdedikasi dalam pelayanan dan pembinaan di Lapas Kelas IIB Jombang.
+            Mengenal lebih dekat Visi, Misi, Tugas & Fungsi, serta jajaran kepemimpinan kami.
         </p>
     </div>
 </section>
@@ -159,9 +177,86 @@
 </section>
 
 {{-- ================================================================= --}}
+{{-- 3. PEJABAT STRUKTURAL (GLASSMORPHISM STYLE) --}}
+{{-- ================================================================= --}}
+<section class="py-20 bg-slate-50 relative overflow-hidden">
+    {{-- Decorative Background Gradients --}}
+    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-blue-100/40 to-transparent rounded-full blur-[100px] pointer-events-none -mt-40 -mr-40"></div>
+    <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-100/40 to-transparent rounded-full blur-[80px] pointer-events-none -mb-20 -ml-20"></div>
+
+    <div class="container mx-auto px-6 relative z-10">
+        
+        {{-- LEVEL 2: PEJABAT MENENGAH --}}
+        <div class="mb-24">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <span class="inline-block bg-white text-blue-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-blue-100 mb-3">Eselon IV</span>
+                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-800">Pejabat Struktural Utama</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                @foreach ($level2 as $i => $p)
+                <div class="card-pro card-level-2 group bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-8 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] transition-all duration-300"
+                     data-nama="{{ $p['nama'] }}" 
+                     data-jabatan="{{ $p['jabatan'] }}"
+                     data-level="utama"
+                     data-aos="fade-up" 
+                     data-aos-delay="{{ $i * 100 }}">
+                    
+                    <div class="relative w-24 h-24 mx-auto mb-6">
+                        <div class="absolute inset-0 bg-blue-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div class="icon-circle relative w-full h-full rounded-full bg-gradient-to-br from-white to-blue-50 border-2 border-white shadow-lg flex items-center justify-center text-blue-500 z-10 overflow-hidden">
+                            <i class="fas fa-user-tie text-4xl transform group-hover:scale-110 transition-transform duration-300"></i>
+                        </div>
+                    </div>
+
+                    <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-700 transition-colors">{{ $p['nama'] }}</h4>
+                    <div class="h-px w-12 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto my-4 opacity-50"></div>
+                    <p class="text-blue-600 font-extrabold text-sm uppercase tracking-wider mb-2">{{ $p['jabatan'] }}</p>
+                    <p class="text-slate-500 text-sm bg-slate-100/50 py-1.5 px-3 rounded-xl inline-block">{{ $p['seksi'] }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- LEVEL 3: PEJABAT PENGAWAS --}}
+        <div>
+            <div class="text-center mb-12" data-aos="fade-up">
+                <span class="inline-block bg-white text-slate-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-slate-200 mb-3">Eselon V</span>
+                <h3 class="text-3xl md:text-3xl font-extrabold text-slate-800">Pejabat Pengawas & Pelaksana</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-slate-400 to-slate-500 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach ($level3 as $i => $p)
+                <div class="card-pro card-level-3 group bg-white/60 backdrop-blur-lg border border-white/80 rounded-3xl p-6 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_15px_30px_rgba(100,116,139,0.1)] transition-all duration-300"
+                     data-nama="{{ $p['nama'] }}" 
+                     data-jabatan="{{ $p['jabatan'] }}"
+                     data-level="madya"
+                     data-aos="zoom-in" 
+                     data-aos-delay="{{ $i * 50 }}">
+                    
+                    <div class="relative w-16 h-16 mx-auto mb-4">
+                        <div class="absolute inset-0 bg-slate-300 rounded-full blur-sm opacity-20 group-hover:opacity-40 transition-opacity"></div>
+                        <div class="icon-circle relative w-full h-full rounded-full bg-white border border-slate-100 shadow-md flex items-center justify-center text-slate-400 z-10">
+                            <i class="fas fa-user-shield text-2xl group-hover:text-slate-700 transition-colors"></i>
+                        </div>
+                    </div>
+
+                    <h5 class="font-bold text-slate-800 text-sm md:text-base mb-2 group-hover:text-slate-900 transition-colors line-clamp-2">{{ $p['nama'] }}</h5>
+                    <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">{{ $p['jabatan'] }}</p>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{{-- ================================================================= --}}
 {{-- 2.5 VIDEO, VISI MISI, TUGAS FUNGSI --}}
 {{-- ================================================================= --}}
-<section class="py-16 bg-white relative">
+<section class="py-16 bg-white relative border-t border-slate-200 shadow-inner">
     <div class="container mx-auto px-6 max-w-6xl">
         
         {{-- Video Profil --}}
@@ -332,83 +427,6 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
-{{-- ================================================================= --}}
-{{-- 3. PEJABAT STRUKTURAL (GLASSMORPHISM STYLE) --}}
-{{-- ================================================================= --}}
-<section class="py-20 bg-slate-50 relative overflow-hidden">
-    {{-- Decorative Background Gradients --}}
-    <div class="absolute top-0 right-0 w-[800px] h-[800px] bg-gradient-to-bl from-blue-100/40 to-transparent rounded-full blur-[100px] pointer-events-none -mt-40 -mr-40"></div>
-    <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-100/40 to-transparent rounded-full blur-[80px] pointer-events-none -mb-20 -ml-20"></div>
-
-    <div class="container mx-auto px-6 relative z-10">
-        
-        {{-- LEVEL 2: PEJABAT MENENGAH --}}
-        <div class="mb-24">
-            <div class="text-center mb-12" data-aos="fade-up">
-                <span class="inline-block bg-white text-blue-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-blue-100 mb-3">Eselon IV</span>
-                <h3 class="text-3xl md:text-4xl font-extrabold text-slate-800">Pejabat Struktural Utama</h3>
-                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @foreach ($level2 as $i => $p)
-                <div class="card-pro card-level-2 group bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-8 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] transition-all duration-300"
-                     data-nama="{{ $p['nama'] }}" 
-                     data-jabatan="{{ $p['jabatan'] }}"
-                     data-level="utama"
-                     data-aos="fade-up" 
-                     data-aos-delay="{{ $i * 100 }}">
-                    
-                    <div class="relative w-24 h-24 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-blue-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                        <div class="icon-circle relative w-full h-full rounded-full bg-gradient-to-br from-white to-blue-50 border-2 border-white shadow-lg flex items-center justify-center text-blue-500 z-10 overflow-hidden">
-                            <i class="fas fa-user-tie text-4xl transform group-hover:scale-110 transition-transform duration-300"></i>
-                        </div>
-                    </div>
-
-                    <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-700 transition-colors">{{ $p['nama'] }}</h4>
-                    <div class="h-px w-12 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto my-4 opacity-50"></div>
-                    <p class="text-blue-600 font-extrabold text-sm uppercase tracking-wider mb-2">{{ $p['jabatan'] }}</p>
-                    <p class="text-slate-500 text-sm bg-slate-100/50 py-1.5 px-3 rounded-xl inline-block">{{ $p['seksi'] }}</p>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- LEVEL 3: PEJABAT PENGAWAS --}}
-        <div>
-            <div class="text-center mb-12" data-aos="fade-up">
-                <span class="inline-block bg-white text-slate-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-slate-200 mb-3">Eselon V</span>
-                <h3 class="text-3xl md:text-3xl font-extrabold text-slate-800">Pejabat Pengawas & Pelaksana</h3>
-                <div class="w-24 h-1.5 bg-gradient-to-r from-slate-400 to-slate-500 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach ($level3 as $i => $p)
-                <div class="card-pro card-level-3 group bg-white/60 backdrop-blur-lg border border-white/80 rounded-3xl p-6 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_15px_30px_rgba(100,116,139,0.1)] transition-all duration-300"
-                     data-nama="{{ $p['nama'] }}" 
-                     data-jabatan="{{ $p['jabatan'] }}"
-                     data-level="madya"
-                     data-aos="zoom-in" 
-                     data-aos-delay="{{ $i * 50 }}">
-                    
-                    <div class="relative w-16 h-16 mx-auto mb-4">
-                        <div class="absolute inset-0 bg-slate-300 rounded-full blur-sm opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                        <div class="icon-circle relative w-full h-full rounded-full bg-white border border-slate-100 shadow-md flex items-center justify-center text-slate-400 z-10">
-                            <i class="fas fa-user-shield text-2xl group-hover:text-slate-700 transition-colors"></i>
-                        </div>
-                    </div>
-
-                    <h5 class="font-bold text-slate-800 text-sm md:text-base mb-2 group-hover:text-slate-900 transition-colors line-clamp-2">{{ $p['nama'] }}</h5>
-                    <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">{{ $p['jabatan'] }}</p>
-                </div>
-                @endforeach
             </div>
         </div>
 
