@@ -56,8 +56,6 @@
                     <option value="super_admin"        {{ request('role') == 'super_admin' ? 'selected' : '' }}>👑 Super Admin</option>
                     <option value="admin_humas"        {{ request('role') == 'admin_humas' ? 'selected' : '' }}>📢 Admin Humas</option>
                     <option value="admin_registrasi"   {{ request('role') == 'admin_registrasi' ? 'selected' : '' }}>📝 Admin Registrasi</option>
-                    <option value="admin_umum"         {{ request('role') == 'admin_umum' ? 'selected' : '' }}>⚙️ Admin Umum</option>
-                    <option value="user"               {{ request('role') == 'user' ? 'selected' : '' }}>👤 User</option>
                 </select>
                 <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
             </div>
@@ -80,8 +78,6 @@
             'super_admin'      => ['bar'=>'bg-red-500',    'bg'=>'bg-red-100',    'text'=>'text-red-700',    'icon'=>'fa-crown',          'label'=>'Super Admin'],
             'admin_humas'      => ['bar'=>'bg-blue-500',   'bg'=>'bg-blue-100',   'text'=>'text-blue-700',   'icon'=>'fa-bullhorn',        'label'=>'Admin Humas'],
             'admin_registrasi' => ['bar'=>'bg-purple-500', 'bg'=>'bg-purple-100', 'text'=>'text-purple-700', 'icon'=>'fa-clipboard-list',  'label'=>'Admin Registrasi'],
-            'admin_umum'       => ['bar'=>'bg-emerald-500','bg'=>'bg-emerald-100','text'=>'text-emerald-700','icon'=>'fa-cog',             'label'=>'Admin Umum'],
-            'user'             => ['bar'=>'bg-slate-400',  'bg'=>'bg-slate-100',  'text'=>'text-slate-700',  'icon'=>'fa-user',            'label'=>'User'],
         ];
         $avatarColors = ['violet','blue','indigo','rose','emerald','amber','cyan','teal'];
     @endphp
