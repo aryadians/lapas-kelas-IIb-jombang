@@ -488,17 +488,9 @@
                 Kami berkomitmen untuk terus meningkatkan pelayanan. Laporkan setiap aduan atau masukan melalui saluran resmi kami.
             </p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <a href="https://www.lapor.go.id/" target="_blank" rel="noopener noreferrer"
-                    class="group bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d">
-                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                    <i class="fas fa-bullhorn text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
-                    <span class="text-xl relative z-10 text-center">Layanan Aspirasi dan Pengaduan Online Rakyat (LAPOR!)</span>
-                    <i class="fas fa-external-link-alt text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
-                </a>
-
+            <div class="flex justify-center">
                 <a href="https://wa.me/{{ $visitSettings['helpdesk_whatsapp'] ?? '6285733333400' }}" target="_blank" rel="noopener noreferrer"
-                    class="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d">
+                    class="group bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-6 px-8 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-2 card-hover-scale inline-flex flex-col items-center justify-center gap-4 relative overflow-hidden btn-glow card-3d max-w-xl w-full">
                     <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                     <i class="fab fa-whatsapp text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
                     <span class="text-xl relative z-10 text-center">Laporan Pengaduan Internal Lapas Jombang</span>
