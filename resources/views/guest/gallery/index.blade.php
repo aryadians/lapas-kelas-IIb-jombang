@@ -4,16 +4,7 @@
 
 {{-- 1. DATA DUMMY PRODUK --}}
 @php
-    $products = [
-        ['name' => 'Asbak Kayu Jati', 'image' => asset('img/galeri/asbak kayu jati.png'), 'cat' => 'Kerajinan', 'price' => 'Rp 45.000'],
-        ['name' => 'Hiasan Meja', 'image' => asset('img/galeri/hiasan meja.png'), 'cat' => 'Dekorasi', 'price' => 'Rp 75.000'],
-        ['name' => 'Jam Dinding Ukir', 'image' => asset('img/galeri/jam dinding ukir.png'), 'cat' => 'Furniture', 'price' => 'Rp 150.000'],
-        ['name' => 'Phone Holder Jati', 'image' => asset('img/galeri/phone holder kayu jati.png'), 'cat' => 'Aksesoris', 'price' => 'Rp 35.000'],
-        ['name' => 'Tempat Pisau Dapur', 'image' => asset('img/galeri/tempat pisau dapur.png'), 'cat' => 'Peralatan', 'price' => 'Rp 85.000'],
-        ['name' => 'Tempat Tissue', 'image' => asset('img/galeri/tempat tissue.png'), 'cat' => 'Perlengkapan', 'price' => 'Rp 50.000'],
-    ];
-
-    $shopeeLink = $links['shopee'] ?? 'https://shopee.co.id';
+    $shopeeLink = $links['shopee'] ?? 'https://id.shp.ee/N6U83aS3';
     $tokpedLink = $links['tokopedia'] ?? 'https://tokopedia.com';
 @endphp
 
@@ -165,7 +156,7 @@
                     {{-- Overlay Badge --}}
                     <div class="absolute top-4 left-4 z-10">
                         <span class="bg-white/95 backdrop-blur text-slate-900 text-xs font-bold px-4 py-1.5 rounded-full shadow-lg">
-                            {{ $item['cat'] }}
+                            {{ $item['category'] }}
                         </span>
                     </div>
 
