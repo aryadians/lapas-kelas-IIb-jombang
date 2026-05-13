@@ -49,13 +49,22 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
             'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi'])],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
+
+        $avatar = null;
+        if ($request->hasFile('avatar')) {
+            $image = $request->file('avatar');
+            $imageData = base64_encode(file_get_contents($image));
+            $avatar = 'data:' . $image->getMimeType() . ';base64,' . $imageData;
+        }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
             'password' => Hash::make($request->password),
+            'avatar' => $avatar,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna baru berhasil ditambahkan.');
