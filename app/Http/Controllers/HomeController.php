@@ -121,7 +121,11 @@ class HomeController extends Controller
      */
     public function profile()
     {
-        return view('profile.index');
+        $kalapas = \App\Models\Pegawai::where('level', 'kalapas')->orderBy('order_index')->first();
+        $eselon4 = \App\Models\Pegawai::where('level', 'eselon_4')->orderBy('order_index')->get();
+        $eselon5 = \App\Models\Pegawai::where('level', 'eselon_5')->orderBy('order_index')->get();
+
+        return view('profile.index', compact('kalapas', 'eselon4', 'eselon5'));
     }
 
     /**

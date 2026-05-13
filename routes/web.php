@@ -233,6 +233,9 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     // Manajemen Banners
     Route::resource('banners', App\Http\Controllers\Admin\BannerController::class, ['names' => 'admin.banners']);
 
+    // Manajemen Pegawai
+    Route::resource('pegawai', \App\Http\Controllers\Admin\PegawaiController::class)->names('admin.pegawai');
+
     // Manajemen WBP
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
     Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');

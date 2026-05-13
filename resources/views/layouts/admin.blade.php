@@ -103,6 +103,12 @@
                     <i class="fas fa-images w-5 h-5 mr-3 {{ request()->routeIs('admin.banners.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
                     <span class="font-medium">Manajemen Banner</span>
                 </a>
+
+                <a href="{{ route('admin.pegawai.index') }}"
+                   class="flex items-center px-4 py-3 {{ request()->routeIs('admin.pegawai.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                    <i class="fas fa-users-cog w-5 h-5 mr-3 {{ request()->routeIs('admin.pegawai.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                    <span class="font-medium">Manajemen Pegawai</span>
+                </a>
                 @endif
 
                 {{-- Kunjungan: semua admin (full CRUD untuk registrasi, read-only untuk humas) --}}

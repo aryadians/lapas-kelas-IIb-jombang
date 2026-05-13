@@ -672,7 +672,7 @@
         const nameText = document.getElementById('followerKtpNama');
         
         img.src = src;
-        nameText.innerText = nama;
+        nameText.innerText = nama ? nama : 'Tidak ada nama';
         
         modal.classList.remove('hidden');
         document.body.classList.add('overflow-hidden');

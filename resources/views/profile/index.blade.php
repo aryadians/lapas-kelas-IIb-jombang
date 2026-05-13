@@ -125,11 +125,12 @@
 </section>
 
 {{-- ================================================================= --}}
-{{-- 2. KEPALA LAPAS (FOTO ASLI) --}}
+{{-- 2. KEPALA LAPAS (DINAMIS) --}}
 {{-- ================================================================= --}}
 <section class="relative z-20 -mt-24 pb-16">
     <div class="container mx-auto px-6">
         <div class="max-w-5xl mx-auto">
+            @if($kalapas)
             <div class="bg-white/90 backdrop-blur-2xl rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-10 md:p-14 border border-white/50 flex flex-col md:flex-row items-center gap-10 md:gap-16 relative overflow-hidden group hover:shadow-[0_20px_60px_rgba(234,179,8,0.15)] transition-all duration-500" data-aos="zoom-in-up">
                 
                 {{-- Background Deco Glowing --}}
@@ -138,16 +139,16 @@
 
                 {{-- Foto Wrapper --}}
                 <div class="relative cursor-pointer swing-trigger-foto flex-shrink-0 group/photo z-10" 
-                     data-nama="RINO SOLEH SUMITRO, A.Md.IP, S.H., M.H." 
-                     data-jabatan="Kepala Lapas Kelas IIB Jombang"
-                     data-img="{{ asset('img/kalapas.png') }}">
+                     data-nama="{{ $kalapas->nama }}" 
+                     data-jabatan="{{ $kalapas->jabatan }}"
+                     data-img="{{ $kalapas->foto }}">
                      
                     {{-- Aura Glow --}}
                     <div class="absolute -inset-4 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-600 rounded-full blur-xl opacity-40 group-hover/photo:opacity-70 group-hover/photo:blur-2xl transition-all duration-500 animate-pulse"></div>
 
                     {{-- Image Container --}}
                     <div class="w-56 h-56 md:w-64 md:h-64 rounded-full p-2 bg-gradient-to-br from-yellow-300 via-yellow-100 to-yellow-600 shadow-2xl relative transform group-hover/photo:scale-105 transition-transform duration-500">
-                        <img src="{{ asset('img/kalapas.png') }}" alt="Kalapas" class="w-full h-full object-cover rounded-full border-4 border-white shadow-inner">
+                        <img src="{{ $kalapas->foto }}" alt="{{ $kalapas->nama }}" class="w-full h-full object-cover rounded-full border-4 border-white shadow-inner">
                         
                         {{-- Crown Icon Badge --}}
                         <div class="absolute bottom-2 right-4 bg-white text-yellow-500 w-14 h-14 flex items-center justify-center rounded-full shadow-xl text-2xl border-2 border-yellow-100 group-hover/photo:animate-bounce">
@@ -161,23 +162,33 @@
                     <div class="inline-flex items-center px-4 py-1.5 bg-gradient-to-r from-yellow-50 to-white text-yellow-600 rounded-full text-sm font-bold tracking-widest uppercase mb-4 shadow-sm border border-yellow-200/50">
                         <i class="fas fa-star text-xs mr-2"></i> Kalapas
                     </div>
-                    <h2 class="text-4xl md:text-5xl font-black text-slate-800 mb-2 leading-tight">RINO SOLEH SUMITRO, <span class="block text-2xl md:text-3xl text-slate-500 mt-1 font-bold">A.Md.IP, S.H. M.H.</span></h2>
-                    <p class="text-xl md:text-2xl text-blue-600 font-black tracking-wide uppercase mb-6 drop-shadow-sm">Kepala Lapas Kelas IIB Jombang</p>
+                    <h2 class="text-4xl md:text-5xl font-black text-slate-800 mb-2 leading-tight">
+                        @php 
+                            $parts = explode(',', $kalapas->nama);
+                            $namaUtama = array_shift($parts);
+                            $gelar = implode(',', $parts);
+                        @endphp
+                        {{ $namaUtama }}, <span class="block text-2xl md:text-3xl text-slate-500 mt-1 font-bold">{{ $gelar }}</span>
+                    </h2>
+                    <p class="text-xl md:text-2xl text-blue-600 font-black tracking-wide uppercase mb-6 drop-shadow-sm">{{ $kalapas->jabatan }}</p>
                     
+                    @if($kalapas->quotes)
                     <div class="relative bg-slate-50/50 rounded-2xl p-6 border border-slate-100/50">
                         <i class="fas fa-quote-left text-4xl text-blue-100 absolute top-4 left-4"></i>
                         <p class="text-slate-600 italic leading-relaxed text-lg pl-10 relative z-10 font-medium">
-                            "Melayani dengan Hati, Berintegritas, dan Profesional demi mewujudkan pemasyarakatan yang maju dan bermartabat."
+                            "{{ $kalapas->quotes }}"
                         </p>
                     </div>
+                    @endif
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </section>
 
 {{-- ================================================================= --}}
-{{-- 3. PEJABAT STRUKTURAL (GLASSMORPHISM STYLE) --}}
+{{-- 3. PEJABAT STRUKTURAL (DINAMIS) --}}
 {{-- ================================================================= --}}
 <section class="py-20 bg-slate-50 relative overflow-hidden">
     {{-- Decorative Background Gradients --}}
@@ -186,7 +197,7 @@
 
     <div class="container mx-auto px-6 relative z-10">
         
-        {{-- LEVEL 2: PEJABAT MENENGAH --}}
+        {{-- LEVEL 2: PEJABAT MENENGAH (Eselon 4) --}}
         <div class="mb-24">
             <div class="text-center mb-12" data-aos="fade-up">
                 <span class="inline-block bg-white text-blue-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-blue-100 mb-3">Eselon IV</span>
@@ -195,10 +206,10 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @foreach ($level2 as $i => $p)
+                @foreach ($eselon4 as $i => $p)
                 <div class="card-pro card-level-2 group bg-white/70 backdrop-blur-xl border border-white/60 rounded-[2rem] p-8 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_20px_40px_rgba(37,99,235,0.1)] transition-all duration-300"
-                     data-nama="{{ $p['nama'] }}" 
-                     data-jabatan="{{ $p['jabatan'] }}"
+                     data-nama="{{ $p->nama }}" 
+                     data-jabatan="{{ $p->jabatan }}"
                      data-level="utama"
                      data-aos="fade-up" 
                      data-aos-delay="{{ $i * 100 }}">
@@ -210,16 +221,18 @@
                         </div>
                     </div>
 
-                    <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-700 transition-colors">{{ $p['nama'] }}</h4>
+                    <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-700 transition-colors">{{ $p->nama }}</h4>
                     <div class="h-px w-12 bg-gradient-to-r from-transparent via-blue-400 to-transparent mx-auto my-4 opacity-50"></div>
-                    <p class="text-blue-600 font-extrabold text-sm uppercase tracking-wider mb-2">{{ $p['jabatan'] }}</p>
-                    <p class="text-slate-500 text-sm bg-slate-100/50 py-1.5 px-3 rounded-xl inline-block">{{ $p['seksi'] }}</p>
+                    <p class="text-blue-600 font-extrabold text-sm uppercase tracking-wider mb-2">{{ $p->jabatan }}</p>
+                    @if($p->seksi)
+                    <p class="text-slate-500 text-sm bg-slate-100/50 py-1.5 px-3 rounded-xl inline-block">{{ $p->seksi }}</p>
+                    @endif
                 </div>
                 @endforeach
             </div>
         </div>
 
-        {{-- LEVEL 3: PEJABAT PENGAWAS --}}
+        {{-- LEVEL 3: PEJABAT PENGAWAS (Eselon 5) --}}
         <div>
             <div class="text-center mb-12" data-aos="fade-up">
                 <span class="inline-block bg-white text-slate-600 text-sm font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-slate-200 mb-3">Eselon V</span>
@@ -228,10 +241,10 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach ($level3 as $i => $p)
+                @foreach ($eselon5 as $i => $p)
                 <div class="card-pro card-level-3 group bg-white/60 backdrop-blur-lg border border-white/80 rounded-3xl p-6 text-center cursor-pointer swing-trigger-icon hover:shadow-[0_15px_30px_rgba(100,116,139,0.1)] transition-all duration-300"
-                     data-nama="{{ $p['nama'] }}" 
-                     data-jabatan="{{ $p['jabatan'] }}"
+                     data-nama="{{ $p->nama }}" 
+                     data-jabatan="{{ $p->jabatan }}"
                      data-level="madya"
                      data-aos="zoom-in" 
                      data-aos-delay="{{ $i * 50 }}">
@@ -243,8 +256,8 @@
                         </div>
                     </div>
 
-                    <h5 class="font-bold text-slate-800 text-sm md:text-base mb-2 group-hover:text-slate-900 transition-colors line-clamp-2">{{ $p['nama'] }}</h5>
-                    <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">{{ $p['jabatan'] }}</p>
+                    <h5 class="font-bold text-slate-800 text-sm md:text-base mb-2 group-hover:text-slate-900 transition-colors line-clamp-2">{{ $p->nama }}</h5>
+                    <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">{{ $p->jabatan }}</p>
                 </div>
                 @endforeach
             </div>
