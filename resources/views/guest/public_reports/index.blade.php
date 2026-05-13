@@ -16,7 +16,6 @@
     }
 
     .report-hero {
-        background: linear-gradient(135deg, var(--navy) 0%, #0f1b35 50%, #101535 100%);
         position: relative;
         overflow: hidden;
     }
@@ -27,6 +26,7 @@
         width: 450px; height: 450px;
         background: radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%);
         border-radius: 50%;
+        z-index: 1;
     }
     .report-hero::after {
         content: '';
@@ -35,6 +35,7 @@
         width: 300px; height: 300px;
         background: radial-gradient(circle, rgba(201,162,39,0.08) 0%, transparent 70%);
         border-radius: 50%;
+        z-index: 1;
     }
 
     .gold-line {
@@ -86,7 +87,13 @@
 </style>
 
 {{-- HERO --}}
-<div class="report-hero pt-32 pb-20 px-4 sm:px-6">
+<div class="report-hero pt-32 pb-20 px-4 sm:px-6 bg-slate-900">
+    {{-- Background Blur Image --}}
+    <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center blur-sm opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-[#0a0f1e]/80 via-[#0f1b35]/80 to-[#101535]/90"></div>
+    </div>
+
     <div class="max-w-5xl mx-auto text-center relative z-10">
         {{-- Badge --}}
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-yellow-600/30 bg-yellow-500/10 text-yellow-400 text-xs font-black uppercase tracking-widest mb-6">
@@ -109,7 +116,7 @@
 
 {{-- STAT STRIP --}}
 <div style="background: #0a0f1e; border-top: 1px solid rgba(201,162,39,0.15); border-bottom: 1px solid rgba(201,162,39,0.15);">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex flex-wrap justify-center gap-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-5 flex flex-wrap justify-center gap-8 relative z-10">
         @php $totalDocs = $reports->flatten()->count(); $totalCats = $reports->count(); @endphp
         <div class="text-center">
             <p class="text-2xl font-black" style="color: #e8c547;">{{ $totalCats }}</p>

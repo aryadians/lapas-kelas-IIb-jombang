@@ -76,10 +76,10 @@
 {{-- 2. HERO SECTION (UPDATED: ANIMASI SHIMMER & PATTERN) --}}
 <section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white min-h-[50vh] flex items-center justify-center overflow-hidden pt-32 pb-20">
     
-    {{-- Background Pattern (Titik-titik SVG) --}}
+    {{-- Background Blur Image --}}
     <div class="absolute inset-0 z-0">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Ccircle cx=\'30\' cy=\'30\' r=\'2\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-blue-900/50 to-slate-900/90"></div>
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1452860606245-08befc0ff44b?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center blur-sm opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-blue-900/70 to-slate-900/90"></div>
     </div>
 
     {{-- Floating Elements (Bola-bola Cahaya) --}}
