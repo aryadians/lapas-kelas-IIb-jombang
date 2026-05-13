@@ -212,6 +212,36 @@
         </div>
         @endif
 
+        {{-- Dasar Hukum & UU Transparansi Publik --}}
+        <div class="mt-20 bg-gradient-to-br from-[#0f1b35] to-[#1e2a45] rounded-[2rem] p-8 md:p-12 border border-white/5 relative overflow-hidden shadow-2xl">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl -mt-20 -mr-20 pointer-events-none"></div>
+            <div class="flex items-start gap-6 relative z-10 flex-col md:flex-row">
+                <div class="w-16 h-16 rounded-2xl cat-icon flex items-center justify-center flex-shrink-0 text-[#0a0f1e] shadow-lg">
+                    <i class="fas fa-scale-balanced text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-black text-white mb-3">Dasar Hukum Keterbukaan Informasi Publik</h3>
+                    <p class="text-sm md:text-base leading-relaxed text-[#8a9ab2] mb-6">
+                        Sebagai wujud komitmen Lapas Kelas IIB Jombang terhadap tata kelola pemerintahan yang baik (Good Governance) dan keterbukaan informasi, publikasi dokumen ini berpedoman pada:
+                    </p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-3 text-sm md:text-base text-white/90">
+                            <i class="fas fa-check-circle mt-1" style="color: #c9a227;"></i>
+                            <span><strong>Undang-Undang Nomor 14 Tahun 2008</strong> tentang Keterbukaan Informasi Publik.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-sm md:text-base text-white/90">
+                            <i class="fas fa-check-circle mt-1" style="color: #c9a227;"></i>
+                            <span><strong>Peraturan Pemerintah Nomor 61 Tahun 2010</strong> tentang Pelaksanaan UU Keterbukaan Informasi Publik.</span>
+                        </li>
+                        <li class="flex items-start gap-3 text-sm md:text-base text-white/90">
+                            <i class="fas fa-check-circle mt-1" style="color: #c9a227;"></i>
+                            <span><strong>Peraturan Menteri Hukum dan HAM</strong> terkait Tata Cara Pengelolaan Informasi dan Dokumentasi.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- Footer Note --}}
         <div class="text-center mt-20 pt-10" style="border-top: 1px solid rgba(201,162,39,0.1);">
             <div class="cat-icon w-10 h-10 rounded-2xl flex items-center justify-center mx-auto mb-3">
