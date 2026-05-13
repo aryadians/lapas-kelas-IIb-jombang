@@ -449,6 +449,19 @@
             sisaKuota: null,
             maxKuota: null,
             nikLoading: false,
+            sessionsByDay: {{ json_encode($sessionsByDay) }},
+            dateToDay: { 
+                @foreach($datesByDay as $dayName => $dates)
+                    @foreach($dates as $date)
+                        '{{ $date['value'] }}': '{{ $dayName }}',
+                    @endforeach
+                @endforeach
+            },
+            get availableSessions() {
+                if (!this.selectedDate) return ['pagi', 'siang'];
+                const day = this.dateToDay[this.selectedDate];
+                return this.sessionsByDay[day] || [];
+            },
             
             async checkQuota() {
                 if (!this.selectedDate) return;
@@ -517,7 +530,16 @@
                 }
             }
         }"
-        x-init="$watch('selectedDate', () => checkQuota()); $watch('selectedSesi', () => checkQuota()); if(selectedDate) checkQuota();"
+        x-init="
+            $watch('selectedDate', () => {
+                checkQuota();
+                if (selectedDate && !availableSessions.includes(selectedSesi)) {
+                    selectedSesi = availableSessions.length > 0 ? availableSessions[0] : 'pagi';
+                }
+            }); 
+            $watch('selectedSesi', () => checkQuota()); 
+            if(selectedDate) checkQuota();
+        "
         style="display: none;"
         x-transition:enter="transition ease-out duration-500"
         x-transition:enter-start="opacity-0 translate-y-10"
@@ -569,8 +591,8 @@
                         <div>
                             <label class="block text-xs font-black text-slate-600 uppercase mb-2">Pilih Sesi</label>
                             <div class="grid grid-cols-2 gap-2">
-                                <button type="button" @click="selectedSesi = 'pagi'" :class="selectedSesi === 'pagi' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Pagi</button>
-                                <button type="button" @click="selectedSesi = 'siang'" :class="selectedSesi === 'siang' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Siang</button>
+                                <button type="button" x-show="availableSessions.includes('pagi')" @click="selectedSesi = 'pagi'" :class="selectedSesi === 'pagi' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Pagi</button>
+                                <button type="button" x-show="availableSessions.includes('siang')" @click="selectedSesi = 'siang'" :class="selectedSesi === 'siang' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-500 border-slate-200'" class="py-3 rounded-xl border-2 font-black text-xs transition-all uppercase tracking-widest shadow-sm">Siang</button>
                             </div>
                         </div>
                     </div>
