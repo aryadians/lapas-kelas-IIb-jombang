@@ -154,11 +154,20 @@
             <div>
                 {{-- Category Header --}}
                 <div class="flex items-center gap-4 mb-8">
-                    <div class="cat-icon w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        @if($cat == 'LHKPN')     <i class="fa-solid fa-vault text-xl" style="color: #0a0f1e;"></i>
-                        @elseif($cat == 'LAKIP') <i class="fa-solid fa-chart-line text-xl" style="color: #0a0f1e;"></i>
-                        @elseif($cat == 'Keuangan') <i class="fa-solid fa-money-bill-transfer text-xl" style="color: #0a0f1e;"></i>
-                        @else <i class="fa-solid fa-file-invoice text-xl" style="color: #0a0f1e;"></i>
+                    @php 
+                        $catInfo = $categoryData[$cat] ?? null; 
+                    @endphp
+                    <div class="cat-icon w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-navy">
+                        @if($catInfo && $catInfo->emoji)
+                            <span class="text-2xl">{{ $catInfo->emoji }}</span>
+                        @elseif($catInfo && $catInfo->icon)
+                            <i class="fa-solid {{ $catInfo->icon }} text-xl" style="color: #0a0f1e;"></i>
+                        @else
+                            @if($cat == 'LHKPN')     <i class="fa-solid fa-vault text-xl" style="color: #0a0f1e;"></i>
+                            @elseif($cat == 'LAKIP') <i class="fa-solid fa-chart-line text-xl" style="color: #0a0f1e;"></i>
+                            @elseif($cat == 'Keuangan') <i class="fa-solid fa-money-bill-transfer text-xl" style="color: #0a0f1e;"></i>
+                            @else <i class="fa-solid fa-file-invoice text-xl" style="color: #0a0f1e;"></i>
+                            @endif
                         @endif
                     </div>
                     <div class="flex-1">

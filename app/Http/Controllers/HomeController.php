@@ -148,8 +148,11 @@ class HomeController extends Controller
         }
 
         $reports = $query->latest()->get()->groupBy('category');
+        
+        // Ambil data kategori untuk mendapatkan ikon/emoji
+        $categoryData = \App\Models\ReportCategory::all()->keyBy('name');
 
-        return view('guest.public_reports.index', compact('reports', 'category'));
+        return view('guest.public_reports.index', compact('reports', 'category', 'categoryData'));
     }
 
     public function integrasi(): View
