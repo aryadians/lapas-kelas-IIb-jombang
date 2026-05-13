@@ -42,7 +42,7 @@ class NewsController extends Controller
         $request->validate([
             'title'        => 'required|max:255',
             'content'      => 'required',
-            'images.*'     => 'nullable|image|file|max:5120',        // max 5MB per gambar
+            'images.*'     => 'nullable|image|file|max:20480',        // max 20MB per gambar
             'videos.*'     => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400', // max 100MB per video
             'published_at' => 'nullable|date',
             'status'       => 'required|in:published,draft',
@@ -114,7 +114,7 @@ class NewsController extends Controller
         $request->validate([
             'title'        => 'required|max:255',
             'content'      => 'required',
-            'images.*'     => 'nullable|image|file|max:5120',
+            'images.*'     => 'nullable|image|file|max:20480',
             'videos.*'     => 'nullable|file|mimes:mp4,mov,avi,webm|max:102400',
             'published_at' => 'nullable|date',
             'status'       => 'required|in:published,draft',
