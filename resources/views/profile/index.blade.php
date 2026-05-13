@@ -254,6 +254,87 @@
             </div>
         </div>
 
+        {{-- Hak & Kewajiban WBP --}}
+        <div class="mt-24" data-aos="fade-up">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl md:text-4xl font-black text-slate-800">Hak & Kewajiban WBP</h3>
+                <p class="text-slate-500 mt-3 max-w-2xl mx-auto">Informasi mengenai hak dan kewajiban Warga Binaan Pemasyarakatan (WBP) selama menjalani masa pidana.</p>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {{-- Hak WBP --}}
+                <div class="bg-gradient-to-br from-emerald-50 to-green-100 rounded-[2rem] p-8 md:p-10 border border-emerald-200 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mt-10 -mr-10"></div>
+                    <div class="flex items-center gap-4 mb-6 relative z-10">
+                        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fas fa-hand-holding-heart text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-black text-emerald-900 tracking-tight">Hak WBP</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-700 relative z-10 font-medium">
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Menjalankan ibadah sesuai dengan agama dan kepercayaannya.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Mendapat perawatan jasmani dan rohani.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Mendapat pendidikan, pengajaran, dan kegiatan rekreasional.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Mendapatkan pelayanan kesehatan dan makanan yang layak.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Menerima kunjungan dari keluarga, advokat, atau pihak lain.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-check text-emerald-600 mt-1"></i>
+                            <span>Mendapatkan pengurangan masa pidana (Remisi), Asimilasi, Cuti, dan Pembebasan Bersyarat (PB) sesuai syarat yang berlaku.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {{-- Kewajiban WBP --}}
+                <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-[2rem] p-8 md:p-10 border border-red-200 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -mt-10 -mr-10"></div>
+                    <div class="flex items-center gap-4 mb-6 relative z-10">
+                        <div class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <i class="fas fa-clipboard-list text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-black text-red-900 tracking-tight">Kewajiban WBP</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-700 relative z-10 font-medium">
+                        <li class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                            <span>Menaati tata tertib dan peraturan yang berlaku di dalam Lapas.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                            <span>Mengikuti program pembinaan yang diselenggarakan.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                            <span>Menjaga kebersihan, keamanan, dan ketertiban lingkungan Lapas.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                            <span>Menghormati hak asasi petugas dan sesama Warga Binaan.</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
+                            <span>Memelihara fasilitas, sarana, dan prasarana yang ada di dalam Lapas.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
     </div>
 </section>
 
