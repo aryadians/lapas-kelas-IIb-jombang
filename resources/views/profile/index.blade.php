@@ -159,6 +159,105 @@
 </section>
 
 {{-- ================================================================= --}}
+{{-- 2.5 VIDEO, VISI MISI, TUGAS FUNGSI --}}
+{{-- ================================================================= --}}
+<section class="py-16 bg-white relative">
+    <div class="container mx-auto px-6 max-w-6xl">
+        
+        {{-- Video Profil --}}
+        <div class="mb-24" data-aos="fade-up">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl md:text-4xl font-black text-slate-800">Video Profil</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            {{-- Menggunakan iframe youtube placeholder. Ganti src dengan link youtube asli lapas jombang --}}
+            <div class="relative pb-[56.25%] h-0 overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-4 border-slate-100 bg-slate-200">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0" title="Video Profil Lapas Kelas IIB Jombang" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="absolute top-0 left-0 w-full h-full border-0"></iframe>
+            </div>
+        </div>
+
+        {{-- Visi & Misi --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-24">
+            {{-- Visi --}}
+            <div class="bg-gradient-to-br from-blue-900 to-slate-900 rounded-[2rem] p-10 text-white shadow-xl relative overflow-hidden" data-aos="fade-right">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl -mt-10 -mr-10"></div>
+                <div class="flex items-center gap-4 mb-6 relative z-10">
+                    <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                        <i class="fas fa-eye text-2xl text-blue-300"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-yellow-400 tracking-tight">Visi</h3>
+                </div>
+                <p class="text-lg text-blue-50 leading-relaxed relative z-10">
+                    Masyarakat memperoleh kepastian hukum. (Contoh Visi Kemenkumham/Kemenimipas, silakan sesuaikan dengan Visi Satker Anda).
+                </p>
+            </div>
+
+            {{-- Misi --}}
+            <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-[2rem] p-10 text-slate-900 shadow-xl relative overflow-hidden" data-aos="fade-left">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mt-10 -mr-10"></div>
+                <div class="flex items-center gap-4 mb-6 relative z-10">
+                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                        <i class="fas fa-bullseye text-2xl text-slate-900"></i>
+                    </div>
+                    <h3 class="text-3xl font-black tracking-tight">Misi</h3>
+                </div>
+                <ul class="space-y-4 text-base md:text-lg font-medium relative z-10">
+                    <li class="flex gap-3">
+                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
+                        <span>Melindungi Hak Asasi Manusia.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
+                        <span>Mewujudkan Pemasyarakatan yang bersih dan melayani.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
+                        <span>Meningkatkan pembinaan kepribadian dan kemandirian.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        {{-- Tugas & Fungsi --}}
+        <div data-aos="fade-up">
+            <div class="text-center mb-10">
+                <h3 class="text-3xl md:text-4xl font-black text-slate-800">Tugas & Fungsi</h3>
+                <p class="text-slate-500 mt-3 max-w-2xl mx-auto">Sesuai dengan peraturan perundang-undangan yang berlaku dalam sistem Pemasyarakatan.</p>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-blue-300 transition-all duration-300 group cursor-pointer">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Keamanan & Ketertiban</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Melakukan pencegahan dan penindakan gangguan keamanan serta menjaga ketertiban di lingkungan Lapas.</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-yellow-300 transition-all duration-300 group cursor-pointer">
+                    <div class="w-16 h-16 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-yellow-500 group-hover:text-white transition-all">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Pembinaan Narapidana</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Memberikan bimbingan kepribadian, mental, rohani, serta bimbingan kerja (kemandirian) kepada warga binaan.</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 group cursor-pointer">
+                    <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-800 mb-3">Administrasi & Perawatan</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">Melaksanakan tata usaha, kepegawaian, keuangan, perlengkapan, serta pelayanan kesehatan narapidana dan tahanan.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{{-- ================================================================= --}}
 {{-- 3. PEJABAT STRUKTURAL (GLASSMORPHISM STYLE) --}}
 {{-- ================================================================= --}}
 <section class="py-20 bg-slate-50 relative overflow-hidden">
