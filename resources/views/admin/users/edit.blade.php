@@ -56,8 +56,12 @@
         
         {{-- Form Header --}}
         <div class="bg-gradient-to-r from-slate-50 to-blue-50 p-8 border-b border-slate-100 flex items-center gap-4">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg transform rotate-3">
-                <span class="text-2xl font-bold">{{ substr($user->name, 0, 1) }}</span>
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg overflow-hidden transform rotate-3">
+                @if($user->avatar)
+                    <img src="{{ $user->avatar }}" class="w-full h-full object-cover">
+                @else
+                    <span class="text-2xl font-bold">{{ substr($user->name, 0, 1) }}</span>
+                @endif
             </div>
             <div>
                 <h2 class="text-xl font-bold text-slate-800">Profil: {{ $user->name }}</h2>
@@ -65,7 +69,7 @@
             </div>
         </div>
 
-        <form action="{{ route('admin.users.update', $user->id) }}" method="POST" id="editUserForm" class="p-8 space-y-8">
+        <form action="{{ route('admin.users.update', $user->id) }}" method="POST" id="editUserForm" class="p-8 space-y-8" enctype="multipart/form-data">
             @csrf
             @method('PATCH')
 
@@ -73,30 +77,50 @@
             <div class="space-y-6">
                 <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
                     <div class="p-2 bg-blue-100 rounded-lg text-blue-600"><i class="fas fa-id-card"></i></div>
-                    <h3 class="text-lg font-bold text-slate-700">Informasi Dasar</h3>
+                    <h3 class="text-lg font-bold text-slate-700">Informasi Dasar & Profil</h3>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label for="name" class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Lengkap</label>
+                <div class="flex flex-col md:flex-row gap-8">
+                    {{-- Avatar Preview --}}
+                    <div class="flex-shrink-0">
                         <div class="relative group">
-                            <i class="fas fa-user absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-                            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" 
-                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
-                                required>
+                            <div id="avatarPreview" class="w-32 h-32 rounded-2xl bg-slate-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-slate-400">
+                                @if($user->avatar)
+                                    <img src="{{ $user->avatar }}" class="w-full h-full object-cover">
+                                @else
+                                    <i class="fas fa-user text-4xl"></i>
+                                @endif
+                            </div>
+                            <label class="absolute -bottom-2 -right-2 p-3 bg-blue-600 text-white rounded-full cursor-pointer hover:bg-blue-700 transition-all shadow-lg border-4 border-white">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" id="avatarInput" name="avatar" class="hidden" accept="image/*" onchange="previewAvatar(this)">
+                            </label>
                         </div>
-                        @error('name') <p class="text-red-500 text-xs font-bold ml-1">{{ $message }}</p> @enderror
+                        <p class="text-[10px] text-slate-400 mt-3 font-bold uppercase tracking-widest text-center">Foto Profil</p>
                     </div>
 
-                    <div class="space-y-2">
-                        <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Email</label>
-                        <div class="relative group">
-                            <i class="fas fa-envelope absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
-                            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" 
-                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
-                                required>
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="name" class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Nama Lengkap</label>
+                            <div class="relative group">
+                                <i class="fas fa-user input-icon absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" 
+                                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
+                                    required>
+                            </div>
+                            @error('name') <p class="text-red-500 text-xs font-bold ml-1">{{ $message }}</p> @enderror
                         </div>
-                        @error('email') <p class="text-red-500 text-xs font-bold ml-1">{{ $message }}</p> @enderror
+
+                        <div class="space-y-2">
+                            <label for="email" class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Alamat Email</label>
+                            <div class="relative group">
+                                <i class="fas fa-envelope input-icon absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
+                                <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" 
+                                    class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
+                                    required>
+                            </div>
+                            @error('email') <p class="text-red-500 text-xs font-bold ml-1">{{ $message }}</p> @enderror
+                        </div>
                     </div>
                 </div>
             </div>
@@ -160,8 +184,11 @@
                         <div class="relative group">
                             <i class="fas fa-key absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                             <input type="password" name="password" id="password" 
-                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
+                                class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
                                 placeholder="••••••••">
+                            <button type="button" onclick="togglePassword('password')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-500">
+                                <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </button>
                         </div>
                         @error('password') <p class="text-red-500 text-xs font-bold ml-1">{{ $message }}</p> @enderror
                     </div>
@@ -171,8 +198,11 @@
                         <div class="relative group">
                             <i class="fas fa-check-double absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors"></i>
                             <input type="password" name="password_confirmation" id="password_confirmation" 
-                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
+                                class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700" 
                                 placeholder="••••••••">
+                            <button type="button" onclick="togglePassword('password_confirmation')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-500">
+                                <i class="fas fa-eye" id="togglePasswordConfirmationIcon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -206,34 +236,58 @@
         },
         buttonsStyling: false
     };
+function confirmEdit(event) {
+    event.preventDefault();
+    const form = document.getElementById('editUserForm');
 
-    function confirmEdit(event) {
-        event.preventDefault();
-        const form = document.getElementById('editUserForm');
-        
-        Swal.fire({
-            ...swal3DConfig,
-            title: 'Simpan Perubahan?',
-            text: "Pastikan data yang Anda masukkan sudah benar.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Simpan',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Tampilkan loading state
-                Swal.fire({
-                    title: 'Menyimpan...',
-                    text: 'Mohon tunggu sebentar.',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-                form.submit();
+    Swal.fire({
+        ...swal3DConfig,
+        title: 'Simpan Perubahan?',
+        text: "Pastikan data yang Anda masukkan sudah benar.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Simpan',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Tampilkan loading state
+            Swal.fire({
+                title: 'Menyimpan...',
+                text: 'Mohon tunggu sebentar.',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            form.submit();
+        }
+    });
+}
+
+function togglePassword(id) {
+...
+        const input = document.getElementById(id);
+        const icon = document.getElementById(id === 'password' ? 'togglePasswordIcon' : 'togglePasswordConfirmationIcon');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('avatarPreview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
             }
-        });
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 </script>
 @endsection
