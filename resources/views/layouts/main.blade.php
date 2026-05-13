@@ -539,11 +539,11 @@
                                     </div>
                                     <div class="flex items-center gap-4 group">
                                         <div class="bg-yellow-500/20 p-2.5 rounded-xl border border-yellow-400/30 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-slate-900 transition-colors">
-                                            <i class="fas fa-phone-alt text-lg group-hover:animate-vibrate"></i>
+                                            <i class="fab fa-whatsapp text-lg group-hover:animate-vibrate"></i>
                                         </div>
                                         <div>
-                                           <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '62 857 3333 3400' }}</p>
-                                           <p class="text-xs text-slate-400">Jam Layanan: {{ $visitSettings['jam_buka_pagi'] ?? '08:00' }} - {{ $visitSettings['jam_tutup_siang'] ?? '15:00' }} WIB</p>
+                                           <p class="text-white text-sm font-bold leading-tight drop-shadow-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '6285733333400' }}</p>
+                                           <p class="text-xs text-slate-400">Jam Layanan: {{ $visitSettings['jam_pagi_buka'] ?? '08:00' }} - {{ $visitSettings['jam_siang_tutup'] ?? '15:00' }} WIB</p>
                                         </div>                                    </div>
                                 </div>
                         

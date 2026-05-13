@@ -362,7 +362,7 @@
                         <label class="text-sm font-bold text-slate-700">Nomor WhatsApp Helpdesk / Pengaduan</label>
                         <div class="flex items-center gap-3">
                             <span class="bg-emerald-100 text-emerald-700 font-black px-4 py-4 rounded-l-2xl border-2 border-r-0 border-emerald-200 text-sm">+62</span>
-                            <input type="text" name="helpdesk_whatsapp" value="{{ $settings['helpdesk_whatsapp'] ?? '' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-r-2xl font-bold text-slate-700 focus:border-emerald-500 focus:ring-0" placeholder="81234567890">
+                            <input type="text" name="helpdesk_whatsapp" value="{{ $settings['helpdesk_whatsapp'] ?? '' }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-r-2xl font-bold text-slate-700 focus:border-emerald-500 focus:ring-0" placeholder="85733333400">
                         </div>
                         <p class="text-[10px] text-slate-400 italic"><i class="fas fa-info-circle mr-1"></i> Format: 62XXXXXXXXXX (tanpa +). Nomor ini akan ditampilkan di halaman publik dan footer website.</p>
                     </div>

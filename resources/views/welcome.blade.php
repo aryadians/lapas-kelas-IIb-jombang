@@ -260,7 +260,7 @@
                 <i class="fa-solid fa-circle-info group-hover:animate-float-up inline-block"></i> FAQ
             </a>
             <a href="#kontak" class="group border border-white/30 hover:border-white hover:bg-white hover:text-slate-900 text-white text-sm font-semibold py-2.5 px-6 rounded-full shadow-lg transition-all card-hover-scale inline-flex items-center justify-center gap-2">
-                <i class="fa-solid fa-phone group-hover:animate-float-up inline-block"></i> Kontak
+                <i class="fab fa-whatsapp group-hover:animate-float-up inline-block"></i> Kontak
             </a>
         </div>
     </div>
@@ -502,7 +502,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                     <i class="fab fa-whatsapp text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300"></i>
                     <span class="text-xl relative z-10 text-center">Laporan Pengaduan Internal Lapas Jombang</span>
-                    <i class="fas fa-phone-alt text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
+                    <i class="fab fa-whatsapp text-lg relative z-10 mt-2 opacity-75 group-hover:opacity-100 transition-opacity"></i>
                 </a>
             </div>
         </div>
@@ -525,7 +525,7 @@
     <div class="container mx-auto px-6 text-center relative z-10">
         <div class="max-w-4xl mx-auto">
             <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-semibold mb-8">
-                <i class="fas fa-phone mr-2"></i>
+                <i class="fab fa-whatsapp mr-2"></i>
                 Hubungi Kami
             </div>
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-black mb-8">
@@ -538,10 +538,10 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 card-hover-scale group">
                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
-                        <i class="fas fa-phone text-2xl text-white"></i>
+                        <i class="fab fa-whatsapp text-2xl text-white"></i>
                     </div>
-                    <h3 class="font-bold mb-2">Telepon & Fax</h3>
-                    <p class="text-slate-300 text-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '62 857 3333 3400' }}</p>                </div>
+                    <h3 class="font-bold mb-2">WhatsApp</h3>
+                    <p class="text-slate-300 text-sm">+{{ $visitSettings['helpdesk_whatsapp'] ?? '6285733333400' }}</p>                </div>
                 <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 card-hover-scale group">
                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <i class="fas fa-envelope text-2xl text-white"></i>

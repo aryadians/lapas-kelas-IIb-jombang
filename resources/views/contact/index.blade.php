@@ -33,13 +33,13 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center card-3d card-hover-scale group">
                 <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl group-hover:scale-110 transition-transform">
-                    <i class="fas fa-phone text-3xl text-white"></i>
+                    <i class="fab fa-whatsapp text-3xl text-white"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-slate-800 mb-3">Telepon</h3>
-                <p class="text-gray-600 mb-4">Hubungi kami untuk informasi langsung.</p>
-                <a href="tel:+62321512345" class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-all btn-hover-lift hover:shadow-lg">
-                    <i class="fas fa-phone mr-2"></i>
-                    (0321) 512345
+                <h3 class="text-2xl font-bold text-slate-800 mb-3">WhatsApp</h3>
+                <p class="text-gray-600 mb-4">Hubungi kami melalui chat WhatsApp.</p>
+                <a href="https://wa.me/6285733333400" class="inline-flex items-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-full transition-all btn-hover-lift hover:shadow-lg">
+                    <i class="fab fa-whatsapp mr-2"></i>
+                    +6285733333400
                 </a>
             </div>
 

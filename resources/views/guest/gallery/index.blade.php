@@ -191,7 +191,7 @@
                             <a href="{{ $tokpedLink }}" target="_blank" class="action-btn w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shadow-sm hover:bg-green-600 hover:text-white hover:shadow-green-500/50" title="Beli di Tokopedia">
                                 <i class="fas fa-store"></i>
                             </a>
-                            <a href="https://wa.me/6281234567890" target="_blank" class="action-btn w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shadow-sm hover:bg-slate-800 hover:text-white" title="Tanya WA">
+                            <a href="https://wa.me/6285733333400" target="_blank" class="action-btn w-10 h-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center shadow-sm hover:bg-slate-800 hover:text-white" title="Tanya WA">
                                 <i class="fab fa-whatsapp"></i>
                             </a>
                         </div>
@@ -217,7 +217,7 @@
                 <p class="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">
                     Kami menerima pesanan custom (kustomisasi) untuk souvenir kantor, plakat, furniture, hingga kerajinan tangan sesuai keinginan Anda.
                 </p>
-                <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-3 bg-yellow-500 text-slate-900 font-bold py-4 px-10 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
+                <a href="https://wa.me/6285733333400" target="_blank" class="inline-flex items-center gap-3 bg-yellow-500 text-slate-900 font-bold py-4 px-10 rounded-full shadow-[0_0_20px_rgba(234,179,8,0.4)] hover:shadow-[0_0_30px_rgba(234,179,8,0.6)] hover:bg-yellow-400 hover:scale-105 transition-all duration-300">
                     <i class="fab fa-whatsapp text-2xl"></i>
                     <span>Konsultasi Gratis via WA</span>
                 </a>

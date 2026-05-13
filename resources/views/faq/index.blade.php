@@ -445,7 +445,7 @@
                     </p>
                     
                     <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                        <a href="https://wa.me/6281234567890" target="_blank" class="w-full sm:w-auto group inline-flex items-center justify-center gap-4 bg-green-500 hover:bg-green-400 text-white px-10 py-5 rounded-full font-bold transition-all shadow-[0_10px_20px_rgba(34,197,94,0.4)] hover:shadow-[0_15px_30px_rgba(34,197,94,0.6)] transform hover:-translate-y-2">
+                        <a href="https://wa.me/6285733333400" target="_blank" class="w-full sm:w-auto group inline-flex items-center justify-center gap-4 bg-green-500 hover:bg-green-400 text-white px-10 py-5 rounded-full font-bold transition-all shadow-[0_10px_20px_rgba(34,197,94,0.4)] hover:shadow-[0_15px_30px_rgba(34,197,94,0.6)] transform hover:-translate-y-2">
                             <i class="fab fa-whatsapp text-4xl group-hover:scale-110 transition-transform"></i> 
                             <div class="text-left leading-tight">
                                 <span class="text-lg">Chat WhatsApp</span><br>
@@ -490,13 +490,13 @@
             title: '<span class="text-2xl font-bold text-slate-800">Hubungi Kami</span>',
             html: `
                 <div class="text-left mt-4 space-y-4">
-                    <div class="flex items-center gap-4 p-4 bg-blue-50 rounded-2xl border border-blue-100 hover:shadow-md transition-shadow">
-                        <div class="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-md">
-                            <i class="fas fa-phone-alt text-xl"></i>
+                    <div class="flex items-center gap-4 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 hover:shadow-md transition-shadow">
+                        <div class="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-white shadow-md">
+                            <i class="fab fa-whatsapp text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-xs text-blue-500 font-bold uppercase tracking-wider">Layanan Telepon</p>
-                            <p class="text-xl text-slate-800 font-black">(0321) 123456</p>
+                            <p class="text-xs text-emerald-500 font-bold uppercase tracking-wider">Layanan WhatsApp</p>
+                            <p class="text-xl text-slate-800 font-black">+6285733333400</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-4 p-4 bg-red-50 rounded-2xl border border-red-100 hover:shadow-md transition-shadow">

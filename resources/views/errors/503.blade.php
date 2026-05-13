@@ -63,7 +63,7 @@
 
         {{-- CTA/Info --}}
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a href="https://wa.me/628123456789" class="group flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all active:scale-95">
+            <a href="https://wa.me/6285733333400" class="group flex items-center gap-3 px-8 py-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-all active:scale-95">
                 <i class="fab fa-whatsapp text-green-400 text-xl"></i>
                 <div class="text-left">
                     <div class="text-[10px] uppercase font-bold text-blue-300/50 tracking-tighter">Hubungi Kami</div>
