@@ -493,6 +493,36 @@
                 });
             });
         }
+
+        // Global Flash Message Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(session('success'))
+                Swal.fire({
+                    ...swalTheme,
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    icon: 'success'
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    ...swalTheme,
+                    title: 'Gagal!',
+                    text: "{{ session('error') }}",
+                    icon: 'error'
+                });
+            @endif
+
+            @if(session('info'))
+                Swal.fire({
+                    ...swalTheme,
+                    title: 'Informasi',
+                    text: "{{ session('info') }}",
+                    icon: 'info'
+                });
+            @endif
+        });
     </script>
 </body>
 </html>

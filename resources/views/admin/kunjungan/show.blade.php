@@ -374,12 +374,17 @@
                                         <div class="flex-grow">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Email Delivery</p>
                                             <p class="text-sm font-bold text-slate-800 capitalize flex items-center justify-between gap-2">
-                                                <span>{{ $log['email'] }}</span>
-                                                @if($log['email'] == 'sent') 
-                                                    <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
-                                                @elseif($log['email'] != 'pending' && $log['email'] != 'skipped')
-                                                    <button onclick="resendNotification('email')" class="bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-[9px] px-2 py-1 rounded-lg font-black transition-all uppercase border border-rose-200 shadow-sm flex items-center gap-1">
-                                                        <i class="fas fa-redo-alt text-[8px]"></i> Kirim Ulang
+                                                <div class="flex items-center gap-2">
+                                                    <span>{{ $log['email'] }}</span>
+                                                    @if($log['email'] == 'sent') 
+                                                        <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
+                                                    @endif
+                                                </div>
+                                                
+                                                @if($log['email'] != 'skipped')
+                                                    <button onclick="resendNotification('email')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-md transition-all active:scale-95 group/btn">
+                                                        <i class="fas fa-paper-plane text-[9px] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
+                                                        <span>Kirim Ulang</span>
                                                     </button>
                                                 @endif
                                             </p>
@@ -406,12 +411,17 @@
                                         <div class="flex-grow">
                                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">WhatsApp Delivery</p>
                                             <p class="text-sm font-bold text-slate-800 capitalize flex items-center justify-between gap-2">
-                                                <span>{{ $log['whatsapp'] }}</span>
-                                                @if($log['whatsapp'] == 'sent') 
-                                                    <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
-                                                @elseif($log['whatsapp'] != 'pending' && $log['whatsapp'] != 'skipped')
-                                                    <button onclick="resendNotification('whatsapp')" class="bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-[9px] px-2 py-1 rounded-lg font-black transition-all uppercase border border-rose-200 shadow-sm flex items-center gap-1">
-                                                        <i class="fas fa-redo-alt text-[8px]"></i> Kirim Ulang
+                                                <div class="flex items-center gap-2">
+                                                    <span>{{ $log['whatsapp'] }}</span>
+                                                    @if($log['whatsapp'] == 'sent') 
+                                                        <i class="fas fa-check-circle text-emerald-500 text-[10px]"></i> 
+                                                    @endif
+                                                </div>
+                                                
+                                                @if($log['whatsapp'] != 'skipped')
+                                                    <button onclick="resendNotification('whatsapp')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold rounded-lg shadow-md transition-all active:scale-95 group/btn">
+                                                        <i class="fas fa-paper-plane text-[9px] group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform"></i>
+                                                        <span>Kirim Ulang</span>
                                                     </button>
                                                 @endif
                                             </p>
