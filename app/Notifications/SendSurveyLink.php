@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Mail\SurveyLinkMail;
 
 class SendSurveyLink extends Notification implements ShouldQueue
 {
@@ -34,22 +35,14 @@ class SendSurveyLink extends Notification implements ShouldQueue
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable (Instance dari Model Kunjungan)
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return \App\Mail\SurveyLinkMail
      */
     public function toMail($notifiable)
     {
         // Generate Link Survey
-        // Pastikan parameter 'kunjungan_id' ini ditangkap oleh SurveyController Anda
         $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
 
-        return (new MailMessage)
-            ->subject('Survei Kepuasan Layanan Kunjungan Lapas Jombang')
-            ->greeting('Halo ' . $notifiable->nama_pengunjung . ',') // FIX: nama_pengunjung
-            ->line('Terima kasih atas kunjungan Anda di Lapas Kelas IIB Jombang. Kunjungan Anda telah selesai.')
-            ->line('Kami mohon kesediaan Anda untuk mengisi survei kepuasan layanan kami melalui tautan di bawah ini.')
-            ->line('Partisipasi Anda sangat berarti untuk peningkatan kualitas layanan kami.')
-            ->action('Isi Survei Sekarang', $surveyUrl)
-            ->line('Terima kasih atas waktu dan perhatian Anda.');
+        return new SurveyLinkMail($notifiable, $surveyUrl);
     }
 
     /**

@@ -38,6 +38,9 @@ class KunjunganStatusMail extends Mailable implements ShouldQueue
         $message = '';
         $color = '';
 
+        // Pastikan Recipient diset dari awal untuk menghindari error header kosong
+        $this->to($this->kunjungan->email_pengunjung, $this->kunjungan->nama_pengunjung);
+
         // 1. Tentukan Konten Berdasarkan Status
         switch ($this->kunjungan->status) {
             case KunjunganStatus::APPROVED:

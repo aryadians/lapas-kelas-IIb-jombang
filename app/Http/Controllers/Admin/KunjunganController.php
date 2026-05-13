@@ -108,6 +108,7 @@ class KunjunganController extends Controller
      */
     public function resendNotification(Request $request, Kunjungan $kunjungan)
     {
+        $kunjungan->refresh(); // Pastikan data terbaru dari DB terload (termasuk email)
         $type = $request->input('type'); // 'email', 'whatsapp'
         $status = $kunjungan->status;
 
@@ -135,11 +136,11 @@ class KunjunganController extends Controller
                 }
 
                 if ($status === KunjunganStatus::COMPLETED) {
-                    $kunjungan->notify(new \App\Notifications\SendSurveyLink());
+                    $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
+                    Mail::to($kunjungan->email_pengunjung)->queue(new \App\Mail\SurveyLinkMail($kunjungan, $surveyUrl));
                 } elseif (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::REJECTED])) {
                     $qrPath = null;
                     if ($status === KunjunganStatus::APPROVED) {
-                        // Gunakan QR Code yang sudah ada atau fallback ke URL
                         if (\Storage::disk('public')->exists("qrcodes/{$kunjungan->id}.png")) {
                             $qrPath = \Storage::disk('public')->path("qrcodes/{$kunjungan->id}.png");
                         }
