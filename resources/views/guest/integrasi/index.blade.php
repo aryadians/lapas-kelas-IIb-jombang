@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'Alur & Usulan Integrasi')
+@section('title', 'Analisis dan Prosedur Pengusulan Hak Narapidana')
 
 @section('content')
 
@@ -8,67 +8,100 @@
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 <style>
     [x-cloak] { display: none !important; }
-    .flow-step-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex: 1; position: relative; }
-    .step-icon-box { width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: white; border: 3px solid #e2e8f0; border-radius: 15px; font-size: 1.5rem; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid #e2e8f0; }
+    .flow-step-icon { width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.2rem; }
 </style>
 @endpush
 
-<section class="relative bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-950 text-white pt-32 pb-24 overflow-hidden">
-    <div class="container mx-auto px-6 relative z-10 text-center max-w-4xl" data-aos="zoom-in">
-        <h1 class="text-4xl md:text-6xl font-black mb-6">Alur & Informasi Integrasi</h1>
+{{-- HERO SECTION --}}
+<section class="relative bg-slate-900 text-white pt-32 pb-24">
+    <div class="container mx-auto px-6 text-center">
+        <h1 class="text-4xl md:text-5xl font-black mb-6">Analisis dan Prosedur <br class="hidden md:block"> Pengusulan Hak Narapidana</h1>
+        <p class="text-slate-400 max-w-2xl mx-auto">Sistem operasional transparan dan akuntabel melalui Sistem Database Pemasyarakatan (SDP).</p>
     </div>
 </section>
 
-<section class="py-16 bg-slate-50" x-data="{ tab: 'remisi' }">
+<section class="py-16 bg-slate-50">
     <div class="container mx-auto px-6 max-w-6xl">
-        <div class="flex flex-wrap justify-center gap-3 mb-16">
-            <button @click="tab = 'remisi'" :class="tab === 'remisi' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-slate-600'" class="px-8 py-3 rounded-full font-bold transition">Remisi Reguler</button>
-            <button @click="tab = 'pb'" :class="tab === 'pb' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-slate-600'" class="px-8 py-3 rounded-full font-bold transition">Pembebasan Bersyarat</button>
-            <button @click="tab = 'cb'" :class="tab === 'cb' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white text-slate-600'" class="px-8 py-3 rounded-full font-bold transition">Cuti Bersyarat</button>
+        
+        <div class="prose max-w-none mb-12">
+            <p class="text-lg text-slate-700 leading-relaxed">
+                Sistem operasional ini dirancang untuk memastikan pemenuhan hak narapidana berjalan secara transparan dan akuntabel melalui Sistem Database Pemasyarakatan (SDP). Berikut adalah rincian mendalam untuk masing-masing jalur:
+            </p>
         </div>
 
-        {{-- 8 STEP UPT DETAIL --}}
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 mb-12">
-            <h4 class="text-xl font-black text-slate-800 mb-6">Proses Pengajuan (8 Langkah UPT)</h4>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">1. Pendataan Narapidana syarat</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">2. Melengkapi data & dokumen</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">3. Sidang TPP</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">4. Pelaksanaan Sidang</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">5. Kontrol sidang</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">6. Verifikasi sidang</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">7. Upload surat pengantar</div>
-                <div class="p-4 bg-blue-50 rounded-xl text-sm font-semibold text-slate-700">8. Kirim ke Ditjenpas & Kanwil</div>
-            </div>
-        </div>
-
-        {{-- Dynamic Tab Content --}}
-        <div class="bg-white p-8 rounded-3xl shadow border border-slate-100">
-            <div x-show="tab === 'remisi'" x-cloak>
-                <h3 class="text-xl font-black mb-4">Alur Remisi Reguler</h3>
-                <ul class="list-decimal pl-5 space-y-2 text-slate-700">
-                    <li>Tahap 1 (UPT): 8 Langkah UPT.</li>
-                    <li>Tahap 2 (Kanwil): Verifikasi usulan.</li>
-                    <li>Tahap 3 (Ditjenpas): Verifikasi, Persetujuan, Generate SK Kolektif, Tanda Tangan Elektronik.</li>
-                    <li>Tahap 4 (UPT): Menerima data SK (Tanpa Cetak).</li>
-                    <li>Tahap 5 (Kanwil): Menerima tembusan (Tanpa Cetak).</li>
-                </ul>
-            </div>
+        {{-- 1. REMISI REGULER --}}
+        <div class="mb-12 glass-card p-8 rounded-3xl" data-aos="fade-up">
+            <h2 class="text-2xl font-black text-blue-900 mb-4 flex items-center gap-3">
+                <i class="fas fa-calendar-alt text-blue-500"></i> 1. Alur Pengusulan Remisi Reguler
+            </h2>
+            <p class="mb-6 text-slate-700">Remisi merupakan hak pengurangan masa pidana yang diberikan kepada narapidana yang telah memenuhi syarat administrasi dan substansi. Alur ini bersifat lebih fleksibel dalam hal waktu verifikasi pusat karena volume pengusulannya yang biasanya bersifat massal (seperti Remisi Umum Hari Kemerdekaan atau Remisi Khusus Keagamaan).</p>
             
-            <div x-show="tab === 'pb' || tab === 'cb'" x-cloak>
-                <h3 class="text-xl font-black mb-4" x-text="tab === 'pb' ? 'Alur Pembebasan Bersyarat (PB)' : 'Alur Cuti Bersyarat (CB)'"></h3>
-                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-800 mb-4 font-bold italic">
-                    Perbedaan: Verifikasi Ditjenpas Max 3 Hari, Tanda Tangan Elektronik DIRJEN, UPT wajib Cetak SK H-3, Kanwil wajib Cetak SK.
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="border-l-4 border-blue-400 pl-4">
+                    <h4 class="font-bold">Tahap 1 (UPT - Inisiasi)</h4>
+                    <p class="text-sm">Petugas melakukan penyaringan data narapidana berdasarkan Letter C dan masa pidana. Setelah data lengkap, dilakukan Sidang Tim Pengamat Pemasyarakatan (TPP) untuk menentukan layak atau tidaknya narapidana diusulkan. Hasil sidang kemudian diunggah bersama surat pengantar ke tingkat pusat.</p>
                 </div>
-                <ul class="list-decimal pl-5 space-y-2 text-slate-700">
-                    <li>Tahap 1 (UPT): 8 Langkah UPT.</li>
-                    <li>Tahap 2 (Kanwil): Verifikasi usulan.</li>
-                    <li>Tahap 3 (Ditjenpas): Verifikasi (MAX 3 HARI), Persetujuan, Generate SK Kolektif, Tanda Tangan Elektronik DIRJEN.</li>
-                    <li>Tahap 4 (UPT): Menerima data & CETAK SK H-3.</li>
-                    <li>Tahap 5 (Kanwil): Menerima tembusan & CETAK SURAT KEPUTUSAN.</li>
-                </ul>
+                <div class="border-l-4 border-blue-400 pl-4">
+                    <h4 class="font-bold">Tahap 2 (Kanwil - Monitoring) & 3 (Ditjenpas - Validasi)</h4>
+                    <p class="text-sm">Kanwil berperan sebagai filter pertama. Pusat melakukan verifikasi akhir. Keunikan pada remisi adalah penggunaan SK Kolektif yang mencakup banyak nama. Jika ditemukan ketidaksesuaian data (seperti remisi tahun sebelumnya yang belum terinput), berkas dikembalikan ke UPT.</p>
+                </div>
+                <div class="border-l-4 border-blue-400 pl-4">
+                    <h4 class="font-bold">Tahap 4 & 5 (Output)</h4>
+                    <p class="text-sm">Karena sifatnya kolektif dan massal, sistem tidak mewajibkan pencetakan SK secara mandiri oleh UPT/Kanwil sebagai syarat eksekusi segera, melainkan cukup sebagai basis data perubahan masa pidana di sistem.</p>
+                </div>
             </div>
         </div>
+
+        {{-- 2. PB & 3. CB --}}
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="glass-card p-8 rounded-3xl" data-aos="fade-right">
+                <h2 class="text-2xl font-black text-amber-900 mb-4 flex items-center gap-3">
+                    <i class="fas fa-door-open text-amber-500"></i> 2. Alur Pengusulan Pembebasan Bersyarat (PB)
+                </h2>
+                <p class="text-slate-700 mb-4">Pembebasan Bersyarat adalah proses pengintegrasian narapidana kembali ke masyarakat setelah menjalani minimal 2/3 masa pidana. Alurnya memiliki standar waktu yang ketat (SLA).</p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li><strong>Tahap 1 (UPT):</strong> Selain 8 langkah administrasi standar, UPT harus memastikan adanya Litmas dari Bapas dan jaminan keluarga.</li>
+                    <li><strong>Tahap 2 (Kanwil):</strong> Pemeriksaan ketat dokumen jaminan dan hasil sidang TPP wilayah.</li>
+                    <li><strong>Tahap 3 (Ditjenpas):</strong> Verifikasi Maksimal 3 Hari. SK ditandatangani Dirjen.</li>
+                    <li><strong>Tahap 4 & 5:</strong> UPT wajib Cetak SK H-3. Kanwil wajib cetak salinan resmi.</li>
+                </ul>
+            </div>
+            <div class="glass-card p-8 rounded-3xl" data-aos="fade-left">
+                <h2 class="text-2xl font-black text-indigo-900 mb-4 flex items-center gap-3">
+                    <i class="fas fa-home text-indigo-500"></i> 3. Alur Pengusulan Cuti Bersyarat (CB)
+                </h2>
+                <p class="text-slate-700 mb-4">Cuti Bersyarat diberikan kepada narapidana dengan masa pidana pendek (di bawah 1 tahun 6 bulan). Secara sistemik, prosedur CB mengadopsi ketatnya jalur PB.</p>
+                <p class="text-sm text-slate-600 mb-4"><strong>Deskripsi Operasional:</strong> Sama seperti PB, alur CB mengedepankan kecepatan. Batas waktu 3 hari di pusat menjadi krusial karena selisih waktu yang sempit antara tanggal pengusulan dan tanggal jatuh tempo bebas.</p>
+                <div class="p-4 bg-indigo-50 rounded-xl text-sm italic font-medium text-indigo-900">
+                    <strong>Kewajiban Cetak:</strong> Tidak hanya menerima data digital, UPT dan Kanwil wajib memproduksi dokumen fisik (SK) sebagai bukti sah saat narapidana melapor ke Kejaksaan dan Bapas.
+                </div>
+            </div>
+        </div>
+
+        {{-- TABLE PERBANDINGAN --}}
+        <div class="bg-white rounded-3xl shadow p-8 border border-slate-200">
+            <h3 class="text-xl font-black mb-6 text-center">Ringkasan Perbandingan Strategis</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-100 text-slate-600 uppercase font-bold">
+                        <tr>
+                            <th class="p-4">Dimensi</th>
+                            <th class="p-4">Remisi Reguler</th>
+                            <th class="p-4">PB & CB</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr><td class="p-4 font-bold">Urgensi Waktu</td><td class="p-4">Standar (Periodik)</td><td class="p-4">Sangat Tinggi (Max 3 Hari)</td></tr>
+                        <tr><td class="p-4 font-bold">Otoritas</td><td class="p-4">Pejabat Ditjenpas</td><td class="p-4">Dirjen (DIRJEN)</td></tr>
+                        <tr><td class="p-4 font-bold">Cetak SK</td><td class="p-4">Tidak Wajib</td><td class="p-4">Wajib</td></tr>
+                        <tr><td class="p-4 font-bold">Tujuan</td><td class="p-4">Pengurangan hukuman</td><td class="p-4">Integrasi ke Masyarakat</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="mt-6 text-sm text-slate-500 italic text-center">"Kesimpulan: Remisi bersifat administratif, PB/CB bersifat eksekutif-operasional sebagai instrumen pengeluaran narapidana."</p>
+        </div>
+
     </div>
 </section>
 
