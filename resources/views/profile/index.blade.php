@@ -268,7 +268,7 @@
             
             {{-- Menggunakan iframe youtube placeholder. Ganti src dengan link youtube asli lapas jombang --}}
             <div class="relative pb-[56.25%] h-0 overflow-hidden rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border-4 border-slate-100 bg-slate-200">
-                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ?rel=0&showinfo=0" title="Video Profil Lapas Kelas IIB Jombang" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="absolute top-0 left-0 w-full h-full border-0"></iframe>
+                <iframe src="https://www.youtube.com/embed/b6cium1oOc8?rel=0&showinfo=0" title="Video Profil Lapas Kelas IIB Jombang" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen class="absolute top-0 left-0 w-full h-full border-0"></iframe>
             </div>
         </div>
 
