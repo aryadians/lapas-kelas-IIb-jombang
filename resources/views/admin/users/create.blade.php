@@ -187,8 +187,11 @@
                         <div class="relative group">
                             <i class="fas fa-check-double input-icon"></i>
                             <input type="password" name="password_confirmation" id="password_confirmation" 
-                                class="w-full pl-12 pr-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700 placeholder-slate-400" 
+                                class="w-full pl-12 pr-12 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-blue-500 focus:ring-0 transition-all font-medium text-slate-700 placeholder-slate-400" 
                                 placeholder="Ulangi kata sandi" required>
+                            <button type="button" onclick="togglePassword('password_confirmation')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-500">
+                                <i class="fas fa-eye" id="togglePasswordConfirmationIcon"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -250,7 +253,7 @@
 
     function togglePassword(id) {
         const input = document.getElementById(id);
-        const icon = document.getElementById('togglePasswordIcon');
+        const icon = document.getElementById(id === 'password' ? 'togglePasswordIcon' : 'togglePasswordConfirmationIcon');
         if (input.type === "password") {
             input.type = "text";
             icon.classList.remove('fa-eye');

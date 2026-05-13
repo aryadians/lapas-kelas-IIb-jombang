@@ -322,6 +322,10 @@ Route::middleware(['auth', 'verified', 'role:super_admin'])->group(function () {
     Route::get('/api/executive/visitor-demographics', [ExecutiveDashboardController::class, 'getVisitorDemographics'])->name('api.executive.visitor-demographics');
     Route::get('/api/executive/most-visited-wbp', [ExecutiveDashboardController::class, 'getMostVisitedWbp'])->name('api.executive.most-visited-wbp');
 
+    // Profil
+    Route::get('/profile/edit', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::patch('/profile/update', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
+
     // Manajemen User (hanya super admin)
     Route::resource('users', AdminUserController::class)->names('admin.users');
 });

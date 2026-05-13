@@ -88,13 +88,22 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'role' => ['required', Rule::in(['super_admin', 'admin_humas', 'admin_registrasi'])],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
-        ]);
+        ];
+
+        if ($request->hasFile('avatar')) {
+            $image = $request->file('avatar');
+            $imageData = base64_encode(file_get_contents($image));
+            $data['avatar'] = 'data:' . $image->getMimeType() . ';base64,' . $imageData;
+        }
+
+        $user->update($data);
 
         if ($request->filled('password')) {
             $user->update(['password' => Hash::make($request->password)]);
