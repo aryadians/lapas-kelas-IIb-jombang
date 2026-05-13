@@ -23,8 +23,12 @@ class GaleriController extends Controller
     {
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
-            'title' => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'material' => 'nullable|string',
+            'dimension' => 'nullable|string',
+            'status' => 'required|string',
             'order_index' => 'nullable|integer'
         ]);
 
@@ -37,11 +41,15 @@ class GaleriController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'image_path' => $imageBase64,
+            'price' => $request->price,
+            'material' => $request->material,
+            'dimension' => $request->dimension,
+            'status' => $request->status,
             'order_index' => $request->order_index ?? 0,
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('admin.galeri.index')->with('success', 'Foto galeri berhasil ditambahkan.');
+        return redirect()->route('admin.galeri.index')->with('success', 'Data galeri berhasil ditambahkan.');
     }
 
     public function edit(Galeri $galeri)
@@ -53,12 +61,16 @@ class GaleriController extends Controller
     {
         $request->validate([
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
-            'title' => 'nullable|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'material' => 'nullable|string',
+            'dimension' => 'nullable|string',
+            'status' => 'required|string',
             'order_index' => 'nullable|integer'
         ]);
 
-        $data = $request->only(['title', 'description', 'order_index']);
+        $data = $request->only(['title', 'description', 'price', 'material', 'dimension', 'status', 'order_index']);
         $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {

@@ -15,5 +15,9 @@ class Galeri extends Model
         'image_path',
         'order_index',
         'is_active',
+        'price',
+        'material',
+        'dimension',
+        'status',
     ];
 }
