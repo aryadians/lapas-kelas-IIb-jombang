@@ -73,12 +73,21 @@ class User extends Authenticatable
     }
 
     /**
-     * Hubungan ke ProfilPengunjung (satu-ke-satu).
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
      */
-    public function profilPengunjung()
+    public function sendPasswordResetNotification($token)
     {
-        return $this->hasOne(ProfilPengunjung::class);
+        $url = url(route('password.reset', [
+            'token' => $token,
+            'email' => $this->email,
+        ], false));
+
+        \Illuminate\Support\Facades\Mail::to($this->email)->send(new \App\Mail\CustomResetPassword($url));
     }
+
 
 
 }
