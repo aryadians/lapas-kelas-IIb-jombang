@@ -520,7 +520,6 @@
                                     <ul class="space-y-3">
                                         <li><a href="{{ route('kunjungan.cek_status') }}" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-search text-[10px] text-yellow-500 mr-3 group-hover:rotate-12 transition-transform"></i>Cek Status Kunjungan</a></li>
                                         <li><a href="{{ route('display.antrian') }}" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-tv text-[10px] text-yellow-500 mr-3 group-hover:-rotate-12 transition-transform"></i>Display Antrian</a></li>
-                                        <li><a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" class="group flex items-center text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium"><i class="fas fa-star text-[10px] text-yellow-500 mr-3 group-hover:scale-125 transition-transform"></i>Survei IKM / Kepuasan</a></li>
                                     </ul>
                                 </div>
                             </div>

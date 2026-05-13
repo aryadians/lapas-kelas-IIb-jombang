@@ -501,7 +501,41 @@
     </div>
 </section>
 
-{{-- === 6. SECTION: KONTAK === --}}
+{{-- === 6. SECTION: SURVEY IKM === --}}
+<section class="py-24 bg-white relative overflow-hidden">
+    <div class="container mx-auto px-6">
+        <div class="bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 rounded-[3rem] p-10 md:p-16 text-center text-white relative overflow-hidden shadow-2xl group">
+            {{-- Decorative Elements --}}
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
+            <div class="absolute bottom-0 left-0 w-80 h-80 bg-blue-400/20 rounded-full blur-[80px] -ml-32 -mb-32 transition-transform duration-1000 group-hover:scale-110"></div>
+
+            <div class="relative z-10">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-3xl mb-8 backdrop-blur-md border border-white/20 shadow-xl group-hover:rotate-6 transition-transform duration-500">
+                    <i class="fas fa-star text-4xl text-yellow-300 animate-pulse"></i>
+                </div>
+                
+                <h2 class="text-3xl md:text-5xl font-black mb-6 tracking-tight leading-tight">Bantu Kami Meningkatkan Pelayanan</h2>
+                <p class="text-blue-100 text-lg md:text-xl font-light mb-12 max-w-2xl mx-auto leading-relaxed">
+                    Kepuasan Anda adalah prioritas kami. Berikan penilaian Anda melalui Survey Indeks Kepuasan Masyarakat (IKM) untuk Lapas Kelas IIB Jombang.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                    <a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" rel="noopener noreferrer" 
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 rounded-2xl font-black transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1 active:scale-95 group/btn">
+                        <span>Isi Survey Sekarang</span>
+                        <i class="fas fa-arrow-right group-hover/btn:translate-x-1 transition-transform"></i>
+                    </a>
+                </div>
+                
+                <p class="mt-8 text-blue-200/60 text-sm font-medium uppercase tracking-[0.2em]">
+                    Kementerian Imigrasi dan Pemasyarakatan RI
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- === 7. SECTION: KONTAK === --}}
 <section id="kontak" class="py-32 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white relative overflow-hidden">
     {{-- Background Pattern --}}
     <div class="absolute inset-0 z-0">
