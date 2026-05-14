@@ -3,78 +3,148 @@
 namespace App\Imports;
 
 use App\Models\Wbp;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class WbpImport implements ToModel, WithChunkReading, WithHeadingRow
+class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
 {
-    /**
-     * @param array $row
-     *
-     * @return Wbp|null
-     */
-    public function model(array $row)
-    {
-        // Sesuaikan mapping dengan header Excel yang Anda berikan
-        // Header: Nama Lengkap, No. Registrasi, Tgl Msk UPT, Tgl Ekspirasi, dll.
-        $nama = trim((string)($row['nama_lengkap'] ?? $row['nama'] ?? ''));
-        $noReg = trim((string)($row['no_registrasi'] ?? $row['no_registrasi'] ?? ''));
+    public $importedNoRegs = [];
 
-        if (empty($nama) || empty($noReg)) {
+    /**
+     * @param Collection $rows
+     */
+    public function collection(Collection $rows)
+    {
+        // Tingkatkan limit waktu eksekusi untuk file besar
+        set_time_limit(300);
+
+        foreach ($rows as $index => $row) {
+            $data = $row->values()->toArray();
+
+            // Log untuk debug setiap baris
+            Log::info("Processing WBP Index $index: " . json_encode($data));
+
+            // 1. Deteksi Header
+            if ($this->isHeader($row)) {
+                Log::info("Row $index skipped as header");
+                continue;
+            }
+
+            // 2. Validasi Struktur Minimal
+            if (count($data) < 2) {
+                Log::info("Row $index skipped: count < 2");
+                continue;
+            }
+
+            $nama  = isset($data[0]) ? trim((string)$data[0]) : null;
+            $noReg = isset($data[1]) ? trim((string)$data[1]) : null;
+
+            // 3. Validasi Data Inti
+            if (empty($nama) || empty($noReg) || strtoupper($nama) === 'NAMA LENGKAP') {
+                Log::info("Row $index skipped: Invalid data - Nama: '$nama', NoReg: '$noReg'");
+                continue;
+            }
+
+            // 4. Pengolahan Alias / Nama Panggilan (Kolom 4 - 9)
+            $aliasParts = [];
+            for ($i = 4; $i <= 9; $i++) {
+                $val = isset($data[$i]) ? trim((string)$data[$i]) : '';
+                if ($val !== '' && $val !== '-') {
+                    $aliasParts[] = $val;
+                }
+            }
+            $namaPanggilan = !empty($aliasParts) ? implode(', ', array_unique($aliasParts)) : '-';
+
+            // 5. Transformasi Data Tambahan
+            $tglMasuk     = isset($data[2]) ? $this->transformDate($data[2]) : null;
+            $tglEkspirasi = isset($data[3]) ? $this->transformDate($data[3]) : null;
+            $blok         = (!empty($data[10]) && trim((string)$data[10]) !== '-') ? trim((string)$data[10]) : '-';
+            $lokasiSel    = (!empty($data[11]) && trim((string)$data[11]) !== '-') ? trim((string)$data[11]) : '-';
+
+            // 6. Inferred Kode Tahanan (A/B)
+            $inferredKode = null;
+            $firstChar    = strtoupper(substr(trim($noReg), 0, 1));
+            if (in_array($firstChar, ['A', 'B'])) {
+                $inferredKode = $firstChar;
+            }
+
+            // 7. Eksekusi Database
+            try {
+                $wbp = Wbp::where('no_registrasi', $noReg)->first();
+
+                if ($wbp) {
+                    $wbp->update([
+                        'nama'              => strtoupper($nama),
+                        'kode_tahanan'      => $inferredKode,
+                        'nama_panggilan'    => strtoupper($namaPanggilan),
+                        'tanggal_masuk'     => $tglMasuk,
+                        'tanggal_ekspirasi' => $tglEkspirasi,
+                        'blok'              => $blok,
+                        'lokasi_sel'        => $lokasiSel,
+                    ]);
+                } else {
+                    Wbp::create([
+                        'no_registrasi'     => $noReg,
+                        'nama'              => strtoupper($nama),
+                        'kode_tahanan'      => $inferredKode,
+                        'nama_panggilan'    => strtoupper($namaPanggilan),
+                        'tanggal_masuk'     => $tglMasuk,
+                        'tanggal_ekspirasi' => $tglEkspirasi,
+                        'blok'              => $blok,
+                        'lokasi_sel'        => $lokasiSel,
+                        'status'            => 'Aktif',
+                    ]);
+                }
+            } catch (Exception $e) {
+                Log::error("Gagal memproses baris ke-" . ($index + 1) . ": " . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Logika pendeteksi header.
+     */
+    private function isHeader($row)
+    {
+        $firstCell = trim(strtolower((string)$row->first()));
+        return str_contains($firstCell, 'nama') || 
+               str_contains($firstCell, 'no. registrasi') || 
+               $firstCell === '';
+    }
+
+    /**
+     * Konfigurasi Chunk Size.
+     */
+    public function chunkSize(): int
+    {
+        return 10; 
+    }
+
+    /**
+     * Helper untuk konversi tanggal Excel/String ke format Y-m-d.
+     */
+    private function transformDate($value)
+    {
+        if (empty($value) || $value === '-' || $value === '00/00/0000') {
             return null;
         }
 
-        $tglMasuk = $this->transformDate($row['tgl_msk_upt'] ?? null);
-        $tglEkspirasi = $this->transformDate($row['tgl_ekspirasi'] ?? null);
-        
-        $blok = !empty($row['blok']) ? trim((string)$row['blok']) : '-';
-        $lokasiSel = !empty($row['lokasi_sel']) ? trim((string)$row['lokasi_sel']) : '-';
-
-        $inferredKode = in_array(strtoupper(substr($noReg, 0, 1)), ['A', 'B']) ? strtoupper(substr($noReg, 0, 1)) : null;
-
-        $wbp = Wbp::where('no_registrasi', $noReg)->first();
-
-        if ($wbp) {
-            $wbp->update([
-                'nama'              => strtoupper($nama),
-                'kode_tahanan'      => $inferredKode,
-                'tanggal_masuk'     => $tglMasuk,
-                'tanggal_ekspirasi' => $tglEkspirasi,
-                'blok'              => $blok,
-                'lokasi_sel'        => $lokasiSel,
-            ]);
-            return null; // Return null agar tidak double insert
-        }
-
-        return new Wbp([
-            'no_registrasi'     => $noReg,
-            'nama'              => strtoupper($nama),
-            'kode_tahanan'      => $inferredKode,
-            'tanggal_masuk'     => $tglMasuk,
-            'tanggal_ekspirasi' => $tglEkspirasi,
-            'blok'              => $blok,
-            'lokasi_sel'        => $lokasiSel,
-            'status'            => 'Aktif',
-        ]);
-    }
-
-    public function chunkSize(): int 
-    { 
-        return 500; 
-    }
-
-    private function transformDate($value)
-    {
-        if (empty($value) || $value === '-' || $value === '00/00/0000') return null;
         try {
             if (is_numeric($value)) {
-                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)->format('Y-m-d');
+                return Date::excelToDateTimeObject($value)->format('Y-m-d');
             }
-            return Carbon::parse(str_replace('/', '-', $value))->format('Y-m-d');
-        } catch (\Exception $e) { 
-            return null; 
+            
+            $cleanDate = str_replace('/', '-', $value);
+            return Carbon::parse($cleanDate)->format('Y-m-d');
+        } catch (Exception $e) {
+            Log::warning("Format tanggal tidak valid: " . $value);
+            return null;
         }
     }
 }
