@@ -71,8 +71,8 @@ class KunjunganController extends Controller
         $query = Kunjungan::select(
             'id', 'profil_pengunjung_id', 'kode_kunjungan', 'nama_pengunjung', 
             'nik_ktp', 'tanggal_kunjungan', 'sesi', 'status', 'nomor_antrian_harian',
-            'wbp_id', 'registration_type', 'created_at', 'foto_ktp'
-        )->with(['wbp', 'profilPengunjung']);
+            'wbp_id', 'registration_type', 'created_at', 'foto_ktp', 'no_wa_pengunjung', 'email_pengunjung', 'kode_booking'
+        )->with(['wbp.restrictions', 'profilPengunjung']);
 
         // ... rest of filters ...
         if ($request->filled('status')) {
@@ -431,6 +431,39 @@ class KunjunganController extends Controller
     /**
      * Menampilkan detail kunjungan.
      */
+    /**
+     * Broadcast pembatalan kunjungan spesifik karena WBP dibatasi
+     */
+    public function broadcastCancel(Kunjungan $kunjungan)
+    {
+        $kunjungan->load('wbp.restrictions');
+        
+        $tglVisit = $kunjungan->tanggal_kunjungan;
+        $restriction = $kunjungan->wbp->restrictions->filter(function($r) use ($tglVisit) {
+            return $r->start_date <= $tglVisit && $r->end_date >= $tglVisit;
+        })->first();
+
+        if (!$restriction) {
+            return response()->json(['success' => false, 'message' => 'WBP tidak dalam masa pembatasan pada tanggal kunjungan ini.'], 400);
+        }
+
+        try {
+            // 1. Batalkan Tiket
+            $kunjungan->updateQuietly(['status' => KunjunganStatus::REJECTED]);
+
+            // 2. Kirim Notifikasi via Job (Sama dengan fitur di WBP Controller)
+            \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $kunjungan->wbp_id, $restriction->id);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Tiket Kunjungan {$kunjungan->kode_booking} berhasil dibatalkan dan notifikasi broadcast telah dikirim ke keluarga."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Broadcast Cancel Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function show($id)
     {
         $kunjungan = Kunjungan::with(['wbp', 'pengikuts', 'activities.causer'])->findOrFail($id);

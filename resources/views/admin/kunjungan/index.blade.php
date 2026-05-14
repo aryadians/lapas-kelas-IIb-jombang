@@ -272,9 +272,24 @@
                             <td class="px-5 py-5 align-middle">
                                 <div class="flex flex-col gap-1.5">
                                     <span class="font-bold text-slate-700 text-sm"><i class="fas fa-user-circle text-slate-400 mr-1.5"></i> {{ $kunjungan->wbp->nama ?? 'N/A' }}</span>
-                                    <span class="text-[10px] font-black text-rose-500 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-full w-max uppercase tracking-widest shadow-sm">
-                                        {{ $kunjungan->hubungan }}
-                                    </span>
+                                    <div class="flex flex-wrap gap-1.5">
+                                        <span class="text-[10px] font-black text-rose-500 bg-rose-50 border border-rose-100 px-2.5 py-1 rounded-full uppercase tracking-widest shadow-sm">
+                                            {{ $kunjungan->hubungan }}
+                                        </span>
+                                        @if($kunjungan->wbp && $kunjungan->wbp->restrictions)
+                                            @php
+                                                $tglVisit = $kunjungan->tanggal_kunjungan;
+                                                $activeRest = $kunjungan->wbp->restrictions->filter(function($r) use ($tglVisit) {
+                                                    return $r->start_date <= $tglVisit && $r->end_date >= $tglVisit;
+                                                })->first();
+                                            @endphp
+                                            @if($activeRest)
+                                                <span class="text-[10px] font-black text-white bg-red-600 border border-red-700 px-2.5 py-1 rounded-full uppercase tracking-widest shadow-sm animate-pulse" title="WBP dalam masa {{ $activeRest->type }}">
+                                                    <i class="fas fa-exclamation-triangle mr-1"></i> WBP DIBATASI
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-5 py-5 align-middle">
@@ -329,6 +344,16 @@
                                             title="Tolak Kunjungan">
                                             <i class="fas fa-user-times text-sm"></i>
                                         </button>
+                                        
+                                        {{-- BROADCAST RESTRICTION --}}
+                                        @if(isset($activeRest) && $activeRest)
+                                            <button type="button"
+                                                onclick="broadcastRestrictionVisit('{{ route('admin.kunjungan.broadcast-cancel', $kunjungan->id) }}', '{{ $kunjungan->kode_booking }}', '{{ $activeRest->type }}')"
+                                                class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 border-2 border-blue-600 hover:border-blue-700 text-white transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/30 hover:-translate-y-0.5 active:scale-95"
+                                                title="📢 Broadcast Pembatalan">
+                                                <i class="fas fa-bullhorn text-sm"></i>
+                                            </button>
+                                        @endif
 
                                     @elseif(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
                                         {{-- SELESAI --}}
@@ -468,6 +493,39 @@ function dashboardStats() {
         updateStats() { fetch('{{ route('admin.kunjungan.stats') }}').then(r=>r.json()).then(d=>this.stats=d); }
     }
 }
+    window.broadcastRestrictionVisit = function(url, kode, type) {
+        Swal.fire({
+            title: '📢 Broadcast Batal Kunjungan?',
+            html: `Tiket <b>${kode}</b> akan dibatalkan otomatis dan notifikasi WA/Email akan dikirimkan karena WBP sedang masa <b>${type}</b>.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Broadcast & Batalkan',
+            cancelButtonText: 'Batal',
+            customClass: { 
+                popup: 'rounded-[2rem] border-0 shadow-2xl', 
+                confirmButton: 'px-8 py-3 rounded-2xl bg-blue-600 text-white font-black hover:scale-105 transition-transform mr-3', 
+                cancelButton: 'px-8 py-3 rounded-2xl bg-slate-100 text-slate-600 font-black hover:scale-105 transition-transform' 
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading(), allowOutsideClick: false, customClass: { popup: 'rounded-3xl' }});
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({ icon: 'success', title: 'Berhasil', text: data.message, customClass: { popup: 'rounded-3xl' } }).then(() => window.location.reload());
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, customClass: { popup: 'rounded-3xl' } });
+                    }
+                })
+                .catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan server.', customClass: { popup: 'rounded-3xl' } }));
+            }
+        });
+    };
 </script>
 @endpush
 @endsection

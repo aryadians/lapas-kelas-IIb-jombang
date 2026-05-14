@@ -209,6 +209,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::post('/activity-logs/delete-old', [DashboardController::class, 'deleteOldActivityLogs'])->name('admin.activity_logs.delete_old');
 
     // Kalender Kunjungan
+    Route::post('kunjungan/{kunjungan}/broadcast-cancel', [AdminKunjunganController::class, 'broadcastCancel'])->name('admin.kunjungan.broadcast-cancel');
     Route::get('kunjungan/kalender', [AdminKunjunganController::class, 'kalender'])->name('admin.kunjungan.kalender');
     Route::get('api/kunjungan/kalender', [AdminKunjunganController::class, 'kalenderData'])->name('admin.api.kunjungan.kalender');
 
