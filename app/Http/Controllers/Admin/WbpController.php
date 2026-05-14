@@ -336,18 +336,3 @@ class WbpController extends Controller
         return redirect()->route('admin.wbp.index')->with('success', 'WBP deleted successfully.');
     }
 }
-'WBP Bulk Update Error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat memperbarui status: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function destroy(Wbp $wbp)
-    {
-        $wbp->delete();
-
-        return redirect()->route('admin.wbp.index')->with('success', 'WBP deleted successfully.');
-    }
-}
