@@ -30,4 +30,19 @@ class Wbp extends Model
     {
         return $this->hasMany(Kunjungan::class, 'wbp_id');
     }
+
+    // Riwayat pembatasan kunjungan
+    public function restrictions()
+    {
+        return $this->hasMany(WbpRestriction::class, 'wbp_id');
+    }
+
+    // Pembatasan kunjungan yang sedang aktif saat ini
+    public function activeRestriction()
+    {
+        return $this->hasOne(WbpRestriction::class, 'wbp_id')
+            ->whereDate('start_date', '<=', now())
+            ->whereDate('end_date', '>=', now())
+            ->latest('id');
+    }
 }

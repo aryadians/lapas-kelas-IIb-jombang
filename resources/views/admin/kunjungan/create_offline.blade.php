@@ -475,13 +475,28 @@
                 processResults: function (d) {
                     return {
                         results: $.map(d, function (i) {
-                            return { text: i.nama + ' (' + (i.kode_tahanan || '-') + ')', id: i.id }
+                            return { 
+                                text: i.nama + ' (' + (i.kode_tahanan || '-') + ')', 
+                                id: i.id,
+                                is_restricted: i.is_restricted,
+                                restriction_message: i.restriction_message
+                            }
                         })
                     };
                 },
                 cache: true
             },
             minimumInputLength: 1
+        }).on('select2:select', function (e) {
+            var data = e.params.data;
+            if (data.is_restricted) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Peringatan: WBP Dalam Pembatasan',
+                    text: data.restriction_message + " (Admin tetap dapat melanjutkan pendaftaran offline jika darurat/diizinkan)",
+                    customClass: { popup: 'rounded-3xl' }
+                });
+            }
         });
     });
 </script>

@@ -1328,6 +1328,18 @@
                                 div.innerHTML = `<div><strong>${item.nama}${displayCode}</strong></div>`;
                                 
                                 div.onclick = () => {
+                                    if (item.is_restricted) {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Kunjungan Diblokir',
+                                            text: item.restriction_message,
+                                            customClass: { popup: 'rounded-3xl' }
+                                        });
+                                        resultsDiv.style.display = 'none';
+                                        searchInput.value = '';
+                                        return;
+                                    }
+
                                     searchInput.value = item.nama; 
                                     hiddenId.value = item.id;      
                                     infoDiv.classList.remove('hidden');

@@ -38,10 +38,22 @@
     </div>
 
     {{-- TABS STATUS --}}
-    <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit">
+    <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit flex-wrap">
         <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Aktif' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             WBP Aktif
+        </a>
+        <a href="{{ route('admin.wbp.index', ['status' => 'Mapenaling', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Mapenaling' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            Mapenaling
+        </a>
+        <a href="{{ route('admin.wbp.index', ['status' => 'Strap Cell', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Strap Cell' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            Strap Cell
+        </a>
+        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang TPP', 'search' => request('search')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang TPP' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            Sidang TPP
         </a>
         <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Bebas' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
@@ -177,6 +189,11 @@
                         <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border {{ $wbp->status === 'Aktif' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100' }}">
                             {{ $wbp->status }}
                         </span>
+                        @if($wbp->activeRestriction)
+                        <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border text-amber-700 bg-amber-50 border-amber-200" title="{{ \Carbon\Carbon::parse($wbp->activeRestriction->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($wbp->activeRestriction->end_date)->format('d/m/Y') }}">
+                            <i class="fas fa-ban text-[9px]"></i> {{ $wbp->activeRestriction->type }}
+                        </span>
+                        @endif
                     </div>
                 </div>
 
@@ -256,6 +273,23 @@
             </div>
             
             <div class="flex items-center gap-2">
+                @if(in_array($status, ['Mapenaling', 'Strap Cell', 'Sidang TPP']))
+                <button type="button" onclick="removeRestriction()"
+                    class="group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-unlock text-emerald-200 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Cabut Pembatasan</span>
+                </button>
+                <button type="button" onclick="broadcastRestriction()"
+                    class="group flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-bullhorn text-blue-200 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Broadcast WA/Email</span>
+                </button>
+                @else
+                <button type="button" onclick="openRestrictionModal()"
+                    class="group flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-amber-500/20">
+                    <i class="fas fa-ban text-amber-200 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Set Pembatasan</span>
+                </button>
                 <button type="button" onclick="bulkUpdateStatus('Aktif')"
                     class="group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-emerald-500/20">
                     <i class="fas fa-check-circle text-emerald-200 group-hover:scale-110 transition-transform"></i>
@@ -266,6 +300,7 @@
                     <i class="fas fa-sign-out-alt text-rose-200 group-hover:scale-110 transition-transform"></i>
                     <span class="text-sm">Set Bebas</span>
                 </button>
+                @endif
                 <button type="button" id="cancel-selection"
                     class="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
                     <i class="fas fa-times"></i>
@@ -381,6 +416,94 @@ document.addEventListener('DOMContentLoaded', function () {
                 .catch(err => {
                     Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan sistem.', customClass: { popup: 'rounded-3xl' } });
                 });
+            }
+        });
+    };
+
+    // --- Restriction Actions ---
+    window.openRestrictionModal = function() {
+        const selectedIds = Array.from(document.querySelectorAll('.wbp-checkbox:checked')).map(cb => cb.value);
+        if (selectedIds.length === 0) return;
+
+        Swal.fire({
+            title: 'Set Pembatasan Kunjungan',
+            html: `
+                <div class="text-left space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Jenis Pembatasan</label>
+                        <select id="swal-type" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 focus:border-indigo-500 outline-none">
+                            <option value="Mapenaling">Mapenaling</option>
+                            <option value="Strap Cell">Strap Cell</option>
+                            <option value="Sidang TPP">Sidang TPP</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Tgl Mulai</label>
+                            <input type="date" id="swal-start" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 focus:border-indigo-500 outline-none" value="{{ now()->format('Y-m-d') }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Tgl Selesai</label>
+                            <input type="date" id="swal-end" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 focus:border-indigo-500 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Keterangan (Opsional)</label>
+                        <textarea id="swal-reason" rows="2" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 focus:border-indigo-500 outline-none" placeholder="Alasan pembatasan..."></textarea>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Simpan',
+            cancelButtonText: 'Batal',
+            customClass: { popup: 'rounded-3xl', confirmButton: 'px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl mr-2', cancelButton: 'px-6 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl' },
+            buttonsStyling: false,
+            preConfirm: () => {
+                const type = document.getElementById('swal-type').value;
+                const start_date = document.getElementById('swal-start').value;
+                const end_date = document.getElementById('swal-end').value;
+                const reason = document.getElementById('swal-reason').value;
+
+                if (!start_date || !end_date) { Swal.showValidationMessage('Tanggal wajib diisi!'); return false; }
+                if (end_date < start_date) { Swal.showValidationMessage('Tanggal selesai tidak valid!'); return false; }
+                return { type, start_date, end_date, reason };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading(), allowOutsideClick: false, customClass: { popup: 'rounded-3xl' }});
+                fetch('{{ route("admin.wbp.set-restriction") }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }, body: JSON.stringify({ ids: selectedIds, ...result.value }) })
+                .then(r => r.json()).then(res => { if(res.success) Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, customClass: { popup: 'rounded-3xl' } }).then(() => window.location.reload()); else Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, customClass: { popup: 'rounded-3xl' } }); }).catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Server error.', customClass: { popup: 'rounded-3xl' } }));
+            }
+        });
+    };
+
+    window.removeRestriction = function() {
+        const selectedIds = Array.from(document.querySelectorAll('.wbp-checkbox:checked')).map(cb => cb.value);
+        if (selectedIds.length === 0) return;
+
+        Swal.fire({
+            title: 'Cabut Pembatasan?', text: `${selectedIds.length} WBP akan dicabut dari daftar pembatasan.`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya', cancelButtonText: 'Batal', customClass: { popup: 'rounded-3xl', confirmButton: 'px-6 py-2.5 bg-emerald-600 text-white font-bold rounded-xl mr-2', cancelButton: 'px-6 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl' }, buttonsStyling: false
+        }).then(r => {
+            if(r.isConfirmed) {
+                Swal.fire({ title: 'Memproses...', didOpen: () => Swal.showLoading(), allowOutsideClick: false, customClass: { popup: 'rounded-3xl' }});
+                fetch('{{ route("admin.wbp.remove-restriction") }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }, body: JSON.stringify({ ids: selectedIds }) })
+                .then(r => r.json()).then(res => { if(res.success) Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, customClass: { popup: 'rounded-3xl' } }).then(() => window.location.reload()); else Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, customClass: { popup: 'rounded-3xl' } }); }).catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Server error.', customClass: { popup: 'rounded-3xl' } }));
+            }
+        });
+    };
+
+    window.broadcastRestriction = function() {
+        const selectedIds = Array.from(document.querySelectorAll('.wbp-checkbox:checked')).map(cb => cb.value);
+        if (selectedIds.length === 0) return;
+
+        Swal.fire({
+            title: 'Kirim Broadcast Batal Kunjungan?', text: `Membatalkan otomatis kunjungan dan mengirimkan WA/Email untuk ${selectedIds.length} WBP.`, icon: 'info', showCancelButton: true, confirmButtonText: 'Ya, Broadcast', cancelButtonText: 'Batal', customClass: { popup: 'rounded-3xl', confirmButton: 'px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl mr-2', cancelButton: 'px-6 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl' }, buttonsStyling: false
+        }).then(r => {
+            if(r.isConfirmed) {
+                Swal.fire({ title: 'Menyusun Antrean Broadcast...', didOpen: () => Swal.showLoading(), allowOutsideClick: false, customClass: { popup: 'rounded-3xl' }});
+                fetch('{{ route("admin.wbp.broadcast-restriction") }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' }, body: JSON.stringify({ ids: selectedIds }) })
+                .then(r => r.json()).then(res => { if(res.success) Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message, customClass: { popup: 'rounded-3xl' } }).then(() => window.location.reload()); else Swal.fire({ icon: 'error', title: 'Gagal', text: res.message, customClass: { popup: 'rounded-3xl' } }); }).catch(() => Swal.fire({ icon: 'error', title: 'Error', text: 'Server error.', customClass: { popup: 'rounded-3xl' } }));
             }
         });
     };

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Wbp;
+use App\Models\WbpRestriction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -189,6 +190,153 @@ class WbpController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('WBP Bulk Update Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Set pembatasan kunjungan (Mapenaling, dll) secara massal
+     */
+    public function setRestriction(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:wbps,id',
+            'type' => 'required|string|in:Mapenaling,Strap Cell,Sidang TPP,Lainnya',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'reason' => 'nullable|string'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Hapus pembatasan aktif sebelumnya (jika ada overlap)
+            WbpRestriction::whereIn('wbp_id', $request->ids)
+                ->where('end_date', '>=', now()->toDateString())
+                ->delete();
+
+            // Insert pembatasan baru
+            $data = [];
+            $now = now();
+            foreach ($request->ids as $wbpId) {
+                $data[] = [
+                    'wbp_id' => $wbpId,
+                    'type' => $request->type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'reason' => $request->reason,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+            WbpRestriction::insert($data);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => count($request->ids) . ' data WBP berhasil dimasukkan ke tab ' . $request->type
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('WBP Set Restriction Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengatur pembatasan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Cabut pembatasan kunjungan massal
+     */
+    public function removeRestriction(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:wbps,id',
+        ]);
+
+        try {
+            // Kita percepat tanggal kadaluarsanya menjadi hari kemarin agar riwayat tetap ada tapi tidak aktif
+            WbpRestriction::whereIn('wbp_id', $request->ids)
+                ->where('end_date', '>=', now()->toDateString())
+                ->update(['end_date' => now()->subDay()->toDateString()]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembatasan kunjungan berhasil dicabut untuk ' . count($request->ids) . ' WBP.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WBP Remove Restriction Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mencabut pembatasan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Broadcast pembatalan kunjungan untuk WBP yang dibatasi
+     */
+    public function broadcastRestriction(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:wbps,id',
+        ]);
+
+        try {
+            $countKunjungan = 0;
+
+            foreach ($request->ids as $wbpId) {
+                $wbp = Wbp::with('activeRestriction')->find($wbpId);
+                if ($wbp && $wbp->activeRestriction) {
+                    $restriction = $wbp->activeRestriction;
+                    
+                    // Cari kunjungan yang overlapping dengan masa pembatasan
+                    $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
+                        ->whereIn('status', ['PENDING', 'APPROVED'])
+                        ->whereDate('tanggal_kunjungan', '>=', $restriction->start_date)
+                        ->whereDate('tanggal_kunjungan', '<=', $restriction->end_date)
+                        ->get();
+
+                    foreach ($kunjungans as $kunjungan) {
+                        // Batalkan kunjungan
+                        $kunjungan->update(['status' => 'REJECTED']);
+                        
+                        // Dispatch job broadcast
+                        \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
+                        $countKunjungan++;
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil membatalkan $countKunjungan kunjungan terdampak dan menaruh notifikasi ke dalam antrean (Queue)."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WBP Broadcast Restriction Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat broadcast: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function destroy(Wbp $wbp)
+    {
+        $wbp->delete();
+
+        return redirect()->route('admin.wbp.index')->with('success', 'WBP deleted successfully.');
+    }
+}
+'WBP Bulk Update Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat memperbarui status: ' . $e->getMessage()

@@ -240,6 +240,9 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class)->names('admin.galeri');
 
     // Manajemen WBP
+    Route::post('wbp/set-restriction', [WbpController::class, 'setRestriction'])->name('admin.wbp.set-restriction');
+    Route::post('wbp/remove-restriction', [WbpController::class, 'removeRestriction'])->name('admin.wbp.remove-restriction');
+    Route::post('wbp/broadcast-restriction', [WbpController::class, 'broadcastRestriction'])->name('admin.wbp.broadcast-restriction');
     Route::post('wbp/bulk-update-status', [WbpController::class, 'bulkUpdateStatus'])->name('admin.wbp.bulk-update-status');
     Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
     Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
