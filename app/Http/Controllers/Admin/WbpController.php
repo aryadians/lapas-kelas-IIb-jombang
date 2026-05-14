@@ -24,32 +24,24 @@ class WbpController extends Controller
             ->where('tanggal_ekspirasi', '<', now()->toDateString())
             ->update(['status' => 'Bebas']);
 
-        $query = Wbp::query()->with('latestRestriction');
-
-        // Debug log
-        \Illuminate\Support\Facades\Log::info("Total WBP in DB: " . Wbp::count());
-        \Illuminate\Support\Facades\Log::info("WBP Aktif count: " . Wbp::where('status', 'Aktif')->count());
+        $query = Wbp::query();
 
         // Filter Status (Default: Aktif)
         $status = $request->get('status', 'Aktif');
         $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang TPP'];
 
         if (in_array($status, $restrictionTypes)) {
-            // Khusus untuk tab pembatasan, tampilkan hanya yang terkait
             $query->whereHas('latestRestriction', function ($q) use ($status) {
                 $q->where('type', $status);
             });
         } elseif ($status === 'Aktif') {
-            // Tab Aktif: Tampilkan semua yang statusnya 'Aktif', 
-            // tanpa mempedulikan ada restriction atau tidak
             $query->where('status', 'Aktif');
         } elseif ($status !== 'Semua') {
-            // Tab lain
             $query->where('status', $status);
         }
 
         if ($request->has('search')) {
-            $search = trim($request->search); // Bersihkan spasi tidak sengaja
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'LIKE', "%{$search}%")
                     ->orWhere('no_registrasi', 'LIKE', "%{$search}%")
@@ -66,6 +58,9 @@ class WbpController extends Controller
         } else {
             $query->latest();
         }
+
+        // Load relasi setelah filter & sort
+        $query->with('latestRestriction');
 
         $wbps = $query->paginate(15)->withQueryString();
 
