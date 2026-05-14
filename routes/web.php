@@ -241,7 +241,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class)->names('admin.galeri');
 
     // Discipline Dashboard
-    Route::get('dashboard/discipline', [Admin\DisciplineDashboardController::class, 'index'])->name('admin.discipline.index');
+    Route::get('dashboard/discipline', [App\Http\Controllers\Admin\DisciplineDashboardController::class, 'index'])->name('admin.discipline.index');
 
     // Manajemen WBP
     Route::post('wbp/set-restriction', [Admin\WbpController::class, 'setRestriction'])->name('admin.wbp.set-restriction');
