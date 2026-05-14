@@ -23,8 +23,12 @@ class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
         set_time_limit(300); 
 
         foreach ($rows as $index => $row) {
+            // Log baris yang sedang diproses
+            Log::info("Processing row $index: " . json_encode($row->values()->toArray()));
+
             // Lewati header
             if ($this->isHeader($row)) {
+                Log::info("Row $index is header, skipping.");
                 continue;
             }
 
@@ -36,6 +40,7 @@ class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
             
             // Jika baris benar-benar kosong atau No Reg tidak valid, lewati
             if (empty($nama) || empty($noReg) || strlen($noReg) < 5) {
+                Log::info("Row $index skipped: Invalid data (Nama: $nama, NoReg: $noReg)");
                 continue;
             }
 
@@ -96,10 +101,11 @@ class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
     private function isHeader($row)
     {
         $firstCell = trim(strtolower((string)$row->first()));
-        $headerKeywords = ['nama lengkap', 'no. registrasi', 'no registrasi'];
+        // Gunakan str_contains agar lebih fleksibel
+        $headerKeywords = ['nama', 'no. registrasi', 'no registrasi'];
         
         foreach ($headerKeywords as $keyword) {
-            if ($firstCell === $keyword) return true;
+            if (str_contains($firstCell, $keyword)) return true;
         }
 
         return false;
