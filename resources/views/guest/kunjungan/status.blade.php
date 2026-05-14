@@ -257,6 +257,11 @@
                         <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-print"></i> CETAK TIKET
                         </a>
+                    @elseif($kunjungan->status == KunjunganStatus::PENDING)
+                        {{-- TOMBOL CETAK (DRAFT/PENDING) --}}
+                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-amber-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-invoice"></i> CETAK TIKET DRAFT (PENDING)
+                        </a>
                     @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
                         {{-- TOMBOL SURVEI (SELESAI) --}}
                         <a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">

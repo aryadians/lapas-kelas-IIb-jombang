@@ -484,10 +484,17 @@ class KunjunganController extends Controller
     public function printProof($id)
     {
         $kunjungan = Kunjungan::with(['wbp', 'pengikuts'])->findOrFail($id);
+        
+        // Cek status untuk menentukan template
+        if ($kunjungan->status == KunjunganStatus::PENDING) {
+            return view('guest.kunjungan.print_pending', compact('kunjungan'));
+        }
+
         if (!in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
             return redirect()->route('kunjungan.status', $kunjungan->id)
                 ->with('error', 'Tiket belum tersedia.');
         }
+        
         return view('guest.kunjungan.print', compact('kunjungan'));
     }
 
