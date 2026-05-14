@@ -220,8 +220,20 @@
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap">
                             @if($log->subject)
-                            <div class="text-xs font-bold text-slate-700">{{ class_basename($log->subject_type) }}</div>
+                            <div class="text-xs font-bold text-slate-700">
+                                {{ class_basename($log->subject_type) }}
+                                @if(isset($log->subject->nama)) - {{ $log->subject->nama }} @elseif(isset($log->subject->nama_pengunjung)) - {{ $log->subject->nama_pengunjung }} @endif
+                            </div>
                             <div class="text-[10px] font-mono text-slate-400">ID: {{ $log->subject_id }}</div>
+                            
+                            {{-- Optional: Show changed properties if available --}}
+                            @if($log->changes && isset($log->changes['attributes']))
+                                <div class="mt-2 text-[9px] text-slate-500 bg-slate-50 p-2 rounded-lg max-w-[200px] truncate" title="{{ json_encode($log->changes['attributes']) }}">
+                                    @foreach(array_slice($log->changes['attributes'], 0, 2) as $key => $val)
+                                        <span class="font-bold">{{ $key }}:</span> {{ is_array($val) ? json_encode($val) : $val }}<br>
+                                    @endforeach
+                                </div>
+                            @endif
                             @else
                             <span class="text-xs text-slate-300">—</span>
                             @endif
