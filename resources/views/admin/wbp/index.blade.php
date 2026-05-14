@@ -200,9 +200,15 @@
                             {{ $wbp->status }}
                         </span>
                         @if($wbp->latestRestriction)
-                        <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border text-amber-700 bg-amber-50 border-amber-200" title="{{ \Carbon\Carbon::parse($wbp->latestRestriction->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($wbp->latestRestriction->end_date)->format('d/m/Y') }}">
-                            <i class="fas fa-ban text-[9px]"></i> {{ $wbp->latestRestriction->type }}
-                        </span>
+                        <div class="mt-2 flex flex-col gap-1">
+                            <span class="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border text-amber-700 bg-amber-50 border-amber-200">
+                                <i class="fas fa-ban"></i> 
+                                {{ $wbp->latestRestriction->type }} 
+                                <span class="font-normal opacity-80">
+                                    ({{ \Carbon\Carbon::parse($wbp->latestRestriction->start_date)->format('d/m') }} - {{ \Carbon\Carbon::parse($wbp->latestRestriction->end_date)->format('d/m/Y') }})
+                                </span>
+                            </span>
+                        </div>
                         @endif
                     </div>
                 </div>
