@@ -26,15 +26,25 @@ class WbpController extends Controller
 
         $query = Wbp::query()->with('latestRestriction');
 
+        // Debug log
+        \Illuminate\Support\Facades\Log::info("Total WBP in DB: " . Wbp::count());
+        \Illuminate\Support\Facades\Log::info("WBP Aktif count: " . Wbp::where('status', 'Aktif')->count());
+
         // Filter Status (Default: Aktif)
         $status = $request->get('status', 'Aktif');
         $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang TPP'];
 
         if (in_array($status, $restrictionTypes)) {
+            // Khusus untuk tab pembatasan, tampilkan hanya yang terkait
             $query->whereHas('latestRestriction', function ($q) use ($status) {
                 $q->where('type', $status);
             });
+        } elseif ($status === 'Aktif') {
+            // Tab Aktif: Tampilkan semua yang statusnya 'Aktif', 
+            // tanpa mempedulikan ada restriction atau tidak
+            $query->where('status', 'Aktif');
         } elseif ($status !== 'Semua') {
+            // Tab lain
             $query->where('status', $status);
         }
 
