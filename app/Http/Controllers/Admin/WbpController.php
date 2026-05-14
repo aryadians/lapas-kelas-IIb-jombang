@@ -36,10 +36,6 @@ class WbpController extends Controller
             });
         } elseif ($status !== 'Semua') {
             $query->where('status', $status);
-            // Sembunyikan WBP yang sedang dibatasi dari tab Aktif agar rapi
-            if ($status === 'Aktif') {
-                $query->whereDoesntHave('latestRestriction');
-            }
         }
 
         if ($request->has('search')) {
