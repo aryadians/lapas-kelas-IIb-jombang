@@ -75,6 +75,12 @@
                         <span class="font-medium">Dashboard</span>
                     </a>
 
+                    <a href="{{ route('admin.discipline.index') }}"
+                       class="flex items-center px-4 py-3 {{ request()->routeIs('admin.discipline.index') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                        <i class="fas fa-gavel w-5 h-5 mr-3 {{ request()->routeIs('admin.discipline.index') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                        <span class="font-medium">Disiplin WBP</span>
+                    </a>
+
                     @if($userRole === 'super_admin')
                     <a href="{{ route('admin.dashboard.executive') }}"
                        class="flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard.executive') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
