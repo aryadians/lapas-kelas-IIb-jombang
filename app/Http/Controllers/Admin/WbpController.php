@@ -166,6 +166,36 @@ class WbpController extends Controller
         return redirect()->route('admin.wbp.index')->with('success', 'WBP updated successfully.');
     }
 
+    /**
+     * Update status multiple WBP secara massal
+     */
+    public function bulkUpdateStatus(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:wbps,id',
+            'status' => 'required|string|in:Aktif,Bebas'
+        ]);
+
+        try {
+            Wbp::whereIn('id', $request->ids)->update(['status' => $request->status]);
+            
+            // Clear cache after update if needed
+            Artisan::call('cache:clear');
+
+            return response()->json([
+                'success' => true,
+                'message' => count($request->ids) . ' data WBP berhasil diubah statusnya menjadi ' . $request->status
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WBP Bulk Update Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function destroy(Wbp $wbp)
     {
         $wbp->delete();

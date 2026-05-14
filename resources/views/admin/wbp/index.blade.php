@@ -59,6 +59,20 @@
         {{-- Toolbar: Import + Search --}}
         <div class="px-6 py-4 border-b border-slate-100 flex flex-col lg:flex-row items-start lg:items-center gap-4">
 
+            {{-- Select All + Bulk Badge --}}
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" id="select-all" 
+                        class="w-5 h-5 rounded-lg border-2 border-slate-200 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer">
+                    <span class="text-xs font-bold text-slate-500 group-hover:text-slate-700 transition-colors uppercase tracking-wider">Pilih Semua</span>
+                </label>
+                <div id="selection-badge" class="hidden animate__animated animate__fadeIn">
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2.5 py-1 rounded-full border border-indigo-200">
+                        <span id="selected-count">0</span> Terpilih
+                    </span>
+                </div>
+            </div>
+
             {{-- Import Form --}}
             <form id="import-form" action="{{ route('admin.wbp.import') }}" method="POST"
                 enctype="multipart/form-data" class="flex items-center gap-2 flex-1 min-w-0">
@@ -118,6 +132,11 @@
                 $color = $colors[abs(crc32($wbp->nama)) % count($colors)];
             @endphp
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 px-6 py-4 border-b border-slate-50 hover:bg-slate-50/80 transition-colors group">
+
+                {{-- Checkbox --}}
+                <div class="flex-shrink-0">
+                    <input type="checkbox" class="wbp-checkbox w-5 h-5 rounded-lg border-2 border-slate-200 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer" value="{{ $wbp->id }}">
+                </div>
 
                 {{-- Avatar --}}
                 <div class="flex-shrink-0 w-11 h-11 rounded-2xl bg-{{ $color }}-100 text-{{ $color }}-600 flex items-center justify-center font-black text-base shadow-sm">
@@ -221,12 +240,150 @@
         </div>
         @endif
     </div>
+
+    {{-- FLOATING BULK ACTION BAR --}}
+    <div id="bulk-action-bar" 
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 translate-y-32 opacity-0 invisible transition-all duration-500 ease-out">
+        <div class="bg-slate-900/90 backdrop-blur-xl border border-white/10 px-6 py-4 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-6">
+            <div class="flex items-center gap-3 pr-6 border-r border-white/10">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-black">
+                    <span id="bulk-selected-count">0</span>
+                </div>
+                <div>
+                    <p class="text-white font-black text-sm leading-none">WBP Terpilih</p>
+                    <p class="text-indigo-300/50 text-[10px] font-bold uppercase tracking-widest mt-1">Aksi Massal</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="bulkUpdateStatus('Aktif')"
+                    class="group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-emerald-500/20">
+                    <i class="fas fa-check-circle text-emerald-200 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Set Aktif</span>
+                </button>
+                <button type="button" onclick="bulkUpdateStatus('Bebas')"
+                    class="group flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-rose-500/20">
+                    <i class="fas fa-sign-out-alt text-rose-200 group-hover:scale-110 transition-transform"></i>
+                    <span class="text-sm">Set Bebas</span>
+                </button>
+                <button type="button" id="cancel-selection"
+                    class="flex items-center justify-center w-10 h-10 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    // --- Bulk Selection Logic ---
+    const selectAll = document.getElementById('select-all');
+    const wbpCheckboxes = document.querySelectorAll('.wbp-checkbox');
+    const bulkBar = document.getElementById('bulk-action-bar');
+    const selectedCountBadge = document.getElementById('selection-badge');
+    const selectedCountText = document.getElementById('selected-count');
+    const bulkSelectedCountText = document.getElementById('bulk-selected-count');
+    const cancelSelection = document.getElementById('cancel-selection');
+
+    function updateBulkUI() {
+        const checked = document.querySelectorAll('.wbp-checkbox:checked');
+        const count = checked.length;
+
+        selectedCountText.textContent = count;
+        bulkSelectedCountText.textContent = count;
+
+        if (count > 0) {
+            bulkBar.classList.remove('translate-y-32', 'opacity-0', 'invisible');
+            selectedCountBadge.classList.remove('hidden');
+        } else {
+            bulkBar.classList.add('translate-y-32', 'opacity-0', 'invisible');
+            selectedCountBadge.classList.add('hidden');
+            selectAll.checked = false;
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            wbpCheckboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkUI();
+        });
+    }
+
+    wbpCheckboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkUI);
+    });
+
+    if (cancelSelection) {
+        cancelSelection.addEventListener('click', function() {
+            wbpCheckboxes.forEach(cb => cb.checked = false);
+            if(selectAll) selectAll.checked = false;
+            updateBulkUI();
+        });
+    }
+
+    // --- Bulk Update Action ---
+    window.bulkUpdateStatus = function(status) {
+        const selectedIds = Array.from(document.querySelectorAll('.wbp-checkbox:checked')).map(cb => cb.value);
+        
+        if (selectedIds.length === 0) return;
+
+        Swal.fire({
+            title: `Set Status ${status}?`,
+            text: `${selectedIds.length} data WBP akan diubah statusnya menjadi ${status}.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lanjutkan',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-3xl',
+                confirmButton: `px-6 py-2.5 ${status === 'Aktif' ? 'bg-emerald-600' : 'bg-rose-600'} text-white font-bold rounded-xl mr-2`,
+                cancelButton: 'px-6 py-2.5 bg-slate-200 text-slate-700 font-bold rounded-xl'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Memproses...',
+                    didOpen: () => Swal.showLoading(),
+                    allowOutsideClick: false,
+                    customClass: { popup: 'rounded-3xl' }
+                });
+
+                fetch('{{ route("admin.wbp.bulk-update-status") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        ids: selectedIds,
+                        status: status
+                    })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: data.message,
+                            customClass: { popup: 'rounded-3xl' }
+                        }).then(() => window.location.reload());
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: data.message, customClass: { popup: 'rounded-3xl' } });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'Terjadi kesalahan sistem.', customClass: { popup: 'rounded-3xl' } });
+                });
+            }
+        });
+    };
 
     // --- File Input Label Update ---
     const fileInput = document.getElementById('file-input');
