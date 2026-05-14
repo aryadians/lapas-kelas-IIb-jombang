@@ -315,10 +315,12 @@ class WbpController extends Controller
                     
                     // Cari kunjungan yang overlapping dengan masa pembatasan
                     $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
-                        ->whereIn('status', ['PENDING', 'APPROVED'])
+                        ->whereIn('status', ['pending', 'approved'])
                         ->whereDate('tanggal_kunjungan', '>=', $restriction->start_date)
                         ->whereDate('tanggal_kunjungan', '<=', $restriction->end_date)
                         ->get();
+
+                    Log::info("Broadcast restriction search for WBP $wbpId between {$restriction->start_date} and {$restriction->end_date}. Found count: " . $kunjungans->count());
 
                     foreach ($kunjungans as $kunjungan) {
                         // Batalkan kunjungan tanpa memicu observer
