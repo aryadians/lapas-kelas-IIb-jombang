@@ -31,13 +31,15 @@ class WbpController extends Controller
         $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang TPP'];
 
         if (in_array($status, $restrictionTypes)) {
+            // Khusus untuk tab pembatasan, tampilkan hanya yang terkait
             $query->whereHas('latestRestriction', function ($q) use ($status) {
                 $q->where('type', $status);
             });
-            \Illuminate\Support\Facades\Log::info("Debugging: Status $status found " . $query->count() . " records.");
         } elseif ($status === 'Aktif') {
-            $query->where('status', 'Aktif');
+            // Tab Aktif: Sembunyikan WBP yang sedang dibatasi
+            $query->where('status', 'Aktif')->whereDoesntHave('latestRestriction');
         } elseif ($status !== 'Semua') {
+            // Tab lain
             $query->where('status', $status);
         }
 
