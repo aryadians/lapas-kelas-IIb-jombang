@@ -254,22 +254,22 @@
 
                     @if(in_array($kunjungan->status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
                         {{-- TOMBOL CETAK (AKTIF) --}}
-                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-2xl font-black shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-print"></i> CETAK TIKET
                         </a>
                     @elseif($kunjungan->status == KunjunganStatus::PENDING)
                         {{-- TOMBOL CETAK (DRAFT/PENDING) --}}
-                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-amber-500 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-file-invoice"></i> CETAK TIKET DRAFT (PENDING)
+                        <a href="{{ route('kunjungan.print', $kunjungan->id) }}" target="_blank" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white px-8 py-3.5 rounded-2xl font-black shadow-lg shadow-amber-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-invoice"></i> CETAK DRAFT (PENDING)
                         </a>
                     @elseif($kunjungan->status == KunjunganStatus::COMPLETED)
                         {{-- TOMBOL SURVEI (SELESAI) --}}
-                        <a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition flex items-center justify-center gap-2">
+                        <a href="https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv" target="_blank" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3.5 rounded-2xl font-black shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2">
                             <i class="fa-solid fa-star"></i> ISI SURVEI IKM
                         </a>
                     @else
                         {{-- TOMBOL MATI (ABU-ABU) --}}
-                        <button disabled class="w-full sm:w-auto bg-slate-200 text-slate-400 px-8 py-3 rounded-xl font-bold cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
+                        <button disabled class="w-full sm:w-auto bg-slate-200 text-slate-400 px-8 py-3.5 rounded-2xl font-black cursor-not-allowed flex items-center justify-center gap-2 border border-slate-300">
                             <i class="fa-solid fa-lock"></i> TIKET BELUM TERSEDIA
                         </button>
                     @endif
