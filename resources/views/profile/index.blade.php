@@ -217,7 +217,11 @@
                     <div class="relative w-24 h-24 mx-auto mb-6">
                         <div class="absolute inset-0 bg-blue-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity"></div>
                         <div class="icon-circle relative w-full h-full rounded-full bg-gradient-to-br from-white to-blue-50 border-2 border-white shadow-lg flex items-center justify-center text-blue-500 z-10 overflow-hidden">
-                            <i class="fas fa-user-tie text-4xl transform group-hover:scale-110 transition-transform duration-300"></i>
+                            @if($p->foto)
+                                <img src="{{ $p->foto }}" alt="{{ $p->nama }}" class="w-full h-full object-cover">
+                            @else
+                                <i class="fas fa-user-tie text-4xl transform group-hover:scale-110 transition-transform duration-300"></i>
+                            @endif
                         </div>
                     </div>
 
@@ -251,8 +255,12 @@
                     
                     <div class="relative w-16 h-16 mx-auto mb-4">
                         <div class="absolute inset-0 bg-slate-300 rounded-full blur-sm opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                        <div class="icon-circle relative w-full h-full rounded-full bg-white border border-slate-100 shadow-md flex items-center justify-center text-slate-400 z-10">
-                            <i class="fas fa-user-shield text-2xl group-hover:text-slate-700 transition-colors"></i>
+                        <div class="icon-circle relative w-full h-full rounded-full bg-white border border-slate-100 shadow-md flex items-center justify-center text-slate-400 z-10 overflow-hidden">
+                            @if($p->foto)
+                                <img src="{{ $p->foto }}" alt="{{ $p->nama }}" class="w-full h-full object-cover">
+                            @else
+                                <i class="fas fa-user-shield text-2xl group-hover:text-slate-700 transition-colors"></i>
+                            @endif
                         </div>
                     </div>
 
