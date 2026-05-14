@@ -36,6 +36,10 @@ class WbpController extends Controller
             });
         } elseif ($status !== 'Semua') {
             $query->where('status', $status);
+            // Sembunyikan WBP yang sedang dibatasi dari tab Aktif agar rapi
+            if ($status === 'Aktif') {
+                $query->whereDoesntHave('latestRestriction');
+            }
         }
 
         if ($request->has('search')) {
@@ -47,10 +51,19 @@ class WbpController extends Controller
             });
         }
 
-        // Urutkan berdasarkan waktu input terakhir agar data baru terlihat
-        $wbps = $query->latest()->paginate(15)->withQueryString();
+        // Filter Pengurutan
+        $sort = $request->get('sort', 'terbaru');
+        if ($sort === 'abjad_asc') {
+            $query->orderBy('nama', 'asc');
+        } elseif ($sort === 'abjad_desc') {
+            $query->orderBy('nama', 'desc');
+        } else {
+            $query->latest();
+        }
 
-        return view('admin.wbp.index', compact('wbps', 'status'));
+        $wbps = $query->paginate(15)->withQueryString();
+
+        return view('admin.wbp.index', compact('wbps', 'status', 'sort'));
     }
 
     /**

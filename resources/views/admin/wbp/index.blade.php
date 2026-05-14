@@ -39,27 +39,27 @@
 
     {{-- TABS STATUS --}}
     <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit flex-wrap">
-        <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Aktif' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             WBP Aktif
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Mapenaling', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Mapenaling', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Mapenaling' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Mapenaling
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Strap Cell', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Strap Cell', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Strap Cell' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Strap Cell
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang TPP', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang TPP', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang TPP' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Sidang TPP
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Bebas' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             WBP Bebas / Ekspirasi
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Semua' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Semua
         </a>
@@ -112,16 +112,26 @@
                 </button>
             </form>
 
-            {{-- Search --}}
-            <form method="GET" class="flex items-center gap-2 w-full lg:w-72 flex-shrink-0">
-                <div class="relative flex-1">
+            {{-- Search & Filter --}}
+            <form method="GET" class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto flex-shrink-0">
+                <input type="hidden" name="status" value="{{ request('status', 'Aktif') }}">
+                
+                {{-- Sort Dropdown --}}
+                <select name="sort" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 focus:border-indigo-400 focus:outline-none focus:bg-white transition-all cursor-pointer">
+                    <option value="terbaru" {{ request('sort', 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                    <option value="abjad_asc" {{ request('sort') === 'abjad_asc' ? 'selected' : '' }}>Abjad (A - Z)</option>
+                    <option value="abjad_desc" {{ request('sort') === 'abjad_desc' ? 'selected' : '' }}>Abjad (Z - A)</option>
+                </select>
+
+                {{-- Search Bar --}}
+                <div class="relative w-full sm:w-64">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Cari Nama atau No. Registrasi..."
                         class="w-full pl-9 pr-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 placeholder-slate-400 focus:border-indigo-400 focus:outline-none focus:bg-white transition-all">
                 </div>
                 @if(request('search'))
-                <a href="{{ route('admin.wbp.index') }}"
+                <a href="{{ route('admin.wbp.index', ['status' => request('status', 'Aktif'), 'sort' => request('sort', 'terbaru')]) }}"
                     class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 transition-all">
                     <i class="fas fa-times text-xs"></i>
                 </a>
