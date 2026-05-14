@@ -306,10 +306,10 @@ class WbpController extends Controller
                         ->get();
 
                     foreach ($kunjungans as $kunjungan) {
-                        // Batalkan kunjungan
-                        $kunjungan->update(['status' => 'REJECTED']);
+                        // Batalkan kunjungan tanpa memicu observer (menghindari double notifikasi)
+                        $kunjungan->updateQuietly(['status' => 'REJECTED']);
                         
-                        // Dispatch job broadcast
+                        // Dispatch job broadcast khusus pembatasan
                         \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
                         $countKunjungan++;
                     }
