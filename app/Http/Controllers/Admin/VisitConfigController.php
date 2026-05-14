@@ -108,11 +108,11 @@ class VisitConfigController extends Controller
             if ($value !== null) {
                 $updateData = ['value' => $value];
                 
-                // Jika setting belum ada, kita perlu memberikan display_name dan type default agar tidak error database
-                if ($key === 'monday_registration_special') {
-                    $updateData['display_name'] = 'Pendaftaran Khusus Hari Senin (Jumat-Minggu)';
-                    $updateData['type'] = 'boolean';
-                }
+                // Jika setting belum ada, kita berikan display_name dan type agar tidak error
+                $updateData = array_merge([
+                    'display_name' => ucwords(str_replace('_', ' ', $key)),
+                    'type' => 'number'
+                ], $updateData);
 
                 VisitSetting::updateOrCreate(['key' => $key], $updateData);
             }
