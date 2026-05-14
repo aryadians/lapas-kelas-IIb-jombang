@@ -13,7 +13,7 @@ class WhatsAppService
     /**
      * Mengirim pesan asli ke API Fonnte.
      */
-    protected function sendMessage(string $to, string $message, ?string $fileUrl = null)
+    public function sendMessage(string $to, string $message, ?string $fileUrl = null)
     {
         // 1. Bersihkan Nomor HP (08xx -> 628xx) dan pastikan hanya angka
         $target = $this->normalizePhoneNumber($to);
