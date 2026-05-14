@@ -59,8 +59,12 @@ class RegistrationValidationService
 
         $allowMonday = $isMondaySpecial && $isTargetMonday && $isTodayFridayToSunday;
 
+        // Jika leadTime 0, izinkan pendaftaran hari ini (today). Jika 1, minimal besok.
         $minDate = Carbon::today()->addDays($leadTime);
-        if ($tanggal->lt($minDate) && !$allowMonday) {
+        
+        // Logika: Jika tanggal yang dipilih SEBELUM minDate DAN bukan pengecualian Senin, tolak.
+        // Jika leadTime adalah 0, $minDate adalah hari ini. $tanggal->lt($minDate) akan menjadi false untuk pendaftaran hari ini.
+        if ($tanggal->lt(Carbon::today()->addDays($leadTime)) && !$allowMonday) {
             return $this->error('tanggal_kunjungan', "Pendaftaran untuk tanggal ini sudah ditutup. Minimal pendaftaran adalah $leadTime hari sebelum kunjungan.");
         }
 
