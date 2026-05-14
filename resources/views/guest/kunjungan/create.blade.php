@@ -1307,7 +1307,10 @@
                     resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Mencari...</div>';
                     resultsDiv.style.display = 'block';
 
-                    fetch(`{{ route('api.search.wbp') }}?q=${query}`)
+                    let tgl = document.getElementById('tanggal_kunjungan').value;
+                    let url = `{{ route('api.search.wbp') }}?q=${query}&tanggal=${tgl}`;
+
+                    fetch(url)
                         .then(res => res.json())
                         .then(data => {
                             resultsDiv.innerHTML = '';

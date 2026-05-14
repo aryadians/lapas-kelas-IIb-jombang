@@ -471,7 +471,12 @@
                 url: '{{ route("api.search.wbp") }}',
                 dataType: 'json',
                 delay: 250,
-                data: function (p) { return { q: p.term }; },
+                data: function (p) { 
+                    return { 
+                        q: p.term,
+                        tanggal: document.getElementById('tanggal_kunjungan').value
+                    }; 
+                },
                 processResults: function (d) {
                     return {
                         results: $.map(d, function (i) {

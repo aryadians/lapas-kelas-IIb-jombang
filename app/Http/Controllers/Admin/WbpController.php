@@ -24,11 +24,17 @@ class WbpController extends Controller
             ->where('tanggal_ekspirasi', '<', now()->toDateString())
             ->update(['status' => 'Bebas']);
 
-        $query = Wbp::query();
+        $query = Wbp::query()->with('latestRestriction');
 
         // Filter Status (Default: Aktif)
         $status = $request->get('status', 'Aktif');
-        if ($status !== 'Semua') {
+        $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang TPP'];
+
+        if (in_array($status, $restrictionTypes)) {
+            $query->whereHas('latestRestriction', function ($q) use ($status) {
+                $q->where('type', $status);
+            });
+        } elseif ($status !== 'Semua') {
             $query->where('status', $status);
         }
 

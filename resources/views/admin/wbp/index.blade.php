@@ -189,9 +189,9 @@
                         <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border {{ $wbp->status === 'Aktif' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' : 'text-rose-600 bg-rose-50 border-rose-100' }}">
                             {{ $wbp->status }}
                         </span>
-                        @if($wbp->activeRestriction)
-                        <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border text-amber-700 bg-amber-50 border-amber-200" title="{{ \Carbon\Carbon::parse($wbp->activeRestriction->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($wbp->activeRestriction->end_date)->format('d/m/Y') }}">
-                            <i class="fas fa-ban text-[9px]"></i> {{ $wbp->activeRestriction->type }}
+                        @if($wbp->latestRestriction)
+                        <span class="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg border text-amber-700 bg-amber-50 border-amber-200" title="{{ \Carbon\Carbon::parse($wbp->latestRestriction->start_date)->format('d/m/Y') }} - {{ \Carbon\Carbon::parse($wbp->latestRestriction->end_date)->format('d/m/Y') }}">
+                            <i class="fas fa-ban text-[9px]"></i> {{ $wbp->latestRestriction->type }}
                         </span>
                         @endif
                     </div>

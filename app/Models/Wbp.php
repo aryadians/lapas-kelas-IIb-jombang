@@ -37,12 +37,20 @@ class Wbp extends Model
         return $this->hasMany(WbpRestriction::class, 'wbp_id');
     }
 
-    // Pembatasan kunjungan yang sedang aktif saat ini
+    // Pembatasan kunjungan yang sedang aktif hari ini
     public function activeRestriction()
     {
         return $this->hasOne(WbpRestriction::class, 'wbp_id')
-            ->whereDate('start_date', '<=', now())
-            ->whereDate('end_date', '>=', now())
+            ->whereDate('start_date', '<=', now()->toDateString())
+            ->whereDate('end_date', '>=', now()->toDateString())
             ->latest('id');
+    }
+
+    // Pembatasan kunjungan yang aktif hari ini ATAU di masa depan (untuk tampilan Admin)
+    public function latestRestriction()
+    {
+        return $this->hasOne(WbpRestriction::class, 'wbp_id')
+            ->whereDate('end_date', '>=', now()->toDateString())
+            ->latest('start_date');
     }
 }

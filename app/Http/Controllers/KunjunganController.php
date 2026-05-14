@@ -179,8 +179,13 @@ class KunjunganController extends Controller
     public function searchWbp(Request $request)
     {
         $search = $request->get('q');
+        $tanggal = $request->get('tanggal', now()->toDateString());
+
         $wbps = Wbp::query()
-            ->with('activeRestriction')
+            ->with(['restrictions' => function($q) use ($tanggal) {
+                $q->whereDate('start_date', '<=', $tanggal)
+                  ->whereDate('end_date', '>=', $tanggal);
+            }])
             ->where('status', 'Aktif') // Hanya tampilkan yang aktif
             ->where(function($q) use ($search) {
                 $q->where('nama', 'LIKE', "%{$search}%")
@@ -189,8 +194,9 @@ class KunjunganController extends Controller
             ->limit(10)->get();
 
         $results = $wbps->map(function ($wbp) {
-            $is_restricted = $wbp->activeRestriction ? true : false;
-            $restriction_message = $is_restricted ? "Maaf, WBP sedang dalam masa {$wbp->activeRestriction->type} hingga " . \Carbon\Carbon::parse($wbp->activeRestriction->end_date)->format('d/m/Y') . " dan tidak dapat dikunjungi." : null;
+            $restriction = $wbp->restrictions->first();
+            $is_restricted = $restriction ? true : false;
+            $restriction_message = $is_restricted ? "Maaf, WBP sedang dalam masa {$restriction->type} hingga " . \Carbon\Carbon::parse($restriction->end_date)->format('d/m/Y') . " dan tidak dapat dikunjungi." : null;
 
             // Kita sembunyikan No Reg dan Blok demi privasi publik
             // Tapi tetap kirim kode_tahanan untuk logika validasi jadwal di frontend
