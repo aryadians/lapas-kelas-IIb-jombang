@@ -244,13 +244,13 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::get('dashboard/discipline', [App\Http\Controllers\Admin\DisciplineDashboardController::class, 'index'])->name('admin.discipline.index');
 
     // Manajemen WBP
-    Route::post('wbp/set-restriction', [Admin\WbpController::class, 'setRestriction'])->name('admin.wbp.set-restriction');
-    Route::post('wbp/remove-restriction', [WbpController::class, 'removeRestriction'])->name('admin.wbp.remove-restriction');
-    Route::post('wbp/broadcast-restriction', [WbpController::class, 'broadcastRestriction'])->name('admin.wbp.broadcast-restriction');
-    Route::post('wbp/bulk-update-status', [WbpController::class, 'bulkUpdateStatus'])->name('admin.wbp.bulk-update-status');
-    Route::post('wbp/import', [WbpController::class, 'import'])->name('admin.wbp.import');
-    Route::get('wbp/{wbp}/history', [WbpController::class, 'history'])->name('admin.wbp.history');
-    Route::resource('wbp', WbpController::class)->names('admin.wbp');
+    Route::post('wbp/set-restriction', [\App\Http\Controllers\Admin\WbpController::class, 'setRestriction'])->name('admin.wbp.set-restriction');
+    Route::post('wbp/remove-restriction', [\App\Http\Controllers\Admin\WbpController::class, 'removeRestriction'])->name('admin.wbp.remove-restriction');
+    Route::post('wbp/broadcast-restriction', [\App\Http\Controllers\Admin\WbpController::class, 'broadcastRestriction'])->name('admin.wbp.broadcast-restriction');
+    Route::post('wbp/bulk-update-status', [\App\Http\Controllers\Admin\WbpController::class, 'bulkUpdateStatus'])->name('admin.wbp.bulk-update-status');
+    Route::post('wbp/import', [\App\Http\Controllers\Admin\WbpController::class, 'import'])->name('admin.wbp.import');
+    Route::get('wbp/{wbp}/history', [\App\Http\Controllers\Admin\WbpController::class, 'history'])->name('admin.wbp.history');
+    Route::resource('wbp', \App\Http\Controllers\Admin\WbpController::class)->names('admin.wbp');
 
     // Kontrol Antrian
     Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
