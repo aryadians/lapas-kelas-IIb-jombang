@@ -34,6 +34,7 @@ class WbpController extends Controller
             $query->whereHas('latestRestriction', function ($q) use ($status) {
                 $q->where('type', $status);
             });
+            \Illuminate\Support\Facades\Log::info("Debugging: Status $status found " . $query->count() . " records.");
         } elseif ($status === 'Aktif') {
             $query->where('status', 'Aktif');
         } elseif ($status !== 'Semua') {
