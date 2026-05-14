@@ -61,10 +61,22 @@ class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
                 $inferredKode = $firstChar;
             }
 
-            // Update atau Buat Baru (Set status Aktif)
-            Wbp::updateOrCreate(
-                ['no_registrasi' => $noReg],
-                [
+            // Update atau Buat Baru
+            $wbp = Wbp::where('no_registrasi', $noReg)->first();
+
+            if ($wbp) {
+                $wbp->update([
+                    'nama'              => strtoupper($nama),
+                    'kode_tahanan'      => $inferredKode,
+                    'nama_panggilan'    => strtoupper($namaPanggilan),
+                    'tanggal_masuk'     => $tglMasuk,
+                    'tanggal_ekspirasi' => $tglEkspirasi,
+                    'blok'              => $blok,
+                    'lokasi_sel'        => $lokasiSel,
+                ]);
+            } else {
+                Wbp::create([
+                    'no_registrasi'     => $noReg,
                     'nama'              => strtoupper($nama),
                     'kode_tahanan'      => $inferredKode,
                     'nama_panggilan'    => strtoupper($namaPanggilan),
@@ -73,8 +85,8 @@ class WbpImport implements ToCollection, SkipsEmptyRows, WithChunkReading
                     'blok'              => $blok,
                     'lokasi_sel'        => $lokasiSel,
                     'status'            => 'Aktif',
-                ]
-            );
+                ]);
+            }
 
             // Simpan daftar no reg yang ada di file
             $this->importedNoRegs[] = $noReg;
