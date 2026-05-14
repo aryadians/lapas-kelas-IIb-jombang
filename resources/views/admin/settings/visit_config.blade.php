@@ -192,6 +192,13 @@
                                 <span class="text-slate-400 font-bold uppercase text-xs w-16">Kali</span>
                             </div>
                         </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold text-slate-700">Maksimal Kunjungan per WBP (Harian)</label>
+                            <div class="flex items-center gap-4">
+                                <input type="number" name="limit_wbp_per_day" value="{{ $settings['limit_wbp_per_day'] ?? 1 }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-slate-700 focus:border-amber-500 focus:ring-0">
+                                <span class="text-slate-400 font-bold uppercase text-xs w-16">Kali</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -39,6 +39,7 @@ class VisitConfigSeeder extends Seeder
         $settings = [
             ['key' => 'limit_nik_per_week', 'value' => '1', 'display_name' => 'Batas Kunjungan NIK per Minggu', 'type' => 'number'],
             ['key' => 'limit_wbp_per_week', 'value' => '1', 'display_name' => 'Batas Kunjungan WBP per Minggu', 'type' => 'number'],
+            ['key' => 'limit_wbp_per_day', 'value' => '1', 'display_name' => 'Batas Kunjungan WBP per Hari', 'type' => 'number'],
         ];
 
         foreach ($settings as $setting) {

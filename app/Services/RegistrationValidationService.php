@@ -115,17 +115,28 @@ class RegistrationValidationService
         // 3. LOGIKA PEMBATASAN DINAMIS (NIK & WBP)
         $limitNik = (int) ($visitSettings['limit_nik_per_week'] ?? 1);
         $limitWbp = (int) ($visitSettings['limit_wbp_per_week'] ?? 1);
+        $limitWbpDay = (int) ($visitSettings['limit_wbp_per_day'] ?? 1);
 
         $startWeek = $tanggal->copy()->subDays(6);
 
-        // Cek Batasan WBP
-        $wbpVisitCount = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
+        // Cek Batasan WBP (Mingguan)
+        $wbpVisitCountWeek = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
             ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
             ->whereBetween('tanggal_kunjungan', [$startWeek->format('Y-m-d'), $dateStr])
             ->count();
 
-        if ($wbpVisitCount >= $limitWbp) {
+        if ($wbpVisitCountWeek >= $limitWbp) {
             return $this->error('global', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbp kali) dalam seminggu terakhir.");
+        }
+
+        // Cek Batasan WBP (Harian)
+        $wbpVisitCountDay = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
+            ->where('tanggal_kunjungan', $dateStr)
+            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
+            ->count();
+
+        if ($wbpVisitCountDay >= $limitWbpDay) {
+            return $this->error('global', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbpDay kali) pada hari tersebut.");
         }
 
         // Cek Batasan NIK
