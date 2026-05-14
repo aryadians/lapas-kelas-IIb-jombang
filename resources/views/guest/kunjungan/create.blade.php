@@ -970,7 +970,7 @@
                                 <label class="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
                                     <i class="fa-solid fa-calendar-alt text-green-500"></i> Pilih Tanggal
                                 </label>
-                                <select name="tanggal_kunjungan" x-model="selectedDate" :disabled="!selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white disabled:bg-gray-100">
+                                <select name="tanggal_kunjungan" id="tanggal_kunjungan" x-model="selectedDate" :disabled="!selectedDay" class="w-full rounded-xl border-2 border-gray-200 focus:ring-2 focus:ring-yellow-400 py-3 px-4 bg-white disabled:bg-gray-100">
                                     <option value="" disabled>-- Pilih hari dulu --</option>
                                     <template x-for="date in availableDates" :key="date.value">
                                         <option :value="date.value" x-text="date.label"></option>
@@ -1307,7 +1307,8 @@
                     resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 italic"><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Mencari...</div>';
                     resultsDiv.style.display = 'block';
 
-                    let tgl = document.getElementById('tanggal_kunjungan').value;
+                    let tglElement = document.getElementById('tanggal_kunjungan');
+                    let tgl = tglElement ? tglElement.value : '';
                     let url = `{{ route('api.search.wbp') }}?q=${query}&tanggal=${tgl}`;
 
                     fetch(url)
