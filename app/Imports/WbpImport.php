@@ -73,7 +73,6 @@ class WbpImport implements ToModel, WithChunkReading, WithHeadingRow
             'status'            => 'Aktif',
         ]);
     }
-    }
 
     public function chunkSize(): int 
     { 
