@@ -179,7 +179,7 @@ class KunjunganController extends Controller
     public function searchWbp(Request $request)
     {
         $search = $request->get('q');
-        $tanggal = $request->get('tanggal', now()->toDateString());
+        $tanggal = $request->filled('tanggal') ? $request->get('tanggal') : now()->toDateString();
 
         $wbps = Wbp::query()
             ->with(['restrictions' => function($q) use ($tanggal) {
