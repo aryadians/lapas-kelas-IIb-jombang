@@ -325,8 +325,8 @@ class WbpController extends Controller
                         ->get();
 
                     foreach ($kunjungans as $kunjungan) {
-                        // Batalkan kunjungan tanpa memicu observer (menghindari double notifikasi)
-                        $kunjungan->updateQuietly(['status' => 'REJECTED']);
+                        // Batalkan kunjungan tanpa memicu observer
+                        $kunjungan->updateQuietly(['status' => \App\Enums\KunjunganStatus::REJECTED]);
                         
                         // Dispatch job broadcast khusus pembatasan
                         \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
