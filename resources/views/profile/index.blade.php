@@ -307,25 +307,37 @@
             flex-shrink: 0;
         }
 
-        /* Format untuk Misi Khusus (List dengan ceklis biasa) */
-        .misi-list ul {
+        /* Format untuk Misi dengan Ordered List */
+        .misi-list ol {
             list-style: none !important;
             padding-left: 0 !important;
+            counter-reset: misi-counter;
         }
         .misi-list li {
             display: flex !important;
-            gap: 12px;
-            margin-bottom: 1rem !important;
+            gap: 16px;
+            margin-bottom: 1.25rem !important;
             align-items: flex-start;
+            counter-increment: misi-counter;
+            font-size: 1.0625rem;
+            line-height: 1.7;
         }
         .misi-list li::before {
-            content: "\f058";
-            font-family: "Font Awesome 6 Free";
+            content: counter(misi-counter);
+            font-family: inherit;
             font-weight: 900;
-            color: currentColor;
-            opacity: 0.8;
-            margin-top: 4px;
+            color: #f59e0b;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-center;
             flex-shrink: 0;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+            font-size: 1.125rem;
+            color: white;
         }
     </style>
 @endpush
@@ -596,7 +608,7 @@
                         <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Target Pencapaian</p>
                     </div>
                 </div>
-                <div class="relative z-10 text-slate-600 leading-relaxed font-medium institutional-content premium-list">
+                <div class="relative z-10">
                     {!! $institutional['tujuan'] ?? 'Mendukung Penegakan Hukum di Bidang Pemasyarakatan yang Bebas dari Korupsi, Bermartabat dan Terpercaya.' !!}
                 </div>
             </div>
@@ -614,7 +626,7 @@
                     </div>
                 </div>
                 
-                <div class="relative z-10 institutional-content premium-list-dark sasaran-grid">
+                <div class="relative z-10">
                     {!! $institutional['sasaran_program'] ?? 'Terwujudnya Penyelenggaraan Pemasyarakatan yang Berkualitas.' !!}
                 </div>
             </div>
@@ -631,7 +643,7 @@
 
             <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-10 md:p-16 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group">
                 <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z\' fill=\'%23f1f5f9\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'/%3E%3C/svg%3E')]"></div>
-                <div class="relative z-10 institutional-content premium-text">
+                <div class="relative z-10">
                     {!! $institutional['tugas_fungsi'] ?? 'Melaksanakan pemasyarakatan narapidana / anak didik.' !!}
                 </div>
             </div>
@@ -646,7 +658,7 @@
                 <div class="w-24 h-1.5 bg-gradient-to-r from-rose-400 to-rose-600 mx-auto rounded-full mt-6"></div>
             </div>
 
-            <div class="bg-gradient-to-b from-white to-slate-50 border border-slate-200 rounded-[3rem] p-10 md:p-16 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] institutional-content premium-rights-list relative overflow-hidden">
+            <div class="bg-gradient-to-b from-white to-slate-50 border border-slate-200 rounded-[3rem] p-10 md:p-16 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden">
                 <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 
