@@ -28,7 +28,7 @@ class WbpController extends Controller
 
         // Filter Status (Default: Aktif)
         $status = $request->get('status', 'Aktif');
-        $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang TPP'];
+        $restrictionTypes = ['Mapenaling', 'Strap Cell', 'Sidang'];
 
         if (in_array($status, $restrictionTypes)) {
             // Khusus untuk tab pembatasan, tampilkan hanya yang terkait
@@ -228,7 +228,7 @@ class WbpController extends Controller
         $request->validate([
             'ids' => 'required|array',
             'ids.*' => 'exists:wbps,id',
-            'type' => 'required|string|in:Mapenaling,Strap Cell,Sidang TPP,Lainnya',
+            'type' => 'required|string|in:Mapenaling,Strap Cell,Sidang,Lainnya',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'reason' => 'nullable|string'

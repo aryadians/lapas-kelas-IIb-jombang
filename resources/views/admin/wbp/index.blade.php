@@ -51,9 +51,9 @@
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Strap Cell' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Strap Cell
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang TPP', 'search' => request('search'), 'sort' => request('sort')]) }}" 
-            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang TPP' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
-            Sidang TPP
+        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
+            Sidang
         </a>
         <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Bebas' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
@@ -289,7 +289,7 @@
             </div>
             
             <div class="flex items-center gap-2">
-                @if(in_array($status, ['Mapenaling', 'Strap Cell', 'Sidang TPP']))
+                @if(in_array($status, ['Mapenaling', 'Strap Cell', 'Sidang']))
                 <button type="button" onclick="removeRestriction()"
                     class="group flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white font-black px-5 py-2.5 rounded-2xl transition-all hover:-translate-y-0.5 active:scale-95 shadow-lg shadow-emerald-500/20">
                     <i class="fas fa-unlock text-emerald-200 group-hover:scale-110 transition-transform"></i>
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <select id="swal-type" class="w-full border-2 border-slate-200 rounded-xl px-4 py-2.5 focus:border-indigo-500 outline-none">
                             <option value="Mapenaling">Mapenaling</option>
                             <option value="Strap Cell">Strap Cell</option>
-                            <option value="Sidang TPP">Sidang TPP</option>
+                            <option value="Sidang">Sidang</option>
                             <option value="Lainnya">Lainnya</option>
                         </select>
                     </div>

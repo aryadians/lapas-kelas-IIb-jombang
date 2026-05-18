@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('wbp_restrictions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('wbp_id')->constrained('wbps')->cascadeOnDelete();
-            $table->enum('type', ['Mapenaling', 'Strap Cell', 'Sidang TPP', 'Lainnya']);
+            $table->enum('type', ['Mapenaling', 'Strap Cell', 'Sidang', 'Lainnya']);
             $table->date('start_date');
             $table->date('end_date');
             $table->text('reason')->nullable();
