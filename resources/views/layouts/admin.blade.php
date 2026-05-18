@@ -134,6 +134,12 @@
                         </svg>
                         <span class="font-medium">Survey IKM</span>
                     </a>
+
+                    <a href="{{ route('admin.broadcast.index') }}"
+                       class="flex items-center px-4 py-3 {{ request()->routeIs('admin.broadcast.*') ? 'bg-rose-600 text-white shadow-lg shadow-rose-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                        <i class="fas fa-bullhorn w-5 h-5 mr-3 {{ request()->routeIs('admin.broadcast.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                        <span class="font-medium">Broadcast Darurat</span>
+                    </a>
                 </div>
                 @endif
 
