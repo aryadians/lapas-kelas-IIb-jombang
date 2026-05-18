@@ -42,6 +42,9 @@ class BroadcastController extends Controller
         $template = BroadcastTemplate::where('name', 'Emergency Closure')->first();
         $wa = new WhatsAppService();
 
+        $failed = [];
+        $sentCount = 0;
+
         foreach ($kunjungans as $kunjungan) {
             $data = [
                 '{nama}' => $kunjungan->nama_pengunjung,
@@ -49,14 +52,36 @@ class BroadcastController extends Controller
                 '{alasan}' => $request->alasan
             ];
             
+            // WA
             $waBody = strtr($template->whatsapp_body, $data);
-            $wa->sendMessage($kunjungan->no_wa_pengunjung, $waBody);
+            $waResponse = $wa->sendMessage($kunjungan->no_wa_pengunjung, $waBody);
             
+            $waSuccess = $waResponse && method_exists($waResponse, 'successful') && $waResponse->successful();
+            
+            // Email
+            $emailSuccess = false;
             if ($kunjungan->email_pengunjung) {
-                $emailBody = strtr($template->email_body, $data);
-                Mail::to($kunjungan->email_pengunjung)->send(new BroadcastMail($template->email_subject, $emailBody));
+                try {
+                    $emailBody = strtr($template->email_body, $data);
+                    Mail::to($kunjungan->email_pengunjung)->send(new BroadcastMail($template->email_subject, $emailBody));
+                    $emailSuccess = true;
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Broadcast Email Gagal ke " . $kunjungan->email_pengunjung . ": " . $e->getMessage());
+                }
+            }
+
+            if ($waSuccess || $emailSuccess) {
+                $sentCount++;
+            } else {
+                $failed[] = $kunjungan->nama_pengunjung . " (" . $kunjungan->no_wa_pengunjung . ")";
             }
         }
-        return redirect()->back()->with('success', 'Broadcast telah dikirim ke ' . $kunjungans->count() . ' pengunjung.');
+
+        $message = "Broadcast telah dikirim ke $sentCount pengunjung.";
+        if (!empty($failed)) {
+            $message .= " Gagal ke: " . implode(', ', $failed);
+        }
+        
+        return redirect()->back()->with('success', $message);
     }
 }
