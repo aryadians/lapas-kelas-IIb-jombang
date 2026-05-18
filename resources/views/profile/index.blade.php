@@ -214,8 +214,58 @@
             font-size: 1.125rem;
             line-height: 1.8;
             color: #475569;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: 500;
+        }
+
+        .premium-text strong {
+            color: #1e293b;
+            font-weight: 900;
+        }
+
+        .premium-text ul {
+            list-style: none !important;
+            padding-left: 0 !important;
+            margin-top: 1.5rem;
+        }
+
+        .premium-text li {
+            padding: 1rem 1.25rem !important;
+            background: #f8fafc;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem !important;
+            display: flex !important;
+            gap: 12px;
+            align-items: flex-start;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+
+        .premium-text li:hover {
+            background: #eff6ff;
+            transform: translateX(5px);
+        }
+
+        .premium-text li::before {
+            content: "\f0a4";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #3b82f6;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .premium-rights-list p {
+            font-size: 1.0625rem;
+            line-height: 1.75;
+            color: #475569;
+            margin-bottom: 1.25rem;
+        }
+
+        .premium-rights-list em {
+            color: #64748b;
+            font-style: italic;
+            font-size: 0.95em;
         }
 
         .premium-rights-list h3,
@@ -587,12 +637,12 @@
             </div>
         </div>
 
-        {{-- Hak & Kewajiban WBP --}}
+        {{-- Hak & Kewajiban Klien Pemasyarakatan --}}
         <div class="mt-24 mb-10" data-aos="fade-up">
             <div class="text-center mb-12">
-                <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest border border-rose-100 mb-4">Informasi Publik</span>
-                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Hak & Kewajiban WBP</h3>
-                <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-medium text-lg">Informasi resmi mengenai hak dan kewajiban Warga Binaan Pemasyarakatan (WBP) selama menjalani masa pidana.</p>
+                <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest border border-rose-100 mb-4">UU No. 22 Tahun 2022</span>
+                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Hak & Kewajiban Klien Pemasyarakatan</h3>
+                <p class="text-slate-500 mt-4 max-w-3xl mx-auto font-medium text-lg">Informasi resmi mengenai hak dan kewajiban Klien Pemasyarakatan berdasarkan Undang-Undang Nomor 22 Tahun 2022 tentang Pemasyarakatan.</p>
                 <div class="w-24 h-1.5 bg-gradient-to-r from-rose-400 to-rose-600 mx-auto rounded-full mt-6"></div>
             </div>
 
@@ -601,7 +651,7 @@
                 <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban WBP.' !!}
+                    {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban Klien Pemasyarakatan.' !!}
                 </div>
             </div>
         </div>
