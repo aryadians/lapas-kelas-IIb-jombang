@@ -26,11 +26,15 @@ class InstitutionalInfoController extends Controller
             'content' => 'required|string',
         ]);
 
-        $institutional->update([
-            'title' => $request->title,
-            'content' => $request->content,
-        ]);
+        try {
+            $institutional->update([
+                'title' => $request->title,
+                'content' => $request->content,
+            ]);
 
-        return redirect()->route('admin.institutional.index')->with('success', 'Informasi lembaga berhasil diperbarui.');
+            return redirect()->route('admin.institutional.index')->with('success', "Informasi '{$institutional->title}' berhasil diperbarui dan sudah live!");
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage())->withInput();
+        }
     }
 }

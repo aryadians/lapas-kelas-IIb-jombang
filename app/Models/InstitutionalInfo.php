@@ -15,4 +15,17 @@ class InstitutionalInfo extends Model
         'content',
         'type'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($info) {
+            \Illuminate\Support\Facades\Cache::forget('institutional_info');
+        });
+
+        static::deleted(function ($info) {
+            \Illuminate\Support\Facades\Cache::forget('institutional_info');
+        });
+    }
 }

@@ -125,7 +125,9 @@ class HomeController extends Controller
         $eselon4 = \App\Models\Pegawai::where('level', 'eselon_4')->orderBy('order_index')->get();
         $eselon5 = \App\Models\Pegawai::where('level', 'eselon_5')->orderBy('order_index')->get();
 
-        $institutional = \App\Models\InstitutionalInfo::pluck('content', 'key');
+        $institutional = \Illuminate\Support\Facades\Cache::rememberForever('institutional_info', function() {
+            return \App\Models\InstitutionalInfo::pluck('content', 'key');
+        });
 
         return view('profile.index', compact('kalapas', 'eselon4', 'eselon5', 'institutional'));
     }
