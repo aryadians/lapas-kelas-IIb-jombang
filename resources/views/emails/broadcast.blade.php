@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html>
+<head><style>body { font-family: sans-serif; }</style></head>
+<body>
+    {!! $body !!}
+</body>
+</html>

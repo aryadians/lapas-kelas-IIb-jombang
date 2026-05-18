@@ -126,6 +126,13 @@ Route::get('/api/profil-by-nik/{nik}', [KunjunganController::class, 'findProfilB
 // [PENTING] API Search WBP untuk Select2 di Formulir Pendaftaran
 Route::get('/api/search-wbp', [KunjunganController::class, 'searchWbp'])->name('api.search.wbp');
 
+// Admin Broadcast Routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/broadcast', [App\Http\Controllers\Admin\BroadcastController::class, 'index'])->name('broadcast.index');
+    Route::put('/broadcast/{template}', [App\Http\Controllers\Admin\BroadcastController::class, 'update'])->name('broadcast.update');
+    Route::post('/broadcast/send', [App\Http\Controllers\Admin\BroadcastController::class, 'send'])->name('broadcast.send');
+});
+
 // API PUBLIK UNTUK ANTRIAN
 Route::get('/api/antrian/status', [AntrianController::class, 'getStatus'])->name('api.antrian.status');
 
