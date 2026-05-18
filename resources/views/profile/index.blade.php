@@ -312,6 +312,7 @@
             list-style: none !important;
             padding-left: 0 !important;
             counter-reset: misi-counter;
+            display: block !important;
         }
         .misi-list li {
             display: flex !important;
@@ -321,23 +322,24 @@
             counter-increment: misi-counter;
             font-size: 1.0625rem;
             line-height: 1.7;
+            color: #475569;
         }
         .misi-list li::before {
             content: counter(misi-counter);
             font-family: inherit;
             font-weight: 900;
-            color: #f59e0b;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             width: 36px;
             height: 36px;
             border-radius: 12px;
             display: flex;
             align-items: center;
-            justify-center;
+            justify-content: center;
             flex-shrink: 0;
             box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
             font-size: 1.125rem;
             color: white;
+        }
         }
     </style>
 @endpush
@@ -649,12 +651,12 @@
             </div>
         </div>
 
-        {{-- Hak & Kewajiban Klien Pemasyarakatan --}}
+        {{-- Hak & Kewajiban Warga Binaan Pemasyarakatan --}}
         <div class="mt-24 mb-10" data-aos="fade-up">
             <div class="text-center mb-12">
                 <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest border border-rose-100 mb-4">UU No. 22 Tahun 2022</span>
-                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Hak & Kewajiban Klien Pemasyarakatan</h3>
-                <p class="text-slate-500 mt-4 max-w-3xl mx-auto font-medium text-lg">Informasi resmi mengenai hak dan kewajiban Klien Pemasyarakatan berdasarkan Undang-Undang Nomor 22 Tahun 2022 tentang Pemasyarakatan.</p>
+                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Hak & Kewajiban Warga Binaan Pemasyarakatan</h3>
+                <p class="text-slate-500 mt-4 max-w-3xl mx-auto font-medium text-lg">Informasi resmi mengenai hak dan kewajiban Warga Binaan Pemasyarakatan berdasarkan Undang-Undang Nomor 22 Tahun 2022 tentang Pemasyarakatan.</p>
                 <div class="w-24 h-1.5 bg-gradient-to-r from-rose-400 to-rose-600 mx-auto rounded-full mt-6"></div>
             </div>
 
@@ -663,7 +665,7 @@
                 <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban Klien Pemasyarakatan.' !!}
+                    {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban Warga Binaan Pemasyarakatan.' !!}
                 </div>
             </div>
         </div>
