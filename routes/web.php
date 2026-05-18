@@ -298,6 +298,9 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_humas'])->group(f
     // Pengumuman
     Route::resource('announcements', AdminAnnouncementController::class);
 
+    // Profil Lembaga (Visi, Misi, dll)
+    Route::resource('institutional', \App\Http\Controllers\Admin\InstitutionalInfoController::class)->names('admin.institutional');
+
     // Produk
     Route::resource('products', AdminProductController::class)->names('admin.products');
 

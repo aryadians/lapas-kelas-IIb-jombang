@@ -134,13 +134,15 @@ class RegistrationValidationService
         }
 
         // Cek Batasan WBP (Harian)
-        $wbpVisitCountDay = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
-            ->where('tanggal_kunjungan', $dateStr)
-            ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
-            ->count();
+        if ($limitWbpDay > 0) {
+            $wbpVisitCountDay = Kunjungan::where('wbp_id', $validatedData['wbp_id'])
+                ->where('tanggal_kunjungan', $dateStr)
+                ->whereIn('status', [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::COMPLETED])
+                ->count();
 
-        if ($wbpVisitCountDay >= $limitWbpDay) {
-            return $this->error('global', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbpDay kali) pada hari tersebut.");
+            if ($wbpVisitCountDay >= $limitWbpDay) {
+                return $this->error('global', "Warga Binaan ini sudah mencapai batas maksimal dikunjungi ($limitWbpDay kali) pada hari tersebut.");
+            }
         }
 
         // Cek Batasan NIK

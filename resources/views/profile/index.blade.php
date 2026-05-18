@@ -85,6 +85,43 @@
             height: 100%;
             border: 0;
         }
+
+        /* --- 4. INSTITUTIONAL CONTENT STYLE --- */
+        .institutional-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .institutional-list li {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+        .institutional-list li::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: currentColor;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .institutional-content h3 {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #1e293b;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .institutional-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .institutional-content li {
+            margin-bottom: 0.75rem;
+        }
     </style>
 @endpush
 {{-- ================================================================= --}}
@@ -304,8 +341,8 @@
                     </div>
                     <h3 class="text-3xl font-black text-yellow-400 tracking-tight">Visi</h3>
                 </div>
-                <p class="text-lg text-blue-50 leading-relaxed relative z-10">
-                    Masyarakat memperoleh kepastian hukum. (Contoh Visi Kemenkumham/Kemenimipas, silakan sesuaikan dengan Visi Satker Anda).
+                <p class="text-lg text-blue-50 leading-relaxed relative z-10 font-bold italic">
+                    "{{ $institutional['visi'] ?? 'Terwujudnya Pemasyarakatan yang Profesional dalam Mendukung Penegakan Hukum Berbasis Hak Asasi Manusia yang Berkeadilan untuk Mewujudkan Indonesia Maju yang Berdaulat, Mandiri dan Berkepribadian, berlandaskan Gotong Royong' }}"
                 </p>
             </div>
 
@@ -318,20 +355,37 @@
                     </div>
                     <h3 class="text-3xl font-black tracking-tight">Misi</h3>
                 </div>
-                <ul class="space-y-4 text-base md:text-lg font-medium relative z-10">
-                    <li class="flex gap-3">
-                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
-                        <span>Melindungi Hak Asasi Manusia.</span>
-                    </li>
-                    <li class="flex gap-3">
-                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
-                        <span>Mewujudkan Pemasyarakatan yang bersih dan melayani.</span>
-                    </li>
-                    <li class="flex gap-3">
-                        <i class="fas fa-check-circle mt-1 opacity-80"></i>
-                        <span>Meningkatkan pembinaan kepribadian dan kemandirian.</span>
-                    </li>
-                </ul>
+                <div class="space-y-4 text-base md:text-lg font-bold relative z-10 institutional-list">
+                    {!! $institutional['misi'] ?? '<ul><li>Melindungi Hak Asasi Manusia.</li><li>Mewujudkan Pemasyarakatan yang bersih dan melayani.</li><li>Meningkatkan pembinaan kepribadian dan kemandirian.</li></ul>' !!}
+                </div>
+            </div>
+        </div>
+
+        {{-- Tujuan --}}
+        <div class="mb-24" data-aos="fade-up">
+            <div class="bg-white border-2 border-slate-100 rounded-[2.5rem] p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl"></div>
+                <div class="flex items-center gap-4 mb-8 relative z-10">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-bullseye text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">Tujuan</h3>
+                </div>
+                <div class="relative z-10 text-slate-600 leading-relaxed text-sm md:text-base font-medium institutional-content">
+                    {!! $institutional['tujuan'] ?? 'Mendukung Penegakan Hukum di Bidang Pemasyarakatan yang Bebas dari Korupsi, Bermartabat dan Terpercaya.' !!}
+                </div>
+            </div>
+        </div>
+
+        {{-- Sasaran Program --}}
+        <div class="mb-24" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Sasaran Program</h3>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+            
+            <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl institutional-content sasaran-grid">
+                {!! $institutional['sasaran_program'] ?? 'Terwujudnya Penyelenggaraan Pemasyarakatan yang Berkualitas.' !!}
             </div>
         </div>
 
@@ -343,30 +397,8 @@
                 <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-blue-300 transition-all duration-300 group cursor-pointer">
-                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-slate-800 mb-3">Keamanan & Ketertiban</h4>
-                    <p class="text-slate-600 text-sm leading-relaxed">Melakukan pencegahan dan penindakan gangguan keamanan serta menjaga ketertiban di lingkungan Lapas.</p>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-yellow-300 transition-all duration-300 group cursor-pointer">
-                    <div class="w-16 h-16 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-yellow-500 group-hover:text-white transition-all">
-                        <i class="fas fa-hands-helping"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-slate-800 mb-3">Pembinaan Narapidana</h4>
-                    <p class="text-slate-600 text-sm leading-relaxed">Memberikan bimbingan kepribadian, mental, rohani, serta bimbingan kerja (kemandirian) kepada warga binaan.</p>
-                </div>
-
-                <div class="bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 group cursor-pointer">
-                    <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                        <i class="fas fa-folder-open"></i>
-                    </div>
-                    <h4 class="text-xl font-bold text-slate-800 mb-3">Administrasi & Perawatan</h4>
-                    <p class="text-slate-600 text-sm leading-relaxed">Melaksanakan tata usaha, kepegawaian, keuangan, perlengkapan, serta pelayanan kesehatan narapidana dan tahanan.</p>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-lg institutional-content">
+                {!! $institutional['tugas_fungsi'] ?? 'Melaksanakan pemasyarakatan narapidana / anak didik.' !!}
             </div>
         </div>
 
@@ -378,76 +410,8 @@
                 <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {{-- Hak WBP --}}
-                <div class="bg-gradient-to-br from-emerald-50 to-green-100 rounded-[2rem] p-8 md:p-10 border border-emerald-200 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl -mt-10 -mr-10"></div>
-                    <div class="flex items-center gap-4 mb-6 relative z-10">
-                        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <i class="fas fa-hand-holding-heart text-2xl text-white"></i>
-                        </div>
-                        <h3 class="text-2xl md:text-3xl font-black text-emerald-900 tracking-tight">Hak WBP</h3>
-                    </div>
-                    <ul class="space-y-4 text-slate-700 relative z-10 font-medium">
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Menjalankan ibadah sesuai dengan agama dan kepercayaannya.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Mendapat perawatan jasmani dan rohani.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Mendapat pendidikan, pengajaran, dan kegiatan rekreasional.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Mendapatkan pelayanan kesehatan dan makanan yang layak.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Menerima kunjungan dari keluarga, advokat, atau pihak lain.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-check text-emerald-600 mt-1"></i>
-                            <span>Mendapatkan pengurangan masa pidana (Remisi), Asimilasi, Cuti, dan Pembebasan Bersyarat (PB) sesuai syarat yang berlaku.</span>
-                        </li>
-                    </ul>
-                </div>
-
-                {{-- Kewajiban WBP --}}
-                <div class="bg-gradient-to-br from-red-50 to-orange-100 rounded-[2rem] p-8 md:p-10 border border-red-200 shadow-xl relative overflow-hidden group hover:-translate-y-2 transition-all duration-300">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-2xl -mt-10 -mr-10"></div>
-                    <div class="flex items-center gap-4 mb-6 relative z-10">
-                        <div class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <i class="fas fa-clipboard-list text-2xl text-white"></i>
-                        </div>
-                        <h3 class="text-2xl md:text-3xl font-black text-red-900 tracking-tight">Kewajiban WBP</h3>
-                    </div>
-                    <ul class="space-y-4 text-slate-700 relative z-10 font-medium">
-                        <li class="flex gap-3">
-                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
-                            <span>Menaati tata tertib dan peraturan yang berlaku di dalam Lapas.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
-                            <span>Mengikuti program pembinaan yang diselenggarakan.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
-                            <span>Menjaga kebersihan, keamanan, dan ketertiban lingkungan Lapas.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
-                            <span>Menghormati hak asasi petugas dan sesama Warga Binaan.</span>
-                        </li>
-                        <li class="flex gap-3">
-                            <i class="fas fa-exclamation-circle text-red-600 mt-1"></i>
-                            <span>Memelihara fasilitas, sarana, dan prasarana yang ada di dalam Lapas.</span>
-                        </li>
-                    </ul>
-                </div>
+            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-lg institutional-content">
+                {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban WBP.' !!}
             </div>
         </div>
 

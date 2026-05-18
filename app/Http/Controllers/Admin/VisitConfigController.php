@@ -32,7 +32,7 @@ class VisitConfigController extends Controller
             'schedules.*.allowed_kode_tahanan.*' => 'string',
             'limit_nik_per_week' => 'required|integer|min:1',
             'limit_wbp_per_week' => 'required|integer|min:1',
-            'limit_wbp_per_day' => 'required|integer|min:1',
+            'limit_wbp_per_day' => 'required|integer|min:0',
             'registration_lead_time' => 'required|integer|min:0',
             'edit_lead_time' => 'required|integer|min:0',
             'max_followers_allowed' => 'required|integer|min:0',
