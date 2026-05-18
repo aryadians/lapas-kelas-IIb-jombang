@@ -114,13 +114,117 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-        .institutional-content ul {
-            list-style-type: disc;
-            padding-left: 1.5rem;
-            margin-bottom: 1.5rem;
+        
+        .premium-list ul {
+            list-style: none;
+            padding-left: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
-        .institutional-content li {
+        .premium-list li {
+            background: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+        .premium-list li:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border-color: #34d399;
+            background: #ffffff;
+        }
+        .premium-list li::before {
+            content: "\f00c";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #10b981;
+            margin-top: 2px;
+            font-size: 1.1rem;
+        }
+
+        .premium-list-dark h3 {
+            color: #ffffff;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        .premium-list-dark ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 2rem;
+        }
+        .premium-list-dark li {
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            color: #cbd5e1;
+            transition: all 0.3s ease;
+        }
+        .premium-list-dark li:hover {
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+        .premium-list-dark li::before {
+            content: "\f192";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #6366f1;
+            margin-top: 3px;
+        }
+        .sasaran-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .premium-text p {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .premium-rights-list h3 {
+            font-size: 1.5rem;
+            color: #9f1239;
+        }
+        .premium-rights-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .premium-rights-list li {
+            padding: 1rem;
+            background: white;
+            border-radius: 1rem;
             margin-bottom: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            transition: transform 0.3s ease;
+            border-left: 4px solid #f43f5e;
+        }
+        .premium-rights-list li:hover {
+            transform: scale(1.02);
+        }
+        .premium-rights-list li::before {
+            content: "\f06a";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #f43f5e;
+            margin-top: 2px;
         }
     </style>
 @endpush
@@ -331,87 +435,123 @@
         </div>
 
         {{-- Visi & Misi --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
             {{-- Visi --}}
-            <div class="bg-gradient-to-br from-blue-900 to-slate-900 rounded-[2rem] p-10 text-white shadow-xl relative overflow-hidden" data-aos="fade-right">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-2xl -mt-10 -mr-10"></div>
-                <div class="flex items-center gap-4 mb-6 relative z-10">
-                    <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <i class="fas fa-eye text-2xl text-blue-300"></i>
+            <div class="group relative bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 rounded-[2.5rem] p-10 md:p-12 text-white shadow-2xl overflow-hidden hover:-translate-y-2 transition-all duration-500" data-aos="fade-right">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] group-hover:bg-blue-400/30 transition-colors duration-700"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
+                
+                <div class="flex flex-col h-full relative z-10">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                            <i class="fas fa-eye text-3xl text-blue-300 drop-shadow-md"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 tracking-tight drop-shadow-sm">VISI</h3>
+                            <p class="text-[10px] uppercase tracking-[0.3em] text-blue-200 font-bold mt-1 opacity-80">Arah & Pandangan</p>
+                        </div>
                     </div>
-                    <h3 class="text-3xl font-black text-yellow-400 tracking-tight">Visi</h3>
+                    <div class="flex-grow flex items-center">
+                        <p class="text-xl md:text-2xl text-blue-50 leading-relaxed font-semibold italic drop-shadow-md">
+                            "{{ $institutional['visi'] ?? 'Terwujudnya Pemasyarakatan yang Profesional dalam Mendukung Penegakan Hukum Berbasis Hak Asasi Manusia yang Berkeadilan untuk Mewujudkan Indonesia Maju yang Berdaulat, Mandiri dan Berkepribadian, berlandaskan Gotong Royong' }}"
+                        </p>
+                    </div>
                 </div>
-                <p class="text-lg text-blue-50 leading-relaxed relative z-10 font-bold italic">
-                    "{{ $institutional['visi'] ?? 'Terwujudnya Pemasyarakatan yang Profesional dalam Mendukung Penegakan Hukum Berbasis Hak Asasi Manusia yang Berkeadilan untuk Mewujudkan Indonesia Maju yang Berdaulat, Mandiri dan Berkepribadian, berlandaskan Gotong Royong' }}"
-                </p>
             </div>
 
             {{-- Misi --}}
-            <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-[2rem] p-10 text-slate-900 shadow-xl relative overflow-hidden" data-aos="fade-left">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mt-10 -mr-10"></div>
-                <div class="flex items-center gap-4 mb-6 relative z-10">
-                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                        <i class="fas fa-bullseye text-2xl text-slate-900"></i>
+            <div class="group relative bg-white rounded-[2.5rem] p-10 md:p-12 text-slate-800 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] border border-slate-100 overflow-hidden hover:-translate-y-2 transition-all duration-500" data-aos="fade-left">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[80px] group-hover:bg-amber-400/20 transition-colors duration-700"></div>
+                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
+
+                <div class="flex flex-col h-full relative z-10">
+                    <div class="flex items-center gap-5 mb-8">
+                        <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+                            <i class="fas fa-bullseye text-3xl text-white drop-shadow-md"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-4xl font-black text-slate-800 tracking-tight">MISI</h3>
+                            <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold mt-1">Langkah Strategis</p>
+                        </div>
                     </div>
-                    <h3 class="text-3xl font-black tracking-tight">Misi</h3>
-                </div>
-                <div class="space-y-4 text-base md:text-lg font-bold relative z-10 institutional-list">
-                    {!! $institutional['misi'] ?? '<ul><li>Melindungi Hak Asasi Manusia.</li><li>Mewujudkan Pemasyarakatan yang bersih dan melayani.</li><li>Meningkatkan pembinaan kepribadian dan kemandirian.</li></ul>' !!}
+                    <div class="flex-grow institutional-list">
+                        {!! $institutional['misi'] ?? '<ul><li>Melindungi Hak Asasi Manusia.</li><li>Mewujudkan Pemasyarakatan yang bersih dan melayani.</li><li>Meningkatkan pembinaan kepribadian dan kemandirian.</li></ul>' !!}
+                    </div>
                 </div>
             </div>
         </div>
 
-        {{-- Tujuan --}}
-        <div class="mb-24" data-aos="fade-up">
-            <div class="bg-white border-2 border-slate-100 rounded-[2.5rem] p-10 shadow-xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 rounded-full blur-3xl"></div>
-                <div class="flex items-center gap-4 mb-8 relative z-10">
-                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        <i class="fas fa-bullseye text-2xl text-white"></i>
+        {{-- Tujuan & Sasaran Program --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-24">
+            {{-- Tujuan --}}
+            <div class="bg-white border border-slate-100 rounded-[2.5rem] p-10 shadow-[0_15px_40px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden group" data-aos="fade-up">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-50 rounded-full blur-3xl"></div>
+                <div class="flex items-center gap-4 mb-8 relative z-10 border-b border-slate-100 pb-6">
+                    <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+                        <i class="fas fa-flag-checkered text-2xl"></i>
                     </div>
-                    <h3 class="text-3xl font-black text-slate-800 tracking-tight">Tujuan</h3>
+                    <div>
+                        <h3 class="text-3xl font-black text-slate-800 tracking-tight">Tujuan</h3>
+                        <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Target Pencapaian</p>
+                    </div>
                 </div>
-                <div class="relative z-10 text-slate-600 leading-relaxed text-sm md:text-base font-medium institutional-content">
+                <div class="relative z-10 text-slate-600 leading-relaxed font-medium institutional-content premium-list">
                     {!! $institutional['tujuan'] ?? 'Mendukung Penegakan Hukum di Bidang Pemasyarakatan yang Bebas dari Korupsi, Bermartabat dan Terpercaya.' !!}
                 </div>
             </div>
-        </div>
 
-        {{-- Sasaran Program --}}
-        <div class="mb-24" data-aos="fade-up">
-            <div class="text-center mb-12">
-                <h3 class="text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Sasaran Program</h3>
-                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-            
-            <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 shadow-xl institutional-content sasaran-grid">
-                {!! $institutional['sasaran_program'] ?? 'Terwujudnya Penyelenggaraan Pemasyarakatan yang Berkualitas.' !!}
+            {{-- Sasaran Program --}}
+            <div class="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden group" data-aos="fade-up" data-aos-delay="100">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
+                <div class="flex items-center gap-4 mb-8 relative z-10 border-b border-slate-700 pb-6">
+                    <div class="w-14 h-14 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-indigo-500 group-hover:text-white transition-colors duration-300">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black text-white tracking-tight">Sasaran Program</h3>
+                        <p class="text-xs text-indigo-300/70 font-bold uppercase tracking-widest mt-1">Indikator Kinerja</p>
+                    </div>
+                </div>
+                
+                <div class="relative z-10 institutional-content premium-list-dark sasaran-grid">
+                    {!! $institutional['sasaran_program'] ?? 'Terwujudnya Penyelenggaraan Pemasyarakatan yang Berkualitas.' !!}
+                </div>
             </div>
         </div>
 
         {{-- Tugas & Fungsi --}}
-        <div data-aos="fade-up">
-            <div class="text-center mb-10">
-                <h3 class="text-3xl md:text-4xl font-black text-slate-800">Tugas & Fungsi</h3>
-                <p class="text-slate-500 mt-3 max-w-2xl mx-auto">Sesuai dengan peraturan perundang-undangan yang berlaku dalam sistem Pemasyarakatan.</p>
-                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+        <div class="mb-24" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest border border-blue-100 mb-4">Core Business</span>
+                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Tugas & Fungsi</h3>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-medium text-lg">Sesuai dengan peraturan perundang-undangan yang berlaku dalam sistem Pemasyarakatan.</p>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-6"></div>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-lg institutional-content">
-                {!! $institutional['tugas_fungsi'] ?? 'Melaksanakan pemasyarakatan narapidana / anak didik.' !!}
+            <div class="bg-white border-2 border-slate-100 rounded-[3rem] p-10 md:p-16 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] relative overflow-hidden group">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v20h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z\' fill=\'%23f1f5f9\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'/%3E%3C/svg%3E')]"></div>
+                <div class="relative z-10 institutional-content premium-text">
+                    {!! $institutional['tugas_fungsi'] ?? 'Melaksanakan pemasyarakatan narapidana / anak didik.' !!}
+                </div>
             </div>
         </div>
 
         {{-- Hak & Kewajiban WBP --}}
-        <div class="mt-24" data-aos="fade-up">
-            <div class="text-center mb-10">
-                <h3 class="text-3xl md:text-4xl font-black text-slate-800">Hak & Kewajiban WBP</h3>
-                <p class="text-slate-500 mt-3 max-w-2xl mx-auto">Informasi mengenai hak dan kewajiban Warga Binaan Pemasyarakatan (WBP) selama menjalani masa pidana.</p>
-                <div class="w-24 h-1.5 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto rounded-full mt-4"></div>
+        <div class="mt-24 mb-10" data-aos="fade-up">
+            <div class="text-center mb-12">
+                <span class="inline-block px-4 py-1.5 rounded-full bg-rose-50 text-rose-600 text-xs font-black uppercase tracking-widest border border-rose-100 mb-4">Informasi Publik</span>
+                <h3 class="text-4xl md:text-5xl font-black text-slate-800 tracking-tight">Hak & Kewajiban WBP</h3>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto font-medium text-lg">Informasi resmi mengenai hak dan kewajiban Warga Binaan Pemasyarakatan (WBP) selama menjalani masa pidana.</p>
+                <div class="w-24 h-1.5 bg-gradient-to-r from-rose-400 to-rose-600 mx-auto rounded-full mt-6"></div>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-10 shadow-lg institutional-content">
-                {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban WBP.' !!}
+            <div class="bg-gradient-to-b from-white to-slate-50 border border-slate-200 rounded-[3rem] p-10 md:p-16 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] institutional-content premium-rights-list relative overflow-hidden">
+                <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10">
+                    {!! $institutional['hak_kewajiban'] ?? 'Informasi hak dan kewajiban WBP.' !!}
+                </div>
             </div>
         </div>
 
