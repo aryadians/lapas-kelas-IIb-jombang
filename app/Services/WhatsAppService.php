@@ -130,22 +130,43 @@ class WhatsAppService
         $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
         $isTahanan = str_starts_with($wbpCode, 'A');
         $isNarapidana = str_starts_with($wbpCode, 'B');
+        $antrian = (int) $kunjungan->nomor_antrian_harian;
         
         $kategoriKunjungan = "Pendaftaran Kunjungan";
         if ($isTahanan) $kategoriKunjungan = "Pendaftaran Kunjungan Tahanan";
         elseif ($isNarapidana) $kategoriKunjungan = "Pendaftaran Kunjungan Narapidana";
+
+        // Tentukan Jam Kedatangan
+        $jamDatang = "";
+        if ($antrian >= 1 && $antrian <= 60) {
+            $jamDatang = "08:30 - 09:00 WIB";
+        } elseif ($antrian >= 61 && $antrian <= 120) {
+            $jamDatang = "09:00 - 09:30 WIB";
+        } elseif ($antrian >= 121 && $antrian <= 200) {
+            $jamDatang = "09:30 - 10:00 WIB";
+        }
         
         $message = "*{$kategoriKunjungan} BERHASIL* ⏳\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
-                 . "Pendaftaran kunjungan Anda telah kami terima.\n\n"
+                 . "Pendaftaran kunjungan Anda telah kami terima dan sedang dalam antrian verifikasi.\n\n"
                  . "📋 Kode: *{$kunjungan->kode_kunjungan}*\n"
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
+                 . "🔢 Estimasi Antrian: *{$kunjungan->nomor_antrian_harian}*\n"
+                 . "⏰ Estimasi Jam: *{$jamDatang}*\n"
                  . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
-                 . "Lihat Status: {$statusUrl}\n\n"
-                 . "Mohon tunggu verifikasi petugas. Wajib membawa *KTP ASLI* saat berkunjung.";
+                 . "⚠️ *INFO PENTING:* ⚠️\n"
+                 . "1. Wajib membawa *KTP ASLI* saat berkunjung.\n";
 
-        // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
+        if ($isTahanan) {
+            $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
+        }
+
+        $message .= "3. Mohon tunggu notifikasi verifikasi selanjutnya melalui WhatsApp ini.\n\n"
+                 . "Lihat Status Lengkap: {$statusUrl}\n\n"
+                 . "Simpan pesan ini sebagai bukti pendaftaran sementara.";
+
+        // Kirim pesan
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
 
