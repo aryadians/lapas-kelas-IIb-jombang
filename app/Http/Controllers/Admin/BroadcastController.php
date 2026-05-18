@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BroadcastTemplate;
 use App\Models\Kunjungan;
+use App\Models\BroadcastLog;
+use App\Models\BroadcastFailedLog;
 use App\Services\WhatsAppService;
 use App\Mail\BroadcastMail;
 use Illuminate\Http\Request;
@@ -22,7 +24,8 @@ class BroadcastController extends Controller
                 'email_body' => "<p>Halo <strong>{nama}</strong>,</p><p>Mohon maaf, kunjungan tanggal <strong>{tanggal}</strong> dibatalkan mendadak dikarenakan <strong>{alasan}</strong>.</p>"
             ]
         );
-        return view('admin.broadcast.index', compact('template'));
+        $logs = BroadcastLog::latest()->get();
+        return view('admin.broadcast.index', compact('template', 'logs'));
     }
 
     public function update(Request $request, BroadcastTemplate $template)
@@ -42,8 +45,8 @@ class BroadcastController extends Controller
         $template = BroadcastTemplate::where('name', 'Emergency Closure')->first();
         $wa = new WhatsAppService();
 
-        $failed = [];
         $sentCount = 0;
+        $failedList = [];
 
         foreach ($kunjungans as $kunjungan) {
             $data = [
@@ -73,15 +76,25 @@ class BroadcastController extends Controller
             if ($waSuccess || $emailSuccess) {
                 $sentCount++;
             } else {
-                $failed[] = $kunjungan->nama_pengunjung . " (" . $kunjungan->no_wa_pengunjung . ")";
+                $failedList[] = [
+                    'name' => $kunjungan->nama_pengunjung,
+                    'phone' => $kunjungan->no_wa_pengunjung,
+                    'email' => $kunjungan->email_pengunjung
+                ];
             }
         }
 
-        $message = "Broadcast telah dikirim ke $sentCount pengunjung.";
-        if (!empty($failed)) {
-            $message .= " Gagal ke: " . implode(', ', $failed);
+        $log = BroadcastLog::create([
+            'target_date' => $request->tanggal,
+            'reason' => $request->alasan,
+            'sent_count' => $sentCount,
+            'failed_count' => count($failedList)
+        ]);
+
+        foreach ($failedList as $fail) {
+            BroadcastFailedLog::create(array_merge($fail, ['broadcast_log_id' => $log->id]));
         }
         
-        return redirect()->back()->with('success', $message);
+        return redirect()->back()->with('success', 'Broadcast selesai dikirim. Berhasil: ' . $sentCount . ', Gagal: ' . count($failedList));
     }
 }
