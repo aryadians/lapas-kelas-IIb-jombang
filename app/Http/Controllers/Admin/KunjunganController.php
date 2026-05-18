@@ -162,10 +162,10 @@ class KunjunganController extends Controller
                 if ($status === KunjunganStatus::COMPLETED) {
                     \App\Jobs\SendWhatsAppCompletedNotification::dispatch($kunjungan);
                 } elseif ($status === KunjunganStatus::PENDING) {
-                    $qrUrl = $kunjungan->barcode ?: \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
+                    $qrUrl = \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
                     \App\Jobs\SendWhatsAppPendingNotification::dispatch($kunjungan, $qrUrl);
                 } elseif (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
-                    $qrUrl = $kunjungan->barcode ?: \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
+                    $qrUrl = \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
                     \App\Jobs\SendWhatsAppApprovedNotification::dispatch($kunjungan, $qrUrl);
                 } elseif ($status === KunjunganStatus::REJECTED) {
                     \App\Jobs\SendWhatsAppRejectedNotification::dispatch($kunjungan);
