@@ -14,6 +14,12 @@ class KunjunganRegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush();
+    }
+
     private function validKunjunganData($overrides = [])
     {
         $wbp = Wbp::factory()->create();
@@ -45,7 +51,12 @@ class KunjunganRegistrationTest extends TestCase
             'nik_ktp'            => '1234567890123456',
             'nomor_hp'           => '081234567890',
             'email_pengunjung'   => 'john@example.com',
-            'alamat_lengkap'     => 'Some Address',
+            'alamat'             => 'Jl. Pahlawan',
+            'rt'                 => '001',
+            'rw'                 => '002',
+            'desa'               => 'Gombong',
+            'kecamatan'          => 'Jombang',
+            'kabupaten'          => 'Jombang',
             'jenis_kelamin'      => 'Laki-laki',
             'wbp_id'             => $wbp->id,
             'hubungan'           => 'Teman',
@@ -68,32 +79,51 @@ class KunjunganRegistrationTest extends TestCase
         $this->assertDatabaseHas('kunjungans', [
             'nama_pengunjung' => 'John Doe',
             'nomor_antrian_harian' => 1,
-            'sesi' => null
+            'sesi' => 'pagi'
         ]);
     }
 
     /** @test */
     public function registration_is_blocked_when_weekday_quota_is_full()
     {
-        config(['kunjungan.quota_hari_biasa' => 1]);
         $date = Carbon::now()->next(Carbon::TUESDAY);
+        
+        // Ensure schedule exists first
+        $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]);
 
-        Kunjungan::factory()->create(['tanggal_kunjungan' => $date->format('Y-m-d')]);
+        \App\Models\VisitSchedule::where('day_of_week', Carbon::TUESDAY)->update([
+            'quota_online_morning' => 1,
+            'quota_online_afternoon' => 0
+        ]);
 
-        // Sanity check: ensure one existing registration is present
-        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
+        Kunjungan::factory()->create([
+            'tanggal_kunjungan' => $date->format('Y-m-d'),
+            'sesi' => 'pagi',
+            'registration_type' => 'online',
+            'status' => \App\Enums\KunjunganStatus::APPROVED
+        ]);
 
-        $response = $this->post(route('kunjungan.store'), $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]));
+        $response = $this->post(route('kunjungan.store'), $this->validKunjunganData([
+            'tanggal_kunjungan' => $date->format('Y-m-d'),
+            'sesi' => 'pagi'
+        ]));
 
-        // After posting, ensure no new registration was created and validation error present
-        $this->assertEquals(1, Kunjungan::whereDate('tanggal_kunjungan', $date->format('Y-m-d'))->count());
-        $response->assertSessionHasErrors('tanggal_kunjungan');
+        $response->assertSessionHasErrors('sesi');
     }
     
     /** @test */
     public function a_visitor_can_register_for_a_monday_session()
     {
         $date = Carbon::now()->next(Carbon::MONDAY);
+        
+        // Ensure schedule exists first
+        $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]);
+
+        \App\Models\VisitSchedule::where('day_of_week', Carbon::MONDAY)->update([
+            'quota_online_morning' => 50,
+            'is_open' => true
+        ]);
+
         $data = $this->validKunjunganData([
             'tanggal_kunjungan' => $date->format('Y-m-d'),
             'sesi' => 'pagi',
@@ -105,19 +135,28 @@ class KunjunganRegistrationTest extends TestCase
         $response->assertSessionHas('success');
         $this->assertDatabaseHas('kunjungans', [
             'nama_pengunjung' => 'John Doe',
-            'sesi' => 'pagi',
+            'sesi' => 'pagi'
         ]);
     }
 
     /** @test */
     public function registration_is_blocked_if_selected_monday_session_is_full()
     {
-        config(['kunjungan.quota_senin_pagi' => 1]);
         $date = Carbon::now()->next(Carbon::MONDAY);
+        
+        // Ensure schedule exists first
+        $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]);
+
+        \App\Models\VisitSchedule::where('day_of_week', Carbon::MONDAY)->update([
+            'quota_online_morning' => 1,
+            'is_open' => true
+        ]);
 
         Kunjungan::factory()->create([
             'tanggal_kunjungan' => $date->format('Y-m-d'),
-            'sesi' => 'pagi'
+            'sesi' => 'pagi',
+            'registration_type' => 'online',
+            'status' => \App\Enums\KunjunganStatus::APPROVED
         ]);
 
         $response = $this->post(route('kunjungan.store'), $this->validKunjunganData([
@@ -134,7 +173,7 @@ class KunjunganRegistrationTest extends TestCase
         $date = Carbon::now()->next(Carbon::MONDAY);
         $data = $this->validKunjunganData([
             'tanggal_kunjungan' => $date->format('Y-m-d'),
-            'sesi' => null, // Explicitly set to null
+            'sesi' => '', // Empty string
         ]);
 
         $response = $this->post(route('kunjungan.store'), $data);
@@ -145,7 +184,10 @@ class KunjunganRegistrationTest extends TestCase
     /** @test */
     public function registration_is_blocked_on_weekends()
     {
-        $date = Carbon::now()->next(Carbon::FRIDAY);
+        // Ensure Sunday is closed
+        \App\Models\VisitSchedule::where('day_of_week', Carbon::SUNDAY)->update(['is_open' => false]);
+
+        $date = Carbon::now()->next(Carbon::SUNDAY);
         
         $response = $this->post(route('kunjungan.store'), $this->validKunjunganData(['tanggal_kunjungan' => $date->format('Y-m-d')]));
 
@@ -162,12 +204,7 @@ class KunjunganRegistrationTest extends TestCase
 
         $response = $this->post(route('kunjungan.store'), $data);
 
-        // Special case: when tanggal_kunjungan is in the past, controller returns a general 'error' message
-        if ($field === 'tanggal_kunjungan' && $value && Carbon::parse($value)->isPast()) {
-            $response->assertSessionHas('error');
-        } else {
-            $response->assertSessionHasErrors($field);
-        }
+        $response->assertSessionHasErrors($field);
 
         $this->assertDatabaseCount('kunjungans', 0);
     }

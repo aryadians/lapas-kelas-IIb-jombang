@@ -220,7 +220,7 @@
                                 <input type="number" name="registration_lead_time" value="{{ $settings['registration_lead_time'] ?? 1 }}" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-black text-slate-700 focus:border-rose-500 focus:ring-0">
                                 <span class="text-slate-400 font-bold uppercase text-xs w-16">Hari</span>
                             </div>
-                            <p class="text-[10px] text-slate-400 italic">Contoh: Jika diisi 1, maka pengunjung tidak bisa mendaftar untuk besok (minimal lusa).</p>
+                            <p class="text-[10px] text-slate-400 italic">Contoh: Jika diisi 1, maka pengunjung tidak bisa mendaftar untuk hari ini (minimal besok). Jika diisi 2, maka besok juga ditutup (minimal lusa).</p>
                         </div>
                         <div class="h-px bg-slate-100"></div>
                         <div class="space-y-4">

@@ -53,19 +53,23 @@ class RegistrationValidationService
 
         // 0. CEK BATAS H-N PENDAFTARAN
         $leadTime = (int) ($visitSettings['registration_lead_time'] ?? 1);
+        $maxLeadTime = (int) ($visitSettings['edit_lead_time'] ?? 14);
         $isMondaySpecial = ($visitSettings['monday_registration_special'] ?? '0') == '1';
         $isTargetMonday = $tanggal->isMonday();
         $isTodayFridayToSunday = now()->isFriday() || now()->isSaturday() || now()->isSunday();
 
         $allowMonday = $isMondaySpecial && $isTargetMonday && $isTodayFridayToSunday;
 
-        // Jika leadTime 0, izinkan pendaftaran hari ini (today). Jika 1, minimal besok.
-        $minDate = Carbon::today()->addDays($leadTime);
-        
-        // Logika: Jika tanggal yang dipilih SEBELUM minDate DAN bukan pengecualian Senin, tolak.
-        // Jika leadTime adalah 0, $minDate adalah hari ini. $tanggal->lt($minDate) akan menjadi false untuk pendaftaran hari ini.
+        // Logika Minimal: Membatasi pendaftaran yang terlalu mepet (Hari-H atau H-N)
+        // Jika leadTime 1, maka hari ini (H+0) dilarang, besok (H+1) dibolehkan.
         if ($tanggal->lt(Carbon::today()->addDays($leadTime)) && !$allowMonday) {
             return $this->error('tanggal_kunjungan', "Pendaftaran untuk tanggal ini sudah ditutup. Minimal pendaftaran adalah $leadTime hari sebelum kunjungan.");
+        }
+
+        // Logika Maksimal: Membatasi pendaftaran yang terlalu jauh (H+N)
+        // Jika maxLeadTime 1, maka besok (H+1) dibolehkan, lusa (H+2) dilarang.
+        if ($tanggal->gt(Carbon::today()->addDays($maxLeadTime)) && !$allowMonday) {
+            return $this->error('tanggal_kunjungan', "Pendaftaran untuk tanggal ini belum dibuka. Maksimal pendaftaran adalah $maxLeadTime hari ke depan.");
         }
 
         $sesi = (isset($validatedData['sesi']) && !is_null($validatedData['sesi']) && trim((string)$validatedData['sesi']) !== '') ? strtolower(trim($validatedData['sesi'])) : 'pagi'; 

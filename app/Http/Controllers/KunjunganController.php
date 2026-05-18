@@ -105,16 +105,16 @@ class KunjunganController extends Controller
         // Duplicate block removed
 
         // Mulai menghitung dari hari ini + leadTime
+        // Contoh: Jika leadTime 1, maka pendaftaran dimulai dari H+1 (besok).
         $date = Carbon::today()->addDays($leadTime);
         $maxDate = Carbon::today()->addDays($maxLeadTime);
 
         // Ambil hari dari range leadTime sampai maxLeadTime
-        $diffDays = $date->diffInDays($maxDate);
         $isMondaySpecial = ($visitSettings['monday_registration_special'] ?? '0') == '1';
         $isTodayFridayToSunday = now()->isFriday() || now()->isSaturday() || now()->isSunday();
 
-        for ($i = 0; $i <= $diffDays; $i++) {
-            $currentDate = $date->copy()->addDays($i);
+        for ($i = $leadTime; $i <= $maxLeadTime; $i++) {
+            $currentDate = Carbon::today()->addDays($i);
             $dayOfWeek = $currentDate->dayOfWeek;
             $dayNameIndo = $dayMapping[$dayOfWeek];
 
