@@ -171,9 +171,15 @@
                             <div class="absolute top-1/2 left-8 right-8 border-t-2 border-dashed border-slate-700"></div>
 
                             <div class="relative z-10 space-y-8">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="bg-blue-600 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/30">Lapas Jombang</div>
-                                    <div class="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">{{ $kunjungan->registration_type }} registration</div>
+                                <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/5">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+                                        <span class="text-[11px] font-black uppercase tracking-[0.2em] text-white">Lapas Jombang</span>
+                                    </div>
+                                    <div class="flex flex-col items-end">
+                                        <span class="text-[10px] font-black text-blue-400 uppercase tracking-widest leading-none">{{ $kunjungan->registration_type }}</span>
+                                        <span class="text-[8px] font-bold text-slate-600 uppercase tracking-[0.2em] mt-1">Registration</span>
+                                    </div>
                                 </div>
 
                                 {{-- INFO WBP --}}
