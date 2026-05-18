@@ -137,4 +137,19 @@ class BroadcastController extends Controller
         
         return redirect()->back()->with('success', 'Broadcast selesai dikirim. Berhasil: ' . $sentCount . ', Gagal: ' . count($failedList));
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada item yang dipilih.'], 400);
+        }
+
+        try {
+            BroadcastLog::whereIn('id', $ids)->delete();
+            return response()->json(['success' => true, 'message' => count($ids) . ' riwayat broadcast berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus: ' . $e->getMessage()], 500);
+        }
+    }
 }

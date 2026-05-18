@@ -131,6 +131,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/broadcast', [App\Http\Controllers\Admin\BroadcastController::class, 'index'])->name('broadcast.index');
     Route::put('/broadcast/{template}', [App\Http\Controllers\Admin\BroadcastController::class, 'update'])->name('broadcast.update');
     Route::post('/broadcast/send', [App\Http\Controllers\Admin\BroadcastController::class, 'send'])->name('broadcast.send');
+    Route::post('/broadcast/bulk-delete', [App\Http\Controllers\Admin\BroadcastController::class, 'bulkDelete'])->name('broadcast.bulk-delete');
 });
 
 // API PUBLIK UNTUK ANTRIAN

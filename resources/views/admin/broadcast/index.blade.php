@@ -75,11 +75,21 @@
 
     {{-- HISTORY LOGS --}}
     <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-        <h2 class="text-lg font-black text-slate-800 mb-4">Riwayat Broadcast</h2>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <h2 class="text-lg font-black text-slate-800">Riwayat Broadcast</h2>
+            
+            <button id="btnBulkDelete" onclick="bulkDelete()" class="hidden bg-rose-100 text-rose-600 px-4 py-2 rounded-xl font-bold text-sm hover:bg-rose-200 transition items-center gap-2">
+                <i class="fa-solid fa-trash-can"></i> Hapus Terpilih (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="text-xs uppercase text-slate-400 font-bold border-b">
+                        <th class="p-3 text-center w-10">
+                            <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                        </th>
                         <th class="p-3 text-left">Tanggal Target</th>
                         <th class="p-3 text-left">Alasan</th>
                         <th class="p-3 text-center">Berhasil</th>
@@ -88,8 +98,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($logs as $log)
-                    <tr class="border-b hover:bg-slate-50">
+                    @forelse($logs as $log)
+                    <tr class="border-b hover:bg-slate-50 transition-colors">
+                        <td class="p-3 text-center">
+                            <input type="checkbox" name="ids[]" value="{{ $log->id }}" class="log-checkbox rounded border-slate-300 text-rose-600 focus:ring-rose-500">
+                        </td>
                         <td class="p-3 font-medium text-slate-700">{{ \Carbon\Carbon::parse($log->target_date)->translatedFormat('d/m/Y') }}</td>
                         <td class="p-3 text-slate-600">{{ $log->reason }}</td>
                         <td class="p-3 text-center font-bold text-emerald-600">
@@ -100,7 +113,11 @@
                         </td>
                         <td class="p-3 text-center text-xs text-slate-500">{{ $log->created_at->format('d/m/Y H:i') }}</td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="p-10 text-center text-slate-400 italic">Belum ada riwayat broadcast.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -110,6 +127,99 @@
 
 @push('scripts')
 <script>
+    // Logic for Bulk Selection
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.log-checkbox');
+    const btnBulkDelete = document.getElementById('btnBulkDelete');
+    const selectedCountSpan = document.getElementById('selectedCount');
+
+    function updateBulkDeleteButton() {
+        const checkedCount = document.querySelectorAll('.log-checkbox:checked').length;
+        selectedCountSpan.textContent = checkedCount;
+        if (checkedCount > 0) {
+            btnBulkDelete.classList.remove('hidden');
+            btnBulkDelete.classList.add('flex');
+        } else {
+            btnBulkDelete.classList.add('hidden');
+            btnBulkDelete.classList.remove('flex');
+        }
+    }
+
+    if(selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+            });
+            updateBulkDeleteButton();
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            const allChecked = document.querySelectorAll('.log-checkbox:checked').length === checkboxes.length;
+            selectAll.checked = allChecked;
+            updateBulkDeleteButton();
+        });
+    });
+
+    async function bulkDelete() {
+        const selectedIds = Array.from(document.querySelectorAll('.log-checkbox:checked')).map(cb => cb.value);
+        
+        const result = await Swal.fire({
+            title: 'Hapus Riwayat?',
+            text: `Anda akan menghapus ${selectedIds.length} riwayat broadcast terpilih secara permanen.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e11d48',
+            cancelButtonColor: '#475569',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-[2rem]',
+                confirmButton: 'rounded-xl font-bold px-6 py-3',
+                cancelButton: 'rounded-xl font-bold px-6 py-3'
+            }
+        });
+
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Menghapus...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const response = await fetch("{{ route('admin.broadcast.bulk-delete') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ ids: selectedIds })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                Swal.fire('Gagal!', error.message || 'Terjadi kesalahan sistem.', 'error');
+            }
+        }
+    }
+
     function confirmBroadcast() {
         const tanggal = document.getElementById('targetTanggal').value;
         const alasan = document.getElementById('alasanPembatalan').value;
