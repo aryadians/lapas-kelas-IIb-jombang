@@ -80,7 +80,8 @@
 <style>
     trix-toolbar .trix-button-group--file-tools { display: none !important; }
     trix-editor { font-size: 14px !important; }
-    .trix-content ul { list-style-type: disc !important; padding-left: 1.5rem !important; }
-    .trix-content ol { list-style-type: decimal !important; padding-left: 1.5rem !important; }
+    trix-editor ul { list-style-type: disc !important; padding-left: 2rem !important; margin-bottom: 1rem !important; display: block !important; }
+    trix-editor ol { list-style-type: decimal !important; padding-left: 2rem !important; margin-bottom: 1rem !important; display: block !important; }
+    trix-editor li { display: list-item !important; margin-bottom: 0.5rem !important; }
 </style>
 @endsection
