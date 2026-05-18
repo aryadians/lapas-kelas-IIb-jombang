@@ -18,25 +18,12 @@
 
 @section('content')
 <div class="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-    {{-- AUTO REFRESH JIKA MASIH PENDING/CALLED/IN_PROGRESS --}}
-    @if(in_array($kunjungan->status, [KunjunganStatus::PENDING, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
-        <meta http-equiv="refresh" content="30">
-    @endif
 
     <div class="max-w-4xl mx-auto">
         <div class="mb-6 flex justify-between items-center">
             <a href="/" class="inline-flex items-center text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors group">
                 <i class="fa-solid fa-arrow-left mr-2 transform group-hover:-translate-x-1 transition-transform"></i> Kembali ke Beranda
             </a>
-            @if(in_array($kunjungan->status, [KunjunganStatus::PENDING, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS]))
-            <span class="text-[10px] sm:text-xs text-slate-400 flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-sm">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                Update otomatis tiap 30 detik
-            </span>
-            @endif
         </div>
 
         {{-- TIKET UTAMA --}}
