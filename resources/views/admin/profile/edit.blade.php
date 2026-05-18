@@ -102,6 +102,42 @@
                 </div>
             </div>
 
+            @if(auth()->user()->role === 'super_admin')
+            <div class="space-y-6">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
+                    <div class="p-2 bg-indigo-100 rounded-lg text-indigo-600"><i class="fas fa-landmark"></i></div>
+                    <h3 class="text-lg font-bold text-slate-700">Informasi Lembaga</h3>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Visi & Misi</label>
+                        <textarea name="visi_misi" rows="4" class="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-medium text-slate-700 focus:border-blue-500 focus:bg-white transition-all" placeholder="Masukkan visi dan misi lembaga...">{{ old('visi_misi', $institutionalData['visi_misi'] ?? '') }}</textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Tujuan & Fungsi</label>
+                        <textarea name="tujuan_fungsi" rows="4" class="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-medium text-slate-700 focus:border-blue-500 focus:bg-white transition-all" placeholder="Masukkan tujuan dan fungsi lembaga...">{{ old('tujuan_fungsi', $institutionalData['tujuan_fungsi'] ?? '') }}</textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Sasaran & Program</label>
+                        <textarea name="sasaran_program" rows="4" class="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-medium text-slate-700 focus:border-blue-500 focus:bg-white transition-all" placeholder="Masukkan sasaran dan program lembaga...">{{ old('sasaran_program', $institutionalData['sasaran_program'] ?? '') }}</textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Tugas & Fungsi</label>
+                        <textarea name="tugas_fungsi" rows="4" class="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-medium text-slate-700 focus:border-blue-500 focus:bg-white transition-all" placeholder="Masukkan tugas dan fungsi lembaga...">{{ old('tugas_fungsi', $institutionalData['tugas_fungsi'] ?? '') }}</textarea>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Hak & Kewajiban</label>
+                        <textarea name="hak_kewajiban" rows="4" class="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-xl font-medium text-slate-700 focus:border-blue-500 focus:bg-white transition-all" placeholder="Masukkan hak dan kewajiban...">{{ old('hak_kewajiban', $institutionalData['hak_kewajiban'] ?? '') }}</textarea>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <button type="submit" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl hover:from-blue-700 hover:to-indigo-700 shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-1 active:scale-95">Simpan Profil</button>
         </form>
     </div>
