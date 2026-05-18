@@ -33,7 +33,7 @@
 
 - **🛡️ Sistem Pembatasan Kunjungan Otomatis** — Fitur baru untuk memblokir kunjungan WBP yang sedang dalam masa *Mapenaling*, *Strap Cell*, atau *Sidang TPP*.
 - **📢 Broadcast Sistem (WA/Email)** — Pengiriman notifikasi pembatalan kunjungan secara massal dan otomatis kepada keluarga pengunjung jika WBP bersangkutan mendadak terkena pembatasan.
-- **📊 Dashboard Disiplin WBP** — Statistik visual untuk memantau kedisiplinan WBP, tren kasus pembatasan, dan daftar pelanggar terbanyak (*Top Violators*).
+
 - **🗂️ Sidebar Menu Grouping** — Navigasi admin kini dikelompokkan berdasarkan fungsionalitas (Dashboard, Layanan Kunjungan, Data Master, Humas, Pengaturan) dengan kontrol akses (RBAC) yang lebih ketat.
 - **⚖️ Bulk Action & Sorting** — Filter urutan abjad dan fitur *bulk selection* untuk pembaruan status WBP secara efisien.
 
