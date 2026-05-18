@@ -16,14 +16,54 @@ class BroadcastController extends Controller
 {
     public function index()
     {
-        $template = BroadcastTemplate::firstOrCreate(
-            ['name' => 'Emergency Closure'],
-            [
-                'whatsapp_body' => "Halo *{nama}*,\n\nMohon maaf, kunjungan tanggal *{tanggal}* dibatalkan mendadak dikarenakan *{alasan}*.\n\nTerima kasih.",
-                'email_subject' => "Informasi Pembatalan Kunjungan",
-                'email_body' => "<p>Halo <strong>{nama}</strong>,</p><p>Mohon maaf, kunjungan tanggal <strong>{tanggal}</strong> dibatalkan mendadak dikarenakan <strong>{alasan}</strong>.</p>"
-            ]
-        );
+        $oldWa = "Halo *{nama}*,\n\nMohon maaf, kunjungan tanggal *{tanggal}* dibatalkan mendadak dikarenakan *{alasan}*.\n\nTerima kasih.";
+        $oldEmail = "<p>Halo <strong>{nama}</strong>,</p><p>Mohon maaf, kunjungan tanggal <strong>{tanggal}</strong> dibatalkan mendadak dikarenakan <strong>{alasan}</strong>.</p>";
+
+        $oldEmailSubject = "Informasi Pembatalan Kunjungan";
+
+        $newWa = "📢 *PENGUMUMAN PENTING: PEMBATALAN KUNJUNGAN LAPAS JOMBANG* 📢\n\nHalo Bapak/Ibu *{nama}*,\n\nKami menginformasikan bahwa jadwal kunjungan Anda yang terdaftar pada:\n📅 Tanggal: *{tanggal}*\n\n*DIBATALKAN* dikarenakan adanya kendala teknis/operasional berupa:\nℹ️ *{alasan}*\n\nKami memohon maaf yang sebesar-besarnya atas ketidaknyamanan ini. Pembatalan ini dilakukan demi menjaga keamanan, ketertiban, dan kualitas pelayanan di Lapas Kelas IIB Jombang.\n\n*Langkah Selanjutnya:*\nBapak/Ibu dapat melakukan pendaftaran ulang untuk jadwal kunjungan di hari berikutnya melalui sistem aplikasi kami secara berkala.\n\nJika ada pertanyaan lebih lanjut, silakan hubungi layanan informasi resmi Lapas Jombang.\n\nTerima kasih atas pengertian dan kerjasamanya.\n\n*Hormat kami,*\n*Admin Layanan Kunjungan Lapas Kelas IIB Jombang*";
+        $newEmail = '<div style="font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+    <h2 style="color: #e11d48; text-align: center;">📢 PENGUMUMAN PENTING</h2>
+    <p>Halo Bapak/Ibu <strong>{nama}</strong>,</p>
+    <p>Kami dari <strong>Lapas Kelas IIB Jombang</strong> ingin menginformasikan bahwa jadwal kunjungan Anda yang telah terdaftar pada:</p>
+    <div style="background-color: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #e11d48;">
+        <p style="margin: 0;">📅 <strong>Tanggal:</strong> {tanggal}</p>
+        <p style="margin: 0; color: #e11d48;">⚠️ <strong>Status:</strong> DIBATALKAN</p>
+        <p style="margin: 0;">ℹ️ <strong>Alasan:</strong> {alasan}</p>
+    </div>
+    <p>Kami memohon maaf yang sebesar-besarnya atas ketidaknyamanan yang ditimbulkan. Pembatalan ini harus kami lakukan dikarenakan situasi mendesak demi menjaga keamanan dan ketertiban di lingkungan Lapas.</p>
+    <p><strong>Langkah Selanjutnya:</strong></p>
+    <ul>
+        <li>Bapak/Ibu dapat melakukan pendaftaran kunjungan kembali untuk hari lain melalui website resmi kami.</li>
+        <li>Pastikan untuk selalu mengecek status kunjungan Anda secara berkala pada aplikasi.</li>
+    </ul>
+    <p>Terima kasih atas perhatian dan kerjasama Bapak/Ibu.</p>
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    <p style="font-size: 12px; color: #777; text-align: center;">
+        Hormat kami,<br>
+        <strong>Tim Layanan Kunjungan Lapas Kelas IIB Jombang</strong><br>
+        Jl. KH. Wahid Hasyim No. 170, Jombang, Jawa Timur
+    </p>
+</div>';
+
+        $template = BroadcastTemplate::where('name', 'Emergency Closure')->first();
+
+        if (!$template) {
+            $template = BroadcastTemplate::create([
+                'name' => 'Emergency Closure',
+                'whatsapp_body' => $newWa,
+                'email_subject' => 'Informasi Pembatalan Kunjungan - Lapas Jombang',
+                'email_body' => $newEmail
+            ]);
+        } elseif ($template->whatsapp_body === $oldWa || $template->email_body === $oldEmail || $template->email_subject === $oldEmailSubject) {
+            // Update to new default if it was using any of the old ones
+            $template->update([
+                'whatsapp_body' => $newWa,
+                'email_body' => $newEmail,
+                'email_subject' => 'Informasi Pembatalan Kunjungan - Lapas Jombang',
+            ]);
+        }
+
         $logs = BroadcastLog::latest()->get();
         return view('admin.broadcast.index', compact('template', 'logs'));
     }
