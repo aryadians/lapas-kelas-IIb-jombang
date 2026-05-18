@@ -11,6 +11,13 @@ class InstitutionalInfoController extends Controller
     public function index()
     {
         $infos = InstitutionalInfo::all();
+        
+        // Auto-seed if empty (solves production deployment issue without terminal)
+        if ($infos->isEmpty()) {
+            \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'InstitutionalInfoSeeder', '--force' => true]);
+            $infos = InstitutionalInfo::all();
+        }
+
         return view('admin.institutional.index', compact('infos'));
     }
 
