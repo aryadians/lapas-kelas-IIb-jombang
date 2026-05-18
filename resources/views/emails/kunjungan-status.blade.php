@@ -110,8 +110,21 @@
                         </tr>
                         <tr>
                             <td>No. Antrian Harian</td>
-                            <td><strong>{{ $kunjungan->nomor_antrian_harian ?? '-' }}</strong></td>
+                            <td><span style="background-color: #fef3c7; padding: 4px 10px; border-radius: 4px; border: 1px solid #f59e0b; color: #92400e; font-size: 18px;"><strong>{{ $kunjungan->nomor_antrian_harian ?? '-' }}</strong></span></td>
                         </tr>
+                        @php
+                            $antrian = (int) $kunjungan->nomor_antrian_harian;
+                            $jamDatang = "";
+                            if ($antrian >= 1 && $antrian <= 60) { $jamDatang = "08:30 - 09:00 WIB"; }
+                            elseif ($antrian >= 61 && $antrian <= 120) { $jamDatang = "09:00 - 09:30 WIB"; }
+                            elseif ($antrian >= 121 && $antrian <= 200) { $jamDatang = "09:30 - 10:00 WIB"; }
+                        @endphp
+                        @if($jamDatang)
+                        <tr>
+                            <td>Jam Kedatangan</td>
+                            <td><strong style="color: #b91c1c;">{{ $jamDatang }}</strong></td>
+                        </tr>
+                        @endif
                         <tr>
                             <td>Tanggal</td>
                             <td>{{ \Carbon\Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y') }}</td>
@@ -122,7 +135,7 @@
                         </tr>
                         <tr>
                             <td>Warga Binaan</td>
-                            <td>{{ $kunjungan->wbp->nama ?? 'Nama WBP' }}</td>
+                            <td>{{ $kunjungan->wbp->nama ?? 'Nama WBP' }} ({{ $kunjungan->wbp->kode_tahanan ?? '-' }})</td>
                         </tr>
                     </table>
 
@@ -166,11 +179,20 @@
                     </div>
 
                     <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; font-size: 13px; color: #92400e; margin-top: 20px;">
-                        <strong>⚠️ Tata Tertib:</strong>
+                        <strong>⚠️ Tata Tertib & Syarat Wajib:</strong>
                         <ul style="margin: 5px 0 0 0; padding-left: 20px;">
-                            <li>Wajib membawa KTP/Identitas Asli.</li>
-                            <li>Datang 15 menit sebelum jam sesi dimulai.</li>
-                            <li>Dilarang membawa barang terlarang (HP, Sajam, Narkoba).</li>
+                            <li style="margin-bottom: 5px;">Mohon datang <strong>TEPAT WAKTU</strong> sesuai Jam Kedatangan di atas.</li>
+                            <li style="margin-bottom: 5px; background-color: #fef2f2; padding: 2px 5px;">Wajib membawa <strong>KTP ASLI</strong> dan atau kartu identitas resmi lainnya.</li>
+                            
+                            @if(str_starts_with(strtoupper($kunjungan->wbp->kode_tahanan ?? ''), 'A'))
+                            <li style="margin-bottom: 5px; background-color: #fee2e2; border: 1px solid #ef4444; padding: 5px; color: #b91c1c;">
+                                <strong>WAJIB membawa SURAT IZIN dari pihak Penahan</strong> (Kepolisian/Kejaksaan/Pengadilan).
+                            </li>
+                            @endif
+                            
+                            <li style="margin-bottom: 5px;">1 nomor antrian hanya berlaku untuk 1 WBP (bisa dikunjungi sekali dalam setiap kunjungan).</li>
+                            <li style="margin-bottom: 5px;">Maksimal 4 orang pengunjung untuk satu kali kunjungan.</li>
+                            <li style="margin-bottom: 5px;">Dilarang membawa barang terlarang (HP, Sajam, Narkoba, dsb).</li>
                         </ul>
                     </div>
 

@@ -146,15 +146,38 @@ class WhatsAppService
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
         $statusUrl = route('kunjungan.status', $kunjungan->id);
+        $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+        $isTahanan = str_starts_with($wbpCode, 'A');
+        $antrian = (int) $kunjungan->nomor_antrian_harian;
+
+        // Tentukan Jam Kedatangan
+        $jamDatang = "";
+        if ($antrian >= 1 && $antrian <= 60) {
+            $jamDatang = "08:30 - 09:00 WIB";
+        } elseif ($antrian >= 61 && $antrian <= 120) {
+            $jamDatang = "09:00 - 09:30 WIB";
+        } elseif ($antrian >= 121 && $antrian <= 200) {
+            $jamDatang = "09:30 - 10:00 WIB";
+        }
 
         $message = "*KUNJUNGAN DISETUJUI* ✅\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Pendaftaran Anda telah *DISETUJUI*.\n\n"
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
-                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
+                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n"
+                 . "⏰ Jam Kedatangan: *{$jamDatang}*\n\n"
+                 . "Mohon datang tepat waktu sesuai jam kedatangan di atas.\n\n"
+                 . "⚠️ *WAJIB DIBAWA:* ⚠️\n"
+                 . "1. *KTP ASLI* dan atau kartu identitas resmi lainnya.\n";
+        
+        if ($isTahanan) {
+            $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
+        }
+
+        $message .= "3. 1 nomor antrian hanya untuk 1 WBP (bisa dikunjungi sekali dalam setiap kunjungan) dan maksimal 4 orang pengunjung.\n\n"
                  . "Lihat Tiket QR: {$statusUrl}\n\n"
-                 . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
+                 . "Tunjukkan QR Code di atas kepada petugas saat tiba di Lapas.";
 
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
     }
@@ -198,14 +221,35 @@ class WhatsAppService
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
         $statusUrl = route('kunjungan.status', $kunjungan->id);
+        $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+        $isTahanan = str_starts_with($wbpCode, 'A');
+        $antrian = (int) $kunjungan->nomor_antrian_harian;
+
+        // Tentukan Jam Kedatangan
+        $jamDatang = "";
+        if ($antrian >= 1 && $antrian <= 60) {
+            $jamDatang = "08:30 - 09:00 WIB";
+        } elseif ($antrian >= 61 && $antrian <= 120) {
+            $jamDatang = "09:00 - 09:30 WIB";
+        } elseif ($antrian >= 121 && $antrian <= 200) {
+            $jamDatang = "09:30 - 10:00 WIB";
+        }
 
         $message = "*PENGINGAT JADWAL KUNJUNGAN* 🔔\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Mengingatkan bahwa jadwal kunjungan Anda adalah *BESOK*.\n\n"
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
-                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n\n"
-                 . "Mohon datang tepat waktu dan bawa KTP Asli serta tunjukkan kode QR pada tiket ini:\n{$statusUrl}\n\n"
+                 . "🔢 Antrian: *{$kunjungan->nomor_antrian_harian}*\n"
+                 . "⏰ Jam Kedatangan: *{$jamDatang}*\n\n"
+                 . "⚠️ *WAJIB DIBAWA:* ⚠️\n"
+                 . "1. *KTP ASLI* / Kartu Identitas Resmi.\n";
+
+        if ($isTahanan) {
+            $message .= "2. *SURAT IZIN dari pihak Penahan* (Wajib).\n";
+        }
+
+        $message .= "Mohon datang tepat waktu dan tunjukkan kode QR pada tiket ini:\n{$statusUrl}\n\n"
                  . "Terima kasih.";
 
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message);
