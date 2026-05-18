@@ -351,3 +351,12 @@ Route::middleware(['auth', 'verified', 'role:super_admin'])->group(function () {
 
 // Load auth routes bawaan Laravel Breeze
 require __DIR__ . '/auth.php';
+
+// Temporary Route to Seed Database on Production Hosting
+Route::get('/update-info-lembaga', function() {
+    \Illuminate\Support\Facades\Artisan::call('db:seed', [
+        '--class' => 'InstitutionalInfoSeeder',
+        '--force' => true
+    ]);
+    return "Database Berhasil Diperbarui dengan Informasi Lembaga Terbaru! Silakan kembali ke Panel Admin.";
+});
