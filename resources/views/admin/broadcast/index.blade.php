@@ -3,13 +3,15 @@
 @section('content')
 <div class="space-y-6 animate__animated animate__fadeIn">
     {{-- HEADER --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl font-black text-slate-800">Broadcast Pengumuman Darurat</h1>
-            <p class="text-sm text-slate-500">Kirim pemberitahuan mendadak ke pengunjung yang terdaftar</p>
-        </div>
-        <div class="bg-rose-50 text-rose-700 px-4 py-2 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation"></i> Situasi Darurat
+    <div class="bg-slate-900 rounded-3xl p-8 text-white shadow-xl shadow-slate-200 mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-black tracking-tight">Broadcast Pengumuman Darurat</h1>
+                <p class="text-blue-200 mt-2 font-medium opacity-80">Kirim pemberitahuan mendadak ke pengunjung yang terdaftar</p>
+            </div>
+            <div class="bg-rose-500 text-white px-5 py-3 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-rose-900/20">
+                <i class="fa-solid fa-triangle-exclamation"></i> Mode Darurat
+            </div>
         </div>
     </div>
     
