@@ -148,7 +148,12 @@ class WhatsAppService
         $statusUrl = route('kunjungan.status', $kunjungan->id);
         $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
         $isTahanan = str_starts_with($wbpCode, 'A');
+        $isNarapidana = str_starts_with($wbpCode, 'B');
         $antrian = (int) $kunjungan->nomor_antrian_harian;
+        
+        $kategoriKunjungan = "Kunjungan";
+        if ($isTahanan) $kategoriKunjungan = "Kunjungan Tahanan";
+        elseif ($isNarapidana) $kategoriKunjungan = "Kunjungan Narapidana";
 
         // Tentukan Jam Kedatangan
         $jamDatang = "";
@@ -160,7 +165,7 @@ class WhatsAppService
             $jamDatang = "09:30 - 10:00 WIB";
         }
 
-        $message = "*KUNJUNGAN DISETUJUI* ✅\n\n"
+        $message = "*{$kategoriKunjungan} DISETUJUI* ✅\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Pendaftaran Anda telah *DISETUJUI*.\n\n"
                  . "📅 Tanggal: {$tanggal}\n"
@@ -223,7 +228,12 @@ class WhatsAppService
         $statusUrl = route('kunjungan.status', $kunjungan->id);
         $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
         $isTahanan = str_starts_with($wbpCode, 'A');
+        $isNarapidana = str_starts_with($wbpCode, 'B');
         $antrian = (int) $kunjungan->nomor_antrian_harian;
+        
+        $kategoriKunjungan = "Kunjungan";
+        if ($isTahanan) $kategoriKunjungan = "Kunjungan Tahanan";
+        elseif ($isNarapidana) $kategoriKunjungan = "Kunjungan Narapidana";
 
         // Tentukan Jam Kedatangan
         $jamDatang = "";
@@ -235,7 +245,7 @@ class WhatsAppService
             $jamDatang = "09:30 - 10:00 WIB";
         }
 
-        $message = "*PENGINGAT JADWAL KUNJUNGAN* 🔔\n\n"
+        $message = "*PENGINGAT {$kategoriKunjungan}* 🔔\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Mengingatkan bahwa jadwal kunjungan Anda adalah *BESOK*.\n\n"
                  . "📅 Tanggal: {$tanggal}\n"

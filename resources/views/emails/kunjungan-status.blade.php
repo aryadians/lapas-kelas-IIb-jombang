@@ -44,23 +44,32 @@
             </div>
 
             <div class="body">
+                @php
+                    $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+                    $isTahanan = str_starts_with($wbpCode, 'A');
+                    $isNarapidana = str_starts_with($wbpCode, 'B');
+                    $kategoriKunjungan = "KUNJUNGAN";
+                    if ($isTahanan) $kategoriKunjungan = "KUNJUNGAN TAHANAN";
+                    elseif ($isNarapidana) $kategoriKunjungan = "KUNJUNGAN NARAPIDANA";
+                @endphp
+
                 @if ($kunjungan->status === KunjunganStatus::APPROVED)
                     {{-- STATUS: APPROVED --}}
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <span class="badge badge-success">✅ PENDAFTARAN DISETUJUI</span>
+                        <span class="badge badge-success">✅ {{ $kategoriKunjungan }} DISETUJUI</span>
                     </div>
 
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
-                    <p>Selamat! Pendaftaran kunjungan tatap muka Anda telah kami terima dan disetujui. Berikut adalah detail tiket kunjungan Anda:</p>
+                    <p>Selamat! Pendaftaran {{ strtolower($kategoriKunjungan) }} tatap muka Anda telah kami terima dan disetujui. Berikut adalah detail tiket kunjungan Anda:</p>
 
                 @elseif ($kunjungan->status === KunjunganStatus::PENDING)
                     {{-- STATUS: PENDING --}}
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <span class="badge" style="background-color: #dbeafe; color: #1e40af; border: 1px solid #3b82f6;">✅ PENDAFTARAN BERHASIL</span>
+                        <span class="badge" style="background-color: #dbeafe; color: #1e40af; border: 1px solid #3b82f6;">✅ PENDAFTARAN {{ $kategoriKunjungan }} BERHASIL</span>
                     </div>
 
                     <h2>Halo, {{ $kunjungan->nama_pengunjung }}</h2>
-                    <p>Selamat! Pendaftaran kunjungan tatap muka Anda telah kami terima. Berikut adalah detail pendaftaran Anda:</p>
+                    <p>Selamat! Pendaftaran {{ strtolower($kategoriKunjungan) }} tatap muka Anda telah kami terima. Berikut adalah detail pendaftaran Anda:</p>
 
                     <div style="margin-top: 30px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
                         <h3 style="margin: 0; font-size: 16px; color: #1e293b;">Data Pengunjung</h3>
