@@ -127,8 +127,15 @@ class WhatsAppService
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
         $statusUrl = route('kunjungan.status', $kunjungan->id);
+        $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+        $isTahanan = str_starts_with($wbpCode, 'A');
+        $isNarapidana = str_starts_with($wbpCode, 'B');
         
-        $message = "*PENDAFTARAN BERHASIL* ⏳\n\n"
+        $kategoriKunjungan = "Pendaftaran Kunjungan";
+        if ($isTahanan) $kategoriKunjungan = "Pendaftaran Kunjungan Tahanan";
+        elseif ($isNarapidana) $kategoriKunjungan = "Pendaftaran Kunjungan Narapidana";
+        
+        $message = "*{$kategoriKunjungan} BERHASIL* ⏳\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Pendaftaran kunjungan Anda telah kami terima.\n\n"
                  . "📋 Kode: *{$kunjungan->kode_kunjungan}*\n"
@@ -136,7 +143,7 @@ class WhatsAppService
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
                  . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
                  . "Lihat Status: {$statusUrl}\n\n"
-                 . "Mohon datang tepat waktu dan bawa KTP serta tunjukan kode QR.";
+                 . "Mohon tunggu verifikasi petugas. Wajib membawa *KTP ASLI* saat berkunjung.";
 
         // Kirim pesan (QR Code akan diabaikan otomatis oleh logika di atas jika localhost)
         return $this->sendMessage($kunjungan->no_wa_pengunjung, $message, $qrCodeUrl);
@@ -191,8 +198,15 @@ class WhatsAppService
     {
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
         $statusUrl = route('kunjungan.status', $kunjungan->id);
+        $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+        $isTahanan = str_starts_with($wbpCode, 'A');
+        $isNarapidana = str_starts_with($wbpCode, 'B');
+        
+        $kategoriKunjungan = "Pendaftaran Kunjungan";
+        if ($isTahanan) $kategoriKunjungan = "Pendaftaran Kunjungan Tahanan";
+        elseif ($isNarapidana) $kategoriKunjungan = "Pendaftaran Kunjungan Narapidana";
 
-        $message = "*KUNJUNGAN DITOLAK* ❌\n\n"
+        $message = "*{$kategoriKunjungan} DITOLAK* ❌\n\n"
                  . "Mohon maaf {$kunjungan->nama_pengunjung},\n"
                  . "Pendaftaran kunjungan Anda untuk tanggal " . $tanggal . " tidak dapat kami proses.\n\n"
                  . "Cek alasan penolakan di: {$statusUrl}\n\n"
@@ -208,8 +222,15 @@ class WhatsAppService
         $tanggal = Carbon::parse($kunjungan->tanggal_kunjungan)->translatedFormat('l, d F Y');
         // Ganti ke link survei IKM Kemenimipas
         $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
+        $wbpCode = strtoupper($kunjungan->wbp->kode_tahanan ?? '');
+        $isTahanan = str_starts_with($wbpCode, 'A');
+        $isNarapidana = str_starts_with($wbpCode, 'B');
+        
+        $kategoriKunjungan = "Kunjungan";
+        if ($isTahanan) $kategoriKunjungan = "Kunjungan Tahanan";
+        elseif ($isNarapidana) $kategoriKunjungan = "Kunjungan Narapidana";
 
-        $message = "*KUNJUNGAN SELESAI* 🏁\n\n"
+        $message = "*{$kategoriKunjungan} SELESAI* 🏁\n\n"
                  . "Halo {$kunjungan->nama_pengunjung},\n"
                  . "Kunjungan Anda pada tanggal {$tanggal} telah tercatat sebagai *SELESAI*.\n\n"
                  . "Untuk meningkatkan kualitas layanan kami, mohon kesediaan Anda untuk mengisi Survei Kepuasan Masyarakat (IKM) melalui link berikut:\n{$surveyUrl}\n\n"
