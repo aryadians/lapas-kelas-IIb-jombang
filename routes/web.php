@@ -299,6 +299,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_humas'])->group(f
     Route::resource('announcements', AdminAnnouncementController::class);
 
     // Profil Lembaga (Visi, Misi, dll)
+    Route::post('institutional/bulk-delete', [\App\Http\Controllers\Admin\InstitutionalInfoController::class, 'bulkDelete'])->name('admin.institutional.bulk-delete');
     Route::resource('institutional', \App\Http\Controllers\Admin\InstitutionalInfoController::class)->names('admin.institutional');
 
     // Produk
