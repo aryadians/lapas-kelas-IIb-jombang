@@ -87,50 +87,68 @@
         }
 
         /* --- 4. INSTITUTIONAL CONTENT STYLE --- */
-        .institutional-list ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .institutional-list li {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 1rem;
-        }
-        .institutional-list li::before {
-            content: "\f058";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            color: currentColor;
-            opacity: 0.8;
-            margin-top: 4px;
+        /* Basic Text Formatting */
+        .institutional-content strong, 
+        .institutional-content b {
+            font-weight: 900 !important;
+            color: #1e293b;
         }
 
-        .institutional-content h3 {
+        .institutional-content p {
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Standard Lists (For Visi, Misi, etc if not using premium class) */
+        .institutional-list ul,
+        .institutional-content ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        .institutional-list ol,
+        .institutional-content ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        .institutional-list li,
+        .institutional-content li {
+            margin-bottom: 0.5rem;
+            display: list-item;
+            line-height: 1.6;
+        }
+
+        /* Headings */
+        .institutional-content h3,
+        .institutional-content h4 {
             font-size: 1.25rem;
             font-weight: 900;
             color: #1e293b;
             margin-top: 2rem;
             margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
         
+        /* Premium List Styling (Override standard list if inside premium container) */
         .premium-list ul {
-            list-style: none;
-            padding-left: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+            list-style: none !important;
+            padding-left: 0 !important;
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+            gap: 1.5rem !important;
         }
         .premium-list li {
             background: #f8fafc;
             border: 1px solid #f1f5f9;
-            padding: 1.5rem;
+            padding: 1.5rem !important;
             border-radius: 1.5rem;
-            display: flex;
+            display: flex !important;
             gap: 12px;
             align-items: flex-start;
             transition: all 0.3s ease;
+            margin-bottom: 0 !important;
         }
         .premium-list li:hover {
             transform: translateY(-5px);
@@ -145,25 +163,28 @@
             color: #10b981;
             margin-top: 2px;
             font-size: 1.1rem;
+            flex-shrink: 0;
         }
 
-        .premium-list-dark h3 {
+        .premium-list-dark h3,
+        .premium-list-dark h4 {
             color: #ffffff;
             border-bottom: 1px solid #334155;
             padding-bottom: 0.5rem;
             margin-top: 0;
         }
         .premium-list-dark ul {
-            list-style: none;
-            padding-left: 0;
-            margin-bottom: 2rem;
+            list-style: none !important;
+            padding-left: 0 !important;
+            margin-bottom: 2rem !important;
+            display: block !important;
         }
         .premium-list-dark li {
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 1rem !important;
             background: rgba(255,255,255,0.05);
             border-radius: 1rem;
-            margin-bottom: 0.5rem;
-            display: flex;
+            margin-bottom: 0.5rem !important;
+            display: flex !important;
             gap: 12px;
             align-items: flex-start;
             color: #cbd5e1;
@@ -180,6 +201,7 @@
             font-weight: 900;
             color: #6366f1;
             margin-top: 3px;
+            flex-shrink: 0;
         }
         .sasaran-grid {
             display: grid;
@@ -196,25 +218,32 @@
             font-weight: 500;
         }
 
-        .premium-rights-list h3 {
+        .premium-rights-list h3,
+        .premium-rights-list h4 {
             font-size: 1.5rem;
             color: #9f1239;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 900;
         }
         .premium-rights-list ul {
-            list-style: none;
-            padding-left: 0;
+            list-style: none !important;
+            padding-left: 0 !important;
+            display: block !important;
         }
         .premium-rights-list li {
-            padding: 1rem;
+            padding: 1rem !important;
             background: white;
             border-radius: 1rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.75rem !important;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            display: flex;
+            display: flex !important;
             gap: 12px;
             align-items: flex-start;
             transition: transform 0.3s ease;
             border-left: 4px solid #f43f5e;
+            color: #334155;
+            font-weight: 500;
         }
         .premium-rights-list li:hover {
             transform: scale(1.02);
@@ -225,6 +254,28 @@
             font-weight: 900;
             color: #f43f5e;
             margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Format untuk Misi Khusus (List dengan ceklis biasa) */
+        .misi-list ul {
+            list-style: none !important;
+            padding-left: 0 !important;
+        }
+        .misi-list li {
+            display: flex !important;
+            gap: 12px;
+            margin-bottom: 1rem !important;
+            align-items: flex-start;
+        }
+        .misi-list li::before {
+            content: "\f058";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: currentColor;
+            opacity: 0.8;
+            margin-top: 4px;
+            flex-shrink: 0;
         }
     </style>
 @endpush
