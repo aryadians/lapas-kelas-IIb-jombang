@@ -550,22 +550,22 @@
         {{-- Visi & Misi --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-24">
             {{-- Visi --}}
-            <div class="group relative bg-gradient-to-br from-blue-900 via-slate-900 to-blue-950 rounded-[2.5rem] p-10 md:p-12 text-white shadow-2xl overflow-hidden hover:-translate-y-2 transition-all duration-500" data-aos="fade-right">
+            <div class="group relative bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 rounded-[2.5rem] p-10 md:p-12 text-white shadow-2xl overflow-hidden hover:-translate-y-2 transition-all duration-500" data-aos="fade-right">
                 <div class="absolute -top-24 -right-24 w-64 h-64 bg-blue-500/20 rounded-full blur-[80px] group-hover:bg-blue-400/30 transition-colors duration-700"></div>
                 <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 origin-left"></div>
                 
                 <div class="flex flex-col h-full relative z-10">
                     <div class="flex items-center gap-5 mb-8">
-                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                            <i class="fas fa-eye text-3xl text-blue-300 drop-shadow-md"></i>
+                        <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                            <i class="fas fa-eye text-4xl text-blue-300 drop-shadow-md"></i>
                         </div>
                         <div>
-                            <h3 class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-500 tracking-tight drop-shadow-sm">VISI</h3>
-                            <p class="text-[10px] uppercase tracking-[0.3em] text-blue-200 font-bold mt-1 opacity-80">Arah & Pandangan</p>
+                            <h3 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 to-yellow-400 tracking-tight drop-shadow-sm">VISI</h3>
+                            <p class="text-xs uppercase tracking-[0.25em] text-blue-200/80 font-bold mt-1">Arah & Pandangan</p>
                         </div>
                     </div>
                     <div class="flex-grow flex items-center">
-                        <p class="text-xl md:text-2xl text-blue-50 leading-relaxed font-semibold italic drop-shadow-md">
+                        <p class="text-xl md:text-[1.375rem] text-blue-50 leading-[1.75] font-medium italic drop-shadow-md">
                             "{{ $institutional['visi'] ?? 'Terwujudnya Pemasyarakatan yang Profesional dalam Mendukung Penegakan Hukum Berbasis Hak Asasi Manusia yang Berkeadilan untuk Mewujudkan Indonesia Maju yang Berdaulat, Mandiri dan Berkepribadian, berlandaskan Gotong Royong' }}"
                         </p>
                     </div>
@@ -579,16 +579,16 @@
 
                 <div class="flex flex-col h-full relative z-10">
                     <div class="flex items-center gap-5 mb-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
-                            <i class="fas fa-bullseye text-3xl text-white drop-shadow-md"></i>
+                        <div class="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500">
+                            <i class="fas fa-bullseye text-4xl text-white drop-shadow-md"></i>
                         </div>
                         <div>
-                            <h3 class="text-4xl font-black text-slate-800 tracking-tight">MISI</h3>
-                            <p class="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-bold mt-1">Langkah Strategis</p>
+                            <h3 class="text-5xl font-black text-slate-800 tracking-tight">MISI</h3>
+                            <p class="text-xs uppercase tracking-[0.25em] text-slate-400 font-bold mt-1">Langkah Strategis</p>
                         </div>
                     </div>
-                    <div class="flex-grow institutional-list">
-                        {!! $institutional['misi'] ?? '<ul><li>Melindungi Hak Asasi Manusia.</li><li>Mewujudkan Pemasyarakatan yang bersih dan melayani.</li><li>Meningkatkan pembinaan kepribadian dan kemandirian.</li></ul>' !!}
+                    <div class="flex-grow misi-list">
+                        {!! $institutional['misi'] ?? '<ol><li>Melindungi Hak Asasi Manusia.</li><li>Mewujudkan Pemasyarakatan yang bersih dan melayani.</li><li>Meningkatkan pembinaan kepribadian dan kemandirian.</li></ol>' !!}
                     </div>
                 </div>
             </div>
