@@ -67,6 +67,7 @@ class SendWhatsAppPendingNotification implements ShouldQueue
 
         if ($ok) {
             \Illuminate\Support\Facades\Cache::forget("wa_failures:{$normalized}");
+            $this->kunjungan->updateNotificationLog('whatsapp', 'sent');
             Log::info("PendingJob: WA sent for Kunjungan ID: {$this->kunjungan->id}. Response: " . ($response ? $response->body() : 'no response'));
             return;
         }

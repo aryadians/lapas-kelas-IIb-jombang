@@ -138,9 +138,10 @@ class KunjunganController extends Controller
                 if ($status === KunjunganStatus::COMPLETED) {
                     $surveyUrl = 'https://star-survei3a.kemenimipas.go.id/ly/8ITXJREv';
                     Mail::to($kunjungan->email_pengunjung)->queue(new \App\Mail\SurveyLinkMail($kunjungan, $surveyUrl));
-                } elseif (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::REJECTED])) {
+                } elseif (in_array($status, [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::REJECTED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
                     $qrPath = null;
-                    if ($status === KunjunganStatus::APPROVED) {
+                    // QR Code relevan untuk PENDING (Konfirmasi) dan APPROVED/CALLED/IN_PROGRESS (Tiket)
+                    if (in_array($status, [KunjunganStatus::PENDING, KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
                         if (\Storage::disk('public')->exists("qrcodes/{$kunjungan->id}.png")) {
                             $qrPath = \Storage::disk('public')->path("qrcodes/{$kunjungan->id}.png");
                         }
@@ -160,7 +161,10 @@ class KunjunganController extends Controller
 
                 if ($status === KunjunganStatus::COMPLETED) {
                     \App\Jobs\SendWhatsAppCompletedNotification::dispatch($kunjungan);
-                } elseif ($status === KunjunganStatus::APPROVED) {
+                } elseif ($status === KunjunganStatus::PENDING) {
+                    $qrUrl = $kunjungan->barcode ?: \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
+                    \App\Jobs\SendWhatsAppPendingNotification::dispatch($kunjungan, $qrUrl);
+                } elseif (in_array($status, [KunjunganStatus::APPROVED, KunjunganStatus::CALLED, KunjunganStatus::IN_PROGRESS])) {
                     $qrUrl = $kunjungan->barcode ?: \Storage::disk('public')->url("qrcodes/{$kunjungan->id}.png");
                     \App\Jobs\SendWhatsAppApprovedNotification::dispatch($kunjungan, $qrUrl);
                 } elseif ($status === KunjunganStatus::REJECTED) {
@@ -169,7 +173,7 @@ class KunjunganController extends Controller
                     throw new \Exception('Status kunjungan tidak mendukung pengiriman notifikasi ini.');
                 }
                 
-                // Job WA akan mengupdate log secara otomatis saat selesai (Job handle() method)
+                // Job WA akan mengupdate log secara otomatis saat selesai
             }
 
             return back()->with('success', 'Permintaan kirim ulang notifikasi ' . strtoupper($type) . ' telah diproses.');
