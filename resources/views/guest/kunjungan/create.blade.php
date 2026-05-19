@@ -568,12 +568,15 @@
             <div class="p-4 sm:p-10">
                 {{-- GENERAL ANNOUNCEMENT FORMULIR --}}
                 @if(!empty($generalAnnouncement) && $isGeneralAnnouncementActive)
-                <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded-2xl p-5 shadow-sm flex items-start gap-4">
-                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 flex-shrink-0 mt-0.5">
-                        <i class="fa-solid fa-circle-info text-xl"></i>
-                    </div>
-                    <div class="text-yellow-800 text-sm font-medium leading-relaxed w-full">
-                        {!! $generalAnnouncement !!}
+                <div class="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/60 shadow-lg shadow-blue-900/5">
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-blue-500 to-indigo-600"></div>
+                    <div class="p-5 sm:p-6 flex items-start gap-4 sm:gap-5">
+                        <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0 mt-1">
+                            <i class="fa-solid fa-bullhorn text-xl"></i>
+                        </div>
+                        <div class="text-slate-700 text-sm sm:text-base leading-relaxed w-full prose prose-blue max-w-none prose-p:my-1 prose-strong:text-blue-900">
+                            {!! $generalAnnouncement !!}
+                        </div>
                     </div>
                 </div>
                 @endif
