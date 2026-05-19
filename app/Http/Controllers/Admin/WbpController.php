@@ -82,16 +82,20 @@ class WbpController extends Controller
             // SINKRONISASI STATUS BEBAS:
             // WBP yang tidak ada dalam file import baru akan diubah statusnya menjadi 'Bebas'
             if (!empty($import->importedNoRegs)) {
-                Wbp::whereNotIn('no_registrasi', $import->importedNoRegs)
+                $updatedCount = Wbp::whereNotIn('no_registrasi', $import->importedNoRegs)
+                   ->where('status', '!=', 'Bebas') // Hanya update yang belum berstatus Bebas
                    ->update(['status' => 'Bebas']);
+                
+                Log::info("WBP Import: {$updatedCount} WBP diubah statusnya menjadi 'Bebas' karena tidak ada di file import terbaru.");
             }
 
             DB::commit();
             Artisan::call('cache:clear');
 
+            $totalImported = count($import->importedNoRegs);
             return response()->json([
                 'success' => true,
-                'message' => "Database WBP telah berhasil diperbarui!"
+                'message' => "Database WBP telah berhasil diperbarui! Total {$totalImported} WBP diproses."
             ]);
 
         } catch (\Exception $e) {

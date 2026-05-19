@@ -13,6 +13,11 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 class WbpImport implements ToModel, WithChunkReading, WithHeadingRow
 {
     /**
+     * Array untuk menyimpan nomor registrasi yang berhasil diimport
+     */
+    public $importedNoRegs = [];
+
+    /**
      * @param array $row
      *
      * @return Wbp|null
@@ -27,6 +32,9 @@ class WbpImport implements ToModel, WithChunkReading, WithHeadingRow
         if (empty($nama) || empty($noReg)) {
             return null;
         }
+
+        // Track nomor registrasi yang diimport
+        $this->importedNoRegs[] = $noReg;
 
         $tglMasuk     = $this->transformDate($row['tgl_msk_upt'] ?? null);
         $tglEkspirasi = $this->transformDate($row['tgl_ekspirasi'] ?? null);
