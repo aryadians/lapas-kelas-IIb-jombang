@@ -40,6 +40,7 @@ class VisitConfigController extends Controller
             'arrival_tolerance_minutes' => 'required|integer|min:0',
             'announcement_guest_page' => 'nullable|string',
             'general_announcement' => 'nullable|string',
+            'is_general_announcement_active' => 'nullable|boolean',
             'info_terkini' => 'nullable|string',
             // VALIDASI CUSTOM TAHAP II
             'terms_conditions' => 'required|string',
