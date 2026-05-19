@@ -76,50 +76,47 @@ class VisitConfigController extends Controller
 
         // 3. Update Settings
         $settingsToUpdate = [
-            'limit_nik_per_week' => $request->limit_nik_per_week,
-            'limit_wbp_per_week' => $request->limit_wbp_per_week,
-            'limit_wbp_per_day' => $request->limit_wbp_per_day,
-            'registration_lead_time' => $request->registration_lead_time,
-            'enable_guest_edit' => $request->has('enable_guest_edit') ? '1' : '0',
-            'edit_lead_time' => $request->edit_lead_time,
-            'max_followers_allowed' => $request->max_followers_allowed,
-            'visit_duration_minutes' => $request->visit_duration_minutes,
-            'arrival_tolerance_minutes' => $request->arrival_tolerance_minutes,
-            'is_emergency_closed' => $request->has('is_emergency_closed') ? '1' : '0',
-            'announcement_guest_page' => $request->announcement_guest_page ?? '',
-            'general_announcement' => $request->general_announcement ?? '',
-            'is_general_announcement_active' => $request->has('is_general_announcement_active') ? '1' : '0',
-            'info_terkini' => $request->info_terkini ?? '',
-            // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
-            'terms_conditions' => $request->terms_conditions,
-            'helpdesk_whatsapp' => preg_replace('/[^0-9]/', '', $request->helpdesk_whatsapp),
-            'api_token_fonnte' => $request->api_token_fonnte ?? '',
-            'jam_buka_pagi' => $request->jam_buka_pagi,
-            'jam_tutup_pagi' => $request->jam_tutup_pagi,
-            'jam_buka_siang' => $request->jam_buka_siang,
-            'jam_tutup_siang' => $request->jam_tutup_siang,
-            // KONFIGURASI EMAIL
-            'mail_host' => $request->mail_host ?? '',
-            'mail_port' => $request->mail_port ?? '587',
-            'mail_username' => $request->mail_username ?? '',
-            'mail_password' => $request->mail_password ?? '',
-            'mail_encryption' => $request->mail_encryption ?? 'tls',
-            'mail_from_address' => $request->mail_from_address ?? '',
-            'admin_email' => $request->admin_email ?? '',
-            'monday_registration_special' => $request->has('monday_registration_special') ? '1' : '0',
+            'limit_nik_per_week' => ['value' => $request->limit_nik_per_week, 'type' => 'number'],
+            'limit_wbp_per_week' => ['value' => $request->limit_wbp_per_week, 'type' => 'number'],
+            'limit_wbp_per_day' => ['value' => $request->limit_wbp_per_day, 'type' => 'number'],
+            'registration_lead_time' => ['value' => $request->registration_lead_time, 'type' => 'number'],
+            'enable_guest_edit' => ['value' => $request->has('enable_guest_edit') ? '1' : '0', 'type' => 'boolean'],
+            'edit_lead_time' => ['value' => $request->edit_lead_time, 'type' => 'number'],
+            'max_followers_allowed' => ['value' => $request->max_followers_allowed, 'type' => 'number'],
+            'visit_duration_minutes' => ['value' => $request->visit_duration_minutes, 'type' => 'number'],
+            'arrival_tolerance_minutes' => ['value' => $request->arrival_tolerance_minutes, 'type' => 'number'],
+            'is_emergency_closed' => ['value' => $request->has('is_emergency_closed') ? '1' : '0', 'type' => 'boolean'],
+            'announcement_guest_page' => ['value' => $request->announcement_guest_page ?? '', 'type' => 'string'],
+            'general_announcement' => ['value' => $request->general_announcement ?? '', 'type' => 'string'],
+            'is_general_announcement_active' => ['value' => $request->has('is_general_announcement_active') ? '1' : '0', 'type' => 'boolean'],
+            'info_terkini' => ['value' => $request->info_terkini ?? '', 'type' => 'string'],
+            'terms_conditions' => ['value' => $request->terms_conditions, 'type' => 'string'],
+            'helpdesk_whatsapp' => ['value' => preg_replace('/[^0-9]/', '', $request->helpdesk_whatsapp), 'type' => 'string'],
+            'api_token_fonnte' => ['value' => $request->api_token_fonnte ?? '', 'type' => 'string'],
+            'jam_buka_pagi' => ['value' => $request->jam_buka_pagi, 'type' => 'string'],
+            'jam_tutup_pagi' => ['value' => $request->jam_tutup_pagi, 'type' => 'string'],
+            'jam_buka_siang' => ['value' => $request->jam_buka_siang, 'type' => 'string'],
+            'jam_tutup_siang' => ['value' => $request->jam_tutup_siang, 'type' => 'string'],
+            'mail_host' => ['value' => $request->mail_host ?? '', 'type' => 'string'],
+            'mail_port' => ['value' => $request->mail_port ?? '587', 'type' => 'string'],
+            'mail_username' => ['value' => $request->mail_username ?? '', 'type' => 'string'],
+            'mail_password' => ['value' => $request->mail_password ?? '', 'type' => 'string'],
+            'mail_encryption' => ['value' => $request->mail_encryption ?? 'tls', 'type' => 'string'],
+            'mail_from_address' => ['value' => $request->mail_from_address ?? '', 'type' => 'string'],
+            'admin_email' => ['value' => $request->admin_email ?? '', 'type' => 'string'],
+            'monday_registration_special' => ['value' => $request->has('monday_registration_special') ? '1' : '0', 'type' => 'boolean'],
         ];
 
-        foreach ($settingsToUpdate as $key => $value) {
-            if ($value !== null) {
-                $updateData = ['value' => $value];
-                
-                // Jika setting belum ada, kita berikan display_name dan type agar tidak error
-                $updateData = array_merge([
-                    'display_name' => ucwords(str_replace('_', ' ', $key)),
-                    'type' => 'number'
-                ], $updateData);
-
-                VisitSetting::updateOrCreate(['key' => $key], $updateData);
+        foreach ($settingsToUpdate as $key => $data) {
+            if ($data['value'] !== null) {
+                VisitSetting::updateOrCreate(
+                    ['key' => $key],
+                    [
+                        'value' => $data['value'],
+                        'type' => $data['type'],
+                        'display_name' => ucwords(str_replace('_', ' ', $key))
+                    ]
+                );
             }
         }
 
