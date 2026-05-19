@@ -317,9 +317,11 @@
                                 <div class="w-14 h-7 bg-red-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-600 shadow-inner"></div>
                             </label>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-bold text-red-800">Teks Pengumuman/Banner Darurat</label>
-                            <textarea name="announcement_guest_page" rows="3" class="w-full p-4 bg-white border-2 border-red-100 focus:border-red-500 rounded-2xl font-medium text-slate-700 focus:ring-0 placeholder-slate-300 text-sm" placeholder="Contoh: Mohon maaf, layanan kunjungan ditutup sementara karena ada sidak mendadak...">{{ $settings['announcement_guest_page'] ?? '' }}</textarea>
+                        <div class="space-y-2" x-data="{ announcementContent: @js($settings['announcement_guest_page'] ?? '') }">
+                            <label class="text-sm font-bold text-red-800">Teks Pengumuman/Banner (Mendukung Format Teks Berwarna)</label>
+                            <input id="announcement_guest_page" type="hidden" name="announcement_guest_page" :value="announcementContent">
+                            <trix-editor input="announcement_guest_page" class="trix-content !min-h-[120px] bg-white border-red-100" x-on:trix-change="announcementContent = $event.target.value"></trix-editor>
+                            <p class="text-[10px] text-red-600 font-medium mt-1">Pengumuman ini akan muncul di bagian atas halaman pendaftaran pengunjung. Kosongkan jika tidak ada pengumuman.</p>
                         </div>
                     </div>
                 </div>
