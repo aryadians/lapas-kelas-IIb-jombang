@@ -152,7 +152,7 @@ class WhatsAppService
                  . "📋 Kode: *{$kunjungan->kode_kunjungan}*\n"
                  . "📅 Tanggal: {$tanggal}\n"
                  . "🕒 Sesi: " . ucfirst($kunjungan->sesi) . "\n"
-                 . "🔢 Estimasi Antrian: *{$kunjungan->nomor_antrian_harian}*\n"
+                 . "🔢 Nomor Antrian: *{$kunjungan->nomor_antrian_harian}*\n"
                  . "⏰ Estimasi Jam: *{$jamDatang}*\n"
                  . "👤 WBP: " . ($kunjungan->wbp->nama ?? '-') . "\n\n"
                  . "⚠️ *INFO PENTING:* ⚠️\n"
@@ -162,7 +162,7 @@ class WhatsAppService
             $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
         }
 
-        $message .= "3. Mohon tunggu notifikasi verifikasi selanjutnya melalui WhatsApp ini.\n\n"
+        $message .= "3. Jumlah pengikut maksimal *4 orang* dan bisa dikunjungi *satu kali*.\n\n"
                  . "Lihat Status Lengkap: {$statusUrl}\n\n"
                  . "Simpan pesan ini sebagai bukti pendaftaran sementara.";
 
@@ -208,7 +208,7 @@ class WhatsAppService
             $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
         }
 
-        $message .= "3. 1 nomor antrian hanya untuk 1 WBP (bisa dikunjungi sekali dalam setiap kunjungan) dan maksimal 4 orang pengunjung.\n\n"
+        $message .= "3. 1 nomor antrian hanya untuk 1 WBP, maksimal *4 orang pengikut*, dan bisa dikunjungi *satu kali*.\n\n"
                  . "Lihat Tiket QR: {$statusUrl}\n\n"
                  . "Tunjukkan QR Code di atas kepada petugas saat tiba di Lapas.";
 
