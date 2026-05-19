@@ -162,7 +162,7 @@ class WhatsAppService
             $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
         }
 
-        $message .= "3. Jumlah pengikut maksimal *4 orang* dan bisa dikunjungi *satu kali*.\n\n"
+        $message .= "3. 1 nomor antrian untuk 1 WBP, maksimal *3 orang pengikut*, dan WBP bisa dikunjungi *1 kali*.\n\n"
                  . "Lihat Status Lengkap: {$statusUrl}\n\n"
                  . "Simpan pesan ini sebagai bukti pendaftaran sementara.";
 
@@ -208,7 +208,7 @@ class WhatsAppService
             $message .= "2. *WAJIB membawa SURAT IZIN dari pihak Penahan* (Kepolisian/Kejaksaan/Pengadilan).\n";
         }
 
-        $message .= "3. 1 nomor antrian hanya untuk 1 WBP, maksimal *4 orang pengikut*, dan bisa dikunjungi *satu kali*.\n\n"
+        $message .= "3. 1 nomor antrian untuk 1 WBP, maksimal *3 orang pengikut*, dan WBP bisa dikunjungi *1 kali*.\n\n"
                  . "Lihat Tiket QR: {$statusUrl}\n\n"
                  . "Tunjukkan QR Code di atas kepada petugas saat tiba di Lapas.";
 

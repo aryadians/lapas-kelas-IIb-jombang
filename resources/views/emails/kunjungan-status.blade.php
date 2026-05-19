@@ -199,7 +199,7 @@
                             </li>
                             @endif
                             
-                            <li style="margin-bottom: 5px;">1 nomor antrian hanya berlaku untuk 1 WBP, maksimal <strong>4 orang pengikut</strong>, dan bisa dikunjungi <strong>satu kali</strong>.</li>
+                            <li style="margin-bottom: 5px;">1 nomor antrian untuk 1 WBP, maksimal <strong>3 orang pengikut</strong>, dan WBP bisa dikunjungi <strong>1 kali</strong>.</li>
                             <li style="margin-bottom: 5px;">Dilarang membawa barang terlarang (HP, Sajam, Narkoba, dsb).</li>
                         </ul>
                     </div>
