@@ -759,13 +759,13 @@
                                 </label>
                                 <div class="flex gap-2 rounded-xl bg-slate-200 p-1 border-2 border-gray-200">
                                     <label class="flex-1 text-center cursor-pointer">
-                                        <input type="radio" name="preferred_notification_channel" value="email" class="hidden peer" checked>
+                                        <input type="radio" name="preferred_notification_channel" value="email" class="hidden peer" {{ old('preferred_notification_channel') == 'email' ? 'checked' : '' }}>
                                         <span class="block w-full py-2 px-4 rounded-lg text-sm font-semibold text-slate-600 bg-white peer-checked:bg-blue-600 peer-checked:text-white peer-checked:shadow-md transition-all">
                                             <i class="fa-solid fa-envelope mr-1"></i> Email
                                         </span>
                                     </label>
                                     <label class="flex-1 text-center cursor-pointer">
-                                        <input type="radio" name="preferred_notification_channel" value="whatsapp" class="hidden peer" {{ old('preferred_notification_channel') == 'whatsapp' ? 'checked' : '' }}>
+                                        <input type="radio" name="preferred_notification_channel" value="whatsapp" class="hidden peer" checked>
                                         <span class="block w-full py-2 px-4 rounded-lg text-sm font-semibold text-slate-600 bg-white peer-checked:bg-green-600 peer-checked:text-white peer-checked:shadow-md transition-all">
                                             <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp
                                         </span>
