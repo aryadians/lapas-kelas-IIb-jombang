@@ -18,12 +18,6 @@ class WbpController extends Controller
      */
     public function index(Request $request)
     {
-        // Otomatis update status WBP yang sudah ekspirasi (lewat hari ini) menjadi 'Bebas'
-        Wbp::where('status', 'Aktif')
-            ->whereNotNull('tanggal_ekspirasi')
-            ->where('tanggal_ekspirasi', '<', now()->toDateString())
-            ->update(['status' => 'Bebas']);
-
         $query = Wbp::query();
 
         // Filter Status (Default: Aktif)

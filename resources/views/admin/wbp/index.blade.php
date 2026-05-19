@@ -55,10 +55,6 @@
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Sidang
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Bebas', 'search' => request('search'), 'sort' => request('sort')]) }}" 
-            class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Bebas' ? 'bg-white text-rose-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
-            WBP Bebas / Ekspirasi
-        </a>
         <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search'), 'sort' => request('sort')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Semua' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Semua
@@ -143,12 +139,6 @@
         <div class="overflow-x-auto">
             @forelse($wbps as $wbp)
             @php
-                $sisa = $wbp->tanggal_ekspirasi
-                    ? \Carbon\Carbon::parse($wbp->tanggal_ekspirasi)->diffInDays(now(), false)
-                    : null;
-                $isExpired = $sisa !== null && $sisa > 0;
-                $isNearExpiry = $sisa !== null && $sisa > -90 && !$isExpired;
-
                 // Avatar color from name
                 $colors = ['indigo','purple','blue','emerald','rose','amber','cyan','teal'];
                 $color = $colors[abs(crc32($wbp->nama)) % count($colors)];
@@ -219,18 +209,7 @@
                         <div class="text-slate-400">
                             Masuk: <span class="font-semibold text-slate-600">{{ $wbp->tanggal_masuk ? \Carbon\Carbon::parse($wbp->tanggal_masuk)->format('d/m/Y') : '-' }}</span>
                         </div>
-                        <div class="text-slate-400">
-                            Ekspirasi:
-                            <span class="font-bold {{ $isExpired ? 'text-red-600' : ($isNearExpiry ? 'text-amber-600' : 'text-slate-600') }}">
-                                {{ $wbp->tanggal_ekspirasi ? \Carbon\Carbon::parse($wbp->tanggal_ekspirasi)->format('d/m/Y') : '-' }}
-                            </span>
-                        </div>
                     </div>
-                    @if($isExpired)
-                    <span class="hidden md:inline-flex text-[9px] font-black bg-red-100 text-red-600 border border-red-200 px-2 py-1 rounded-full uppercase tracking-widest">Habis</span>
-                    @elseif($isNearExpiry)
-                    <span class="hidden md:inline-flex text-[9px] font-black bg-amber-100 text-amber-600 border border-amber-200 px-2 py-1 rounded-full uppercase tracking-widest">Segera</span>
-                    @endif
                 </div>
 
                 {{-- Actions --}}
