@@ -186,7 +186,7 @@ class KunjunganController extends Controller
                 $q->whereDate('start_date', '<=', $tanggal)
                   ->whereDate('end_date', '>=', $tanggal);
             }])
-            ->where('status', 'Aktif') // Hanya tampilkan yang aktif
+            // Tampilkan semua WBP tanpa filter status
             ->where(function($q) use ($search) {
                 $q->where('nama', 'LIKE', "%{$search}%")
                   ->orWhere('no_registrasi', 'LIKE', "%{$search}%");
