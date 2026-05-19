@@ -343,14 +343,14 @@
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" name="is_general_announcement_active" value="1" class="sr-only peer" {{ ($settings['is_general_announcement_active'] ?? '0') == '1' ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_general_announcement_active" value="1" class="sr-only peer" {{ old('is_general_announcement_active', $settings['is_general_announcement_active'] ?? '0') == '1' ? 'checked' : '' }}>
                         <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
                     </label>
                 </div>
                 <div class="p-8 space-y-5">
                     <div class="space-y-2">
                         <label class="text-sm font-bold text-slate-700">Isi Pengumuman</label>
-                        <textarea name="general_announcement" rows="4" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 focus:border-yellow-500 focus:ring-0 text-sm" placeholder="Masukkan pengumuman penting di sini...">{{ $settings['general_announcement'] ?? '' }}</textarea>
+                        <textarea name="general_announcement" rows="4" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 focus:border-yellow-500 focus:ring-0 text-sm" placeholder="Masukkan pengumuman penting di sini...">{{ old('general_announcement', $settings['general_announcement'] ?? '') }}</textarea>
                         <p class="text-[10px] text-slate-400 italic mt-1">Gunakan toggle di sudut kanan atas untuk mengaktifkan/menonaktifkan pengumuman ini.</p>
                     </div>
                 </div>

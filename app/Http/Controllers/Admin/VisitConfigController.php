@@ -88,6 +88,7 @@ class VisitConfigController extends Controller
             'announcement_guest_page' => $request->announcement_guest_page ?? '',
             'general_announcement' => $request->general_announcement ?? '',
             'is_general_announcement_active' => $request->has('is_general_announcement_active') ? '1' : '0',
+            'info_terkini' => $request->info_terkini ?? '',
             // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
             'terms_conditions' => $request->terms_conditions,
             'helpdesk_whatsapp' => preg_replace('/[^0-9]/', '', $request->helpdesk_whatsapp),
