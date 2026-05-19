@@ -328,6 +328,32 @@
 
         {{-- ════════════════════════════════════════════ TAB 3: KONTEN & INFO PUBLIK ════════════════════════════════════════════ --}}
         <div x-show="tab === 'konten'" x-transition:enter="animate__animated animate__fadeIn" class="space-y-8">
+            {{-- Pengumuman Formulir Pendaftaran --}}
+            <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                <div class="bg-slate-50 px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="w-11 h-11 bg-yellow-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-yellow-200">
+                            <i class="fas fa-bullhorn text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight">Pengumuman Formulir Pendaftaran</h2>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Teks yang akan muncul di bawah judul formulir kunjungan</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" name="is_general_announcement_active" value="1" class="sr-only peer" {{ ($settings['is_general_announcement_active'] ?? '0') == '1' ? 'checked' : '' }}>
+                        <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-500 shadow-inner"></div>
+                    </label>
+                </div>
+                <div class="p-8 space-y-5">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold text-slate-700">Isi Pengumuman</label>
+                        <textarea name="general_announcement" rows="4" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-medium text-slate-700 focus:border-yellow-500 focus:ring-0 text-sm" placeholder="Masukkan pengumuman penting di sini...">{{ $settings['general_announcement'] ?? '' }}</textarea>
+                        <p class="text-[10px] text-slate-400 italic mt-1">Gunakan toggle di sudut kanan atas untuk mengaktifkan/menonaktifkan pengumuman ini.</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Syarat & Ketentuan --}}
             <div class="bg-white rounded-[2rem] shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
                 <div class="bg-slate-50 px-8 py-5 border-b border-slate-100 flex items-center gap-4">

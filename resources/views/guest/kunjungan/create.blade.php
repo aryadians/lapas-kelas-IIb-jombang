@@ -566,6 +566,18 @@
             </div>
 
             <div class="p-4 sm:p-10">
+                {{-- GENERAL ANNOUNCEMENT FORMULIR --}}
+                @if(!empty($generalAnnouncement) && $isGeneralAnnouncementActive)
+                <div class="mb-6 bg-yellow-50 border border-yellow-200 rounded-2xl p-5 shadow-sm flex items-start gap-4">
+                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-circle-info text-xl"></i>
+                    </div>
+                    <div class="text-yellow-800 text-sm font-medium leading-relaxed w-full">
+                        {!! $generalAnnouncement !!}
+                    </div>
+                </div>
+                @endif
+
                 {{-- STEP 0: REAL-TIME QUOTA CHECKER (UX IMPROVEMENT) --}}
                 <div class="mb-10 bg-blue-50 border-2 border-blue-100 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center gap-3 mb-4">

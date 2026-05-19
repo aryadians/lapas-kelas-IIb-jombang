@@ -49,6 +49,8 @@ class KunjunganController extends Controller
         $maxFollowers = (int) ($visitSettings['max_followers_allowed'] ?? 4);
         $isEmergencyClosed = ($visitSettings['is_emergency_closed'] ?? '0') == '1';
         $announcement = $visitSettings['announcement_guest_page'] ?? null;
+        $generalAnnouncement = $visitSettings['general_announcement'] ?? '';
+        $isGeneralAnnouncementActive = ($visitSettings['is_general_announcement_active'] ?? '0') == '1';
         $termsConditions = $visitSettings['terms_conditions'] ?? '';
         $helpdeskWhatsapp = $visitSettings['helpdesk_whatsapp'] ?? '';
         $maxLeadTime = (int) ($visitSettings['edit_lead_time'] ?? 14);
@@ -168,6 +170,8 @@ class KunjunganController extends Controller
             'maxFollowers' => $maxFollowers,
             'isEmergencyClosed' => $isEmergencyClosed,
             'announcement' => $announcement,
+            'generalAnnouncement' => $generalAnnouncement,
+            'isGeneralAnnouncementActive' => $isGeneralAnnouncementActive,
             'termsConditions' => $termsConditions,
             'helpdeskWhatsapp' => $helpdeskWhatsapp,
             'closedDaysString' => $closedDaysString,

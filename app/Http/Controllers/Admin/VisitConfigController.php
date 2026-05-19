@@ -39,6 +39,7 @@ class VisitConfigController extends Controller
             'visit_duration_minutes' => 'required|integer|min:1',
             'arrival_tolerance_minutes' => 'required|integer|min:0',
             'announcement_guest_page' => 'nullable|string',
+            'general_announcement' => 'nullable|string',
             'info_terkini' => 'nullable|string',
             // VALIDASI CUSTOM TAHAP II
             'terms_conditions' => 'required|string',
@@ -85,6 +86,8 @@ class VisitConfigController extends Controller
             'arrival_tolerance_minutes' => $request->arrival_tolerance_minutes,
             'is_emergency_closed' => $request->has('is_emergency_closed') ? '1' : '0',
             'announcement_guest_page' => $request->announcement_guest_page ?? '',
+            'general_announcement' => $request->general_announcement ?? '',
+            'is_general_announcement_active' => $request->has('is_general_announcement_active') ? '1' : '0',
             // DATA TAMBAHAN FITUR MANAJEMEN LAPAS TAHAP II
             'terms_conditions' => $request->terms_conditions,
             'helpdesk_whatsapp' => preg_replace('/[^0-9]/', '', $request->helpdesk_whatsapp),
