@@ -36,26 +36,8 @@
 
 {{-- WRAPPER UTAMA DENGAN STATE ALPINE JS --}}
 <div x-data="{
-    showForm: {{ (!$isEmergencyClosed && (session('errors') || session('error') || request()->has('form'))) ? 'true' : 'false' }},
-    showAnnouncement: true
+    showForm: {{ (!$isEmergencyClosed && (session('errors') || session('error') || request()->has('form'))) ? 'true' : 'false' }}
 }" class="bg-slate-50 min-h-screen pb-20">
-
-    {{-- PENGUMUMAN (TAMPIL JIKA ADA DAN TIDAK EMERGENCY CLOSED) --}}
-    @if(!empty($announcement) && !$isEmergencyClosed)
-    <div x-show="showAnnouncement" x-transition.duration.300ms class="bg-yellow-500 text-yellow-900 px-4 py-3 shadow-md relative z-50">
-        <div class="max-w-7xl mx-auto flex items-start sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3 font-medium">
-                <i class="fa-solid fa-bullhorn text-xl"></i>
-                <div class="text-sm sm:text-base leading-snug">
-                    {!! $announcement !!}
-                </div>
-            </div>
-            <button @click="showAnnouncement = false" class="text-yellow-800 hover:text-yellow-900 focus:outline-none flex-shrink-0 bg-yellow-400 hover:bg-yellow-300 rounded-full p-1 transition-colors">
-                <i class="fa-solid fa-xmark text-lg w-6 h-6 flex items-center justify-center"></i>
-            </button>
-        </div>
-    </div>
-    @endif
 
     {{-- ============================================================== --}}
     {{-- BAGIAN 1: INFORMASI & TATA TERTIB (FULL UI) --}}
@@ -432,7 +414,7 @@
                         <h2 class="text-2xl sm:text-4xl font-black text-white uppercase tracking-wider mb-4 drop-shadow-md">Pendaftaran Ditutup Sementara</h2>
                         <div class="w-24 h-1 bg-yellow-400 mx-auto mt-2 mb-6 rounded-full opacity-50"></div>
                         <p class="text-white text-base sm:text-xl font-medium leading-relaxed px-4">
-                            {{ $announcement ?: 'Mohon maaf, layanan pendaftaran kunjungan tatap muka sedang ditutup untuk sementara waktu. Silakan hubungi petugas atau kembali lagi nanti.' }}
+                            {!! $announcement ?: 'Mohon maaf, layanan pendaftaran kunjungan tatap muka sedang ditutup untuk sementara waktu. Silakan hubungi petugas atau kembali lagi nanti.' !!}
                         </p>
                     </div>
                 @else
