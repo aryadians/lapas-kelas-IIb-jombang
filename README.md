@@ -29,6 +29,12 @@
 
 ## 🆕 Pembaruan Terbaru
 
+### 🚀 Versi 1.8.3 (Penyempurnaan Import & Status WBP)
+
+- **🔄 Resolusi Duplikasi Registrasi Otomatis** — Fitur cerdas untuk menangani duplikasi nomor registrasi (`no_registrasi`) pada file Excel yang di-import dengan menambahkan suffix unik secara dinamis (misalnya `-2`, `-3`), memastikan semua baris berhasil tersimpan dan ditampilkan.
+- **🛡️ Penyesuaian Sinkronisasi Status WBP** — Menghapus sinkronisasi otomatis status "Bebas" saat import data baru guna mencegah data WBP aktif terubah statusnya akibat potongan file Excel yang tidak lengkap.
+- **⚙️ Pencocokan Header Fleksibel** — Peningkatan algoritma import untuk secara otomatis mencocokkan struktur kolom header yang bergeser atau memiliki judul/title block dekoratif di baris teratas.
+
 ### 🚀 Versi 1.8.2 (Pembatasan & Disiplin)
 
 - **🛡️ Sistem Pembatasan Kunjungan Otomatis** — Fitur baru untuk memblokir kunjungan WBP yang sedang dalam masa *Mapenaling*, *Strap Cell*, atau *Sidang TPP*.
@@ -87,6 +93,43 @@
 | **WBP Management**          | Sinkronisasi data Warga Binaan, lokasi blok, sel, masa tahanan, dan kode tahanan.    |   ✅   |
 | **Manajemen Banner**        | Unggah dan kelola slideshow gambar/video interaktif dengan efek Lightbox.            |   ✅   |
 | **Panel Konfigurasi 5-Tab** | Semua pengaturan sistem dikelola dari satu halaman terorganisir.                     |   ✅   |
+
+---
+
+## 🧠 Logika Bisnis & Alur Kerja Utama (Core Business Logic)
+
+### 🔄 1. Siklus Hidup Kunjungan (Visit Lifecycle Status Flow)
+Alur transaksi kunjungan dirancang terstruktur dari awal registrasi hingga survei selesai:
+1. **`PENDING`** 📥: Pengunjung melakukan pendaftaran secara mandiri (online) atau dibantu petugas (offline). Sistem memeriksa kuota harian dan masa pembatasan WBP.
+2. **`APPROVED`** / **`REJECTED`** ⚖️: Petugas memverifikasi kelengkapan KTP dan relasi keluarga. Tiket QR Code dikirim otomatis via WhatsApp/Email jika disetujui, atau alasan penolakan jika ditolak.
+3. **`ON_QUEUE`** 🚪: Pengunjung tiba di gerbang Lapas dan petugas memindai QR Code untuk menandai kehadiran.
+4. **`CALLED`** 📢: Petugas memanggil nomor antrian menggunakan suara announcer otomatis (TTS).
+5. **`SERVING`** 🤝: Pengunjung berada di ruang tatap muka menemui WBP.
+6. **`COMPLETED`** ✅: Kunjungan selesai, sistem otomatis mengirimkan tautan survei kepuasan pelanggan (IKM) melalui pesan WhatsApp.
+
+### 📢 2. Pengantrean Tugas Berat (Background Jobs & Queues)
+Demi kenyamanan navigasi pengguna, tugas-tugas dengan latency tinggi diproses di latar belakang menggunakan **Laravel Queue & Redis**:
+- **`ImageService`**: Mengompres gambar KTP dan foto pengikut menggunakan intervensi GD untuk mengoptimalkan ruang penyimpanan sebelum dikonversi menjadi format Base64.
+- **`WhatsAppService`**: Pengiriman pesan teks/notifikasi melalui Fonnte atau Wablas API dijalankan secara asinkron.
+- **`KunjunganObserver`**: Memantau perubahan status kunjungan dan secara otomatis memicu antrean pengiriman email serta notifikasi WhatsApp.
+
+### 🛡️ 3. Sistem Disiplin & Pembatasan WBP
+Untuk menjaga ketertiban, sistem melarang pendaftaran kunjungan ke WBP yang memiliki catatan disiplin aktif:
+- **Tipe Pembatasan**: *Mapenaling* (Masa Pengenalan Lingkungan), *Strap Cell* (Sel Sunyi), dan *Sidang TPP*.
+- **Blokir Registrasi**: Form pendaftaran online otomatis memblokir pencarian dan reservasi terhadap WBP yang sedang dibatasi.
+- **Broadcast Pembatalan Otomatis**: Jika WBP mendadak dibatasi setelah kunjungan disetujui, sistem akan membatalkan kunjungan secara massal dan mengirimkan notifikasi penolakan via WhatsApp secara otomatis kepada pengunjung terdaftar.
+
+---
+
+## 📂 Struktur Data & Arsitektur Model Utama (Core Database Models)
+
+Desain database Si-LAKU dioptimalkan untuk performa tinggi dan integritas data:
+- **`User`** (`users`): Pengguna sistem dengan otorisasi berbasis peran (Role-Based Access Control - RBAC) yaitu `admin`, `superadmin` (Kalapas), dan `petugas`.
+- **`Wbp`** (`wbps`): Data master Warga Binaan Pemasyarakatan, mencakup nomor registrasi unik, nama, blok, sel kamar, tanggal masuk, tanggal ekspirasi, serta status hukum (Narapidana/Tahanan).
+- **`ProfilPengunjung`** (`profil_pengunjungs`): Menyimpan data master pengunjung (NIK, nama, alamat, nomor hp) untuk mempercepat pengisian otomatis pada pendaftaran berulang.
+- **`Kunjungan`** (`kunjungans`): Tabel transaksi sentral yang menyimpan jadwal kunjungan, sesi (pagi/siang), nomor antrian harian, token QR, tipe pendaftaran (online/offline), dan status alur hidup kunjungan.
+- **`Pengikut`** (`pengikuts`): Relasi one-to-many ke kunjungan untuk menyimpan data pengikut keluarga yang ikut serta menemani pengunjung utama.
+- **`AntrianStatus`** (`antrian_status`): Memantau real-time display status antrean yang terintegrasi dengan layar TV antrean.
 
 ---
 
