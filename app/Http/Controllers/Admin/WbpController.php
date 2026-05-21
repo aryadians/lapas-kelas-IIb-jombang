@@ -79,15 +79,7 @@ class WbpController extends Controller
             $import = new \App\Imports\WbpImport;
             \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
 
-            // SINKRONISASI STATUS BEBAS:
-            // WBP yang tidak ada dalam file import baru akan diubah statusnya menjadi 'Bebas'
-            if (!empty($import->importedNoRegs)) {
-                $updatedCount = Wbp::whereNotIn('no_registrasi', $import->importedNoRegs)
-                   ->where('status', '!=', 'Bebas') // Hanya update yang belum berstatus Bebas
-                   ->update(['status' => 'Bebas']);
-                
-                Log::info("WBP Import: {$updatedCount} WBP diubah statusnya menjadi 'Bebas' karena tidak ada di file import terbaru.");
-            }
+
 
             DB::commit();
             Artisan::call('cache:clear');
