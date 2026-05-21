@@ -129,10 +129,15 @@ class WbpImport implements ToCollection
                 continue;
             }
 
-            // Skip if this no_registrasi has already been processed in this import run (prevent duplicates in file)
-            if (in_array($noReg, $processedNoRegs)) {
-                continue;
+            // Handle duplicate no_registrasi within the import file by appending a suffix
+            $originalNoReg = $noReg;
+            $resolvedNoReg = $noReg;
+            $suffix = 1;
+            while (in_array($resolvedNoReg, $processedNoRegs)) {
+                $suffix++;
+                $resolvedNoReg = $originalNoReg . '-' . $suffix;
             }
+            $noReg = $resolvedNoReg;
             $processedNoRegs[] = $noReg;
             $this->importedNoRegs[] = $noReg;
 

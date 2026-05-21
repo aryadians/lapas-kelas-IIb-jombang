@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Wbp;
 use Carbon\Carbon;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 class UploadValidationTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_foto_ktp_exceeding_2mb_is_rejected()
     {
         Storage::fake('public');
