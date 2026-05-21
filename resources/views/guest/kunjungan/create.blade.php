@@ -227,7 +227,7 @@
                     <div class="relative flex flex-col items-center text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 group hover:border-yellow-300 card-hover-scale">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-900 to-blue-800 text-yellow-400 rounded-full flex items-center justify-center font-bold text-lg sm:text-xl mb-4 shadow-lg group-hover:scale-110 transition-all duration-300">1</div>
                         <h4 class="font-bold text-slate-900 text-lg mb-2">Daftar Online (H-1)</h4>
-                        <p class="text-sm text-slate-600">Daftar via Website atau WA: <br><strong class="text-blue-700">{{ $helpdeskWhatsapp ?: '08573333400' }}</strong></p>
+                        <p class="text-sm text-slate-600">Daftar melalui website resmi.</p>
                     </div>
                     <div class="relative flex flex-col items-center text-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl hover:shadow-xl transition-all duration-300 border border-slate-200 group hover:border-yellow-300 card-hover-scale">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white border-4 border-slate-200 text-slate-500 rounded-full flex items-center justify-center font-bold text-lg sm:text-xl mb-4 shadow-lg group-hover:border-yellow-500 group-hover:text-yellow-600 transition-all duration-300">2</div>
