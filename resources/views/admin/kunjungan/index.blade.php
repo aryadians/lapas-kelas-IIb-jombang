@@ -222,6 +222,7 @@
                 @foreach([
                     ['type' => 'approved', 'color' => 'emerald', 'icon' => 'check-double', 'label' => 'Setujui'],
                     ['type' => 'completed', 'color' => 'blue', 'icon' => 'flag-checkered', 'label' => 'Selesai'],
+                    ['type' => 'broadcast-cancel', 'color' => 'orange', 'icon' => 'bullhorn', 'label' => 'Broadcast Batal'],
                     ['type' => 'delete', 'color' => 'rose', 'icon' => 'trash-alt', 'label' => 'Hapus']
                 ] as $btn)
                     <button type="button" onclick="submitBulkAction('{{ $btn['type'] }}')" 
@@ -465,14 +466,34 @@ function submitBulkAction(actionType) {
     const form = document.getElementById('bulk-action-form');
     if(!document.querySelectorAll('.kunjungan-checkbox:checked').length) return;
 
+    let title = 'Proses Data Masal?';
+    let text = 'Semua data terpilih akan diproses.';
+    let icon = 'warning';
+    let confirmBtn = 'Ya, Proses!';
+    let confirmClass = 'from-slate-800 to-black shadow-slate-900/50';
+
+    if (actionType === 'broadcast-cancel') {
+        title = '📢 Broadcast Batal Masal?';
+        text = 'Pendaftaran kunjungan terpilih yang WBP-nya sedang dibatasi akan dibatalkan otomatis dan dikirimi notifikasi WA/Email.';
+        icon = 'warning';
+        confirmBtn = 'Ya, Kirim & Batalkan';
+        confirmClass = 'from-orange-500 to-amber-600 shadow-orange-500/50';
+    }
+
     Swal.fire({
-        ...swalTheme3D, title: 'Proses Data Masal?', text: `Semua data terpilih akan diproses.`, icon: 'warning',
-        showCancelButton: true, confirmButtonText: "Ya, Proses!",
-        customClass: { ...swalTheme3D.customClass, confirmButton: swalTheme3D.customClass.confirmButton + ' from-slate-800 to-black shadow-slate-900/50' }
+        ...swalTheme3D, title: title, text: text, icon: icon,
+        showCancelButton: true, confirmButtonText: confirmBtn,
+        customClass: { ...swalTheme3D.customClass, confirmButton: swalTheme3D.customClass.confirmButton + ' ' + confirmClass }
     }).then(r => { 
         if(r.isConfirmed) { 
-            form.action = actionType === 'delete' ? "{{ route('admin.kunjungan.bulk-delete') }}" : "{{ route('admin.kunjungan.bulk-update') }}";
-            let inp = document.createElement('input'); inp.type = 'hidden'; inp.name = 'status'; inp.value = actionType; form.appendChild(inp);
+            if (actionType === 'broadcast-cancel') {
+                form.action = "{{ route('admin.kunjungan.bulk-broadcast-cancel') }}";
+            } else if (actionType === 'delete') {
+                form.action = "{{ route('admin.kunjungan.bulk-delete') }}";
+            } else {
+                form.action = "{{ route('admin.kunjungan.bulk-update') }}";
+                let inp = document.createElement('input'); inp.type = 'hidden'; inp.name = 'status'; inp.value = actionType; form.appendChild(inp);
+            }
             form.submit(); 
         } 
     });

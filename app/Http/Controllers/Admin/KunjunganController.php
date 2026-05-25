@@ -526,6 +526,47 @@ class KunjunganController extends Controller
     }
 
     /**
+     * Broadcast pembatalan kunjungan massal untuk WBP yang dibatasi
+     */
+    public function bulkBroadcastCancel(Request $request)
+    {
+        $request->validate([
+            'ids'   => 'required|array|min:1',
+            'ids.*' => 'integer|exists:kunjungans,id',
+        ]);
+
+        $ids = $request->input('ids');
+        $kunjungans = Kunjungan::with('wbp.restrictions')->whereIn('id', $ids)->get();
+        $countKunjungan = 0;
+        $failedCount = 0;
+
+        foreach ($kunjungans as $kunjungan) {
+            $tglVisit = $kunjungan->tanggal_kunjungan;
+            $restriction = $kunjungan->wbp->restrictions->filter(function($r) use ($tglVisit) {
+                return $r->start_date <= $tglVisit && $r->end_date >= $tglVisit;
+            })->first();
+
+            if ($restriction) {
+                try {
+                    // Batalkan Kunjungan secara diam-diam tanpa memicu observer biasa
+                    $kunjungan->updateQuietly(['status' => KunjunganStatus::REJECTED]);
+
+                    // Dispatch job broadcast pembatalan khusus pembatasan
+                    \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $kunjungan->wbp_id, $restriction->id);
+                    $countKunjungan++;
+                } catch (\Exception $e) {
+                    Log::error("Bulk Broadcast Cancel Error for Kunjungan {$kunjungan->id}: " . $e->getMessage());
+                    $failedCount++;
+                }
+            } else {
+                $failedCount++;
+            }
+        }
+
+        return redirect()->route('admin.kunjungan.index')->with('success', "Berhasil membatalkan $countKunjungan kunjungan dan mengirim notifikasi broadcast. ($failedCount data kunjungan dilewati karena WBP tidak dalam masa pembatasan).");
+    }
+
+    /**
      * API untuk mengambil statistik dashboard secara real-time.
      */
     public function getStats()

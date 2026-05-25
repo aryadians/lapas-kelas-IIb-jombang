@@ -229,6 +229,7 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::get('kunjungan/verify-success/{kunjungan}', [AdminKunjunganController::class, 'verifySuccess'])->name('admin.kunjungan.verify.success');
     Route::post('kunjungan/bulk-update', [AdminKunjunganController::class, 'bulkUpdate'])->name('admin.kunjungan.bulk-update');
     Route::post('kunjungan/bulk-delete', [AdminKunjunganController::class, 'bulkDelete'])->name('admin.kunjungan.bulk-delete');
+    Route::post('kunjungan/bulk-broadcast-cancel', [AdminKunjunganController::class, 'bulkBroadcastCancel'])->name('admin.kunjungan.bulk-broadcast-cancel');
     Route::patch('kunjungan/{kunjungan}/update-status', [AdminKunjunganController::class, 'updateStatus'])->name('admin.kunjungan.update-status');
     Route::post('kunjungan/{kunjungan}/resend-notification', [AdminKunjunganController::class, 'resendNotification'])->name('admin.kunjungan.resend-notification');
 
