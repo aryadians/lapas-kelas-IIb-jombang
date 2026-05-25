@@ -63,7 +63,7 @@
         <div class="bg-white px-6 py-2.5 rounded-xl text-sm font-black text-teal-600 shadow-sm">
             <i class="fas fa-users mr-2"></i> Database Pengunjung
         </div>
-        <a href="{{ route('admin.visitors.followers') }}" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">
+        <a href="{{ route('admin.visitors.followers', ['limit' => request('limit')]) }}" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">
             <i class="fas fa-user-friends mr-2"></i> Database Pengikut
         </a>
     </div>
@@ -78,6 +78,16 @@
                     <input type="text" name="search" value="{{ request('search') }}"
                         class="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-teal-400 focus:outline-none font-medium text-slate-700 placeholder-slate-400 transition-all text-sm"
                         placeholder="Cari Nama Pengunjung atau NIK...">
+                </div>
+                {{-- Limit --}}
+                <div class="relative lg:w-44">
+                    <select name="limit" onchange="this.form.submit()" class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-teal-400 focus:outline-none font-bold text-slate-600 cursor-pointer text-sm appearance-none transition-all">
+                        <option value="10" {{ request('limit', '10') == '10' ? 'selected' : '' }}>10 data</option>
+                        <option value="25" {{ request('limit') == '25' ? 'selected' : '' }}>25 data</option>
+                        <option value="50" {{ request('limit') == '50' ? 'selected' : '' }}>50 data</option>
+                        <option value="all" {{ request('limit') == 'all' ? 'selected' : '' }}>Tampilkan Semua</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
                 </div>
                 {{-- Sort --}}
                 <div class="relative lg:w-60">
@@ -111,7 +121,7 @@
                         <i class="fas fa-filter"></i> Filter
                     </button>
                     @if(request()->anyFilled(['search','sort','wilayah','has_foto']))
-                    <a href="{{ route('admin.visitors.index') }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95 text-sm flex items-center">
+                    <a href="{{ route('admin.visitors.index', ['limit' => request('limit')]) }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95 text-sm flex items-center">
                         <i class="fas fa-times"></i>
                     </a>
                     @endif

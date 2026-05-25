@@ -75,7 +75,12 @@ class VisitorController extends Controller
                 break;
         }
 
-        $visitors = $query->paginate(10);
+        $limit = $request->get('limit', 10);
+        if ($limit === 'all') {
+            $visitors = $query->paginate(999999);
+        } else {
+            $visitors = $query->paginate((int)$limit);
+        }
         $visitors->appends($request->all());
 
         $visitors->getCollection()->transform(function ($visitor) {
@@ -108,7 +113,8 @@ class VisitorController extends Controller
             })
             ->get();
 
-        $perPage = 15;
+        $limit = $request->get('limit', 15);
+        $perPage = ($limit === 'all') ? 999999 : (int)$limit;
         $page = $request->get('page', 1);
         $followers = new \Illuminate\Pagination\LengthAwarePaginator(
             $allFollowers->forPage($page, $perPage),

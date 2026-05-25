@@ -59,7 +59,12 @@ class WbpController extends Controller
         // Load relasi setelah filter & sort
         $query->with('latestRestriction');
 
-        $wbps = $query->paginate(15)->withQueryString();
+        $limit = $request->get('limit', 15);
+        if ($limit === 'all') {
+            $wbps = $query->paginate(999999)->withQueryString();
+        } else {
+            $wbps = $query->paginate((int)$limit)->withQueryString();
+        }
 
         return view('admin.wbp.index', compact('wbps', 'status', 'sort'));
     }

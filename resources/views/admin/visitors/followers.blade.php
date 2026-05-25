@@ -48,7 +48,7 @@
 
     {{-- SUB-NAV --}}
     <div class="flex gap-2 p-1 bg-slate-100 rounded-2xl w-fit no-print">
-        <a href="{{ route('admin.visitors.index') }}" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">
+        <a href="{{ route('admin.visitors.index', ['limit' => request('limit')]) }}" class="px-6 py-2.5 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-700 transition-all">
             <i class="fas fa-users mr-2"></i> Database Pengunjung
         </a>
         <div class="bg-white px-6 py-2.5 rounded-xl text-sm font-black text-indigo-600 shadow-sm">
@@ -66,12 +66,21 @@
                         class="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:bg-white focus:border-indigo-400 focus:outline-none font-medium text-slate-700 placeholder-slate-400 transition-all text-sm"
                         placeholder="Cari Nama Pengikut atau NIK...">
                 </div>
+                <div class="relative lg:w-44">
+                    <select name="limit" onchange="this.form.submit()" class="w-full pl-4 pr-8 py-3 bg-slate-50 border-2 border-slate-100 rounded-xl focus:border-indigo-400 focus:outline-none font-bold text-slate-600 cursor-pointer text-sm appearance-none transition-all">
+                        <option value="15" {{ request('limit', '15') == '15' ? 'selected' : '' }}>15 data</option>
+                        <option value="50" {{ request('limit') == '50' ? 'selected' : '' }}>50 data</option>
+                        <option value="100" {{ request('limit') == '100' ? 'selected' : '' }}>100 data</option>
+                        <option value="all" {{ request('limit') == 'all' ? 'selected' : '' }}>Tampilkan Semua</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                </div>
                 <div class="flex gap-2">
                     <button type="submit" class="px-8 py-3 bg-slate-900 hover:bg-indigo-600 text-white font-black rounded-xl transition-all shadow-md active:scale-95 text-sm flex items-center gap-2">
                         <i class="fas fa-search"></i> Cari
                     </button>
                     @if(request('search'))
-                    <a href="{{ route('admin.visitors.followers') }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95 text-sm flex items-center">
+                    <a href="{{ route('admin.visitors.followers', ['limit' => request('limit')]) }}" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all active:scale-95 text-sm flex items-center">
                         <i class="fas fa-times"></i>
                     </a>
                     @endif

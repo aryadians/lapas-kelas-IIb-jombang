@@ -39,23 +39,23 @@
 
     {{-- TABS STATUS --}}
     <div class="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl w-fit flex-wrap">
-        <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Aktif', 'search' => request('search'), 'sort' => request('sort'), 'limit' => request('limit')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Aktif' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             WBP Aktif
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Mapenaling', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Mapenaling', 'search' => request('search'), 'sort' => request('sort'), 'limit' => request('limit')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Mapenaling' ? 'bg-white text-amber-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Mapenaling
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Strap Cell', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Strap Cell', 'search' => request('search'), 'sort' => request('sort'), 'limit' => request('limit')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Strap Cell' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Strap Cell
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Sidang', 'search' => request('search'), 'sort' => request('sort'), 'limit' => request('limit')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Sidang' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Sidang
         </a>
-        <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search'), 'sort' => request('sort')]) }}" 
+        <a href="{{ route('admin.wbp.index', ['status' => 'Semua', 'search' => request('search'), 'sort' => request('sort'), 'limit' => request('limit')]) }}" 
             class="px-6 py-2 rounded-xl text-sm font-black transition-all {{ $status === 'Semua' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700' }}">
             Semua
         </a>
@@ -112,6 +112,14 @@
             <form method="GET" class="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto flex-shrink-0">
                 <input type="hidden" name="status" value="{{ request('status', 'Aktif') }}">
                 
+                {{-- Limit Dropdown --}}
+                <select name="limit" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 focus:border-indigo-400 focus:outline-none focus:bg-white transition-all cursor-pointer">
+                    <option value="15" {{ request('limit', '15') == '15' ? 'selected' : '' }}>15 data</option>
+                    <option value="50" {{ request('limit') == '50' ? 'selected' : '' }}>50 data</option>
+                    <option value="100" {{ request('limit') == '100' ? 'selected' : '' }}>100 data</option>
+                    <option value="all" {{ request('limit') == 'all' ? 'selected' : '' }}>Tampilkan Semua</option>
+                </select>
+
                 {{-- Sort Dropdown --}}
                 <select name="sort" onchange="this.form.submit()" class="w-full sm:w-auto px-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 focus:border-indigo-400 focus:outline-none focus:bg-white transition-all cursor-pointer">
                     <option value="terbaru" {{ request('sort', 'terbaru') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
@@ -127,7 +135,7 @@
                         class="w-full pl-9 pr-4 py-2.5 border-2 border-slate-100 bg-slate-50 rounded-xl text-sm font-medium text-slate-700 placeholder-slate-400 focus:border-indigo-400 focus:outline-none focus:bg-white transition-all">
                 </div>
                 @if(request('search'))
-                <a href="{{ route('admin.wbp.index', ['status' => request('status', 'Aktif'), 'sort' => request('sort', 'terbaru')]) }}"
+                <a href="{{ route('admin.wbp.index', ['status' => request('status', 'Aktif'), 'sort' => request('sort', 'terbaru'), 'limit' => request('limit')]) }}"
                     class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 transition-all">
                     <i class="fas fa-times text-xs"></i>
                 </a>
