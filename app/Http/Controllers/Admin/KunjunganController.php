@@ -98,7 +98,12 @@ class KunjunganController extends Controller
             });
         }
 
-        $kunjungans = $query->latest()->paginate(15)->withQueryString();
+        $limit = $request->get('limit', 15);
+        if ($limit === 'all') {
+            $kunjungans = $query->latest()->paginate(999999)->withQueryString();
+        } else {
+            $kunjungans = $query->latest()->paginate((int)$limit)->withQueryString();
+        }
 
         return view('admin.kunjungan.index', compact('kunjungans', 'statsToday'));
     }

@@ -180,12 +180,22 @@
                     </select>
                 </div>
 
+                <div class="lg:w-44">
+                    <label class="text-xs font-bold text-slate-600 mb-2 flex items-center gap-2"><i class="fas fa-list text-indigo-500"></i> Tampilkan</label>
+                    <select name="limit" onchange="this.form.submit()" class="w-full px-4 py-3.5 bg-white border-2 border-slate-100 rounded-2xl focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 font-bold text-slate-700 shadow-sm transition-all cursor-pointer">
+                        <option value="15" {{ request('limit', '15') == '15' ? 'selected' : '' }}>15 data</option>
+                        <option value="50" {{ request('limit') == '50' ? 'selected' : '' }}>50 data</option>
+                        <option value="100" {{ request('limit') == '100' ? 'selected' : '' }}>100 data</option>
+                        <option value="all" {{ request('limit') == 'all' ? 'selected' : '' }}>Tampilkan Semua</option>
+                    </select>
+                </div>
+
                 <div class="flex items-end gap-3 lg:w-48">
                     <button type="submit" class="flex-grow bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl shadow-[0_10px_20px_-10px_rgba(0,0,0,0.5)] transition-all hover:-translate-y-1 active:translate-y-0 text-sm flex justify-center items-center gap-2">
                         <i class="fas fa-filter text-blue-400"></i> Filter
                     </button>
                     @if(request()->hasAny(['search', 'tanggal_kunjungan', 'status']))
-                        <a href="{{ route('admin.kunjungan.index') }}" class="px-5 py-3.5 bg-rose-50 border-2 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white font-bold rounded-2xl transition-all shadow-sm hover:shadow-rose-500/30 flex items-center justify-center" title="Reset">
+                        <a href="{{ route('admin.kunjungan.index', ['limit' => request('limit')]) }}" class="px-5 py-3.5 bg-rose-50 border-2 border-rose-100 text-rose-500 hover:bg-rose-500 hover:text-white font-bold rounded-2xl transition-all shadow-sm hover:shadow-rose-500/30 flex items-center justify-center" title="Reset">
                             <i class="fas fa-undo"></i>
                         </a>
                     @endif
