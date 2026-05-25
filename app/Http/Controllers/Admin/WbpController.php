@@ -312,9 +312,9 @@ class WbpController extends Controller
             $countKunjungan = 0;
 
             foreach ($request->ids as $wbpId) {
-                $wbp = Wbp::with('activeRestriction')->find($wbpId);
-                if ($wbp && $wbp->activeRestriction) {
-                    $restriction = $wbp->activeRestriction;
+                $wbp = Wbp::with('latestRestriction')->find($wbpId);
+                if ($wbp && $wbp->latestRestriction) {
+                    $restriction = $wbp->latestRestriction;
                     
                     // Cari kunjungan yang overlapping dengan masa pembatasan
                     $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
