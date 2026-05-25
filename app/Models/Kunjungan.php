@@ -140,7 +140,7 @@ class Kunjungan extends Model
     public function wbp()
     {
         // belongsTo('ModelTujuan', 'foreign_key_di_tabel_ini')
-        return $this->belongsTo(Wbp::class, 'wbp_id');
+        return $this->belongsTo(Wbp::class, 'wbp_id')->withTrashed();
     }
     public function pengikuts()
     {

@@ -18,6 +18,6 @@ class WbpRestriction extends Model
 
     public function wbp()
     {
-        return $this->belongsTo(Wbp::class);
+        return $this->belongsTo(Wbp::class)->withTrashed();
     }
 }

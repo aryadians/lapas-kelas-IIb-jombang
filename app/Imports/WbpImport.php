@@ -174,6 +174,13 @@ class WbpImport implements ToCollection
             // Update or Create
             $wbp = Wbp::where('no_registrasi', $noReg)->first();
             if ($wbp) {
+                // Proteksi: Jika WBP sedang berada dalam masa pembatasan (Mapenaling, Strap Cell, Sidang, dll.),
+                // data di database tidak boleh ditimpa/diperbarui oleh data baru dari Excel.
+                if ($wbp->latestRestriction()->exists()) {
+                    Log::info("WBP dengan No Reg {$noReg} memiliki pembatasan aktif. Lewati update.");
+                    continue;
+                }
+
                 $wbp->update([
                     'nama'              => strtoupper($nama),
                     'kode_tahanan'      => $inferredKode,
@@ -197,6 +204,11 @@ class WbpImport implements ToCollection
                     'status'            => 'Aktif',
                 ]);
             }
+        }
+
+        // Hapus data WBP lama yang tidak tercantum di file Excel impor
+        if (!empty($processedNoRegs)) {
+            Wbp::whereNotIn('no_registrasi', $processedNoRegs)->delete();
         }
     }
 
