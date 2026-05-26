@@ -29,10 +29,10 @@ Schedule::call(function () {
     \Illuminate\Support\Facades\Log::info('[Scheduler] Log aktivitas lebih dari 1 bulan berhasil dihapus otomatis.');
 })->monthlyOn(1, '03:00');
 
-// Auto-Delete Log Broadcast Pembatasan > 3 Bulan (setiap tanggal 1 jam 04:00)
+// Auto-Delete Log Broadcast Pembatasan > 30 Hari (setiap tanggal 1 jam 04:00)
 Schedule::call(function () {
-    \App\Models\BroadcastRestrictionLog::where('created_at', '<', now()->subMonths(3))->delete();
-    \Illuminate\Support\Facades\Log::info('[Scheduler] Log broadcast pembatasan lebih dari 3 bulan berhasil dihapus otomatis.');
+    \App\Models\BroadcastRestrictionLog::where('created_at', '<', now()->subDays(30))->delete();
+    \Illuminate\Support\Facades\Log::info('[Scheduler] Log broadcast pembatasan lebih dari 30 hari berhasil dihapus otomatis.');
 })->monthlyOn(1, '04:00');
 
 
