@@ -317,10 +317,10 @@
                                 <div class="w-14 h-7 bg-red-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-red-600 shadow-inner"></div>
                             </label>
                         </div>
-                        <div class="space-y-2" x-data="{ announcementContent: @js($settings['announcement_guest_page'] ?? '') }">
+                        <div class="space-y-2">
                             <label class="text-sm font-bold text-red-800">Teks Pengumuman/Banner (Mendukung Format Teks Berwarna)</label>
-                            <input id="announcement_guest_page" type="hidden" name="announcement_guest_page" :value="announcementContent">
-                            <trix-editor input="announcement_guest_page" class="trix-content !min-h-[120px] bg-white border-red-100" x-on:trix-change="announcementContent = $event.target.value"></trix-editor>
+                            <input id="announcement_guest_page" type="hidden" name="announcement_guest_page" value="{!! old('announcement_guest_page', $settings['announcement_guest_page'] ?? '') !!}">
+                            <trix-editor input="announcement_guest_page" class="trix-content !min-h-[120px] bg-white border-red-100"></trix-editor>
                             <p class="text-[10px] text-red-600 font-medium mt-1">Pengumuman ini akan muncul di bagian atas halaman pendaftaran pengunjung. Kosongkan jika tidak ada pengumuman.</p>
                         </div>
                     </div>
@@ -367,9 +367,9 @@
                         <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Teks aturan yang tampil di halaman pendaftaran pengunjung</p>
                     </div>
                 </div>
-                <div class="p-8" x-data="{ termsContent: @js($settings['terms_conditions'] ?? '') }">
-                    <input id="terms_conditions" type="hidden" name="terms_conditions" :value="termsContent">
-                    <trix-editor input="terms_conditions" class="trix-content" x-on:trix-change="termsContent = $event.target.value"></trix-editor>
+                <div class="p-8">
+                    <input id="terms_conditions" type="hidden" name="terms_conditions" value="{!! old('terms_conditions', $settings['terms_conditions'] ?? '') !!}">
+                    <trix-editor input="terms_conditions" class="trix-content"></trix-editor>
                     <p class="text-[10px] text-slate-400 italic mt-3"><i class="fas fa-info-circle mr-1"></i> Gunakan toolbar di atas untuk format tebal, miring, list, dll. Teks ini akan ditampilkan di halaman pendaftaran guest.</p>
                 </div>
             </div>
