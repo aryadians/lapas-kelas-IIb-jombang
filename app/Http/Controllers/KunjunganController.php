@@ -40,8 +40,8 @@ class KunjunganController extends Controller
         });
         $openDays = $openSchedules->pluck('day_name')->toArray();
         
-        // Ambil Batas H-N Pendaftaran & Konfigurasi dari Cache (1 menit agar lebih realtime)
-        $visitSettings = \Illuminate\Support\Facades\Cache::remember('visit_settings', 60, function() {
+        // Ambil Batas H-N Pendaftaran & Konfigurasi dari Cache (10 detik agar perubahan admin cepat terlihat)
+        $visitSettings = \Illuminate\Support\Facades\Cache::remember('visit_settings', 10, function() {
             return \App\Models\VisitSetting::pluck('value', 'key')->toArray();
         });
 

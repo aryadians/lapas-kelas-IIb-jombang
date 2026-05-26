@@ -7,6 +7,7 @@ use App\Models\VisitSchedule;
 use App\Models\VisitSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 class VisitConfigController extends Controller
 {
@@ -122,6 +123,8 @@ class VisitConfigController extends Controller
 
         // Bersihkan cache agar perubahan langsung terasa
         Artisan::call('cache:clear');
+        Cache::forget('visit_settings');
+        Cache::forget('open_schedules');
 
         return redirect()->back()->with('success', 'Konfigurasi kunjungan berhasil diperbarui.');
     }
