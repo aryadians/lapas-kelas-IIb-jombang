@@ -260,6 +260,11 @@ Route::middleware(['auth', 'verified', 'role:super_admin,admin_registrasi'])->gr
     Route::get('wbp/{wbp}/history', [\App\Http\Controllers\Admin\WbpController::class, 'history'])->name('admin.wbp.history');
     Route::resource('wbp', \App\Http\Controllers\Admin\WbpController::class)->names('admin.wbp');
 
+    // Log Broadcast Pembatasan WBP
+    Route::get('/restriction-logs', [\App\Http\Controllers\Admin\BroadcastRestrictionLogController::class, 'index'])->name('admin.restriction-logs.index');
+    Route::get('/restriction-logs/{log}', [\App\Http\Controllers\Admin\BroadcastRestrictionLogController::class, 'show'])->name('admin.restriction-logs.show');
+    Route::post('/restriction-logs/bulk-destroy', [\App\Http\Controllers\Admin\BroadcastRestrictionLogController::class, 'bulkDestroy'])->name('admin.restriction-logs.bulk-destroy');
+
     // Kontrol Antrian
     Route::get('/antrian/panggil-manual', [AntrianController::class, 'panggilManual'])->name('admin.antrian.panggil-manual');
     Route::post('/antrian/panggil-spesifik', [AntrianController::class, 'panggilSpesifik'])->name('admin.antrian.panggil-spesifik');

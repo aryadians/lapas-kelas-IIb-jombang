@@ -152,6 +152,12 @@
                         <span class="font-medium">Data Warga Binaan</span>
                     </a>
 
+                    <a href="{{ route('admin.restriction-logs.index') }}"
+                       class="flex items-center px-4 py-3 {{ request()->routeIs('admin.restriction-logs.*') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
+                        <i class="fas fa-history w-5 h-5 mr-3 {{ request()->routeIs('admin.restriction-logs.*') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}"></i>
+                        <span class="font-medium">Log Broadcast Pembatasan</span>
+                    </a>
+
                     <a href="{{ route('admin.visitors.index') }}"
                        class="flex items-center px-4 py-3 {{ request()->routeIs('admin.visitors.index') ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} rounded-xl transition-all duration-200 group">
                         <svg class="w-5 h-5 mr-3 {{ request()->routeIs('admin.visitors.index') ? 'text-white' : 'text-slate-500 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

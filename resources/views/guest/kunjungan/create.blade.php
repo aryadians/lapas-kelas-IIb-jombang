@@ -87,6 +87,21 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-16 relative z-20">
 
+            {{-- GENERAL ANNOUNCEMENT LANDING PAGE --}}
+            @if(!empty($generalAnnouncement) && $isGeneralAnnouncementActive)
+            <div class="mb-8 relative overflow-hidden rounded-3xl bg-amber-500/10 border-2 border-yellow-500/30 backdrop-blur-md shadow-xl p-6 flex items-start gap-4 text-left">
+                <div class="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center text-yellow-500 flex-shrink-0">
+                    <i class="fa-solid fa-bullhorn text-xl animate-bounce"></i>
+                </div>
+                <div class="text-white text-sm sm:text-base leading-relaxed max-w-none flex-1">
+                    <h4 class="text-yellow-400 font-black text-sm uppercase tracking-wider mb-1">Pengumuman Penting</h4>
+                    <div class="text-gray-100 font-medium">
+                        {!! $generalAnnouncement !!}
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- BADGE KEMENTERIAN --}}
             <div class="text-center mb-8">
                 <div class="inline-flex items-center text-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-950 to-blue-900 text-yellow-400 px-4 py-3 sm:px-6 rounded-full font-bold shadow-2xl border-2 border-yellow-500 border-opacity-50 text-xs sm:text-sm">

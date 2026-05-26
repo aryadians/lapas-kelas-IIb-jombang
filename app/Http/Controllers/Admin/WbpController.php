@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Wbp;
 use App\Models\WbpRestriction;
+use App\Models\BroadcastRestrictionLog;
+use App\Models\BroadcastRestrictionLogDetail;
+use App\Enums\KunjunganStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -299,71 +302,211 @@ class WbpController extends Controller
     }
 
     /**
-     * Broadcast pembatalan kunjungan untuk WBP yang dibatasi
+     * Broadcast manual pembatalan kunjungan untuk WBP yang dibatasi.
+     * Setiap eksekusi disimpan ke broadcast_restriction_logs untuk audit trail.
      */
     public function broadcastRestriction(Request $request)
     {
         $request->validate([
-            'ids' => 'required|array',
+            'ids'   => 'nullable|array',
             'ids.*' => 'exists:wbps,id',
         ]);
 
-        try {
-            $countKunjungan = 0;
-            $countWbpNoRestriction = 0;
+        $startTime               = now();
+        $totalWbpProcessed       = 0;
+        $totalWbpNoRestriction   = 0;
+        $totalKunjunganCancelled = 0;
+        $totalNotifQueued        = 0;
+        $hasError                = false;
+        $logDetails              = [];
 
-            foreach ($request->ids as $wbpId) {
-                $wbp = Wbp::with('latestRestriction')->find($wbpId);
+        $targetIds = $request->get('ids');
+        if (empty($targetIds)) {
+            $targetIds = Wbp::whereHas('latestRestriction')->pluck('id')->toArray();
+        }
+
+        try {
+            foreach ($targetIds as $wbpId) {
+                $wbp = Wbp::with(['latestRestriction'])->find($wbpId);
+                $totalWbpProcessed++;
+
                 if (!$wbp || !$wbp->latestRestriction) {
-                    $countWbpNoRestriction++;
-                    Log::warning("Broadcast restriction: WBP $wbpId tidak memiliki restriction aktif/mendatang.");
+                    $totalWbpNoRestriction++;
+                    Log::warning("Broadcast restriction: WBP {$wbpId} tidak memiliki restriction aktif/mendatang.");
+                    $logDetails[] = [
+                        'wbp_id'            => $wbpId,
+                        'wbp_nama'          => $wbp?->nama ?? "WBP #{$wbpId}",
+                        'restriction_type'  => null,
+                        'restriction_start' => null,
+                        'restriction_end'   => null,
+                        'kunjungan_id'      => null,
+                        'kode_booking'      => null,
+                        'tanggal_kunjungan' => null,
+                        'pengunjung_nama'   => null,
+                        'pengunjung_wa'     => null,
+                        'pengunjung_email'  => null,
+                        'wa_queued'         => false,
+                        'email_queued'      => false,
+                        'action'            => 'no_restriction',
+                        'error_message'     => null,
+                    ];
                     continue;
                 }
 
                 $restriction = $wbp->latestRestriction;
-                
-                // Cari kunjungan yang overlapping dengan masa pembatasan
-                // Gunakan enum value secara eksplisit untuk keamanan
-                $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
+
+                $kunjungans = \App\Models\Kunjungan::with('profilPengunjung')
+                    ->where('wbp_id', $wbpId)
                     ->whereIn('status', [
-                        \App\Enums\KunjunganStatus::PENDING->value,
-                        \App\Enums\KunjunganStatus::APPROVED->value,
+                        KunjunganStatus::PENDING->value,
+                        KunjunganStatus::APPROVED->value,
                     ])
                     ->whereDate('tanggal_kunjungan', '>=', $restriction->start_date)
                     ->whereDate('tanggal_kunjungan', '<=', $restriction->end_date)
                     ->get();
 
-                Log::info("Broadcast restriction WBP {$wbp->nama} (id:{$wbpId}) antara {$restriction->start_date} - {$restriction->end_date}. Kunjungan ditemukan: " . $kunjungans->count());
+                Log::info("[ManualBroadcast] WBP {$wbp->nama} (id:{$wbpId}) | {$restriction->start_date} s.d. {$restriction->end_date} | Terdampak: {$kunjungans->count()}");
+
+                if ($kunjungans->isEmpty()) {
+                    $logDetails[] = [
+                        'wbp_id'            => $wbp->id,
+                        'wbp_nama'          => $wbp->nama,
+                        'restriction_type'  => $restriction->type,
+                        'restriction_start' => $restriction->start_date,
+                        'restriction_end'   => $restriction->end_date,
+                        'kunjungan_id'      => null,
+                        'kode_booking'      => null,
+                        'tanggal_kunjungan' => null,
+                        'pengunjung_nama'   => null,
+                        'pengunjung_wa'     => null,
+                        'pengunjung_email'  => null,
+                        'wa_queued'         => false,
+                        'email_queued'      => false,
+                        'action'            => 'no_kunjungan',
+                        'error_message'     => null,
+                    ];
+                    continue;
+                }
 
                 foreach ($kunjungans as $kunjungan) {
-                    // Batalkan kunjungan tanpa memicu observer
-                    $kunjungan->updateQuietly(['status' => \App\Enums\KunjunganStatus::REJECTED]);
-                    
-                    // Dispatch job broadcast khusus pembatasan
-                    \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
-                    $countKunjungan++;
+                    try {
+                        $kunjungan->updateQuietly(['status' => KunjunganStatus::REJECTED]);
+                        \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
+
+                        $profil = $kunjungan->profilPengunjung;
+                        $logDetails[] = [
+                            'wbp_id'            => $wbp->id,
+                            'wbp_nama'          => $wbp->nama,
+                            'restriction_type'  => $restriction->type,
+                            'restriction_start' => $restriction->start_date,
+                            'restriction_end'   => $restriction->end_date,
+                            'kunjungan_id'      => $kunjungan->id,
+                            'kode_booking'      => $kunjungan->kode_booking,
+                            'tanggal_kunjungan' => $kunjungan->tanggal_kunjungan,
+                            'pengunjung_nama'   => $profil?->nama ?? $kunjungan->nama_pengunjung ?? '-',
+                            'pengunjung_wa'     => $profil?->nomor_hp ?? $kunjungan->no_wa_pengunjung ?? '-',
+                            'pengunjung_email'  => $profil?->email ?? $kunjungan->email_pengunjung ?? '-',
+                            'wa_queued'         => true,
+                            'email_queued'      => false,
+                            'action'            => 'cancelled',
+                            'error_message'     => null,
+                        ];
+                        $totalKunjunganCancelled++;
+                        $totalNotifQueued++;
+                    } catch (\Exception $e) {
+                        $hasError = true;
+                        Log::error("[ManualBroadcast] Error kunjungan #{$kunjungan->id}: " . $e->getMessage());
+                        $logDetails[] = [
+                            'wbp_id'            => $wbp->id,
+                            'wbp_nama'          => $wbp->nama,
+                            'restriction_type'  => $restriction->type,
+                            'restriction_start' => $restriction->start_date,
+                            'restriction_end'   => $restriction->end_date,
+                            'kunjungan_id'      => $kunjungan->id,
+                            'kode_booking'      => $kunjungan->kode_booking,
+                            'tanggal_kunjungan' => $kunjungan->tanggal_kunjungan,
+                            'pengunjung_nama'   => null,
+                            'pengunjung_wa'     => null,
+                            'pengunjung_email'  => null,
+                            'wa_queued'         => false,
+                            'email_queued'      => false,
+                            'action'            => 'error',
+                            'error_message'     => $e->getMessage(),
+                        ];
+                    }
                 }
             }
 
-            if ($countKunjungan === 0) {
-                $extra = $countWbpNoRestriction > 0
-                    ? " ($countWbpNoRestriction WBP tidak memiliki data pembatasan aktif.)"
+            // Tentukan status akhir
+            $status = 'success';
+            if ($totalKunjunganCancelled === 0 && !$hasError) {
+                $status = 'no_impact';
+            } elseif ($hasError && $totalKunjunganCancelled > 0) {
+                $status = 'partial_error';
+            } elseif ($hasError) {
+                $status = 'failed';
+            }
+
+            $notes = "Manual broadcast oleh admin. WBP dipilih: {$totalWbpProcessed}. "
+                   . "Tanpa restriction: {$totalWbpNoRestriction}. "
+                   . "Kunjungan dibatalkan: {$totalKunjunganCancelled}. "
+                   . "Durasi: " . now()->diffInSeconds($startTime) . " detik.";
+
+            // Simpan log utama
+            $log = BroadcastRestrictionLog::create([
+                'triggered_by'               => 'manual',
+                'triggered_by_user_id'       => auth()->id(),
+                'total_wbp_processed'        => $totalWbpProcessed,
+                'total_wbp_no_restriction'   => $totalWbpNoRestriction,
+                'total_kunjungan_cancelled'  => $totalKunjunganCancelled,
+                'total_notifications_queued' => $totalNotifQueued,
+                'status'                     => $status,
+                'notes'                      => $notes,
+            ]);
+
+            // Simpan detail per kunjungan
+            foreach ($logDetails as $detail) {
+                $detail['broadcast_restriction_log_id'] = $log->id;
+                BroadcastRestrictionLogDetail::create($detail);
+            }
+
+            Log::info("[ManualBroadcast] DONE | log_id: {$log->id} | status: {$status}");
+
+            if ($totalKunjunganCancelled === 0) {
+                $extra = $totalWbpNoRestriction > 0
+                    ? " ({$totalWbpNoRestriction} WBP tanpa data pembatasan aktif.)"
                     : '';
                 return response()->json([
-                    'success' => true,
-                    'message' => "Broadcast selesai. Tidak ada kunjungan (Pending/Disetujui) yang perlu dibatalkan selama masa pembatasan ini. Kemungkinan belum ada pengunjung yang mendaftar untuk WBP tersebut.{$extra}"
+                    'success'  => true,
+                    'message'  => "Broadcast selesai. Tidak ada kunjungan (Pending/Disetujui) yang perlu dibatalkan selama masa pembatasan ini. Kemungkinan belum ada pengunjung yang mendaftar untuk WBP tersebut.{$extra}",
+                    'log_id'   => $log->id,
                 ]);
             }
 
             return response()->json([
-                'success' => true,
-                'message' => "Berhasil membatalkan $countKunjungan kunjungan terdampak dan menaruh notifikasi ke dalam antrean (Queue)."
+                'success'  => true,
+                'message'  => "Berhasil membatalkan {$totalKunjunganCancelled} kunjungan terdampak dan menaruh notifikasi ke dalam antrean (Queue).",
+                'log_id'   => $log->id,
             ]);
+
         } catch (\Exception $e) {
-            Log::error('WBP Broadcast Restriction Error: ' . $e->getMessage());
+            Log::error('[ManualBroadcast] Fatal Error: ' . $e->getMessage());
+
+            // Simpan log error
+            BroadcastRestrictionLog::create([
+                'triggered_by'               => 'manual',
+                'triggered_by_user_id'       => auth()->id(),
+                'total_wbp_processed'        => $totalWbpProcessed,
+                'total_wbp_no_restriction'   => $totalWbpNoRestriction,
+                'total_kunjungan_cancelled'  => $totalKunjunganCancelled,
+                'total_notifications_queued' => $totalNotifQueued,
+                'status'                     => 'failed',
+                'notes'                      => 'FATAL ERROR: ' . $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan saat broadcast: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan saat broadcast: ' . $e->getMessage(),
             ], 500);
         }
     }
