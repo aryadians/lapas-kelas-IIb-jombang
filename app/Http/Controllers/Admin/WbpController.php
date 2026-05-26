@@ -310,30 +310,49 @@ class WbpController extends Controller
 
         try {
             $countKunjungan = 0;
+            $countWbpNoRestriction = 0;
 
             foreach ($request->ids as $wbpId) {
                 $wbp = Wbp::with('latestRestriction')->find($wbpId);
-                if ($wbp && $wbp->latestRestriction) {
-                    $restriction = $wbp->latestRestriction;
-                    
-                    // Cari kunjungan yang overlapping dengan masa pembatasan
-                    $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
-                        ->whereIn('status', ['pending', 'approved'])
-                        ->whereDate('tanggal_kunjungan', '>=', $restriction->start_date)
-                        ->whereDate('tanggal_kunjungan', '<=', $restriction->end_date)
-                        ->get();
-
-                    Log::info("Broadcast restriction search for WBP $wbpId between {$restriction->start_date} and {$restriction->end_date}. Found count: " . $kunjungans->count());
-
-                    foreach ($kunjungans as $kunjungan) {
-                        // Batalkan kunjungan tanpa memicu observer
-                        $kunjungan->updateQuietly(['status' => \App\Enums\KunjunganStatus::REJECTED]);
-                        
-                        // Dispatch job broadcast khusus pembatasan
-                        \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
-                        $countKunjungan++;
-                    }
+                if (!$wbp || !$wbp->latestRestriction) {
+                    $countWbpNoRestriction++;
+                    Log::warning("Broadcast restriction: WBP $wbpId tidak memiliki restriction aktif/mendatang.");
+                    continue;
                 }
+
+                $restriction = $wbp->latestRestriction;
+                
+                // Cari kunjungan yang overlapping dengan masa pembatasan
+                // Gunakan enum value secara eksplisit untuk keamanan
+                $kunjungans = \App\Models\Kunjungan::where('wbp_id', $wbpId)
+                    ->whereIn('status', [
+                        \App\Enums\KunjunganStatus::PENDING->value,
+                        \App\Enums\KunjunganStatus::APPROVED->value,
+                    ])
+                    ->whereDate('tanggal_kunjungan', '>=', $restriction->start_date)
+                    ->whereDate('tanggal_kunjungan', '<=', $restriction->end_date)
+                    ->get();
+
+                Log::info("Broadcast restriction WBP {$wbp->nama} (id:{$wbpId}) antara {$restriction->start_date} - {$restriction->end_date}. Kunjungan ditemukan: " . $kunjungans->count());
+
+                foreach ($kunjungans as $kunjungan) {
+                    // Batalkan kunjungan tanpa memicu observer
+                    $kunjungan->updateQuietly(['status' => \App\Enums\KunjunganStatus::REJECTED]);
+                    
+                    // Dispatch job broadcast khusus pembatasan
+                    \App\Jobs\SendRestrictionNotificationJob::dispatch($kunjungan->id, $wbpId, $restriction->id);
+                    $countKunjungan++;
+                }
+            }
+
+            if ($countKunjungan === 0) {
+                $extra = $countWbpNoRestriction > 0
+                    ? " ($countWbpNoRestriction WBP tidak memiliki data pembatasan aktif.)"
+                    : '';
+                return response()->json([
+                    'success' => true,
+                    'message' => "Broadcast selesai. Tidak ada kunjungan (Pending/Disetujui) yang perlu dibatalkan selama masa pembatasan ini. Kemungkinan belum ada pengunjung yang mendaftar untuk WBP tersebut.{$extra}"
+                ]);
             }
 
             return response()->json([
